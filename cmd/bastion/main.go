@@ -4,7 +4,8 @@ import (
 		"fmt"
 		"flag"
 		"bastion/credentials"
-		// "github.com/bmizerany/aws4"
+		"bastion/ec2"
+		"bastion/resilient"
 )
 
 // we must first retrieve our AWS API keys, which will either be in the instance metadata,
@@ -17,6 +18,7 @@ import (
 
 var accessKeyId string
 var secretKey string
+var region string
 var opsee string
 var caPath string
 var certPath string
@@ -25,6 +27,7 @@ var keyPath string
 func init() {
 	flag.StringVar(&accessKeyId, "access_key_id", "", "AWS access key ID.")
 	flag.StringVar(&secretKey, "secret_key", "", "AWS secret key ID.")
+	flag.StringVar(&region, "region", "", "AWS Region.")
 	flag.StringVar(&opsee, "opsee", "localhost:8085", "Hostname and port to the Opsee server.")
 	flag.StringVar(&caPath, "ca", "ca.pem", "Path to the CA certificate.")
 	flag.StringVar(&certPath, "cert", "cert.pem", "Path to the certificate.")
@@ -33,14 +36,13 @@ func init() {
 
 func main() {
 	flag.Parse()
-
-	if accessKeyId == "" || secretKey == "" {
-		cc := credentials.Start()
-		creds := <- cc
-		accessKeyId = creds.AccessKeyId
-		secretKey = creds.SecretAccessKey
-		fmt.Println("creds ", creds)
+	credProvider := credentials.New(accessKeyId, secretKey, region)
+	c := ec2.Start(credProvider)
+	conn, err := resilient.Start(opsee, caPath, certPath, keyPath)
+	if err != nil {
+		fmt.Println("error during resilient conn startup", err)
+		return
 	}
-
-
+	conn.Recv()
+	<- c
 }
