@@ -68,7 +68,6 @@ func (rc *ResilientConn) Close() {
 }
 
 func (rc *ResilientConn) Send(v interface{}) {
-	fmt.Println("Send", v)
 	rc.sendChan <- v
 }
 
@@ -90,21 +89,16 @@ func (rc *ResilientConn) loop(timeout int) {
 }
 
 func (rc *ResilientConn) reconnLoop(startingTimeout int, timeout *int) <-chan time.Time {
-
-	fmt.Println("once more")
 	if rc.conn == nil {
-		fmt.Println("reconnecting")
 		conn, err := tls.Dial("tcp", rc.address, rc.config)
 		if err != nil {
 			fmt.Println("encountered error trying to connect to opsee backend:", err)
 			return time.After(time.Duration(*timeout) * time.Second)
 		}
-		fmt.Println("dialed")
 		rc.conn = conn
 		*timeout = startingTimeout
 		rc.connected = true
 		rc.connChan <- true
-		fmt.Println("connected")
 		go rc.sender()
 	}
 	recvBuffer, err := readFramed(rc.conn)
@@ -114,7 +108,6 @@ func (rc *ResilientConn) reconnLoop(startingTimeout int, timeout *int) <-chan ti
 		rc.connected = false
 	}
 	if len(recvBuffer) == 0 {
-		fmt.Println("recv ping")
 		return nil
 	}
 
@@ -130,16 +123,13 @@ func (rc *ResilientConn) reconnLoop(startingTimeout int, timeout *int) <-chan ti
 
 func (rc *ResilientConn) sender() {
 	for {
-		fmt.Println("sender start")
 		toSend := <- rc.sendChan
-		fmt.Println("to send", toSend)
 		buff, err := json.Marshal(&toSend)
 		if err != nil {
 			fmt.Println("encountered error marshalling object:", err)
 			continue
 		}
 		size := uint16(len(buff))
-		fmt.Println("sending", buff)
 		err = binary.Write(rc.conn, binary.BigEndian, &size)
 		n, err := rc.conn.Write(buff)
 		if err != nil || uint16(n) != size {

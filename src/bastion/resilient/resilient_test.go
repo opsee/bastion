@@ -10,7 +10,6 @@ import (
 		"github.com/stretchr/testify/assert"
 
 )
-import _ "crypto/md5"
 
 func TestSuccessfulConnection(t *testing.T) {
 	fmt.Println("test success")
