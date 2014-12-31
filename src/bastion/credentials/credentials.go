@@ -8,11 +8,16 @@ import (
 		"encoding/json"
 )
 
+type HttpClient interface {
+	Get(url string) (resp *http.Response, err error)
+}
+
 type CredentialsProvider struct {
 	creds 			chan *Credentials
 	oldCreds		*Credentials
-	ichan			chan *InstanceId
+	instanceId		*InstanceId
 	ticks		 	<-chan time.Time
+	client			HttpClient
 }
 
 type Credentials struct {
@@ -44,25 +49,25 @@ type InstanceId struct {
 	AvailabilityZone 	string
 }
 
-func New(overrideAccessKeyId string, overrideSecretAccessKey string, overrideRegion string) *CredentialsProvider {
-	cp := CredentialsProvider {make(chan *Credentials),
+func NewProvider(client HttpClient, 
+		overrideAccessKeyId, overrideSecretAccessKey, overrideRegion string) *CredentialsProvider {
+	cp := &CredentialsProvider {make(chan *Credentials),
 		&Credentials{overrideAccessKeyId,overrideSecretAccessKey,overrideRegion},
-		make(chan *InstanceId),
-		time.Tick(1 * time.Hour)}
+		nil,
+		time.Tick(1 * time.Hour),
+		client}
 	cp.start(overrideAccessKeyId, overrideSecretAccessKey, overrideRegion)
-	return &cp
+	return cp
 }
 
-func (cp *CredentialsProvider) start(overrideAccessKeyId string, overrideSecretAccessKey string, overrideRegion string) {
+func (cp *CredentialsProvider) start(overrideAccessKeyId, 
+		overrideSecretAccessKey, overrideRegion string) {
 	go func() {
 		if overrideAccessKeyId != "" && overrideSecretAccessKey != "" && overrideRegion != "" {
 			cp.creds <- &Credentials{overrideAccessKeyId, overrideSecretAccessKey, overrideRegion}
 			return
 		}
 		iid := cp.retrieveInstanceId()
-		if iid != nil {
-			cp.ichan <- iid
-		}
 		for {
 			if !cp.loop(iid, overrideAccessKeyId, overrideSecretAccessKey, overrideRegion) {
 				return
@@ -98,7 +103,7 @@ func (cp *CredentialsProvider) loop(iid *InstanceId, overrideAccessKeyId string,
 	return true
 }
 
-func (cp * CredentialsProvider) GetCredentials() *Credentials {
+func (cp *CredentialsProvider) GetCredentials() *Credentials {
 	select {
 	case creds := <- cp.creds:
 		cp.oldCreds = creds
@@ -108,8 +113,12 @@ func (cp * CredentialsProvider) GetCredentials() *Credentials {
 	}
 }
 
+func (cp *CredentialsProvider) GetInstanceId() *InstanceId {
+	return cp.instanceId
+}
+
 func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
-	resp,err := http.Get("http://169.254.169.254/latest/dynamic/instance-identity/document")
+	resp,err := cp.client.Get("http://169.254.169.254/latest/dynamic/instance-identity/document")
 	if err != nil {
 		fmt.Println("error getting ec2 instance id:", err)
 		return nil
@@ -126,12 +135,12 @@ func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
 		fmt.Println("error parsing instanceid:", err)
 		return nil
 	}
-	cp.ichan <- &iid
+	cp.instanceId = &iid
 	return &iid
 }
 
 func (cp *CredentialsProvider) retrieveMetadataCreds() *metadataCredentials {
-	resp, err := http.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee")
+	resp, err := cp.client.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee")
 	if err != nil {
 		fmt.Println("error getting ec2 metadata:", err)
 		return nil
