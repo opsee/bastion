@@ -9,7 +9,7 @@ import (
 		"encoding/json"
 		"io/ioutil"
 		"encoding/binary"
-		"net"
+		bioutil "bastion/ioutil"
 )
 
 type ResilientConn struct {
@@ -101,7 +101,7 @@ func (rc *ResilientConn) reconnLoop(startingTimeout int, timeout *int) <-chan ti
 		rc.connChan <- true
 		go rc.sender()
 	}
-	recvBuffer, err := readFramed(rc.conn)
+	recvBuffer, err := bioutil.ReadFramed(rc.conn)
 	if err != nil {
 		rc.conn.Close()
 		rc.conn = nil
@@ -137,23 +137,6 @@ func (rc *ResilientConn) sender() {
 			return
 		}
 	}
-}
-
-func readFramed(conn net.Conn) ([]byte, error) {
-	var size uint16
-	err := binary.Read(conn, binary.BigEndian, &size)
-	if err != nil {
-		return nil, err
-	}
-	if size == 0 {
-		return []byte{}, nil
-	}
-	buffer := make([]byte, size, size)
-	n, err := conn.Read(buffer)
-	if err != nil {
-		return nil, err
-	}
-	return buffer[0:n], nil
 }
 
 func (rc *ResilientConn) IsConnected() bool {

@@ -4,8 +4,21 @@ import (
 		"fmt"
 )
 
+type GroupType int
+
+const (
+	SecurityGroup GroupType = iota
+	AutoScaleGroup GroupType = iota
+)
+
 type Groups struct {
 	lookup 		map[string]*Group
+}
+
+type Group struct {
+	groupName 	string
+	groupType	GroupType
+	lookup		map[string]*Server
 }
 
 func Start() *Groups {
@@ -13,12 +26,32 @@ func Start() *Groups {
 	return groups
 }
 
-func (g *Groups) AddGroup(groupName string) (*Group) {
+func (g *Groups) AddGroup(groupName string) *Group {
 	group, ok := g.lookup[groupName]
 	if ok {
 		return group
 	}
-	group = startGroup(groupName)
+	group = newGroup(groupName)
 	g.lookup[groupName] = group
 	return group
+}
+
+func newGroupFromSG(sg *ec2.SecurityGroup) *Group {
+	group = &Group{
+		groupName : sg.GroupName,
+		groupID : sg.GroupID,
+		groupType : SecurityGroup,
+		}
+}
+
+func newGroup(groupName, groupID string, groupType GroupType) *Group {
+	group = &Group{
+		groupName : groupName,
+		groupID : groupID,
+		groupType : groupType,
+		lookup : make(map[string] *Server)}
+}
+
+func (g *Group) CheckGroupMembership() {
+
 }
