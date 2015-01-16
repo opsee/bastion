@@ -10,4 +10,4 @@ test: deps
 	go test -v bastion/...
 
 build: deps
-	go build cmd/bastion/main.go -o bastion
+	go build -o bastion cmd/bastion/main.go
