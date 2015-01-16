@@ -3,7 +3,7 @@ package resilient
 import (
 		"os"
 		"fmt"
-		nettest "github.com/opsee/bastion/testing/net"
+		nettest "bastion/testing/net"
 		"time"
 		"testing"
 		"github.com/stretchr/testify/assert"

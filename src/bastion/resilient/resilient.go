@@ -9,7 +9,7 @@ import (
 		"encoding/json"
 		"io/ioutil"
 		"encoding/binary"
-		bioutil "github.com/opsee/bastion/ioutil"
+		bioutil "bastion/ioutil"
 )
 
 type ResilientConn struct {

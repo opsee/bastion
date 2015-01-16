@@ -3,7 +3,7 @@ package checks
 import (
 		"fmt"
 		"testing"
-		nettest "github.com/opsee/bastion/testing/net"
+		nettest "bastion/testing/net"
 		"time"
 		"net"
 		"github.com/stretchr/testify/assert"

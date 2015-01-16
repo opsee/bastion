@@ -4,7 +4,7 @@ import(
 		"fmt"
 		"github.com/stripe/aws-go/aws"
 		"github.com/stripe/aws-go/gen/ec2"
-		"github.com/opsee/bastion/credentials"
+		"bastion/credentials"
 		// "github.com/stripe/aws-go/gen/autoscaling"
 )
 
