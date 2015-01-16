@@ -107,5 +107,5 @@ func startServer(port int, t *testing.T) nettest.TestServer {
 }
 
 func certPath(cert string) string {
-	return fmt.Sprintf("%s/certs/%s", os.Getenv("GOPATH"), cert)
+	return fmt.Sprintf("certs/%s", cert)
 }
