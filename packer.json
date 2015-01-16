@@ -9,7 +9,7 @@
 		"secret_key": "{{user `aws_secret_key`}}",
 		"region": "us-west-1",
 		"source_ami": "ami-076e6542",
-		"instance_type": "t1.micro",
+		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	}],
