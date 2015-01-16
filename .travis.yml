@@ -1,11 +1,11 @@
 language: go
-addons:
-  artifacts:
-    key:
-      secure: QwuIiZ1lfH5oTkqxSXDWWDACHO/V5eX0gm8Q0YQhT8x9HkhfCIgV+stm6wkFX/UGbG2qpi9c5LbzFttaehtrNhc0cPQK0r+r9bwtnkKM+U9FlU3ym4mszqhftKV6JJ0K1vhUo3nmwAajjUkEz13sRkPqUTdtp6fzmd/JHOzAUL4=
-    secret:
-      secure: DajzK1ZeuEFMvIhmhocDOUGfcUpe5+pes1zC7JlsZuKId0IhuV/AefvCacoLrN7fp25oqoUP2ISsb83qJz0yM/maxel/5ldwBPWDZvtWBLNAmfQTtJhb/r1aMobAzBej4q0/PwwhV0cwuH9ThTeZ0i4eq3YrF3oi+szs3yF9CdE=
-    bucket: opsee-builds
+# addons:
+#   artifacts:
+#     key:
+#       secure: QwuIiZ1lfH5oTkqxSXDWWDACHO/V5eX0gm8Q0YQhT8x9HkhfCIgV+stm6wkFX/UGbG2qpi9c5LbzFttaehtrNhc0cPQK0r+r9bwtnkKM+U9FlU3ym4mszqhftKV6JJ0K1vhUo3nmwAajjUkEz13sRkPqUTdtp6fzmd/JHOzAUL4=
+#     secret:
+#       secure: DajzK1ZeuEFMvIhmhocDOUGfcUpe5+pes1zC7JlsZuKId0IhuV/AefvCacoLrN7fp25oqoUP2ISsb83qJz0yM/maxel/5ldwBPWDZvtWBLNAmfQTtJhb/r1aMobAzBej4q0/PwwhV0cwuH9ThTeZ0i4eq3YrF3oi+szs3yF9CdE=
+#     bucket: opsee-builds
 install:
   - wget https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip -O /tmp/packer.zip
   - sudo unzip /tmp/packer.zip -d /usr/local/bin
