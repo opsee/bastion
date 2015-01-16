@@ -130,6 +130,9 @@ func (rc *ResilientConn) sender() {
 			continue
 		}
 		size := uint16(len(buff))
+		if rc.conn == nil {
+			return
+		}
 		err = binary.Write(rc.conn, binary.BigEndian, &size)
 		n, err := rc.conn.Write(buff)
 		if err != nil || uint16(n) != size {

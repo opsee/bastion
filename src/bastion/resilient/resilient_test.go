@@ -1,6 +1,7 @@
 package resilient
 
 import (
+		"os"
 		"fmt"
 		nettest "bastion/testing/net"
 		"time"
