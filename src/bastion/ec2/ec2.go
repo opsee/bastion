@@ -8,51 +8,41 @@ import(
 		// "github.com/stripe/aws-go/gen/autoscaling"
 )
 
-func Start(credProvider *credentials.CredentialsProvider) chan bool {
-	c := make(chan bool)
-	go func() {
-		groups := make(map[string]ec2.SecurityGroup)
-		instances := make(map[string]ec2.Instance)
-		for {
-			creds := credProvider.GetCredentials()
-			fmt.Println("credentials:", creds)
-			loop(creds, groups, instances)
-			c <- true
-		}
-	}()
-	return c
+type EC2Scanner interface {
+	ScanSecurityGroups() ([]*ec2.SecurityGroup, error)
+	ScanSecurityGroupInstances() ([]*ec2.Reservation, error)
 }
 
-func loop(creds *credentials.Credentials, groups map[string]ec2.SecurityGroup, instances map[string]ec2.Instance) {
+type eC2ScannerImpl struct {
+	credProvider 	*credentials.CredentialsProvider
+}
+
+func New(credProvider *credentials.CredentialsProvider) EC2Scanner {
+	scanner := &eC2ScannerImpl{credProvider}
+
+}
+
+func (s *eC2ScannerImpl) getClient() *ec2.EC2 {
+	creds := s.credProvider.GetCredentials()
 	awsCreds := aws.Creds(creds.AccessKeyId, creds.SecretAccessKey, "")
-	ec2 := ec2.New(awsCreds, creds.Region, nil)
-	iterateSecurityGroups(ec2, groups)
-	fmt.Println("groups", groups)
-	iterateInstances(ec2, instances)
+	return ec2.New(awsCreds, creds.Region, nil)
 }
 
-func iterateSecurityGroups(client *ec2.EC2, groups map[string]ec2.SecurityGroup) {
+func (s *eC2ScannerImpl) ScanSecurityGroups() ([]*ec2.SecurityGroup, error) {
+	client := s.getClient()
 	resp, err := client.DescribeSecurityGroups(nil)
 	if err != nil {
-		fmt.Println("encountered an error scanning the ec2 security groups API:", err)
-		return
+		return nil, err
 	}
-	for _,group := range resp.SecurityGroups {
-		fmt.Println("group", *group.GroupID)
-		groups[*group.GroupID] = group
-	}
+	return resp.SecurityGroups, nil
 }
 
-func iterateInstances(client *ec2.EC2, instances map[string]ec2.Instance) {
-	var token *string = nil
-	resp, err := client.DescribeInstances(&ec2.DescribeInstancesRequest{NextToken:token})
+func (s *EC2Scanner) ScanSecurityGroupInstances(groupId string) ([]*ec2.Reservation, error) {
+	client := s.getClient()
+	resp, err := client.DescribeInstances(&ec2.DescribeInstancesRequest{
+		Filters : []ec2.Filter{ec2.Filter{"SecurityGroups", []string{groupId}}}})
 	if err != nil {
-		fmt.Println("encountered an error scanning ec2 instances API:", err)
-		return
+		return nil, err
 	}
-	for _,reservation := range resp.Reservations {
-		for _,instance := range reservation.Instances {
-			instances[*instance.InstanceID] = instance
-		}
-	}
+	return resp.Reservations, nil
 }

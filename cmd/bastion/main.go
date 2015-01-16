@@ -2,10 +2,16 @@ package main
 
 import (
 		"fmt"
+		"os"
+		"io/ioutil"
 		"flag"
+		"time"
+		"net/http"
 		"bastion/credentials"
-		"bastion/ec2"
-		"bastion/resilient"
+		// "bastion/ec2"
+		// "bastion/resilient"
+		"encoding/json"
+		"github.com/moonpolysoft/raidman"
 )
 
 // we must first retrieve our AWS API keys, which will either be in the instance metadata,
@@ -23,6 +29,8 @@ var opsee string
 var caPath string
 var certPath string
 var keyPath string
+var dataPath string
+var hostname string
 
 func init() {
 	flag.StringVar(&accessKeyId, "access_key_id", "", "AWS access key ID.")
@@ -32,17 +40,55 @@ func init() {
 	flag.StringVar(&caPath, "ca", "ca.pem", "Path to the CA certificate.")
 	flag.StringVar(&certPath, "cert", "cert.pem", "Path to the certificate.")
 	flag.StringVar(&keyPath, "key", "key.pem", "Path to the key file.")
+	flag.StringVar(&dataPath, "data", "", "Data path.")
+	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
 }
 
 func main() {
 	flag.Parse()
-	credProvider := credentials.New(accessKeyId, secretKey, region)
-	c := ec2.Start(credProvider)
-	conn, err := resilient.Start(opsee, caPath, certPath, keyPath)
+	httpClient := &http.Client{}
+	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
+	// c := ec2.Start(credProvider)
+	c, err := raidman.Dial("tcp", opsee)
 	if err != nil {
-		fmt.Println("error during resilient conn startup", err)
-		return
+		panic(err)
 	}
-	conn.Recv()
-	<- c
+
+	if hostname == "" {
+		hostname = credProvider.GetInstanceId().InstanceId
+	}
+
+	tick := time.Tick(time.Second * 10)
+
+	go func() {
+		if dataPath != "" {
+			file, err := os.Open(dataPath)
+			if err != nil {
+				panic(err)
+			}
+			bytes, err := ioutil.ReadAll(file)
+			if err != nil {
+				panic(err)
+			}
+			events := []raidman.Event{}
+			err = json.Unmarshal(bytes, &events)
+			if err != nil {
+				panic(err)
+			}
+			for _,event := range events {
+				c.Send(&event)
+			}
+		}
+	}()
+
+	for {
+		event := &raidman.Event{
+			State: "connected",
+			Host: hostname,
+			Service: "bastion",
+			Ttl: 10}
+		fmt.Println(event)
+		c.Send(event)
+		<- tick
+	}
 }

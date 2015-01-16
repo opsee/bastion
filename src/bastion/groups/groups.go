@@ -12,13 +12,14 @@ const (
 )
 
 type Groups struct {
-	lookup 		map[string]*Group
+	lookup 		map[string]Group
 }
 
 type Group struct {
 	groupName 	string
+	groupID 	string
 	groupType	GroupType
-	lookup		map[string]*Server
+	lookup		map[string]Server
 }
 
 func Start() *Groups {
@@ -37,11 +38,11 @@ func (g *Groups) AddGroup(groupName string) *Group {
 }
 
 func newGroupFromSG(sg *ec2.SecurityGroup) *Group {
-	group = &Group{
+	return &Group{
 		groupName : sg.GroupName,
 		groupID : sg.GroupID,
 		groupType : SecurityGroup,
-		}
+		lookup : make(map[string]*Server)}
 }
 
 func newGroup(groupName, groupID string, groupType GroupType) *Group {
