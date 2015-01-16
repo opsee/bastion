@@ -7,11 +7,11 @@ import (
 		"flag"
 		"time"
 		"net/http"
-		"bastion/credentials"
+		"github.com/opsee/bastion/credentials"
 		// "bastion/ec2"
 		// "bastion/resilient"
 		"encoding/json"
-		"github.com/moonpolysoft/raidman"
+		"github.com/amir/raidman"
 )
 
 // we must first retrieve our AWS API keys, which will either be in the instance metadata,
