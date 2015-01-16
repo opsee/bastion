@@ -23,7 +23,7 @@
 		{
 			"type" : "chef-solo",
 			"cookbook_paths": ["cookbooks"],
-			"run_list": ["bastion"]
+			"run_list": ["runit", "bastion"]
 		}
 	]
 }
