@@ -10,4 +10,4 @@ test: deps
 	go test -v bastion/...
 
 build: deps
-	go build -o bastion cmd/bastion/main.go
+	go build -o cookbooks/bastion/files/bastion cmd/bastion/main.go

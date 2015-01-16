@@ -21,11 +21,6 @@
 			]
 		},
 		{
-			"type" : "file",
-			"source" : "bastion",
-			"destination" : "/opt/bastion/bin/bastion"
-		},
-		{
 			"type" : "chef-solo",
 			"cookbook_paths": ["cookbooks"],
 			"run_list": ["bastion"]
