@@ -50,8 +50,9 @@ func main() {
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
 	// c := ec2.Start(credProvider)
 	c, err := raidman.Dial("tcp", opsee)
-	if err != nil {
-		panic(err)
+	if err != nil { //we'll need retry logic here but for right now I just need the frickin build to go
+		time.Sleep(30000)
+		return
 	}
 
 	if hostname == "" {

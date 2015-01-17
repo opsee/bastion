@@ -78,13 +78,16 @@ func (cp *CredentialsProvider) start(overrideAccessKeyId,
 
 func (cp *CredentialsProvider) loop(iid *InstanceId, overrideAccessKeyId string, overrideSecretAccessKey string, overrideRegion string) bool {
 	metaCreds := cp.retrieveMetadataCreds()
-	accessKeyId := metaCreds.AccessKeyId
-	if overrideAccessKeyId != "" {
-		accessKeyId = overrideAccessKeyId
-	}
-	secretAccessKey := metaCreds.SecretAccessKey
-	if overrideSecretAccessKey != "" {
-		secretAccessKey = overrideSecretAccessKey
+	var accessKeyId, secretAccessKey string
+	if metaCreds != nil {
+		accessKeyId = metaCreds.AccessKeyId
+		if overrideAccessKeyId != "" {
+			accessKeyId = overrideAccessKeyId
+		}
+		secretAccessKey = metaCreds.SecretAccessKey
+		if overrideSecretAccessKey != "" {
+			secretAccessKey = overrideSecretAccessKey
+		}
 	}
 	var region string = ""
 	if iid != nil {
