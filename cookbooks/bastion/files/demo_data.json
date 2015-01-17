@@ -1,0 +1,5 @@
+[
+{"ttl":120,"host":"bastion","service":"discovery","state":"discovered","metric":3,"attributes":{"group_name":"mysql_cluster","port":"3306","group_type":"sg"}},
+{"ttl":120,"host":"bastion","service":"discovery","state":"discovered","metric":5,"attributes":{"group_name":"web_hosts","port":"80","group_type":"asg","min_hosts":"5"}},
+{"ttl":120,"host":"bastion","service":"discovery","state":"discovered","metric":2,"attributes":{"group_name":"secure_web","port":"443","group_type":"asg","min_hosts":"2"}}
+]

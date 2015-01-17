@@ -22,6 +22,13 @@ file "/opt/bastion/bin/bastion" do
 	action :create
 end
 
+file "/opt/bastion/etc/demo_data.json" do
+	owner "bastion"
+	group "bastion"
+	mode '0755'
+	action :create
+end
+
 runit_service "bastion" do
 	default_logger true
 end

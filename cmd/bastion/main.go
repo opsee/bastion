@@ -76,6 +76,7 @@ func main() {
 				panic(err)
 			}
 			for _,event := range events {
+				fmt.Println(event)
 				c.Send(&event)
 			}
 		}
