@@ -15,14 +15,16 @@ end
 	end
 end
 
-file "/opt/bastion/bin/bastion" do
+cookbook_file "bastion" do
+	path "/opt/bastion/bin/bastion"
 	owner "bastion"
 	group "bastion"
 	mode '0755'
 	action :create
 end
 
-file "/opt/bastion/etc/demo_data.json" do
+cookbook_file "demo_data.json" do
+	path "/opt/bastion/etc/demo_data.json"
 	owner "bastion"
 	group "bastion"
 	mode '0755'
