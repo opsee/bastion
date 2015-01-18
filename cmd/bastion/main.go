@@ -51,7 +51,8 @@ func main() {
 	// c := ec2.Start(credProvider)
 	c, err := raidman.Dial("tcp", opsee)
 	if err != nil { //we'll need retry logic here but for right now I just need the frickin build to go
-		time.Sleep(30000)
+		fmt.Println("err",err)
+		time.Sleep(30 * time.Second)
 		return
 	}
 
