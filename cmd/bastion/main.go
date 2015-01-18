@@ -77,7 +77,9 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			discTick := time.Tick(time.Second * 5)
 			for _,event := range events {
+				<- discTick
 				fmt.Println(event)
 				c.Send(&event)
 			}
