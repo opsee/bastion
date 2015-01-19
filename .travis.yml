@@ -1,14 +1,16 @@
 language: go
-# addons:
-#   artifacts:
-#     key:
-#       secure: QwuIiZ1lfH5oTkqxSXDWWDACHO/V5eX0gm8Q0YQhT8x9HkhfCIgV+stm6wkFX/UGbG2qpi9c5LbzFttaehtrNhc0cPQK0r+r9bwtnkKM+U9FlU3ym4mszqhftKV6JJ0K1vhUo3nmwAajjUkEz13sRkPqUTdtp6fzmd/JHOzAUL4=
-#     secret:
-#       secure: DajzK1ZeuEFMvIhmhocDOUGfcUpe5+pes1zC7JlsZuKId0IhuV/AefvCacoLrN7fp25oqoUP2ISsb83qJz0yM/maxel/5ldwBPWDZvtWBLNAmfQTtJhb/r1aMobAzBej4q0/PwwhV0cwuH9ThTeZ0i4eq3YrF3oi+szs3yF9CdE=
-#     bucket: opsee-builds
 install:
-  - wget https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip -O /tmp/packer.zip
-  - sudo unzip /tmp/packer.zip -d /usr/local/bin
+- wget https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip -O /tmp/packer.zip
+- sudo unzip /tmp/packer.zip -d /usr/local/bin
 before_install: rsync -az $TRAVIS_BUILD_DIR/src/bastion/ $HOME/gopath/src/bastion/
 env:
   secure: DoxnY235bmZVTWsdEWow4TSXqj6Rp+l+CvBQ8kM5aYuSWe5e5RHSI9rNhmFHRHeqcEZBuvsvXmivhXqkBO5vdQHsA6tRY/tKaS8tYDzrSjS+5qn+q8zIUE+3c/mb8tthpCm5ug0uF2CcMMImrDEiaoccyZ3mSVQGcWrkB8wNxXc=
+addons:
+  artifacts:
+    key:
+      secure: cNvJ4EusaE4Cu5csfRBx4SATAwgv8+lQdB4Ga670kvpOmPKjymJXBBT5+Niil+DeiyauZxYlSs4K1Mhstl2LhcrYckf8ItyaFDnaWVTeXUYMoZK7is/fd2NDRb/R0e9rMYAFZyiKoBj7qrwAcPHcQDBAxvEmc9ZZM2d98s/wzbM=
+    secret:
+      secure: cHMEAJskG4VhDW6S+U5dR4byO/jUscnR5e0lMhp/0On4fcfSBRyEPnZ0+grgA72/cNwWkWk2/XTXbRunm3gHeLsAbLpZqLdFE5KsE32t2051CxhojzL2m2E/tUdLckTIncFnpiqYo/KbOe2mgnjGCI14qHKvahrGJ8Hhy5+dwao=
+    bucket: opsee-bastion-cf
+    paths:
+    - $HOME/mapped_cloudformation.json
