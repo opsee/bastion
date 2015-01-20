@@ -8,25 +8,13 @@
 			"Type": "String",
 			"Default": "m3.medium",
 			"ConstraintDescription" : "Must be a valid EC2 instance type."
-		},
-		"AllowSSHFrom": {
-			"Description": "The net block (CIDR) that SSH is available to.",
-			"Default": "0.0.0.0/0",
-			"Type": "String"
-		},
-		"KeyPair": {
-			"Description" : "The name of an EC2 Key Pair to allow SSH access to the instance.",
-			"Type" : "String"
 		}
 	},
 	"Resources" : {
 		"BastionSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
-				"GroupDescription": "Bastion SecurityGroup",
-				"SecurityGroupIngress": [
-					{"IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "CidrIp": {"Ref":"AllowSSHFrom"}}
-				]
+				"GroupDescription": "Bastion SecurityGroup"
 			}
 		},
 		"BastionRole": {
@@ -130,8 +118,7 @@
 				"ImageId": {"Fn::FindInMap" : [ "RegionMap", {"Ref":"AWS::Region"}, "AMI" ]},
 				"IamInstanceProfile": {"Ref":"BastionInstanceProfile"},
 				"InstanceType": {"Ref":"InstanceType"},
-				"SecurityGroups": [{"Ref": "BastionSecurityGroup"}],
-				"KeyName": {"Ref":"KeyPair"}
+				"SecurityGroups": [{"Ref": "BastionSecurityGroup"}]
 			}
 		}
 	}
