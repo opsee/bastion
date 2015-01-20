@@ -12,6 +12,7 @@ addons:
     secret:
       secure: cHMEAJskG4VhDW6S+U5dR4byO/jUscnR5e0lMhp/0On4fcfSBRyEPnZ0+grgA72/cNwWkWk2/XTXbRunm3gHeLsAbLpZqLdFE5KsE32t2051CxhojzL2m2E/tUdLckTIncFnpiqYo/KbOe2mgnjGCI14qHKvahrGJ8Hhy5+dwao=
     bucket: opsee-bastion-cf
+    region: us-west-1
     paths:
     - packer.log
     - mapped_cloudformation.json
