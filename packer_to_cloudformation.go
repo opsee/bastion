@@ -21,6 +21,10 @@ type TemplateData struct {
 	Mappings string
 }
 
+type AMIMapping struct {
+	AMI string
+}
+
 func main() {
 	flag.Parse()
 	logfile, err := os.Open(packerLog)
@@ -34,11 +38,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	mappings := make(map[string]string)
+	mappings := make(map[string]AMIMapping)
 	for _,record := range records {
 		if record[2] == "artifact" && record[4] == "id" {
 			ids := strings.Split(record[5],":")
-			mappings[ids[0]] = ids[1]
+			mappings[ids[0]] = AMIMapping{ids[1]}
 		}
 	}
 	data := TemplateData{}
