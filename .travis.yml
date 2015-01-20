@@ -15,5 +15,5 @@ addons:
     region: us-west-1
     paths:
     - packer.log
-    - mapped_cloudformation.json
+    - bastion-cf.template
     debug: true

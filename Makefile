@@ -4,7 +4,7 @@ pack-ami: test build
 	packer build -machine-readable -parallel=true packer.json > packer.log
 
 build-cloudformation: pack-ami
-	go run packer_to_cloudformation.go -packer_log packer.log -cloudform cloudformation.json > mapped_cloudformation.json
+	go run packer_to_cloudformation.go -packer_log packer.log -cloudform cloudformation.json > bastion-cf.template
 
 deps:
 	go get -v -t ./...
