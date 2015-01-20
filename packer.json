@@ -13,6 +13,7 @@
 		"source_ami": "ami-9eaa1cf6",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -24,6 +25,7 @@
 		"source_ami": "ami-076e6542",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -35,6 +37,7 @@
 		"source_ami": "ami-3d50120d",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -46,6 +49,7 @@
 		"source_ami": "ami-f0b11187",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -57,6 +61,7 @@
 		"source_ami": "ami-d6e7c084",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -68,6 +73,7 @@
 		"source_ami": "ami-e74b60e6",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -79,6 +85,7 @@
 		"source_ami": "ami-1711732d",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	},
 	{
@@ -90,6 +97,7 @@
 		"source_ami": "ami-69d26774",
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
+		"ami_groups": "all",
 		"ami_name": "Opsee Bastion {{timestamp}}"
 	}
 	],
