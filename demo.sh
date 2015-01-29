@@ -2,4 +2,4 @@
 
 export GOPATH=`pwd`
 go get ./...
-go run cmd/bastion/main.go --access_key_id=a --secret_key=s --region=us-west-1 --opsee=beta-api.opsee.co:5555 --hostname="cliff" --data=cookbooks/bastion/files/default/demo_data.json
+go run cmd/bastion/main.go --access_key_id=AKIAJJA5SLKBYDIE23AQ --secret_key=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 --region=us-west-1 --opsee=localhost:5555 --hostname="cliff"
