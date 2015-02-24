@@ -2,12 +2,12 @@ package scanner
 
 import(
 		// "fmt"
-		"github.com/stripe/aws-go/aws"
-		"github.com/stripe/aws-go/gen/ec2"
-		"github.com/stripe/aws-go/gen/elb"
-		"github.com/stripe/aws-go/gen/rds"
+		"github.com/awslabs/aws-sdk-go/aws"
+		"github.com/awslabs/aws-sdk-go/gen/ec2"
+		"github.com/awslabs/aws-sdk-go/gen/elb"
+		"github.com/awslabs/aws-sdk-go/gen/rds"
 		"bastion/credentials"
-		// "github.com/stripe/aws-go/gen/autoscaling"
+		// "github.com/awslabs/aws-sdk-go/gen/autoscaling"
 )
 
 type EC2Scanner interface {

@@ -13,8 +13,8 @@ import (
 		"encoding/json"
 		"github.com/amir/raidman"
 		
-		"github.com/stripe/aws-go/gen/ec2"
-		"github.com/stripe/aws-go/gen/rds"
+		"github.com/awslabs/aws-sdk-go/gen/ec2"
+		"github.com/awslabs/aws-sdk-go/gen/rds"
 		"strconv"
 		"strings"
 )
