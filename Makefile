@@ -13,4 +13,4 @@ test: deps
 	go test -v bastion/...
 
 build: deps
-	go build -o cookbooks/bastion/files/default/bastion cmd/bastion/main.go
+	go build -x -v -o cookbooks/bastion/files/default/bastion cmd/bastion/main.go
