@@ -4,3 +4,12 @@ src/github.com
 src/golang.org
 src/code.google.com
 *.test
+*~
+.idea
+/packer.log
+/bastion.iml
+/bastion-cf.template
+/cookbooks/bastion/files/default/bastion
+
+
+
