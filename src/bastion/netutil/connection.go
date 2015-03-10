@@ -9,7 +9,6 @@ import (
 
 type Connection struct {
 	Conn     net.TCPConn
-	Quit     <-chan bool
 	Reader   *bufio.Reader
 	Listener *Listener
 	Closed   bool

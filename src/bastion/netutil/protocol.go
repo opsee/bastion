@@ -7,7 +7,7 @@ import (
 
 type Message map[string]interface{}
 type RequestId uint64
-type RequestHandler func(*Request, Connection)
+
 
 type Header struct {
 	Version uint      `json:"version"`
