@@ -94,6 +94,7 @@ func (c *Connection) handleNextRequest() error {
 			} else {
 				if data, err := json.Marshal(reply); err == nil {
 					c.Write(data)
+					c.Write([]byte("\r\n"))
 				}
 			}
 		}()
