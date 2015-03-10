@@ -9,8 +9,8 @@ import (
 )
 
 type Connection struct {
-	Conn     net.Conn
-	Reader   *bufio.Reader
+	Conn   net.Conn
+	Reader *bufio.Reader
 	Server *Server
 }
 
@@ -47,13 +47,13 @@ func (c *Connection) SetWriteDeadline(t time.Time) error {
 }
 
 func (c *Connection) Loop() error {
-    var err error = nil
-    for {
-        if err = c.HandleNextRequest(); err != nil {
-            break
-        }
-    }
-    return err
+	var err error = nil
+	for {
+		if err = c.HandleNextRequest(); err != nil {
+			break
+		}
+	}
+	return err
 }
 
 func (c *Connection) ReadNextRequest() (*Request, error) {

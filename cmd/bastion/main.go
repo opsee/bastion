@@ -59,7 +59,6 @@ func requestHandler(request *netutil.Request, conn *netutil.Connection) {
 	log.Println(request)
 }
 
-
 func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	runtime.GOMAXPROCS(runtime.NumCPU())
