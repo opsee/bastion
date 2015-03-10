@@ -5,13 +5,22 @@ import (
 	"sync/atomic"
 )
 
-type Message map[string]interface{}
-type RequestId uint64
-type RequestHandler func(*Request, Connection)
+type MessageData map[string]interface{}
+type MessageId uint64
 
 type Header struct {
-	Version uint      `json:"version"`
-	Id      RequestId `json:"id"`
+	Version uint32    `json:"version"`
+	Id      MessageId `json:"id`
+}
+
+type Message struct {
+	*Header
+	Data MessageData `json:"message"`
+}
+
+func NewMessage() *Message {
+	header := &Header{Version: 1, Id: nextMessageId()}
+	return &Message{Header: header, Data: make(MessageData)}
 }
 
 func (h *Header) String() string {
@@ -19,29 +28,31 @@ func (h *Header) String() string {
 }
 
 type Request struct {
-	*Header
-	Command string  `json:"command"`
-	Message Message `json:"message"`
+	*Message
+	Command string `json:"command"`
+}
+
+func NewRequest(command string) *Request {
+	return &Request{NewMessage(), command}
 }
 
 func (r *Request) String() string {
-	return fmt.Sprintf("Message@%p[command=%s id=%d version=%d message=%v]", r, r.Command, r.Id, r.Version, r.Message)
+	return fmt.Sprintf("Message@%p[command=%s id=%d version=%d messagedata=%v]", r, r.Command, r.Id, r.Version, r.Data)
 }
 
 type Reply struct {
-	*Header
-	RequestId RequestId `json:"request_id"`
-	Message   Message   `json:"message"`
+	*Message
+	InReplyTo MessageId `json:"in_reply_to"`
+}
+
+func NewReply(inReplyTo *Request) *Reply {
+	return &Reply{Message: NewMessage(), InReplyTo: inReplyTo.Id}
 }
 
 func (r *Reply) String() {}
 
-func init() {
-	requestId = 0
-}
+var requestId uint64 = 0
 
-var requestId uint64
-
-func nextRequestId() uint64 {
-	return atomic.AddUint64(&requestId, 1)
+func nextMessageId() MessageId {
+	return MessageId(atomic.AddUint64(&requestId, 1))
 }
