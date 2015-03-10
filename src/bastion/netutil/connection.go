@@ -3,78 +3,100 @@ package netutil
 import (
 	"bufio"
 	"encoding/json"
-	"io"
 	"net"
 	"time"
 )
 
 type Connection struct {
-	Conn   net.Conn
-	Reader *bufio.Reader
-	Server *Server
+	conn   net.Conn
+	reader *bufio.Reader
+	server *Server
+}
+
+func NewConnection(innerConnection net.Conn, server *Server) *Connection {
+	return &Connection{conn: innerConnection, reader: bufio.NewReader(innerConnection), server: server}
+}
+
+func (c *Connection) Server() *Server {
+	return c.server
 }
 
 func (c *Connection) Write(out []byte) (int, error) {
-	return c.Conn.Write(out)
+	return c.conn.Write(out)
 }
 
 func (c *Connection) Read(b []byte) (int, error) {
-	return c.Conn.Read(b)
+	return c.conn.Read(b)
 }
 
 func (c *Connection) Close() error {
-	return c.Conn.Close()
+	return c.conn.Close()
 }
 
 func (c *Connection) LocalAddr() net.Addr {
-	return c.Conn.LocalAddr()
+	return c.conn.LocalAddr()
 }
 
 func (c *Connection) RemoteAddr() net.Addr {
-	return c.Conn.RemoteAddr()
+	return c.conn.RemoteAddr()
 }
 
 func (c *Connection) SetDeadline(t time.Time) error {
-	return c.Conn.SetDeadline(t)
+	return c.conn.SetDeadline(t)
 }
 
 func (c *Connection) SetReadDeadline(t time.Time) error {
-	return c.Conn.SetReadDeadline(t)
+	return c.conn.SetReadDeadline(t)
 }
 
 func (c *Connection) SetWriteDeadline(t time.Time) error {
-	return c.Conn.SetWriteDeadline(t)
+	return c.conn.SetWriteDeadline(t)
 }
 
-func (c *Connection) Loop() error {
-	var err error = nil
+func (c *Connection) ReadLine() ([]byte, error) {
+	if data, _, err := c.reader.ReadLine(); err != nil {
+		return nil, err
+	} else {
+		return data, nil
+	}
+}
+
+func (c *Connection) loop() error {
 	for {
-		if err = c.HandleNextRequest(); err != nil {
-			break
+		if err := c.handleNextRequest(); err != nil {
+			return err
 		}
 	}
-	return err
+	return nil
 }
 
-func (c *Connection) ReadNextRequest() (*Request, error) {
-	if data, _, err := c.Reader.ReadLine(); err == nil && len(data) != 0 {
-		req := NewRequest("unknown")
+func (c *Connection) readNextRequest() (*Request, error) {
+	var req *Request = nil
+	var err error = nil
+	var data []byte
+	if data, err = c.ReadLine(); err == nil && len(data) != 0 {
+		req = NewRequest("unknown")
 		if jsonErr := json.Unmarshal(data, &req); jsonErr != nil {
-			return req, &net.ParseError{Type: "json", Text: string(data)}
-		} else {
-			return req, nil
+			err = &net.ParseError{Type: "json", Text: string(data)}
 		}
-	} else if len(data) == 0 || err == io.EOF {
-		return nil, io.EOF
 	}
-	return nil, nil
+	return req, err
 }
 
-func (c *Connection) HandleNextRequest() error {
-	if req, err := c.ReadNextRequest(); err != nil {
+func (c *Connection) handleNextRequest() error {
+	if req, err := c.readNextRequest(); err != nil {
 		return err
 	} else {
-		go c.Server.Handler(req, c)
-		return nil
+		go func() {
+			reply, keepGoing := c.server.callbacks.RequestReceived(c, req)
+			if !keepGoing {
+				c.Close()
+			} else {
+				if data, err := json.Marshal(reply); err == nil {
+					c.Write(data)
+				}
+			}
+		}()
 	}
+	return nil
 }
