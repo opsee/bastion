@@ -3,9 +3,9 @@ package credentials
 import (
 		"time"
 		"net/http"
-		"fmt"
 		"io/ioutil"
 		"encoding/json"
+    "log"
 )
 
 type HttpClient interface {
@@ -97,7 +97,7 @@ func (cp *CredentialsProvider) loop(iid *InstanceId, overrideAccessKeyId string,
 		region = overrideRegion
 	}
 	if region == "" {
-		fmt.Println("No metadata available and no region supplied on cmd line. Exiting.")
+		log.Println("No metadata available and no region supplied on cmd line. Exiting.")
 		return false
 	}
 	creds := &Credentials{accessKeyId, secretAccessKey, region}
@@ -123,19 +123,19 @@ func (cp *CredentialsProvider) GetInstanceId() *InstanceId {
 func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
 	resp,err := cp.client.Get("http://169.254.169.254/latest/dynamic/instance-identity/document")
 	if err != nil {
-		fmt.Println("error getting ec2 instance id:", err)
+		log.Println("error getting ec2 instance id:", err)
 		return nil
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("error reading ec2 metadata:", err)
+		log.Println("error reading ec2 metadata:", err)
 		return nil
 	}
 	var iid InstanceId
 	err = json.Unmarshal(body, &iid)
 	if err != nil {
-		fmt.Println("error parsing instanceid:", err)
+		log.Println("error parsing instanceid:", err)
 		return nil
 	}
 	cp.instanceId = &iid
@@ -145,19 +145,19 @@ func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
 func (cp *CredentialsProvider) retrieveMetadataCreds() *metadataCredentials {
 	resp, err := cp.client.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee")
 	if err != nil {
-		fmt.Println("error getting ec2 metadata:", err)
+		log.Println("error getting ec2 metadata:", err)
 		return nil
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("error reading ec2 metadata:", err)
+		log.Println("error reading ec2 metadata:", err)
 		return nil
 	}
 	var metaCreds metadataCredentials
 	err = json.Unmarshal(body, &metaCreds)
 	if err != nil {
-		fmt.Println("error parsing credentials:", err)
+		log.Println("error parsing credentials:", err)
 		return nil
 	}
 	return &metaCreds

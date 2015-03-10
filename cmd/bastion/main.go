@@ -15,6 +15,8 @@ import (
 	"github.com/amir/raidman"
 	"github.com/awslabs/aws-sdk-go/gen/ec2"
 	"github.com/awslabs/aws-sdk-go/gen/rds"
+	"log"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -49,13 +51,19 @@ func init() {
 	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
 }
 
-func myhandler(request *netutil.Request, conn netutil.Connection) {
-	fmt.Println(request)
+func connhandler(listener *netutil.Listener, connection *netutil.Connection) {
+
+}
+
+func myhandler(request *netutil.Request, conn *netutil.Connection) {
+	log.Println(request)
 }
 
 func main() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
-	srv := netutil.NewDefaultServer(myhandler)
+	srv := netutil.NewDefaultServer(connhandler, myhandler)
 	go srv.Serve()
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)

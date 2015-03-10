@@ -13,9 +13,9 @@ type Server struct {
 	RequestHandlers   map[string][]*RequestHandler
 }
 
-func NewDefaultServer(handler RequestHandler) *Server {
+func NewDefaultServer(connHandler ConnectionHandler, handler RequestHandler) *Server {
 	server := &Server{}
-	server.Listener = DefaultTcpListener(handler)
+	server.Listener = DefaultTcpListener(connHandler, handler)
 	server.ConnectionCounter = 0
 	server.RequestHandlers = make(map[string][]*RequestHandler)
 	return server
@@ -31,13 +31,4 @@ func (s *Server) GetHandlers(cmdname string) []*RequestHandler {
 	s.handlerMapMutex.RLock()
 	defer s.handlerMapMutex.RUnlock()
 	return s.RequestHandlers[cmdname]
-}
-
-func (server *Server) NewReply(request *Request) (error, Reply) {
-	reply := &Reply{}
-	reply.RequestId = request.Id
-	reply.Id = RequestId(nextRequestId())
-	reply.Version = 1
-	reply.Message = make(Message)
-	return nil, Reply{}
 }

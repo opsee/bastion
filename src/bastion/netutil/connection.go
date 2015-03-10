@@ -5,28 +5,49 @@ import (
 	"encoding/json"
 	"io"
 	"net"
+	"time"
 )
 
 type Connection struct {
-	Conn     net.TCPConn
+	Conn     net.Conn
 	Reader   *bufio.Reader
 	Listener *Listener
-	Closed   bool
 }
 
-func (c *Connection) Send(out []byte) (int, error) {
+func (c *Connection) Write(out []byte) (int, error) {
 	return c.Conn.Write(out)
 }
 
+func (c *Connection) Read(b []byte) (int, error) {
+	return c.Conn.Read(b)
+}
+
 func (c *Connection) Close() error {
-	defer c.Listener.DecrementConnectionCount()
-	c.Closed = true
 	return c.Conn.Close()
+}
+
+func (c *Connection) LocalAddr() net.Addr {
+	return c.Conn.LocalAddr()
+}
+
+func (c *Connection) RemoteAddr() net.Addr {
+	return c.Conn.RemoteAddr()
+}
+
+func (c *Connection) SetDeadline(t time.Time) error {
+	return c.Conn.SetDeadline(t)
+}
+
+func (c *Connection) SetReadDeadline(t time.Time) error {
+	return c.Conn.SetReadDeadline(t)
+}
+func (c *Connection) SetWriteDeadline(t time.Time) error {
+	return c.Conn.SetWriteDeadline(t)
 }
 
 func (c *Connection) ReadNextRequest() (*Request, error) {
 	if data, _, err := c.Reader.ReadLine(); err == nil && len(data) != 0 {
-		req := &Request{Message: make(Message)}
+		req := NewRequest("unknown")
 		if jsonErr := json.Unmarshal(data, &req); jsonErr != nil {
 			return req, &net.ParseError{Type: "json", Text: string(data)}
 		} else {
@@ -38,19 +59,11 @@ func (c *Connection) ReadNextRequest() (*Request, error) {
 	return nil, nil
 }
 
-func (c *Connection) Loop() error {
-	for {
-		if err := c.HandleRequest(); err != nil {
-			return err
-		}
-	}
-}
-
-func (c *Connection) HandleRequest() error {
+func (c *Connection) HandleNextRequest() error {
 	if req, err := c.ReadNextRequest(); err != nil {
 		return err
 	} else {
-		go c.Listener.Handler(req, *c)
+		go c.Listener.Handler(req, c)
 		return nil
 	}
 }
