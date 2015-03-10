@@ -9,9 +9,9 @@ import (
 )
 
 type Connection struct {
-	Conn     net.Conn
-	Reader   *bufio.Reader
-	Listener *Listener
+	Conn   net.Conn
+	Reader *bufio.Reader
+	Server *Server
 }
 
 func (c *Connection) Write(out []byte) (int, error) {
@@ -41,8 +41,19 @@ func (c *Connection) SetDeadline(t time.Time) error {
 func (c *Connection) SetReadDeadline(t time.Time) error {
 	return c.Conn.SetReadDeadline(t)
 }
+
 func (c *Connection) SetWriteDeadline(t time.Time) error {
 	return c.Conn.SetWriteDeadline(t)
+}
+
+func (c *Connection) Loop() error {
+	var err error = nil
+	for {
+		if err = c.HandleNextRequest(); err != nil {
+			break
+		}
+	}
+	return err
 }
 
 func (c *Connection) ReadNextRequest() (*Request, error) {
@@ -63,7 +74,7 @@ func (c *Connection) HandleNextRequest() error {
 	if req, err := c.ReadNextRequest(); err != nil {
 		return err
 	} else {
-		go c.Listener.Handler(req, c)
+		go c.Server.Handler(req, c)
 		return nil
 	}
 }
