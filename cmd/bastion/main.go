@@ -1,22 +1,22 @@
 package main
 
 import (
-		"fmt"
-		"os"
-		"io/ioutil"
-		"flag"
-		"time"
-		"net/http"
-		"bastion/credentials"
-		"bastion/scanner"
-		// "bastion/resilient"
-		"encoding/json"
-		"github.com/amir/raidman"
-		
-		"github.com/awslabs/aws-sdk-go/gen/ec2"
-		"github.com/awslabs/aws-sdk-go/gen/rds"
-		"strconv"
-		"strings"
+	"bastion/credentials"
+	"bastion/netutil"
+	"bastion/scanner"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"time"
+	// "bastion/resilient"
+	"encoding/json"
+	"github.com/amir/raidman"
+	"github.com/awslabs/aws-sdk-go/gen/ec2"
+	"github.com/awslabs/aws-sdk-go/gen/rds"
+	"strconv"
+	"strings"
 )
 
 // we must first retrieve our AWS API keys, which will either be in the instance metadata,
@@ -24,7 +24,7 @@ import (
 // API, and then actually trying to open TCP connections.
 
 // In parallel we try and open a TLS connection back to the opsee API. We'll have been supplied
-// a ca certificate, certificate and a secret key in pem format, either via the instance metadata 
+// a ca certificate, certificate and a secret key in pem format, either via the instance metadata
 // or on the command line.
 
 var accessKeyId string
@@ -49,15 +49,21 @@ func init() {
 	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
 }
 
+func myhandler(request *netutil.Request, conn netutil.Connection) {
+	fmt.Println(request)
+}
+
 func main() {
 	flag.Parse()
+	srv := netutil.NewDefaultServer(myhandler)
+	go srv.Serve()
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
 	ec2Client := scanner.New(credProvider)
 	c, err := raidman.Dial("tcp", opsee)
 	if err != nil { //we'll need retry logic here but for right now I just need the frickin build to go
-		fmt.Println("err",err)
-		time.Sleep(30 * time.Second)
+		fmt.Println("err", err)
+		time.Sleep(30000 * time.Second)
 		return
 	}
 
@@ -83,18 +89,18 @@ func main() {
 				panic(err)
 			}
 			discTick := time.Tick(time.Second * 5)
-			for _,event := range events {
-				<- discTick
+			for _, event := range events {
+				<-discTick
 				fmt.Println(event)
 				c.Send(&event)
 			}
 		} else {
-			groups,_ := ec2Client.ScanSecurityGroups()
+			groups, _ := ec2Client.ScanSecurityGroups()
 			groupMap := make(map[string]ec2.SecurityGroup)
-			for _,group := range groups {
-				if (group.GroupID != nil) {
+			for _, group := range groups {
+				if group.GroupID != nil {
 					groupMap[*group.GroupID] = group
-					instances,_ := ec2Client.ScanSecurityGroupInstances(*group.GroupID)
+					instances, _ := ec2Client.ScanSecurityGroupInstances(*group.GroupID)
 					if len(instances) == 0 {
 						continue
 					}
@@ -124,8 +130,8 @@ func main() {
 				fmt.Println(event)
 				c.Send(&event)
 			}
-			lbs,_ := ec2Client.ScanLoadBalancers()
-			for _,lb := range lbs {
+			lbs, _ := ec2Client.ScanLoadBalancers()
+			for _, lb := range lbs {
 				if lb.LoadBalancerName == nil {
 					continue
 				}
@@ -148,15 +154,15 @@ func main() {
 				fmt.Println(event)
 				c.Send(&event)
 			}
-			rdbs,_ := ec2Client.ScanRDS()
-			sgs,_ := ec2Client.ScanRDSSecurityGroups()
+			rdbs, _ := ec2Client.ScanRDS()
+			sgs, _ := ec2Client.ScanRDSSecurityGroups()
 			sgMap := make(map[string]rds.DBSecurityGroup)
-			for _,sg := range sgs {
+			for _, sg := range sgs {
 				if sg.DBSecurityGroupName != nil {
 					sgMap[*sg.DBSecurityGroupName] = sg
 				}
 			}
-			for _,db := range rdbs {
+			for _, db := range rdbs {
 				event := raidman.Event{}
 				event.Ttl = 120
 				event.Host = hostname
@@ -193,12 +199,12 @@ func main() {
 
 	for {
 		event := &raidman.Event{
-			State: "connected",
-			Host: hostname,
+			State:   "connected",
+			Host:    hostname,
 			Service: "bastion",
-			Ttl: 10}
+			Ttl:     10}
 		fmt.Println(event)
 		c.Send(event)
-		<- tick
+		<-tick
 	}
 }
