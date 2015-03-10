@@ -15,6 +15,7 @@ import (
 	"github.com/amir/raidman"
 	"github.com/awslabs/aws-sdk-go/gen/ec2"
 	"github.com/awslabs/aws-sdk-go/gen/rds"
+	"io"
 	"log"
 	"runtime"
 	"strconv"
@@ -51,19 +52,30 @@ func init() {
 	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
 }
 
-func connectionHandler(listener *netutil.Server, connection *netutil.Connection) {
+type Callbacks struct{}
 
+func (this *Callbacks) ConnectionMade(connection *netutil.Connection) bool {
+	return true
 }
 
-func requestHandler(request *netutil.Request, conn *netutil.Connection) {
-	log.Println(request)
+func (this *Callbacks) ConnectionLost(connection *netutil.Connection, err error) {
+	if err != io.EOF {
+		log.Print("[ERROR]: Connection lost: ", err)
+	}
+}
+
+func (this *Callbacks) RequestReceived(connection *netutil.Connection, request *netutil.Request) (*netutil.Reply, bool) {
+	log.Print("request received:", request.Command)
+	reply := netutil.NewReply(request)
+	log.Print(reply)
+	return reply, true
 }
 
 func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
-	srv := netutil.DefaultServer(connectionHandler, requestHandler)
+	srv := netutil.DefaultServer(&Callbacks{})
 	go srv.Serve()
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)

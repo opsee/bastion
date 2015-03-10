@@ -1,12 +1,9 @@
 package netutil
 
 import (
-	"bufio"
 	"crypto/rand"
 	"crypto/tls"
 	"errors"
-	"fmt"
-	"io"
 	"log"
 	"net"
 	"runtime"
@@ -15,26 +12,25 @@ import (
 )
 
 type ServerCallbacks interface {
-	ConnectionMade(*Server, *Connection)
-	ConnectionLost(*Server, *Connection, error)
-	RequestReceived(*Server, *Connection, *Request)
+	ConnectionMade(*Connection) bool
+	ConnectionLost(*Connection, error)
+	RequestReceived(*Connection, *Request) (*Reply, bool)
 }
 
 type ConnectionHandler func(*Server, *Connection)
 type RequestHandler func(*Request, *Connection)
 
 type Server struct {
-	ListenPort        int
-	ConnectionHandler ConnectionHandler
-	Handler           RequestHandler
-	// private
-	started         bool
-	sslOptions      map[string]string
-	acceptorCount   int
-	connectionCount int32
-	cert            tls.Certificate
-	tlsConfig       *tls.Config
-	netListener     net.Listener
+	listenPort        int
+	connectionHandler ConnectionHandler
+	handler           RequestHandler
+	sslOptions        map[string]string
+	acceptorCount     int
+	connectionCount   int32
+	cert              tls.Certificate
+	tlsConfig         *tls.Config
+	netListener       net.Listener
+	callbacks         ServerCallbacks
 }
 
 var (
@@ -47,51 +43,35 @@ func init() {
 	DefaultAcceptorCount = runtime.NumCPU()
 }
 
-func DefaultServer(connectionHandler ConnectionHandler, requestHandler RequestHandler) *Server {
-	return NewServer(connectionHandler, requestHandler, DefaultAcceptorCount, DefaultListenPort, DefaultSSLOptions)
+func DefaultServer(callbacks ServerCallbacks) *Server {
+	return NewServer(callbacks, DefaultAcceptorCount, DefaultListenPort, DefaultSSLOptions)
 }
 
-func NewServer(connectionHandler ConnectionHandler, requestHandler RequestHandler, acceptorCount int, port int, sslOptions map[string]string) *Server {
+func NewServer(callbacks ServerCallbacks, acceptorCount int, port int, sslOptions map[string]string) *Server {
 	server := &Server{}
 	server.acceptorCount = acceptorCount
-	server.ListenPort = port
-	server.ConnectionHandler = connectionHandler
-	server.Handler = requestHandler
+	server.listenPort = port
+	server.callbacks = callbacks
 	server.sslOptions = sslOptions
 	return server
 }
 
 func (server *Server) initTLS() error {
-	if len(server.sslOptions) == 0 || server.sslOptions == nil {
-		return errors.New("ssl options missing: " + fmt.Sprint(server.sslOptions))
-	}
-	if cert, err := tls.LoadX509KeyPair(server.sslOptions["pem"], server.sslOptions["key"]); err != nil {
-		return err
-	} else {
-		server.cert = cert
+	var err error
+	if server.cert, err = tls.LoadX509KeyPair(server.sslOptions["pem"], server.sslOptions["key"]); err == nil {
 		server.tlsConfig = &tls.Config{Rand: rand.Reader, Certificates: []tls.Certificate{server.cert}}
-		if netListener, err := tls.Listen("tcp", ":"+strconv.Itoa(server.ListenPort), server.tlsConfig); err != nil {
-			return err
-		} else {
-			server.netListener = netListener
-		}
+		server.netListener, err = tls.Listen("tcp", ":"+strconv.Itoa(server.listenPort), server.tlsConfig)
 	}
-	return nil
+	return err
 }
 
 func (server *Server) initTCP() error {
-	if netListener, err := net.Listen("tcp", ":"+strconv.Itoa(server.ListenPort)); err != nil {
-		return err
-	} else {
-		server.netListener = netListener
-	}
-	return nil
+	var err error
+	server.netListener, err = net.Listen("tcp", ":"+strconv.Itoa(server.listenPort))
+	return err
 }
 
 func (server *Server) Listen() error {
-	if server.started {
-		return errors.New("already started")
-	}
 	if server.sslOptions != nil && len(server.sslOptions) > 0 {
 		return server.initTLS()
 	}
@@ -100,18 +80,19 @@ func (server *Server) Listen() error {
 
 func (server *Server) Serve() error {
 	if err := server.Listen(); err != nil {
+		log.Print("[ERROR]: listen error: ", err)
 		return err
 	}
 	for i := 0; i < server.acceptorCount; i++ {
-		go server.Loop()
+		go server.loop()
 	}
-	server.started = true
 	return nil
 }
 
-func (server *Server) Loop() error {
+func (server *Server) loop() error {
 	for {
 		if innerConnection, err := server.netListener.Accept(); err != nil {
+			log.Print("[ERROR]: accept failed: ", err)
 			return err
 		} else {
 			server.handleNewConnection(innerConnection)
@@ -121,18 +102,18 @@ func (server *Server) Loop() error {
 
 func (server *Server) handleNewConnection(innerConnection net.Conn) {
 	server.incrementConnectionCount()
-	newConnection := &Connection{Conn: innerConnection,
-		Reader: bufio.NewReader(innerConnection),
-		Server: server}
-	if server.ConnectionHandler != nil {
-		server.ConnectionHandler(server, newConnection)
+	newConnection := NewConnection(innerConnection, server)
+	if !server.callbacks.ConnectionMade(newConnection) {
+		newConnection.Close()
+		server.callbacks.ConnectionLost(newConnection, errors.New("callback ordered connection closed."))
+	} else {
+		go func() {
+			var err error = nil
+			defer server.decrementConnectionCount()
+			err = newConnection.loop()
+			server.callbacks.ConnectionLost(newConnection, err)
+		}()
 	}
-	go func() {
-		defer server.decrementConnectionCount()
-		if err := newConnection.Loop(); err != nil && err != io.EOF {
-			log.Print("[ERROR]: Connection %p exited with error: ", err)
-		}
-	}()
 }
 
 func (server *Server) ConnectionCount() int32 {
