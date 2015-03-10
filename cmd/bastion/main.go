@@ -51,19 +51,20 @@ func init() {
 	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
 }
 
-func connhandler(listener *netutil.Listener, connection *netutil.Connection) {
+func connectionHandler(listener *netutil.Server, connection *netutil.Connection) {
 
 }
 
-func myhandler(request *netutil.Request, conn *netutil.Connection) {
+func requestHandler(request *netutil.Request, conn *netutil.Connection) {
 	log.Println(request)
 }
+
 
 func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
-	srv := netutil.NewDefaultServer(connhandler, myhandler)
+	srv := netutil.DefaultServer(connectionHandler, requestHandler)
 	go srv.Serve()
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
