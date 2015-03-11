@@ -33,15 +33,22 @@ func NewMessage() *Message {
 	return &Message{Header: header, Data: make(MessageData)}
 }
 
-func NewRequest(command string) *Request {
-	return &Request{Message: &Message{Header: &Header{Version: 1}, Data: make(MessageData)}, Command: command}
+func NewRequest(command string, incrementId bool) *Request {
+	request := &Request{Message: &Message{Header: &Header{Version: 1}, Data: make(MessageData)}, Command: command}
+    if (incrementId) {
+        request.Id = nextMessageId()
+    }
+    return request
 }
 
-func NewReply(inReplyTo *Request) *Reply {
+func NewReply(inReplyTo *Request, incrementId bool) *Reply {
 	reply := &Reply{Message: NewMessage(), InReplyTo: inReplyTo.Id}
-	reply.Id = nextMessageId()
+    if (incrementId) {
+        reply.Id = nextMessageId()
+    }
 	return reply
 }
+
 
 func (h *Header) String() string {
 	return fmt.Sprintf("Header@%p[id=%d version=%d]", h, h.Id, h.Version)
@@ -57,7 +64,6 @@ func (r *Reply) String() string {
 }
 
 var requestId uint64 = 0
-
 func nextMessageId() MessageId {
 	return MessageId(atomic.AddUint64(&requestId, 1))
 }

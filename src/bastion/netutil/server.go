@@ -17,13 +17,13 @@ type ServerCallbacks interface {
 	RequestReceived(*Connection, *Request) (*Reply, bool)
 }
 
-type ConnectionHandler func(*Server, *Connection)
-type RequestHandler func(*Request, *Connection)
+type ConnectionHandler func(*Server, *Client)
+type RequestHandler func(*Request, *Client)
 
 type Server struct {
 	listenPort        int
-	connectionHandler ConnectionHandler
-	handler           RequestHandler
+//	connectionHandler ConnectionHandler
+//	handler           RequestHandler
 	sslOptions        map[string]string
 	acceptorCount     int
 	connectionCount   int32
