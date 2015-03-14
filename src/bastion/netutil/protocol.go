@@ -3,6 +3,9 @@ package netutil
 import (
 	"fmt"
 	"sync/atomic"
+    "io"
+    "encoding/json"
+    "bufio"
 )
 
 type MessageData map[string]interface{}
@@ -28,9 +31,37 @@ type Reply struct {
 	InReplyTo MessageId `json:"in_reply_to"`
 }
 
+type Serializable interface {
+    Serialize(writer io.Writer) error
+}
+
+type Deserializable interface {
+    Deserialize(reader io.Reader) error
+}
+
+func (message *Message) Serialize(writer io.Writer) error {
+    var err error = nil
+    var jsonData []byte;
+    if jsonData, err = json.Marshal(message); err == nil {
+        _, err = writer.Write(jsonData)
+    }
+    return err
+}
+
+func (message *Message) Deserialize(reader io.Reader) error {
+    bufReader := bufio.NewReader(reader)
+    data, isPrefix, err := bufReader.ReadLine(); if (isPrefix) || err != nil {
+        if (isPrefix) {
+            log.Panic("[PANIC]: Message.Deserialize: partial read shouldn't happenen: ", err)
+        }
+        return err
+    } else {
+        return json.Unmarshal(data, message)
+    }
+}
+
 func NewMessage() *Message {
-	header := &Header{Version: 1}
-	return &Message{Header: header, Data: make(MessageData)}
+	return &Message{Header: &Header{Version: 1}, Data: make(MessageData)}
 }
 
 func NewRequest(command string, incrementId bool) *Request {
@@ -48,7 +79,6 @@ func NewReply(inReplyTo *Request, incrementId bool) *Reply {
     }
 	return reply
 }
-
 
 func (h *Header) String() string {
 	return fmt.Sprintf("Header@%p[id=%d version=%d]", h, h.Id, h.Version)

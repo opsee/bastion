@@ -3,12 +3,11 @@ package netutil
 import (
 	"crypto/rand"
 	"crypto/tls"
-	"errors"
-	"log"
 	"net"
 	"runtime"
 	"strconv"
 	"sync/atomic"
+    "errors"
 )
 
 type ServerCallbacks interface {
@@ -22,8 +21,6 @@ type RequestHandler func(*Request, *Client)
 
 type Server struct {
 	listenPort        int
-//	connectionHandler ConnectionHandler
-//	handler           RequestHandler
 	sslOptions        map[string]string
 	acceptorCount     int
 	connectionCount   int32
@@ -36,7 +33,7 @@ type Server struct {
 var (
 	DefaultListenPort    int = 5666
 	DefaultAcceptorCount int = 4
-	DefaultSSLOptions        = make(map[string]string)
+	DefaultSSLOptions    map[string]string = make(map[string]string)
 )
 
 func init() {
@@ -80,7 +77,6 @@ func (server *Server) Listen() error {
 
 func (server *Server) Serve() error {
 	if err := server.Listen(); err != nil {
-		log.Print("[ERROR]: listen error: ", err)
 		return err
 	}
 	for i := 0; i < server.acceptorCount; i++ {
@@ -92,16 +88,16 @@ func (server *Server) Serve() error {
 func (server *Server) loop() error {
 	for {
 		if innerConnection, err := server.netListener.Accept(); err != nil {
-			log.Print("[ERROR]: accept failed: ", err)
+			log.Error("[ERROR]: accept failed: ", err)
 			return err
 		} else {
 			server.handleNewConnection(innerConnection)
+            return nil
 		}
 	}
 }
 
 func (server *Server) handleNewConnection(innerConnection net.Conn) {
-	server.incrementConnectionCount()
 	newConnection := NewConnection(innerConnection, server)
 	if !server.callbacks.ConnectionMade(newConnection) {
 		newConnection.Close()

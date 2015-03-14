@@ -2,9 +2,6 @@ package netutil
 
 import (
 	"bufio"
-	"encoding/json"
-	"io"
-	"log"
 	"net"
 	"time"
 )
@@ -12,13 +9,19 @@ import (
 type Connection struct {
 	conn   net.Conn
 	reader *bufio.Reader
+    writer *bufio.Writer
 	server *Server
+    span   *Span
 }
 
 func NewConnection(innerConnection net.Conn, server *Server) *Connection {
-	return &Connection{conn: innerConnection,
-		reader: bufio.NewReader(innerConnection),
-		server: server}
+    span := NewSpan("connection-" + innerConnection.RemoteAddr().String() + "->" + innerConnection.LocalAddr().String())
+    return &Connection{conn: innerConnection,
+        reader: bufio.NewReader(innerConnection),
+        writer: bufio.NewWriter(innerConnection),
+        server: server,
+        span:   span,
+    }
 }
 
 func (c *Connection) Server() *Server {
@@ -64,61 +67,23 @@ func (c *Connection) ReadLine() ([]byte, bool, error) {
 func (c *Connection) SendRequest(command string, data MessageData) error {
 	request := NewRequest(command, true)
 	request.Data = data
-	if jsonData, err := json.Marshal(request); err != nil {
-		return err
-	} else {
-		if _, err := c.Write(append(jsonData, '\r', '\n')); err != nil {
-			return err
-		}
-	}
-	return nil
+    return request.Serialize(c.writer)
 }
 
 func (c *Connection) loop() error {
+    var err error = nil
 	for {
-		if err := c.handleNextRequest(); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Connection) readNextRequest() (*Request, error) {
-	if data, isPrefix, err := c.ReadLine(); err == nil && len(data) != 0 {
-		if isPrefix {
-			log.Panic("[ERROR]: got isPrefix in *Connection.readNextRequest")
-		}
-		req := NewRequest("", false)
-		if jsonErr := json.Unmarshal(data, &req); jsonErr != nil {
-			return nil, &net.ParseError{Type: "json", Text: string(data)}
-		} else {
-			return req, nil
-		}
-	} else {
-		return nil, err
-	}
-}
-
-func (c *Connection) handleNextRequest() error {
-	if req, err := c.readNextRequest(); err != nil {
-		return err
-	} else {
-		go func() error {
-			reply, keepGoing := c.server.callbacks.RequestReceived(c, req)
-			if !keepGoing {
-				c.Close()
-				return io.EOF
-			} else {
-				if data, err := json.Marshal(reply); err != nil {
-					return err
-				} else {
-					if _, err := c.Write(append(data, '\r', '\n')); err != nil {
-						return err
-					}
-				}
-			}
-			return nil
-		}()
-	}
-	return nil
+        var request Request
+        if err = request.Deserialize(c.reader); err == nil {
+            if reply, keepGoing := c.server.callbacks.RequestReceived(c, &request); keepGoing {
+                return reply.Serialize(c.writer)
+            } else {
+                log.Error("%v", err)
+            }
+        } else {
+            log.Error("%v", err)
+        }
+    }
+    c.server.callbacks.ConnectionLost(c, err)
+    return err
 }

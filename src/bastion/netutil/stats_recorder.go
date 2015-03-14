@@ -2,7 +2,6 @@ package netutil
 
 import (
 	"time"
-    "log"
 )
 
 type StatsRecorder interface {
@@ -16,7 +15,7 @@ type StatsRecorder interface {
 type DebugStatsRecorder struct{}
 
 func (s *DebugStatsRecorder) log(stat string, amount int64) {
-	log.Printf("stats %s %v", stat, amount)
+	log.Info("stats %s %v", stat, amount)
 }
 
 func (s *DebugStatsRecorder) Timer(stat string, amount int64) {

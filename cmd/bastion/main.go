@@ -75,13 +75,13 @@ func main() {
 	flag.Parse()
 	srv := netutil.DefaultServer(&Callbacks{})
 	go srv.Serve()
-	if cli, err := netutil.ConnectTCP("127.0.0.1:5666"); err != nil {
-		log.Print("[ERROR]: ConnectTCP: ", err)
-		return
-	} else {
-		cli.SendRequest("command", nil)
-		cli.SendRequest("command2", nil)
-	}
+//	if cli, err := netutil.ConnectTCP("127.0.0.1:5666"); err != nil {
+//		log.Print("[ERROR]: ConnectTCP: ", err)
+//		return
+//	} else {
+//		cli.SendRequest("command", nil)
+//		cli.SendRequest("command2", nil)
+//	}
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
 	ec2Client := scanner.New(credProvider)

@@ -35,11 +35,9 @@ func (c *Client) SendRequest(command string, data MessageData) error {
 	if jsonData, err := json.Marshal(request); err != nil {
 		return err
 	} else {
-		if _, err := c.Write(append(jsonData, '\r', '\n')); err != nil {
-			return err
-		}
+		_, err := c.Write(append(jsonData, '\r', '\n'))
+        return err
 	}
-	return nil
 }
 
 func (c *Client) Write(out []byte) (int, error) {
