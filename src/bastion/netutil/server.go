@@ -4,10 +4,10 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"net"
 	"runtime"
 	"strconv"
-	"sync/atomic"
 )
 
 type ServerCallbacks interface {
@@ -23,11 +23,18 @@ type Server struct {
 	listenPort      int
 	sslOptions      map[string]string
 	acceptorCount   int
-	connectionCount int32
+	connectionCount AtomicCounter
 	cert            tls.Certificate
 	tlsConfig       *tls.Config
 	netListener     net.Listener
 	callbacks       ServerCallbacks
+}
+
+type serverRequest struct {
+	server  *Server
+	request *Request
+	reply   *Reply
+	span    *Span
 }
 
 var (
@@ -51,6 +58,11 @@ func NewServer(callbacks ServerCallbacks, acceptorCount int, port int, sslOption
 	server.callbacks = callbacks
 	server.sslOptions = sslOptions
 	return server
+}
+
+func (server *Server) NewRequest(request *Request) *serverRequest {
+	return &serverRequest{server, request, nil, NewSpan(fmt.Sprintf("request-%p", request))}
+
 }
 
 func (server *Server) initTLS() error {
@@ -104,22 +116,9 @@ func (server *Server) handleNewConnection(innerConnection net.Conn) {
 		server.callbacks.ConnectionLost(newConnection, errors.New("callback ordered connection closed."))
 	} else {
 		go func() {
-			var err error = nil
-			defer server.decrementConnectionCount()
-			err = newConnection.loop()
-			server.callbacks.ConnectionLost(newConnection, err)
+			server.connectionCount.Increment()
+			defer server.connectionCount.Decrement()
+			server.callbacks.ConnectionLost(newConnection, newConnection.Start())
 		}()
 	}
-}
-
-func (server *Server) ConnectionCount() int32 {
-	return atomic.LoadInt32(&server.connectionCount)
-}
-
-func (server *Server) incrementConnectionCount() int32 {
-	return atomic.AddInt32(&server.connectionCount, 1)
-}
-
-func (server *Server) decrementConnectionCount() int32 {
-	return atomic.AddInt32(&server.connectionCount, -1)
 }

@@ -30,7 +30,8 @@ func ConnectTCP(addr string) (*Client, error) {
 }
 
 func (c *Client) SendRequest(command string, data MessageData) error {
-	request := NewRequest(command, true)
+	request := NewRequest(command)
+	request.Id = nextMessageId()
 	request.Data = data
 	if jsonData, err := json.Marshal(request); err != nil {
 		return err

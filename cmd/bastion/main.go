@@ -15,7 +15,6 @@ import (
 	"github.com/amir/raidman"
 	"github.com/awslabs/aws-sdk-go/gen/ec2"
 	"github.com/awslabs/aws-sdk-go/gen/rds"
-	"io"
 	"log"
 	"runtime"
 	"strconv"
@@ -59,14 +58,12 @@ func (this *Callbacks) ConnectionMade(connection *netutil.Connection) bool {
 }
 
 func (this *Callbacks) ConnectionLost(connection *netutil.Connection, err error) {
-	if err != io.EOF {
-		log.Print("[ERROR]: Connection lost: ", err)
-	}
+	log.Print("[ERROR]: Connection lost: ", err)
 }
 
 func (this *Callbacks) RequestReceived(connection *netutil.Connection, request *netutil.Request) (*netutil.Reply, bool) {
 	keepGoing := request.Command != "close"
-	return netutil.NewReply(request, true), keepGoing
+	return netutil.NewReply(request), keepGoing
 }
 
 func main() {
