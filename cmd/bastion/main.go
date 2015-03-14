@@ -65,8 +65,8 @@ func (this *Callbacks) ConnectionLost(connection *netutil.Connection, err error)
 }
 
 func (this *Callbacks) RequestReceived(connection *netutil.Connection, request *netutil.Request) (*netutil.Reply, bool) {
-	log.Print("request received:", request)
-	return netutil.NewReply(request, true), true
+	keepGoing := request.Command != "close"
+	return netutil.NewReply(request, true), keepGoing
 }
 
 func main() {
@@ -75,13 +75,12 @@ func main() {
 	flag.Parse()
 	srv := netutil.DefaultServer(&Callbacks{})
 	go srv.Serve()
-//	if cli, err := netutil.ConnectTCP("127.0.0.1:5666"); err != nil {
-//		log.Print("[ERROR]: ConnectTCP: ", err)
-//		return
-//	} else {
-//		cli.SendRequest("command", nil)
-//		cli.SendRequest("command2", nil)
-//	}
+	//	if cli, err := netutil.ConnectTCP("127.0.0.1:5666"); err != nil {
+	//		log.Print("[ERROR]: ConnectTCP: ", err)
+	//		return
+	//	} else {
+	//		cli.SendRequest("command", nil)
+	//	}
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
 	ec2Client := scanner.New(credProvider)

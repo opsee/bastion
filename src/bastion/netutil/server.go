@@ -3,11 +3,11 @@ package netutil
 import (
 	"crypto/rand"
 	"crypto/tls"
+	"errors"
 	"net"
 	"runtime"
 	"strconv"
 	"sync/atomic"
-    "errors"
 )
 
 type ServerCallbacks interface {
@@ -20,19 +20,19 @@ type ConnectionHandler func(*Server, *Client)
 type RequestHandler func(*Request, *Client)
 
 type Server struct {
-	listenPort        int
-	sslOptions        map[string]string
-	acceptorCount     int
-	connectionCount   int32
-	cert              tls.Certificate
-	tlsConfig         *tls.Config
-	netListener       net.Listener
-	callbacks         ServerCallbacks
+	listenPort      int
+	sslOptions      map[string]string
+	acceptorCount   int
+	connectionCount int32
+	cert            tls.Certificate
+	tlsConfig       *tls.Config
+	netListener     net.Listener
+	callbacks       ServerCallbacks
 }
 
 var (
-	DefaultListenPort    int = 5666
-	DefaultAcceptorCount int = 4
+	DefaultListenPort    int               = 5666
+	DefaultAcceptorCount int               = 4
 	DefaultSSLOptions    map[string]string = make(map[string]string)
 )
 
@@ -92,7 +92,7 @@ func (server *Server) loop() error {
 			return err
 		} else {
 			server.handleNewConnection(innerConnection)
-            return nil
+			return nil
 		}
 	}
 }

@@ -2,6 +2,7 @@ package netutil
 
 import (
 	"bufio"
+	"io"
 	"net"
 	"time"
 )
@@ -9,19 +10,19 @@ import (
 type Connection struct {
 	conn   net.Conn
 	reader *bufio.Reader
-    writer *bufio.Writer
+	writer *bufio.Writer
 	server *Server
-    span   *Span
+	span   *Span
 }
 
 func NewConnection(innerConnection net.Conn, server *Server) *Connection {
-    span := NewSpan("connection-" + innerConnection.RemoteAddr().String() + "->" + innerConnection.LocalAddr().String())
-    return &Connection{conn: innerConnection,
-        reader: bufio.NewReader(innerConnection),
-        writer: bufio.NewWriter(innerConnection),
-        server: server,
-        span:   span,
-    }
+	span := NewSpan("connection-" + innerConnection.RemoteAddr().String() + "->" + innerConnection.LocalAddr().String())
+	return &Connection{conn: innerConnection,
+		reader: bufio.NewReader(innerConnection),
+		writer: bufio.NewWriter(innerConnection),
+		server: server,
+		span:   span,
+	}
 }
 
 func (c *Connection) Server() *Server {
@@ -67,23 +68,26 @@ func (c *Connection) ReadLine() ([]byte, bool, error) {
 func (c *Connection) SendRequest(command string, data MessageData) error {
 	request := NewRequest(command, true)
 	request.Data = data
-    return request.Serialize(c.writer)
+	return SerializeMessage(c.writer, request)
 }
 
 func (c *Connection) loop() error {
-    var err error = nil
+	var err error = nil
 	for {
-        var request Request
-        if err = request.Deserialize(c.reader); err == nil {
-            if reply, keepGoing := c.server.callbacks.RequestReceived(c, &request); keepGoing {
-                return reply.Serialize(c.writer)
-            } else {
-                log.Error("%v", err)
-            }
-        } else {
-            log.Error("%v", err)
-        }
-    }
-    c.server.callbacks.ConnectionLost(c, err)
-    return err
+		var request Request
+		if err = DeserializeMessage(c.conn, &request); err == nil {
+			reply, keepGoing := c.server.callbacks.RequestReceived(c, &request)
+			if reply != nil {
+				if err = SerializeMessage(c.conn, reply); err != nil {
+					break
+				}
+			}
+			if !keepGoing {
+				err = io.EOF
+				break
+			}
+		}
+	}
+	c.server.callbacks.ConnectionLost(c, err)
+	return err
 }

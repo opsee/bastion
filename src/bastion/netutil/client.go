@@ -36,7 +36,7 @@ func (c *Client) SendRequest(command string, data MessageData) error {
 		return err
 	} else {
 		_, err := c.Write(append(jsonData, '\r', '\n'))
-        return err
+		return err
 	}
 }
 
