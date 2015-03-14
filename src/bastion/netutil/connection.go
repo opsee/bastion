@@ -94,8 +94,7 @@ func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
     return
 }
 
-func (c *Connection) handleRequest(request *ServerRequest) error {
-    var err error
+func (c *Connection) handleRequest(request *ServerRequest) (err error) {
     request.span.Start("reply")
     request.span.Start("process")
     reply, keepGoing := c.server.callbacks.RequestReceived(c, request)
@@ -104,7 +103,7 @@ func (c *Connection) handleRequest(request *ServerRequest) error {
         reply.Id = nextMessageId()
         request.span.Start("serialize")
         if err = SerializeMessage(c, reply); err != nil {
-            return err
+            return
         }
         request.span.Finish("serialize")
     }
@@ -113,7 +112,7 @@ func (c *Connection) handleRequest(request *ServerRequest) error {
     }
     request.span.Finish("reply")
     request.span.Finish("request")
-    return err
+    return
 }
 
 var nextConnectionId AtomicCounter
