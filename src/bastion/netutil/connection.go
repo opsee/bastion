@@ -5,24 +5,24 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"sync/atomic"
 	"time"
 )
 
 type Connection struct {
-	id     uint64
+	id     int64
 	conn   net.Conn
 	reader *bufio.Reader
 	server *Server
 	span   *Span
+    requestNum uint64
 }
 
-func NewConnection(innerConnection net.Conn, server *Server) *Connection {
-	var connectionId uint64 = nextConnectionId()
-	return &Connection{conn: innerConnection,
-		reader: bufio.NewReader(innerConnection),
+func NewConnection(conn net.Conn, server *Server) *Connection {
+	var connectionId = nextConnectionId.Increment()
+	return &Connection{conn: conn,
+		reader: bufio.NewReader(conn),
 		server: server,
-		span:   NewSpan(fmt.Sprintf("conn-%d-%s-%s", connectionId, innerConnection.RemoteAddr(), innerConnection.LocalAddr())),
+		span:   NewSpan(fmt.Sprintf("conn-%d-%s-%s", connectionId, conn.RemoteAddr(), conn.LocalAddr())),
 		id:     connectionId,
 	}
 }
@@ -69,35 +69,15 @@ func (c *Connection) ReadLine() ([]byte, bool, error) {
 
 func (c *Connection) Start() error {
 	var err error = io.EOF
-	var reqNum uint64 = 0
 	for {
-		span := NewSpan(fmt.Sprintf("request-%v", reqNum))
-		reqNum += 1
-		var request Request
-		span.Start("request")
-		span.Start("deserialize")
-		if err = DeserializeMessage(c, &request); err != nil {
-			break
-		}
-		span.Finish("deserialize")
-		span.Start("reply")
-		span.Start("process")
-		reply, keepGoing := c.server.callbacks.RequestReceived(c, &request)
-		span.Finish("process")
-		if reply != nil {
-			reply.Id = nextMessageId()
-			span.Start("serialize")
-			if err = SerializeMessage(c, reply); err != nil {
-				break
-			}
-			span.Finish("serialize")
-		}
-		if !keepGoing {
-			break
-		}
-		span.Finish("reply")
-		span.Finish("request")
-		log.Debug(span.JSON())
+        var request *ServerRequest
+        if request, err = c.readRequest(); err != nil {
+            break
+        }
+        if err = c.handleRequest(request); err != nil {
+            break
+        }
+		log.Debug(request.span.JSON())
 
 	}
 	c.span.CollectMemStats()
@@ -105,8 +85,35 @@ func (c *Connection) Start() error {
 	return err
 }
 
-var connectionIdCounter uint64 = 0
-
-func nextConnectionId() uint64 {
-	return atomic.AddUint64(&connectionIdCounter, 1)
+func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
+    serverRequest = &ServerRequest{server: c.Server(), span: NewSpan(fmt.Sprintf("request-%v", c.requestNum))}
+    serverRequest.span.Start("request")
+    serverRequest.span.Start("deserialize")
+    err = DeserializeMessage(c, serverRequest)
+    serverRequest.span.Finish("deserialize")
+    return
 }
+
+func (c *Connection) handleRequest(request *ServerRequest) error {
+    var err error
+    request.span.Start("reply")
+    request.span.Start("process")
+    reply, keepGoing := c.server.callbacks.RequestReceived(c, request)
+    request.span.Finish("process")
+    if reply != nil {
+        reply.Id = nextMessageId()
+        request.span.Start("serialize")
+        if err = SerializeMessage(c, reply); err != nil {
+            return err
+        }
+        request.span.Finish("serialize")
+    }
+    if !keepGoing {
+        return io.EOF
+    }
+    request.span.Finish("reply")
+    request.span.Finish("request")
+    return err
+}
+
+var nextConnectionId AtomicCounter

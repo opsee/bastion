@@ -10,32 +10,34 @@ import (
 	"strconv"
 )
 
-type ServerCallbacks interface {
-	ConnectionMade(*Connection) bool
-	ConnectionLost(*Connection, error)
-	RequestReceived(*Connection, *Request) (*Reply, bool)
-}
+type (
+	ServerCallbacks interface {
+		ConnectionMade(*Connection) bool
+		ConnectionLost(*Connection, error)
+		RequestReceived(*Connection, *ServerRequest) (*Reply, bool)
+	}
 
-type ConnectionHandler func(*Server, *Client)
-type RequestHandler func(*Request, *Client)
+	ConnectionHandler func(*Server, *Client)
+	RequestHandler    func(*ServerRequest, *Client)
 
-type Server struct {
-	listenPort      int
-	sslOptions      map[string]string
-	acceptorCount   int
-	connectionCount AtomicCounter
-	cert            tls.Certificate
-	tlsConfig       *tls.Config
-	netListener     net.Listener
-	callbacks       ServerCallbacks
-}
+	Server struct {
+		listenPort      int
+		sslOptions      map[string]string
+		acceptorCount   int
+		connectionCount AtomicCounter
+		cert            tls.Certificate
+		tlsConfig       *tls.Config
+		netListener     net.Listener
+		callbacks       ServerCallbacks
+	}
 
-type serverRequest struct {
-	server  *Server
-	request *Request
-	reply   *Reply
-	span    *Span
-}
+	ServerRequest struct {
+        *Request
+		server  *Server
+		reply   *Reply
+		span    *Span
+	}
+)
 
 var (
 	DefaultListenPort    int               = 5666
@@ -60,8 +62,8 @@ func NewServer(callbacks ServerCallbacks, acceptorCount int, port int, sslOption
 	return server
 }
 
-func (server *Server) NewRequest(request *Request) *serverRequest {
-	return &serverRequest{server, request, nil, NewSpan(fmt.Sprintf("request-%p", request))}
+func (server *Server) NewRequest(request *Request) *ServerRequest {
+	return &ServerRequest{Request:request, server:server, span:NewSpan(fmt.Sprintf("request-%p", request))}
 
 }
 

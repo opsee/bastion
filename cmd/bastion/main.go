@@ -61,7 +61,7 @@ func (this *Callbacks) ConnectionLost(connection *netutil.Connection, err error)
 	log.Print("[ERROR]: Connection lost: ", err)
 }
 
-func (this *Callbacks) RequestReceived(connection *netutil.Connection, request *netutil.Request) (*netutil.Reply, bool) {
+func (this *Callbacks) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (*netutil.Reply, bool) {
 	keepGoing := request.Command != "close"
 	return netutil.NewReply(request), keepGoing
 }
