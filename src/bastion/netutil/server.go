@@ -4,11 +4,10 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"errors"
-	"log"
+	"fmt"
 	"net"
 	"runtime"
 	"strconv"
-	"sync/atomic"
 )
 
 type ServerCallbacks interface {
@@ -17,26 +16,31 @@ type ServerCallbacks interface {
 	RequestReceived(*Connection, *Request) (*Reply, bool)
 }
 
-type ConnectionHandler func(*Server, *Connection)
-type RequestHandler func(*Request, *Connection)
+type ConnectionHandler func(*Server, *Client)
+type RequestHandler func(*Request, *Client)
 
 type Server struct {
-	listenPort        int
-	connectionHandler ConnectionHandler
-	handler           RequestHandler
-	sslOptions        map[string]string
-	acceptorCount     int
-	connectionCount   int32
-	cert              tls.Certificate
-	tlsConfig         *tls.Config
-	netListener       net.Listener
-	callbacks         ServerCallbacks
+	listenPort      int
+	sslOptions      map[string]string
+	acceptorCount   int
+	connectionCount AtomicCounter
+	cert            tls.Certificate
+	tlsConfig       *tls.Config
+	netListener     net.Listener
+	callbacks       ServerCallbacks
+}
+
+type serverRequest struct {
+	server  *Server
+	request *Request
+	reply   *Reply
+	span    *Span
 }
 
 var (
-	DefaultListenPort    int = 5666
-	DefaultAcceptorCount int = 4
-	DefaultSSLOptions        = make(map[string]string)
+	DefaultListenPort    int               = 5666
+	DefaultAcceptorCount int               = 4
+	DefaultSSLOptions    map[string]string = make(map[string]string)
 )
 
 func init() {
@@ -54,6 +58,11 @@ func NewServer(callbacks ServerCallbacks, acceptorCount int, port int, sslOption
 	server.callbacks = callbacks
 	server.sslOptions = sslOptions
 	return server
+}
+
+func (server *Server) NewRequest(request *Request) *serverRequest {
+	return &serverRequest{server, request, nil, NewSpan(fmt.Sprintf("request-%p", request))}
+
 }
 
 func (server *Server) initTLS() error {
@@ -80,7 +89,6 @@ func (server *Server) Listen() error {
 
 func (server *Server) Serve() error {
 	if err := server.Listen(); err != nil {
-		log.Print("[ERROR]: listen error: ", err)
 		return err
 	}
 	for i := 0; i < server.acceptorCount; i++ {
@@ -92,38 +100,25 @@ func (server *Server) Serve() error {
 func (server *Server) loop() error {
 	for {
 		if innerConnection, err := server.netListener.Accept(); err != nil {
-			log.Print("[ERROR]: accept failed: ", err)
+			log.Error("[ERROR]: accept failed: ", err)
 			return err
 		} else {
 			server.handleNewConnection(innerConnection)
+			return nil
 		}
 	}
 }
 
 func (server *Server) handleNewConnection(innerConnection net.Conn) {
-	server.incrementConnectionCount()
 	newConnection := NewConnection(innerConnection, server)
 	if !server.callbacks.ConnectionMade(newConnection) {
 		newConnection.Close()
 		server.callbacks.ConnectionLost(newConnection, errors.New("callback ordered connection closed."))
 	} else {
 		go func() {
-			var err error = nil
-			defer server.decrementConnectionCount()
-			err = newConnection.loop()
-			server.callbacks.ConnectionLost(newConnection, err)
+			server.connectionCount.Increment()
+			defer server.connectionCount.Decrement()
+			server.callbacks.ConnectionLost(newConnection, newConnection.Start())
 		}()
 	}
-}
-
-func (server *Server) ConnectionCount() int32 {
-	return atomic.LoadInt32(&server.connectionCount)
-}
-
-func (server *Server) incrementConnectionCount() int32 {
-	return atomic.AddInt32(&server.connectionCount, 1)
-}
-
-func (server *Server) decrementConnectionCount() int32 {
-	return atomic.AddInt32(&server.connectionCount, -1)
 }

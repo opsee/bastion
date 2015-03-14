@@ -2,19 +2,29 @@ package netutil
 
 import (
 	"bufio"
-	"encoding/json"
+	"fmt"
+	"io"
 	"net"
+	"sync/atomic"
 	"time"
 )
 
 type Connection struct {
+	id     uint64
 	conn   net.Conn
 	reader *bufio.Reader
 	server *Server
+	span   *Span
 }
 
 func NewConnection(innerConnection net.Conn, server *Server) *Connection {
-	return &Connection{conn: innerConnection, reader: bufio.NewReader(innerConnection), server: server}
+	var connectionId uint64 = nextConnectionId()
+	return &Connection{conn: innerConnection,
+		reader: bufio.NewReader(innerConnection),
+		server: server,
+		span:   NewSpan(fmt.Sprintf("conn-%d-%s-%s", connectionId, innerConnection.RemoteAddr(), innerConnection.LocalAddr())),
+		id:     connectionId,
+	}
 }
 
 func (c *Connection) Server() *Server {
@@ -53,51 +63,50 @@ func (c *Connection) SetWriteDeadline(t time.Time) error {
 	return c.conn.SetWriteDeadline(t)
 }
 
-func (c *Connection) ReadLine() ([]byte, error) {
-	if data, _, err := c.reader.ReadLine(); err != nil {
-		return nil, err
-	} else {
-		return data, nil
-	}
+func (c *Connection) ReadLine() ([]byte, bool, error) {
+	return c.reader.ReadLine()
 }
 
-func (c *Connection) loop() error {
+func (c *Connection) Start() error {
+	var err error = io.EOF
+	var reqNum uint64 = 0
 	for {
-		if err := c.handleNextRequest(); err != nil {
-			return err
+		span := NewSpan(fmt.Sprintf("request-%v", reqNum))
+		reqNum += 1
+		var request Request
+		span.Start("request")
+		span.Start("deserialize")
+		if err = DeserializeMessage(c, &request); err != nil {
+			break
 		}
-	}
-	return nil
-}
-
-func (c *Connection) readNextRequest() (*Request, error) {
-	var req *Request = nil
-	var err error = nil
-	var data []byte
-	if data, err = c.ReadLine(); err == nil && len(data) != 0 {
-		req = NewRequest("unknown")
-		if jsonErr := json.Unmarshal(data, &req); jsonErr != nil {
-			err = &net.ParseError{Type: "json", Text: string(data)}
-		}
-	}
-	return req, err
-}
-
-func (c *Connection) handleNextRequest() error {
-	if req, err := c.readNextRequest(); err != nil {
-		return err
-	} else {
-		go func() {
-			reply, keepGoing := c.server.callbacks.RequestReceived(c, req)
-			if !keepGoing {
-				c.Close()
-			} else {
-				if data, err := json.Marshal(reply); err == nil {
-					c.Write(data)
-					c.Write([]byte("\r\n"))
-				}
+		span.Finish("deserialize")
+		span.Start("reply")
+		span.Start("process")
+		reply, keepGoing := c.server.callbacks.RequestReceived(c, &request)
+		span.Finish("process")
+		if reply != nil {
+			reply.Id = nextMessageId()
+			span.Start("serialize")
+			if err = SerializeMessage(c, reply); err != nil {
+				break
 			}
-		}()
+			span.Finish("serialize")
+		}
+		if !keepGoing {
+			break
+		}
+		span.Finish("reply")
+		span.Finish("request")
+		log.Debug(span.JSON())
+
 	}
-	return nil
+	c.span.CollectMemStats()
+	log.Info(c.span.JSON())
+	return err
+}
+
+var connectionIdCounter uint64 = 0
+
+func nextConnectionId() uint64 {
+	return atomic.AddUint64(&connectionIdCounter, 1)
 }
