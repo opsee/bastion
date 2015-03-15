@@ -10,7 +10,6 @@ import (
 
 const (
 	CallMessageType uint = iota
-	CastMessageType
 	KeepAlivePingMessageType
 	KeepAlivePongMessageType
 )

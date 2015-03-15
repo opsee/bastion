@@ -13,4 +13,3 @@ func init() {
 	logging.SetLevel(logging.INFO, "json-tcp")
 	logging.SetFormatter(logFormat)
 }
-

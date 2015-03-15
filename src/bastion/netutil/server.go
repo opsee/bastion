@@ -7,22 +7,21 @@ import (
 	"fmt"
 	"net"
 	"runtime"
-	"strconv"
 )
 
 type (
+	SslOptions map[string]string
+
 	ServerCallbacks interface {
+		Address() string
+		SslOptions() SslOptions
 		ConnectionMade(*Connection) bool
 		ConnectionLost(*Connection, error)
 		RequestReceived(*Connection, *ServerRequest) (*Reply, bool)
 	}
 
-	ConnectionHandler func(*Server, *Client)
-	RequestHandler    func(*ServerRequest, *Client)
-
 	Server struct {
-		listenPort      int
-		sslOptions      map[string]string
+		address         string
 		acceptorCount   int
 		connectionCount AtomicCounter
 		cert            tls.Certificate
@@ -32,17 +31,15 @@ type (
 	}
 
 	ServerRequest struct {
-        *Request
-		server  *Server
-		reply   *Reply
-		span    *Span
+		*Request
+		server *Server
+		reply  *Reply
+		span   *Span
 	}
 )
 
 var (
-	DefaultListenPort    int               = 5666
-	DefaultAcceptorCount int               = 4
-	DefaultSSLOptions    map[string]string = make(map[string]string)
+	DefaultAcceptorCount int = 4
 )
 
 func init() {
@@ -50,40 +47,37 @@ func init() {
 }
 
 func DefaultServer(callbacks ServerCallbacks) *Server {
-	return NewServer(callbacks, DefaultAcceptorCount, DefaultListenPort, DefaultSSLOptions)
+	return NewServer(callbacks)
 }
 
-func NewServer(callbacks ServerCallbacks, acceptorCount int, port int, sslOptions map[string]string) *Server {
+func NewServer(callbacks ServerCallbacks) *Server {
 	server := &Server{}
-	server.acceptorCount = acceptorCount
-	server.listenPort = port
+	server.acceptorCount = DefaultAcceptorCount
 	server.callbacks = callbacks
-	server.sslOptions = sslOptions
 	return server
 }
 
 func (server *Server) NewRequest(request *Request) *ServerRequest {
-	return &ServerRequest{Request:request, server:server, span:NewSpan(fmt.Sprintf("request-%p", request))}
-
+	return &ServerRequest{Request: request, server: server, span: NewSpan(fmt.Sprintf("request-%p", request))}
 }
 
 func (server *Server) initTLS() error {
 	var err error
-	if server.cert, err = tls.LoadX509KeyPair(server.sslOptions["pem"], server.sslOptions["key"]); err == nil {
+	if server.cert, err = tls.LoadX509KeyPair(server.callbacks.SslOptions()["pem"], server.callbacks.SslOptions()["key"]); err == nil {
 		server.tlsConfig = &tls.Config{Rand: rand.Reader, Certificates: []tls.Certificate{server.cert}}
-		server.netListener, err = tls.Listen("tcp", ":"+strconv.Itoa(server.listenPort), server.tlsConfig)
+		server.netListener, err = tls.Listen("tcp", server.callbacks.Address(), server.tlsConfig)
 	}
 	return err
 }
 
 func (server *Server) initTCP() error {
 	var err error
-	server.netListener, err = net.Listen("tcp", ":"+strconv.Itoa(server.listenPort))
+	server.netListener, err = net.Listen("tcp", server.callbacks.Address())
 	return err
 }
 
 func (server *Server) Listen() error {
-	if server.sslOptions != nil && len(server.sslOptions) > 0 {
+	if server.callbacks.SslOptions() != nil && len(server.callbacks.SslOptions()) > 0 {
 		return server.initTLS()
 	}
 	return server.initTCP()

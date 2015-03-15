@@ -9,12 +9,12 @@ import (
 )
 
 type Connection struct {
-	id     int64
-	conn   net.Conn
-	reader *bufio.Reader
-	server *Server
-	span   *Span
-    requestNum uint64
+	id         int64
+	conn       net.Conn
+	reader     *bufio.Reader
+	server     *Server
+	span       *Span
+	requestNum uint64
 }
 
 func NewConnection(conn net.Conn, server *Server) *Connection {
@@ -67,18 +67,15 @@ func (c *Connection) ReadLine() ([]byte, bool, error) {
 	return c.reader.ReadLine()
 }
 
-func (c *Connection) Start() error {
-	var err error = io.EOF
+func (c *Connection) Start() (err error) {
 	for {
-        var request *ServerRequest
-        if request, err = c.readRequest(); err != nil {
-            break
-        }
-        if err = c.handleRequest(request); err != nil {
-            break
-        }
-		log.Debug(request.span.JSON())
-
+		var request *ServerRequest
+		if request, err = c.readRequest(); err != nil {
+			break
+		}
+		if err = c.handleRequest(request); err != nil {
+			break
+		}
 	}
 	c.span.CollectMemStats()
 	log.Info(c.span.JSON())
@@ -86,33 +83,33 @@ func (c *Connection) Start() error {
 }
 
 func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
-    serverRequest = &ServerRequest{server: c.Server(), span: NewSpan(fmt.Sprintf("request-%v", c.requestNum))}
-    serverRequest.span.Start("request")
-    serverRequest.span.Start("deserialize")
-    err = DeserializeMessage(c, serverRequest)
-    serverRequest.span.Finish("deserialize")
-    return
+	serverRequest = &ServerRequest{server: c.Server(), span: NewSpan(fmt.Sprintf("request-%v", c.requestNum))}
+	serverRequest.span.Start("request")
+	serverRequest.span.Start("deserialize")
+	err = DeserializeMessage(c, serverRequest)
+	serverRequest.span.Finish("deserialize")
+	return
 }
 
 func (c *Connection) handleRequest(request *ServerRequest) (err error) {
-    request.span.Start("reply")
-    request.span.Start("process")
-    reply, keepGoing := c.server.callbacks.RequestReceived(c, request)
-    request.span.Finish("process")
-    if reply != nil {
-        reply.Id = nextMessageId()
-        request.span.Start("serialize")
-        if err = SerializeMessage(c, reply); err != nil {
-            return
-        }
-        request.span.Finish("serialize")
-    }
-    if !keepGoing {
-        return io.EOF
-    }
-    request.span.Finish("reply")
-    request.span.Finish("request")
-    return
+	request.span.Start("reply")
+	request.span.Start("process")
+	reply, keepGoing := c.server.callbacks.RequestReceived(c, request)
+	request.span.Finish("process")
+	if reply != nil {
+		reply.Id = nextMessageId()
+		request.span.Start("serialize")
+		if err = SerializeMessage(c, reply); err != nil {
+			return
+		}
+		request.span.Finish("serialize")
+	}
+	if !keepGoing {
+		return io.EOF
+	}
+	request.span.Finish("reply")
+	request.span.Finish("request")
+	return
 }
 
 var nextConnectionId AtomicCounter

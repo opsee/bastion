@@ -53,6 +53,14 @@ func init() {
 
 type Callbacks struct{}
 
+func (this *Callbacks) Address() string {
+	return ":5666"
+}
+
+func (this *Callbacks) SslOptions() netutil.SslOptions {
+	return nil
+}
+
 func (this *Callbacks) ConnectionMade(connection *netutil.Connection) bool {
 	return true
 }
