@@ -1,7 +1,6 @@
 package netutil
 
 import (
-	"encoding/json"
 	"net"
 )
 
@@ -18,14 +17,9 @@ type BaseClient struct {
 	callbacks Client
 }
 
-func (c *BaseClient) SendRequest(command string, data MessageData) error {
+func (c *BaseClient) SendRequest(command string, data MessageData) (err error) {
 	request := NewRequest(command)
 	request.Id = nextMessageId()
 	request.Data = data
-	if jsonData, err := json.Marshal(request); err != nil {
-		return err
-	} else {
-		_, err := c.Write(append(jsonData, '\r', '\n'))
-		return err
-	}
+	return SerializeMessage(c, request)
 }

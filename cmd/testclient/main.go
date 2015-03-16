@@ -27,6 +27,6 @@ func main() {
 		log.Printf("client  connect: ", err)
 		return
 	} else {
-		client.SendRequest("foo", nil)
+		client.SendRequest("shutdown", nil)
 	}
 }

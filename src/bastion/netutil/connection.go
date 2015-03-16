@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"sync/atomic"
 )
 
 type Connection struct {
@@ -35,7 +36,7 @@ func (c *Connection) ReadLine() ([]byte, bool, error) {
 }
 
 func (c *Connection) Start() (err error) {
-	for {
+	for c.server.exit == 0 {
 		c.requestNum.Increment()
 		var request *ServerRequest
 		if request, err = c.readRequest(); err != nil {
@@ -45,6 +46,7 @@ func (c *Connection) Start() (err error) {
 			break
 		}
 	}
+	log.Error("conn exit %b", c.server.exit)
 	c.span.CollectMemStats()
 	log.Info(c.span.JSON())
 	return err
@@ -78,6 +80,11 @@ func (c *Connection) handleRequest(request *ServerRequest) (err error) {
 	request.span.Finish("reply")
 	request.span.Finish("request")
 	return
+}
+
+func (c *Connection) Close() error {
+	atomic.StoreInt32(&c.server.exit, 1)
+	return c.Conn.Close()
 }
 
 var nextConnectionId AtomicCounter
