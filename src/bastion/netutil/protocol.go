@@ -8,6 +8,17 @@ import (
 	"sync/atomic"
 )
 
+const (
+	CallMessageType uint = iota
+	KeepAlivePingMessageType
+	KeepAlivePongMessageType
+)
+
+var (
+	crlfSlice        = []byte{'\r', '\n'}
+	messageId uint64 = 0
+)
+
 type (
 	MessageData map[string]interface{}
 
@@ -15,6 +26,7 @@ type (
 
 	Header struct {
 		Version uint32    `json:"version"`
+		Type    uint      `json:"type"`
 		Id      MessageId `json:"id`
 	}
 
@@ -42,22 +54,10 @@ type (
 	}
 )
 
-const (
-	MsgKeepAlive string = "keepalive"
-)
-
-var (
-	crlfSlice        = []byte{'\r', '\n'}
-	messageId uint64 = 0
-)
-
 func SerializeMessage(writer io.Writer, message interface{}) error {
-	var err error = nil
-	var jsonData []byte
-	if jsonData, err = json.Marshal(message); err != nil {
+	if jsonData, err := json.Marshal(message); err != nil {
 		return err
-	}
-	if _, err = writer.Write(append(jsonData, crlfSlice...)); err != nil {
+	} else if _, err = writer.Write(append(jsonData, crlfSlice...)); err != nil {
 		return err
 	}
 	return nil
@@ -81,7 +81,7 @@ func NewRequest(command string) *Request {
 	return &Request{Message: &Message{Header: &Header{Version: 1}, Data: make(MessageData)}, Command: command}
 }
 
-func NewReply(inReplyTo *Request) *Reply {
+func NewReply(inReplyTo *ServerRequest) *Reply {
 	return &Reply{Message: NewMessage(), InReplyTo: inReplyTo.Id}
 }
 
