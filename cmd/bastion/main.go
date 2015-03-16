@@ -15,10 +15,15 @@ import (
 	"github.com/amir/raidman"
 	"github.com/awslabs/aws-sdk-go/gen/ec2"
 	"github.com/awslabs/aws-sdk-go/gen/rds"
-	"log"
+	"github.com/op/go-logging"
 	"runtime"
 	"strconv"
 	"strings"
+)
+
+var (
+	log       = logging.MustGetLogger("bastion.json-tcp")
+	logFormat = logging.MustStringFormatter("%{time:2006-01-02T15:04:05.999999999Z07:00} %{level} [%{module}] %{message}")
 )
 
 // we must first retrieve our AWS API keys, which will either be in the instance metadata,
@@ -28,18 +33,22 @@ import (
 // In parallel we try and open a TLS connection back to the opsee API. We'll have been supplied
 // a ca certificate, certificate and a secret key in pem format, either via the instance metadata
 // or on the command line.
-
-var accessKeyId string
-var secretKey string
-var region string
-var opsee string
-var caPath string
-var certPath string
-var keyPath string
-var dataPath string
-var hostname string
+var (
+	accessKeyId string
+	secretKey   string
+	region      string
+	opsee       string
+	caPath      string
+	certPath    string
+	keyPath     string
+	dataPath    string
+	hostname    string
+)
 
 func init() {
+	logging.SetLevel(logging.INFO, "json-tcp")
+	logging.SetFormatter(logFormat)
+	// cmdline args
 	flag.StringVar(&accessKeyId, "access_key_id", "", "AWS access key ID.")
 	flag.StringVar(&secretKey, "secret_key", "", "AWS secret key ID.")
 	flag.StringVar(&region, "region", "", "AWS Region.")
@@ -51,41 +60,32 @@ func init() {
 	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
 }
 
-type Callbacks struct{}
+type Server struct{}
 
-func (this *Callbacks) Address() string {
-	return ":5666"
-}
-
-func (this *Callbacks) SslOptions() netutil.SslOptions {
+func (this *Server) SslOptions() netutil.SslOptions {
 	return nil
 }
 
-func (this *Callbacks) ConnectionMade(connection *netutil.Connection) bool {
+func (this *Server) ConnectionMade(connection *netutil.Connection) bool {
 	return true
 }
 
-func (this *Callbacks) ConnectionLost(connection *netutil.Connection, err error) {
-	log.Print("[ERROR]: Connection lost: ", err)
+func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
+	log.Error("Connection lost: %v", err)
 }
 
-func (this *Callbacks) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (*netutil.Reply, bool) {
+func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (*netutil.Reply, bool) {
 	keepGoing := request.Command != "close"
 	return netutil.NewReply(request), keepGoing
 }
 
 func main() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
-	srv := netutil.DefaultServer(&Callbacks{})
-	go srv.Serve()
-	//	if cli, err := netutil.ConnectTCP("127.0.0.1:5666"); err != nil {
-	//		log.Print("[ERROR]: ConnectTCP: ", err)
-	//		return
-	//	} else {
-	//		cli.SendRequest("command", nil)
-	//	}
+	if _, err := netutil.ListenTCP(":5666", &Server{}); err != nil {
+		log.Panic("json-tcp server failed to start: ", err)
+		return
+	}
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
 	ec2Client := scanner.New(credProvider)

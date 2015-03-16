@@ -10,6 +10,10 @@ func (counter *AtomicCounter) Load() int64 {
 	return atomic.LoadInt64(&counter.val)
 }
 
+func (counter *AtomicCounter) LoadFast() int64 {
+	return counter.val
+}
+
 func (counter *AtomicCounter) Store(val int64) {
 	atomic.StoreInt64(&counter.val, val)
 }

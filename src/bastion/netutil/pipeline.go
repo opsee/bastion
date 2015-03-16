@@ -10,13 +10,13 @@ import (
 )
 
 type Pipeline struct {
-	client *Client
+	client *BaseClient
 	buf    *bytes.Buffer
 	count  int32
 	sync.Mutex
 }
 
-func NewPipeline(c *Client) (p *Pipeline) {
+func NewPipeline(c *BaseClient) (p *Pipeline) {
 	p = &Pipeline{client: c}
 	p.buf = bytes.NewBuffer(nil)
 	return p
