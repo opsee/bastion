@@ -46,7 +46,6 @@ func (c *Connection) Start() (err error) {
 			break
 		}
 	}
-	log.Error("conn exit %b", c.server.exit)
 	c.span.CollectMemStats()
 	log.Info(c.span.JSON())
 	return err
