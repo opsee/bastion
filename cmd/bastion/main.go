@@ -99,7 +99,7 @@ func NewOpseeClient(address string) (client *raidman.Client, err error) {
 }
 
 var (
-	httpClient   *http.Client
+	httpClient   *http.Client = &http.Client{}
 	credProvider *credentials.CredentialsProvider
 	jsonServer   netutil.TCPServer
 	ec2Client    scanner.EC2Scanner
@@ -108,12 +108,8 @@ var (
 )
 
 func main() {
-	defer func() {
-		jsonServer.Close()
-		jsonServer.Join()
-	}()
-	flag.Parse()
 	var err error
+	flag.Parse()
 	if jsonServer, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
 		log.Panic("json-tcp server failed to start: ", err)
 		return
@@ -138,10 +134,14 @@ func main() {
 		}
 	}
 	log.Info("hostname: %s", hostname)
+
 	go loadAndPopulate()
+	connectionIdleLoop()
+	jsonServer.Join()
+}
 
+func connectionIdleLoop() {
 	tick := time.Tick(time.Second * 10)
-
 	connectedEvent := &raidman.Event{
 		State:   "connected",
 		Host:    hostname,
@@ -155,96 +155,99 @@ func main() {
 	}
 }
 
+func reportFromDataFile(dataFilePath string) (err error) {
+	var events []raidman.Event
+	var file *os.File
+	var bytes []byte
+	const sendTickInterval = time.Second * 5
+
+	if file, err = os.Open(dataFilePath); err != nil {
+		log.Panicf("opening data file %s: %v", dataPath, err)
+	}
+	if bytes, err = ioutil.ReadAll(file); err != nil {
+		log.Panicf("reading from data file %s: %v", dataPath, err)
+	}
+	if err = json.Unmarshal(bytes, &events); err != nil {
+		log.Panicf("unmarshalling json from %s: %v", dataPath, err)
+	}
+	discTick := time.Tick(sendTickInterval)
+	for _, event := range events {
+		<-discTick
+		log.Debug("%v", event)
+		opseeClient.Send(&event)
+	}
+	return
+}
+
 func loadAndPopulate() (err error) {
 	if dataPath != "" {
-		file, err := os.Open(dataPath)
-		if err != nil {
-			panic(err)
-		}
-		bytes, err := ioutil.ReadAll(file)
-		if err != nil {
-			panic(err)
-		}
-		events := []raidman.Event{}
-		err = json.Unmarshal(bytes, &events)
-		if err != nil {
-			panic(err)
-		}
-		discTick := time.Tick(time.Second * 5)
-		for _, event := range events {
-			<-discTick
-			fmt.Println(event)
-			opseeClient.Send(&event)
-		}
-	} else {
-		var groups []ec2.SecurityGroup
-		if groups, err = ec2Client.ScanSecurityGroups(); err != nil {
-			log.Fatalf("scanning security groups: %s", err.Error())
-		}
-
-		for _, group := range groups {
-			if group.GroupID != nil {
-				groupMap[*group.GroupID] = group
-				instances, _ := ec2Client.ScanSecurityGroupInstances(*group.GroupID)
-				if len(instances) == 0 {
-					continue
-				}
-			} else {
+		return reportFromDataFile(dataPath)
+	}
+	var groups []ec2.SecurityGroup
+	if groups, err = ec2Client.ScanSecurityGroups(); err != nil {
+		log.Fatalf("scanning security groups: %s", err.Error())
+	}
+	for _, group := range groups {
+		if group.GroupID != nil {
+			groupMap[*group.GroupID] = group
+			instances, _ := ec2Client.ScanSecurityGroupInstances(*group.GroupID)
+			if len(instances) == 0 {
 				continue
 			}
-			event := raidman.Event{}
-			event.Ttl = 120
-			event.Host = hostname
-			event.Service = "discovery"
-			event.State = "sg"
-			event.Metric = 0
-			event.Attributes = make(map[string]string)
-			event.Attributes["group_id"] = *group.GroupID
-			if group.GroupName != nil {
-				event.Attributes["group_name"] = *group.GroupName
-			}
-			if len(group.IPPermissions) > 0 {
-				perms := group.IPPermissions[0]
-				if perms.ToPort != nil {
-					event.Attributes["port"] = strconv.Itoa(*perms.ToPort)
-				}
-				if perms.IPProtocol != nil {
-					event.Attributes["protocol"] = *perms.IPProtocol
-				}
-			}
-			fmt.Println(event)
-			opseeClient.Send(&event)
+		} else {
+			continue
 		}
-		lbs, _ := ec2Client.ScanLoadBalancers()
-		for _, lb := range lbs {
-			if lb.LoadBalancerName == nil {
-				continue
-			}
-			event := elbLoadBalancerDescriptionToEvent(lb)
-			fmt.Println(event)
-			opseeClient.Send(event)
-		}
-		rdbs, _ := ec2Client.ScanRDS()
-		sgs, _ := ec2Client.ScanRDSSecurityGroups()
-		sgMap := make(map[string]rds.DBSecurityGroup)
-		for _, sg := range sgs {
-			if sg.DBSecurityGroupName != nil {
-				sgMap[*sg.DBSecurityGroupName] = sg
-			}
-		}
-		for _, db := range rdbs {
-			event := rdsDBInstanceToEvent(db)
-			fmt.Println(event)
-			opseeClient.Send(event)
-		}
-		//FIN
-		event := raidman.Event{}
-		event.Ttl = 120
-		event.Host = hostname
-		event.Service = "discovery"
-		event.State = "end"
+		event := ec2SecurityGroupToEvent(group)
 		fmt.Println(event)
-		opseeClient.Send(&event)
+		opseeClient.Send(event)
+	}
+	lbs, _ := ec2Client.ScanLoadBalancers()
+	for _, lb := range lbs {
+		if lb.LoadBalancerName == nil {
+			continue
+		}
+		event := elbLoadBalancerDescriptionToEvent(lb)
+		fmt.Println(event)
+		opseeClient.Send(event)
+	}
+	rdbs, _ := ec2Client.ScanRDS()
+	sgs, _ := ec2Client.ScanRDSSecurityGroups()
+	sgMap := make(map[string]rds.DBSecurityGroup)
+	for _, sg := range sgs {
+		if sg.DBSecurityGroupName != nil {
+			sgMap[*sg.DBSecurityGroupName] = sg
+		}
+	}
+	for _, db := range rdbs {
+		event := rdsDBInstanceToEvent(db)
+		fmt.Println(event)
+		opseeClient.Send(event)
+	}
+	//FIN
+	event := raidman.Event{}
+	event.Ttl = 120
+	event.Host = hostname
+	event.Service = "discovery"
+	event.State = "end"
+	fmt.Println(event)
+	opseeClient.Send(&event)
+	return
+}
+
+func ec2SecurityGroupToEvent(group ec2.SecurityGroup) (event *raidman.Event) {
+	event = &raidman.Event{Ttl: 120, Host: hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
+	event.Attributes["group_id"] = *group.GroupID
+	if group.GroupName != nil {
+		event.Attributes["group_name"] = *group.GroupName
+	}
+	if len(group.IPPermissions) > 0 {
+		perms := group.IPPermissions[0]
+		if perms.ToPort != nil {
+			event.Attributes["port"] = strconv.Itoa(*perms.ToPort)
+		}
+		if perms.IPProtocol != nil {
+			event.Attributes["protocol"] = *perms.IPProtocol
+		}
 	}
 	return
 }

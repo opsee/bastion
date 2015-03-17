@@ -79,6 +79,7 @@ func (server *BaseServer) Serve() (err error) {
 	for i := 0; i < acceptorCount; i++ {
 		server.wg.Add(1)
 		go func() (err error) {
+			log.Notice("loop start")
 			defer server.wg.Done()
 			if err = server.loop(); err != nil {
 				log.Notice("server loop exit: %s", err.Error())
