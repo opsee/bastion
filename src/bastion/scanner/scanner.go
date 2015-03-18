@@ -8,7 +8,18 @@ import(
 		"github.com/awslabs/aws-sdk-go/gen/rds"
 		"bastion/credentials"
 		// "github.com/awslabs/aws-sdk-go/gen/autoscaling"
+    "github.com/op/go-logging"
 )
+
+var (
+    log = logging.MustGetLogger("bastion.json-tcp")
+    logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
+)
+
+func init() {
+    logging.SetLevel(logging.INFO, "json-tcp")
+    logging.SetFormatter(logFormat)
+}
 
 type EC2Scanner interface {
 	ScanSecurityGroups() ([]ec2.SecurityGroup, error)

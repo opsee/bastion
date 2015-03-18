@@ -5,7 +5,6 @@ import (
 	"bastion/netutil"
 	"bastion/scanner"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,17 +13,14 @@ import (
 	"encoding/json"
 	"github.com/amir/raidman"
 	"github.com/awslabs/aws-sdk-go/gen/ec2"
-	"github.com/awslabs/aws-sdk-go/gen/elb"
 	"github.com/awslabs/aws-sdk-go/gen/rds"
 	"github.com/op/go-logging"
 	"runtime"
-	"strconv"
-	"strings"
 )
 
 var (
-	log       = logging.MustGetLogger("bastion.json-tcp")
-	logFormat = logging.MustStringFormatter("%{time:2006-01-02T15:04:05.999999999Z07:00} %{level} [%{module}] %{message}")
+	log       = logging.MustGetLogger("main")
+	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} [%{level:.8s}]: [%{module}] %{shortfunc} ▶ %{id:03x}%{color:reset} %{message}")
 )
 
 // we must first retrieve our AWS API keys, which will either be in the instance metadata,
@@ -48,7 +44,7 @@ var (
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	logging.SetLevel(logging.INFO, "json-tcp")
+	logging.SetLevel(logging.DEBUG, "bastion.main")
 	logging.SetFormatter(logFormat)
 
 	// cmdline args
@@ -99,57 +95,58 @@ func NewOpseeClient(address string) (client *raidman.Client, err error) {
 }
 
 var (
-	httpClient   *http.Client = &http.Client{}
-	credProvider *credentials.CredentialsProvider
-	jsonServer   netutil.TCPServer
-	ec2Client    scanner.EC2Scanner
-	opseeClient  *raidman.Client              = nil
-	groupMap     map[string]ec2.SecurityGroup = make(map[string]ec2.SecurityGroup)
+	httpClient        *http.Client = &http.Client{}
+	credProvider      *credentials.CredentialsProvider
+	jsonServer        netutil.TCPServer
+	ec2Client         scanner.EC2Scanner
+	awsApiEventParser *scanner.AwsApiEventParser
+	opseeClient       *raidman.Client              = nil
+	groupMap          map[string]ec2.SecurityGroup = make(map[string]ec2.SecurityGroup)
 )
 
 func main() {
 	var err error
+
 	flag.Parse()
+
 	if jsonServer, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
-		log.Panic("json-tcp server failed to start: ", err)
-		return
+		log.Fatalf("json-tcp server failed to start: ", err)
 	}
+
 	httpClient = &http.Client{}
 	credProvider = credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
-	ec2Client = scanner.New(credProvider)
-	connectToOpsee := netutil.NewBackoffRetrier(func() (interface{}, error) {
-		return NewOpseeClient(opsee)
-	})
-	if err = connectToOpsee.Run(); err != nil {
-		log.Fatalf("connectToOpsee: %v", err)
-		return
-	}
-	opseeClient = connectToOpsee.Result().(*raidman.Client)
-
 	if hostname == "" {
 		if credProvider.GetInstanceId() == nil {
-			hostname = "localhost"
+			log.Fatalf("Cannot determine hostname")
 		} else {
 			hostname = credProvider.GetInstanceId().InstanceId
 		}
 	}
 	log.Info("hostname: %s", hostname)
 
+	awsApiEventParser = scanner.NewAwsApiEventParser(hostname)
+	ec2Client = scanner.New(credProvider)
+
+	connectToOpsee := func() (interface{}, error) { return NewOpseeClient(opsee) }
+	connectToOpseeRetrier := netutil.NewBackoffRetrier(connectToOpsee)
+	if err = connectToOpseeRetrier.Run(); err != nil {
+		log.Fatalf("connectToOpsee: %v", err)
+	}
+	opseeClient = connectToOpseeRetrier.Result().(*raidman.Client)
+
 	go loadAndPopulate()
-	connectionIdleLoop()
+	go connectionIdleLoop()
+
 	jsonServer.Join()
 }
 
 func connectionIdleLoop() {
 	tick := time.Tick(time.Second * 10)
-	connectedEvent := &raidman.Event{
-		State:   "connected",
-		Host:    hostname,
-		Service: "bastion",
-		Ttl:     10}
-
+	connectedEvent := awsApiEventParser.NewEvent("bastion")
+	connectedEvent.State = "connected"
+	connectedEvent.Ttl = 10
 	for {
-		log.Info("%s", connectedEvent)
+		log.Debug("%+v", connectedEvent)
 		opseeClient.Send(connectedEvent)
 		<-tick
 	}
@@ -159,21 +156,22 @@ func reportFromDataFile(dataFilePath string) (err error) {
 	var events []raidman.Event
 	var file *os.File
 	var bytes []byte
+
 	const sendTickInterval = time.Second * 5
 
 	if file, err = os.Open(dataFilePath); err != nil {
-		log.Panicf("opening data file %s: %v", dataPath, err)
+		log.Fatalf("opening data file %s: %v", dataPath, err)
 	}
 	if bytes, err = ioutil.ReadAll(file); err != nil {
-		log.Panicf("reading from data file %s: %v", dataPath, err)
+		log.Fatalf("reading from data file %s: %v", dataPath, err)
 	}
 	if err = json.Unmarshal(bytes, &events); err != nil {
-		log.Panicf("unmarshalling json from %s: %v", dataPath, err)
+		log.Fatalf("unmarshalling json from %s: %v", dataPath, err)
 	}
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
-		log.Debug("%v", event)
+		log.Debug("%+v", event)
 		opseeClient.Send(&event)
 	}
 	return
@@ -185,8 +183,10 @@ func loadAndPopulate() (err error) {
 	}
 	var groups []ec2.SecurityGroup
 	if groups, err = ec2Client.ScanSecurityGroups(); err != nil {
-		log.Fatalf("scanning security groups: %s", err.Error())
+		log.Error("scanning security groups: %s", err.Error())
+		return
 	}
+
 	for _, group := range groups {
 		if group.GroupID != nil {
 			groupMap[*group.GroupID] = group
@@ -197,20 +197,20 @@ func loadAndPopulate() (err error) {
 		} else {
 			continue
 		}
-		event := ec2SecurityGroupToEvent(group)
-		fmt.Println(event)
+		event := awsApiEventParser.ToEvent(group)
+		log.Debug("%+v", event)
 		opseeClient.Send(event)
 	}
+
 	lbs, _ := ec2Client.ScanLoadBalancers()
 	for _, lb := range lbs {
-		if lb.LoadBalancerName == nil {
-			continue
+		if lb.LoadBalancerName != nil {
+			event := awsApiEventParser.ToEvent(lb)
+			log.Debug("%+v", event)
+			opseeClient.Send(event)
 		}
-		event := elbLoadBalancerDescriptionToEvent(lb)
-		fmt.Println(event)
-		opseeClient.Send(event)
 	}
-	rdbs, _ := ec2Client.ScanRDS()
+
 	sgs, _ := ec2Client.ScanRDSSecurityGroups()
 	sgMap := make(map[string]rds.DBSecurityGroup)
 	for _, sg := range sgs {
@@ -218,67 +218,18 @@ func loadAndPopulate() (err error) {
 			sgMap[*sg.DBSecurityGroupName] = sg
 		}
 	}
+
+	rdbs, _ := ec2Client.ScanRDS()
 	for _, db := range rdbs {
-		event := rdsDBInstanceToEvent(db)
-		fmt.Println(event)
+		event := awsApiEventParser.ToEvent(db)
+		log.Debug("%+v", event)
 		opseeClient.Send(event)
 	}
+
 	//FIN
-	event := raidman.Event{}
-	event.Ttl = 120
-	event.Host = hostname
-	event.Service = "discovery"
+	event := awsApiEventParser.NewEvent("discovery")
 	event.State = "end"
-	fmt.Println(event)
-	opseeClient.Send(&event)
+	log.Debug("%+v", event)
+	opseeClient.Send(event)
 	return
-}
-
-func ec2SecurityGroupToEvent(group ec2.SecurityGroup) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
-	event.Attributes["group_id"] = *group.GroupID
-	if group.GroupName != nil {
-		event.Attributes["group_name"] = *group.GroupName
-	}
-	if len(group.IPPermissions) > 0 {
-		perms := group.IPPermissions[0]
-		if perms.ToPort != nil {
-			event.Attributes["port"] = strconv.Itoa(*perms.ToPort)
-		}
-		if perms.IPProtocol != nil {
-			event.Attributes["protocol"] = *perms.IPProtocol
-		}
-	}
-	return
-}
-
-func elbLoadBalancerDescriptionToEvent(lb elb.LoadBalancerDescription) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
-	event.Attributes["group_name"] = *lb.LoadBalancerName
-	event.Attributes["group_id"] = *lb.DNSName
-	if lb.HealthCheck != nil {
-		split := strings.Split(*lb.HealthCheck.Target, ":")
-		split2 := strings.Split(split[1], "/")
-		event.Attributes["port"] = split2[0]
-		event.Attributes["protocol"] = split[0]
-		event.Attributes["request"] = strings.Join([]string{"/", split2[1]}, "")
-	}
-	return
-}
-
-func rdsDBInstanceToEvent(db rds.DBInstance) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
-	if db.DBName != nil {
-		event.Attributes["group_name"] = *db.DBName
-		if len(db.VPCSecurityGroups) > 0 {
-			sgId := *db.VPCSecurityGroups[0].VPCSecurityGroupID
-			event.Attributes["group_id"] = sgId
-			ec2sg := groupMap[sgId]
-			perms := ec2sg.IPPermissions[0]
-			event.Attributes["port"] = strconv.Itoa(*perms.ToPort)
-			event.Attributes["protocol"] = "sql"
-			event.Attributes["request"] = "select 1;"
-		}
-	}
-	return event
 }

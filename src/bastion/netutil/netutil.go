@@ -6,13 +6,12 @@ import (
 )
 
 var (
-	log = logging.MustGetLogger("bastion.json-tcp")
-	//	logFormat = logging.MustStringFormatter("%{time:2006-01-02T15:04:05.999999999Z07:00} %{level} [%{module}] %{message}")
+	log       = logging.MustGetLogger("bastion.json-tcp")
 	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
 )
 
 func init() {
-	logging.SetLevel(logging.INFO, "json-tcp")
+	logging.SetLevel(logging.DEBUG, "bastion.json-tcp")
 	logging.SetFormatter(logFormat)
 }
 

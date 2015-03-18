@@ -75,11 +75,11 @@ func (server *BaseServer) Listen() (net.Listener, error) {
 func (server *BaseServer) Serve() (err error) {
 	if server.Listener, err = server.Listen(); err != nil {
 		log.Error("listen: %v", err)
+		return
 	}
 	for i := 0; i < acceptorCount; i++ {
 		server.wg.Add(1)
 		go func() (err error) {
-			log.Notice("loop start")
 			defer server.wg.Done()
 			if err = server.loop(); err != nil {
 				log.Notice("server loop exit: %s", err.Error())
@@ -95,9 +95,7 @@ func (server *BaseServer) Stop() {
 }
 
 func (server *BaseServer) Join() {
-	log.Info("waiting on wg")
 	server.wg.Wait()
-	log.Info("waited on wg")
 }
 
 func (server *BaseServer) initTLS() (listener net.Listener, err error) {
