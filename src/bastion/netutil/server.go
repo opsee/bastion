@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net"
 	"runtime"
+	"sync"
+	"sync/atomic"
 )
 
 type (
@@ -19,7 +21,10 @@ type (
 	}
 
 	Listener interface {
+		net.Listener
 		Serve() error
+		Stop()
+		Join()
 		Listen() (net.Listener, error)
 	}
 
@@ -35,6 +40,8 @@ type (
 		connectionCount AtomicCounter
 		cert            tls.Certificate
 		tlsConfig       *tls.Config
+		wg              sync.WaitGroup
+		exit            int32
 	}
 
 	ServerRequest struct {
@@ -55,7 +62,6 @@ func init() {
 }
 
 func NewServer(address string, handler ServerCallbacks) *BaseServer {
-
 	return &BaseServer{ServerCallbacks: handler, Address: address}
 }
 
@@ -69,11 +75,27 @@ func (server *BaseServer) Listen() (net.Listener, error) {
 func (server *BaseServer) Serve() (err error) {
 	if server.Listener, err = server.Listen(); err != nil {
 		log.Error("listen: %v", err)
+		return
 	}
 	for i := 0; i < acceptorCount; i++ {
-		go server.loop()
+		server.wg.Add(1)
+		go func() (err error) {
+			defer server.wg.Done()
+			if err = server.loop(); err != nil {
+				log.Notice("server loop exit: %s", err.Error())
+			}
+			return
+		}()
 	}
 	return
+}
+
+func (server *BaseServer) Stop() {
+	atomic.StoreInt32(&server.exit, 1)
+}
+
+func (server *BaseServer) Join() {
+	server.wg.Wait()
 }
 
 func (server *BaseServer) initTLS() (listener net.Listener, err error) {
@@ -85,18 +107,18 @@ func (server *BaseServer) initTLS() (listener net.Listener, err error) {
 }
 
 func (server *BaseServer) loop() (err error) {
-	for {
+	for server.exit == 0 {
 		if conn, err := server.Listener.Accept(); err != nil {
-			log.Error("accept: ", err)
 			break
 		} else {
-			server.handleNewConnection(conn)
+			server.handleConnection(conn)
 		}
 	}
+	log.Error("server exit %d", server.exit)
 	return
 }
 
-func (server *BaseServer) handleNewConnection(conn net.Conn) {
+func (server *BaseServer) handleConnection(conn net.Conn) {
 	newConn := NewConnection(conn, server)
 	if !server.ConnectionMade(newConn) {
 		newConn.Close()

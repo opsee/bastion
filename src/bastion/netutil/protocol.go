@@ -8,17 +8,6 @@ import (
 	"sync/atomic"
 )
 
-const (
-	CallMessageType uint = iota
-	KeepAlivePingMessageType
-	KeepAlivePongMessageType
-)
-
-var (
-	crlfSlice        = []byte{'\r', '\n'}
-	messageId uint64 = 0
-)
-
 type (
 	MessageData map[string]interface{}
 
@@ -54,6 +43,17 @@ type (
 	}
 )
 
+const (
+	CallMessageType uint = iota
+	KeepAlivePingMessageType
+	KeepAlivePongMessageType
+)
+
+var (
+	crlfSlice        = []byte{'\r', '\n'}
+	messageId uint64 = 0
+)
+
 func SerializeMessage(writer io.Writer, message interface{}) error {
 	if jsonData, err := json.Marshal(message); err != nil {
 		return err
@@ -83,6 +83,10 @@ func NewRequest(command string) *Request {
 
 func NewReply(inReplyTo *ServerRequest) *Reply {
 	return &Reply{Message: NewMessage(), InReplyTo: inReplyTo.Id}
+}
+
+func (m *Message) Deserialize(reader io.Reader) error {
+	return DeserializeMessage(reader, m)
 }
 
 func (h *Header) String() string {
