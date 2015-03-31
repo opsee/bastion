@@ -40,32 +40,21 @@ func (c *Connection) ReadLine() ([]byte, bool, error) {
 
 
 func (c *Connection) Start() (err error) {
-    var i int = 0
 	for  {
-        i += 1
-        if (i == 100) {
-            log.Error("ServerCancelling")
-            go serverCancel()
-            return
-        }
 		c.requestNum.Increment()
-		var request *ServerRequest
-        log.Info("pre-read")
-		if request, err = c.readRequest(); err != nil {
+//		var request *ServerRequest
+		if request, err := c.readRequest(); err != nil {
+			break
+		} else if err = c.handleRequest(request); err != nil {
 			break
 		}
-        log.Info("pre-handle")
-		if err = c.handleRequest(request); err != nil {
+		select {
+		case <- serverCtx.Done():
+			err = serverCtx.Err()
 			break
+		default:
+			continue
 		}
-        select {
-        case <- serverCtx.Done():
-            log.Error("Broke out due to context")
-            err = serverCtx.Err()
-            break
-        default:
-            continue
-        }
 	}
 	c.span.CollectMemStats()
 	log.Info(c.span.JSON())
@@ -85,20 +74,16 @@ func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
 func (c *Connection) handleRequest(request *ServerRequest) (err error) {
 	request.span.Start("reply")
 	request.span.Start("process")
-    log.Info("handleRequest")
 	reply, keepGoing := c.server.RequestReceived(c, request)
 	request.span.Finish("process")
 	if reply != nil {
 		reply.Id = nextMessageId()
 		request.span.Start("serialize")
 		if err = SerializeMessage(c, reply); err != nil {
-            log.Error("Seriealze: %v", err)
 			return
 		}
-        log.Error("done serialized")
 		request.span.Finish("serialize")
 	}
-    log.Error("fuck")
 	if !keepGoing {
 		return io.EOF
 	}

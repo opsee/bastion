@@ -54,21 +54,11 @@ var (
 	messageId uint64 = 0
 )
 
-func SerializeMessage(writer io.Writer, message interface{}) error {
-//    writer2 := bufio.NewWriter(writer)
-	if jsonData, err := json.Marshal(message); err != nil {
-		return err
-	} else if n, err := writer.Write(jsonData); err != nil {
-        log.Info("error n=%s", n)
-		return err
-	} else {
-        rn := []byte{'\n'}
-        if _, err = writer.Write(rn); err != nil {
-            log.Error("write: %v", err)
-        }
-        log.Info("error n=%s", n)
+func SerializeMessage(writer io.Writer, message interface{}) (err error) {
+	if jsonData, err := json.Marshal(message); err == nil {
+		_, err = writer.Write(append(jsonData, crlfSlice...))
     }
-	return nil
+	return
 }
 
 func DeserializeMessage(reader io.Reader, message interface{}) error {

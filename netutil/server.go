@@ -120,7 +120,6 @@ func (server *BaseServer) loop() (err error) {
 			server.handleConnection(conn)
 		}
 	}
-	log.Error("server exit %d", server.exit)
 	return
 }
 
@@ -134,6 +133,5 @@ func (server *BaseServer) handleConnection(conn net.Conn) {
 		server.connectionCount.Increment()
 		defer server.connectionCount.Decrement()
 		server.ConnectionLost(newConn, newConn.Start())
-		log.Info("leaving handleConnection")
 	}()
 }
