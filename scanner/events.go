@@ -2,10 +2,10 @@ package scanner
 
 import (
 	"fmt"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
+	"github.com/amir/raidman"
+	"github.com/awslabs/aws-sdk-go/service/ec2"
+	"github.com/awslabs/aws-sdk-go/service/elb"
+	"github.com/awslabs/aws-sdk-go/service/rds"
 	"github.com/opsee/bastion/credentials"
 	"github.com/opsee/bastion/netutil"
 	"net/http"

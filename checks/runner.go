@@ -1,6 +1,6 @@
 package checks
 
-import "github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
+import "golang.org/x/net/context"
 
 type Runner interface {
 	AddCheck(Check)
