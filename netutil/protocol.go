@@ -56,7 +56,7 @@ var (
 
 func SerializeMessage(writer io.Writer, message interface{}) (err error) {
 	if jsonData, err := json.Marshal(message); err == nil {
-		_, err = writer.Write(append(jsonData, crlfSlice...))
+		_, err := writer.Write(append(jsonData, crlfSlice...))
     }
 	return
 }
