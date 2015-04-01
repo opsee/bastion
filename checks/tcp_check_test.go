@@ -5,8 +5,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	nettest "github.com/opsee/bastion/testing/net"
 	"net"
-	"testing"
 	"time"
+	"testing"
 )
 
 func TestTCPNotListening(t *testing.T) {
