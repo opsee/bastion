@@ -1,4 +1,5 @@
 *~
-.idea
-packer.log
+.idea/
+.*~
+
 
