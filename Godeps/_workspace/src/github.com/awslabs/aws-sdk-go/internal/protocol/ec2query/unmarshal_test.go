@@ -1,16 +1,15 @@
 package ec2query_test
 
 import (
-	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/internal/protocol/ec2query"
-	"github.com/awslabs/aws-sdk-go/internal/signer/v4"
-
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil"
 	"github.com/awslabs/aws-sdk-go/internal/util"
-	"github.com/stretchr/testify/assert"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/protocol/ec2query"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/signer/v4"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -780,4 +779,3 @@ func TestOutputService8ProtocolTestNamedMapCase1(t *testing.T) {
 	assert.Equal(t, "bar", *(*out.Map)["qux"])
 
 }
-

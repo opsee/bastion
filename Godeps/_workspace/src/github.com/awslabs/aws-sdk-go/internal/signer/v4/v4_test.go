@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 )
 
 func buildSigner(serviceName string, region string, signTime time.Time, expireTime time.Duration, body string) signer {

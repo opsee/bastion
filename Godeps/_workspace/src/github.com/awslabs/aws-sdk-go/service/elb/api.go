@@ -6,7 +6,7 @@ package elb
 import (
 	"time"
 
-	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
 )
 
 // AddTagsRequest generates a request for the AddTags operation.

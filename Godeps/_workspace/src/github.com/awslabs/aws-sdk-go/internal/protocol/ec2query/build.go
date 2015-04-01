@@ -5,8 +5,8 @@ package ec2query
 import (
 	"net/url"
 
-	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/internal/protocol/query/queryutil"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/protocol/query/queryutil"
 )
 
 func Build(r *aws.Request) {

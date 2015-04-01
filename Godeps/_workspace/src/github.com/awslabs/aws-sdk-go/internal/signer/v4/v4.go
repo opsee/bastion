@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
 )
 
 const (

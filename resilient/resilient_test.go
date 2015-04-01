@@ -2,7 +2,7 @@ package resilient
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 	nettest "github.com/opsee/bastion/testing/net"
 	"os"
 	"testing"

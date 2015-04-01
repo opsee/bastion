@@ -5,10 +5,10 @@ package ec2_test
 import (
 	"testing"
 
-	"github.com/awslabs/aws-sdk-go/aws"
 	"github.com/awslabs/aws-sdk-go/internal/util/utilassert"
-	"github.com/awslabs/aws-sdk-go/service/ec2"
-	"github.com/stretchr/testify/assert"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 )
 
 var (

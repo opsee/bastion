@@ -1,7 +1,7 @@
 package core
 
 import (
-	"golang.org/x/net/context"
+	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
 	"time"
 )
 

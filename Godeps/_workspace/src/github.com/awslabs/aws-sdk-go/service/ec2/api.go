@@ -6,7 +6,7 @@ package ec2
 import (
 	"time"
 
-	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
 )
 
 // AcceptVPCPeeringConnectionRequest generates a request for the AcceptVPCPeeringConnection operation.

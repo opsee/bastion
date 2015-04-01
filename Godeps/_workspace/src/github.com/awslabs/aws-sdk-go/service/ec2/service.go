@@ -1,13 +1,13 @@
 package ec2
 
 import (
-	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/internal/protocol/ec2query"
-	"github.com/awslabs/aws-sdk-go/internal/signer/v4"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/protocol/ec2query"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/signer/v4"
 )
 
-// EC2 is a client for Amazon EC2.
-type EC2 struct {
+type EC2 struct // EC2 is a client for Amazon EC2.
+{
 	*aws.Service
 }
 

@@ -3,15 +3,15 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"github.com/amir/raidman"
-	"github.com/op/go-logging"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/GeertJohan/go.rice"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+	"github.com/opsee/bastion/netutil"
+	"github.com/opsee/bastion/scanner"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"time"
-	"github.com/opsee/bastion/netutil"
-	"github.com/opsee/bastion/scanner"
-	"github.com/GeertJohan/go.rice"
 )
 
 var (
@@ -72,14 +72,14 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 }
 
 func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (reply *netutil.Reply, keepGoing bool) {
-	keepGoing =  request.Command != "shutdown"
+	keepGoing = request.Command != "shutdown"
 	if !keepGoing {
 		if err := connection.Server().Close(); err != nil {
 			log.Notice("shutdown")
 		}
 	}
 	reply = netutil.NewReply(request)
-    log.Error("giving reply %v", reply)
+	log.Error("giving reply %v", reply)
 	return
 }
 
