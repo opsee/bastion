@@ -128,22 +128,24 @@ func (rc *ResilientConn) reconnLoop(startingTimeout int, timeout *int) <-chan ti
 	return nil
 }
 
-func (rc *ResilientConn) sender() {
+func (rc *ResilientConn) sender() (err error) {
 	for {
 		toSend := <- rc.sendChan
-		buff, err := json.Marshal(&toSend)
-		if err != nil {
-			fmt.Println("encountered error marshalling object:", err)
+		var buff []byte
+		var n int
+		if buff, err = json.Marshal(&toSend); err != nil {
+			log.Error("encountered error marshalling object:", err)
 			continue
 		}
 		size := uint16(len(buff))
 		if rc.conn == nil {
+			return errors.New("connection lost")
+		}
+		if err = binary.Write(rc.conn, binary.BigEndian, &size); err != nil {
 			return
 		}
-		err = binary.Write(rc.conn, binary.BigEndian, &size)
-		n, err := rc.conn.Write(buff)
-		if err != nil || uint16(n) != size {
-			fmt.Println("encountered error writing data to conn:", err)
+		if n, err = rc.conn.Write(buff); err != nil || uint16(n) != size {
+			log.Error("encountered error writing data to conn:", err)
 			return
 		}
 	}

@@ -1,10 +1,10 @@
 all: test
 
 ami: test build
-	@packer build -machine-readable -parallel=true packer.json | tee packer.log
+	@packer build -machine-readable -parallel=true build/packer.json | tee build/packer.log
 
 cloudformation: pack-ami
-	@@godep go run packer_to_cloudformation/packer_to_cloudformation.go -packer_log packer.log -cloudform cloudformation.json > bastion-cf.template
+	@@godep go run packer_to_cloudformation/packer_to_cloudformation.go -packer_log build/packer.log -cloudform build/cloudformation.json > build/bastion-cf.template
 
 dl-godep: 
 	@go get github.com/tools/godep
@@ -16,7 +16,7 @@ test: build
 	@godep go test -v ./...
 
 build: deps
-	@godep go build  -a -p=4 -v -x  -o cookbooks/bastion/files/default/bastion
+	@godep go build -p=4 -v -x  -o cookbooks/bastion/files/default/bastion
 
 clean: 
 	@go clean -x -i -r ./...
