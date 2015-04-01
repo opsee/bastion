@@ -32,3 +32,4 @@ func ListenTCP(address string, s ServerCallbacks) (server TCPServer, err error) 
 	err = server.Serve()
 	return
 }
+

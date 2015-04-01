@@ -12,8 +12,8 @@ import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/kardianos/osext"
 )
 
-// appendedBox defines an appended box
-type appendedBox struct {
+type // appendedBox defines an appended box
+appendedBox struct {
 	Name  string                   // box name
 	Files map[string]*appendedFile // appended files (*zip.File) by full path
 }

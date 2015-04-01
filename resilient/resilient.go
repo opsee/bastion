@@ -10,7 +10,14 @@ import (
 		"io/ioutil"
 		"encoding/binary"
 	bioutil "github.com/opsee/bastion/ioutil"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 )
+
+var (
+	log       = logging.MustGetLogger("resilient")
+	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
+)
+
 
 type ResilientConn struct {
 	closed			bool

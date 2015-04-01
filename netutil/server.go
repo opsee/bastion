@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
+	"path/filepath"
+	"os"
 )
 
 type (
@@ -64,6 +66,14 @@ var (
 
 func init() {
 	acceptorCount = runtime.NumCPU()
+}
+
+func GetFileDir() (dir string, err error) {
+	dir, err = filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return dir, err
 }
 
 func NewServer(address string, handler ServerCallbacks) *BaseServer {
