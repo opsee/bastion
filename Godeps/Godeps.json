@@ -1,0 +1,42 @@
+{
+	"ImportPath": "github.com/opsee/bastion",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/GeertJohan/go.rice",
+			"Rev": "b4a18af231435326dd7995d2dd0f3ee31b81f212"
+		},
+		{
+			"ImportPath": "github.com/amir/raidman",
+			"Rev": "57b78a08c96234a4cf19a7c33c8eb28ce4214cbc"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/aws",
+			"Rev": "072d128aad2c9aa21c398f67132a6c9a00caace2"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/service/ec2",
+			"Rev": "072d128aad2c9aa21c398f67132a6c9a00caace2"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/service/elb",
+			"Rev": "072d128aad2c9aa21c398f67132a6c9a00caace2"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/service/rds",
+			"Rev": "072d128aad2c9aa21c398f67132a6c9a00caace2"
+		},
+		{
+			"ImportPath": "github.com/op/go-logging",
+			"Rev": "e5fb9bb8a3a168cc269b38f092b65d2e18cebb9a"
+		},
+		{
+			"ImportPath": "github.com/satori/go.uuid",
+			"Rev": "242673bbc820e051ef00033e274d32e08ece9e15"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
+		}
+	]
+}
