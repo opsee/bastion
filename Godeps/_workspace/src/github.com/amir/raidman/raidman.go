@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/golang/protobuf/proto"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman/proto"
+	pb "github.com/opsee/bastion/Godeps/_workspace/src/github.com/golang/protobuf/proto"
 )
 
 type network interface {
