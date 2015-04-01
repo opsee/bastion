@@ -110,5 +110,5 @@ func certPath(cert string) string {
 	if travis_build != "" {
 		return fmt.Sprintf("%s/certs/%s", travis_build, cert)
 	}
-	return fmt.Sprintf("%s/certs/%s", os.Getenv("GOPATH"), cert)
+	return fmt.Sprintf("%s/src/github.com/opsee/bastion/pkgdata/certs/%s", os.Getenv("GOPATH"), cert)
 }
