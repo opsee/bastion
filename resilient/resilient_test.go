@@ -108,7 +108,7 @@ func startServer(port int, t *testing.T) nettest.TestServer {
 func certPath(cert string) string {
 	travis_build := os.Getenv("TRAVIS_BUILD_DIR")
 	if travis_build != "" {
-		return fmt.Sprintf("%s/certs/%s", travis_build, cert)
+		return fmt.Sprintf("%s/pkgdata/certs/%s", travis_build, cert)
 	}
 	return fmt.Sprintf("../pkgdata/certs/%s", cert)
 }
