@@ -1,0 +1,8 @@
+[
+{"ttl":120,"host":"bastion","service":"discovery","state":"sg","metric":3,"attributes":{"group_name":"mysql_cluster","port":"3306","protocol":"tcp"}},
+{"ttl":120,"host":"bastion","service":"discovery","state":"asg","metric":5,"attributes":{"group_name":"web_hosts","port":"80","min_hosts":"5","protocol":"tcp"}},
+{"ttl":120,"host":"bastion","service":"discovery","state":"asg","metric":2,"attributes":{"group_name":"secure_web","port":"443","min_hosts":"2","protocol":"tcp"}},
+{"ttl":120,"host":"bastion","service":"discovery","state":"sg","metric":8,"attributes":{"group_name":"credit_cards","port":"443","protocol":"tcp"}},
+{"ttl":120,"host":"bastion","service":"discovery","state":"unmonitored","metric":4},
+{"ttl":120,"host":"bastion","service":"discovery","state":"end"}
+]
