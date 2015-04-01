@@ -3,11 +3,12 @@ package credentials
 import (
 	"io"
 	"time"
-	// "fmt"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/opsee/bastion/testing"
 	"net/http"
-	"testing"
 )
 
 const instanceResponseTxt = `{
