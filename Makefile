@@ -1,10 +1,10 @@
-all: test
+all: cloudformation
 
-ami: test build
+pack-ami: test
 	@packer build -machine-readable -parallel=true build/packer.json | tee build/packer.log
 
 cloudformation: pack-ami
-	@@godep go run packer_to_cloudformation/packer_to_cloudformation.go -packer_log build/packer.log -cloudform build/cloudformation.json > build/bastion-cf.template
+	@godep go run build/packer_to_cloudformation/packer_to_cloudformation.go -packer_log build/packer.log -cloudform build/cloudformation.json > build/bastion-cf.template
 
 dl-godep: 
 	@go get github.com/tools/godep
