@@ -107,7 +107,6 @@ var awsScanner *scanner.AwsApiEventParser
 
 func main() {
 	certBox := rice.MustFindBox("pkgdata/certs")
-	log.Info(certBox.Name())
 	flag.Parse()
 	if dataPath != "" {
 		startStatic()
