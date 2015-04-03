@@ -1,21 +1,17 @@
 package main
 
 import (
-	"bastion/credentials"
-	"bastion/netutil"
-	"bastion/scanner"
-	"flag"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"time"
-	// "bastion/resilient"
 	"encoding/json"
-	"github.com/amir/raidman"
-	"github.com/awslabs/aws-sdk-go/gen/ec2"
-	"github.com/awslabs/aws-sdk-go/gen/rds"
-	"github.com/op/go-logging"
+	"flag"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/GeertJohan/go.rice"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+	"github.com/opsee/bastion/netutil"
+	"github.com/opsee/bastion/scanner"
+	"io/ioutil"
+	"os"
 	"runtime"
+	"time"
 )
 
 var (
@@ -23,7 +19,9 @@ var (
 	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} [%{level:.8s}]: [%{module}] %{shortfunc} ▶ %{id:03x}%{color:reset} %{message}")
 )
 
-// we must first retrieve our AWS API keys, which will either be in the instance metadata,
+const sendTickInterval = time.Second * 5
+
+// We must first retrieve our AWS API keys, which will either be in the inthotance metadata,
 // or our command line options. Then we begin scanning the environment, first using the AWS
 // API, and then actually trying to open TCP connections.
 
@@ -31,15 +29,15 @@ var (
 // a ca certificate, certificate and a secret key in pem format, either via the instance metadata
 // or on the command line.
 var (
-	accessKeyId string
-	secretKey   string
-	region      string
-	opsee       string
-	caPath      string
-	certPath    string
-	keyPath     string
-	dataPath    string
-	hostname    string
+	accessKeyId string // AWS Access Key Id
+	secretKey   string // AWS Secret Key
+	region      string // AWS Region Name
+	opsee       string // Opsee home IP address
+	caPath      string // path to CA
+	certPath    string // path to TLS cert
+	keyPath     string // path to cert privkey
+	dataPath    string // path to event logfile for replay
+	hostname    string // this machine's hostname
 )
 
 func init() {
@@ -74,86 +72,86 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 }
 
 func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (reply *netutil.Reply, keepGoing bool) {
-	isShutdown := request.Command == "shutdown"
-	keepGoing = !isShutdown
-	if isShutdown {
+	keepGoing = request.Command != "shutdown"
+	if !keepGoing {
 		if err := connection.Server().Close(); err != nil {
 			log.Notice("shutdown")
-			reply = nil
 		}
 	}
 	reply = netutil.NewReply(request)
+	log.Error("giving reply %v", reply)
 	return
 }
 
-type OpseeClient struct {
-	*raidman.Client
-}
-
-func NewOpseeClient(address string) (client *raidman.Client, err error) {
-	return raidman.Dial("tcp", address)
-}
-
-var (
-	httpClient        *http.Client = &http.Client{}
-	credProvider      *credentials.CredentialsProvider
-	jsonServer        netutil.TCPServer
-	ec2Client         scanner.EC2Scanner
-	awsApiEventParser *scanner.AwsApiEventParser
-	opseeClient       *raidman.Client              = nil
-	groupMap          map[string]ec2.SecurityGroup = make(map[string]ec2.SecurityGroup)
-)
-
-func main() {
-	var err error
-
-	flag.Parse()
-
-	if jsonServer, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
-		log.Fatalf("json-tcp server failed to start: ", err)
-	}
-
-	httpClient = &http.Client{}
-	credProvider = credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
+func MustGetHostname() string {
 	if hostname == "" {
-		if credProvider.GetInstanceId() == nil {
-			log.Fatalf("Cannot determine hostname")
+		if awsScanner.CredProvider.GetInstanceId() != nil {
+			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId
 		} else {
-			hostname = credProvider.GetInstanceId().InstanceId
+			log.Fatal("couldn't determine hostname")
 		}
 	}
 	log.Info("hostname: %s", hostname)
+	return hostname
+}
 
-	awsApiEventParser = scanner.NewAwsApiEventParser(hostname)
-	ec2Client = scanner.New(credProvider)
-
-	connectToOpsee := func() (interface{}, error) { return NewOpseeClient(opsee) }
-	connectToOpseeRetrier := netutil.NewBackoffRetrier(connectToOpsee)
-	if err = connectToOpseeRetrier.Run(); err != nil {
-		log.Fatalf("connectToOpsee: %v", err)
+func MustStartServer() (server netutil.TCPServer) {
+	var err error
+	if server, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
+		log.Fatalf("json-tcp server failed to start: ", err)
 	}
-	opseeClient = connectToOpseeRetrier.Result().(*raidman.Client)
+	return
+}
 
-	go loadAndPopulate()
-	go connectionIdleLoop()
+var awsScanner *scanner.AwsApiEventParser
 
+func main() {
+	certBox := rice.MustFindBox("pkgdata/certs")
+	log.Info(certBox.Name())
+	flag.Parse()
+	if dataPath != "" {
+		startStatic()
+	} else {
+		go start()
+	}
+	jsonServer := MustStartServer()
 	jsonServer.Join()
+
 }
 
-func connectionIdleLoop() {
-	tick := time.Tick(time.Second * 10)
-	connectedEvent := awsApiEventParser.NewEvent("bastion")
-	connectedEvent.State = "connected"
-	connectedEvent.Ttl = 10
-	for {
-		log.Debug("%+v", connectedEvent)
-		opseeClient.Send(connectedEvent)
-		<-tick
+func start() {
+	hostname = MustGetHostname()
+	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
+	awsScanner.ConnectToOpsee(opsee)
+	if err := awsScanner.Scan(); err == nil {
+		awsScanner.RunForever()
+	} else {
+		log.Fatal("Scan failed: %v", err)
 	}
 }
 
-func reportFromDataFile(dataFilePath string) (err error) {
-	var events []raidman.Event
+func startStatic() {
+	if events, err := loadEventsFromFile(dataPath); err != nil {
+		log.Fatal("loadEventsFromFile: %+v", events)
+	} else {
+		reportStaticEvents(events)
+	}
+}
+
+func reportStaticEvents(events []raidman.Event) (err error) {
+	if events, err := loadEventsFromFile(dataPath); err == nil {
+		discTick := time.Tick(sendTickInterval)
+		for _, event := range events {
+			<-discTick
+			awsScanner.SendEvent(&event)
+		}
+	} else {
+		log.Fatalf("loadEventsFromDataFile %s: %v", dataPath, err)
+	}
+	return
+}
+
+func loadEventsFromFile(dataFilePath string) (events []raidman.Event, err error) {
 	var file *os.File
 	var bytes []byte
 
@@ -168,68 +166,5 @@ func reportFromDataFile(dataFilePath string) (err error) {
 	if err = json.Unmarshal(bytes, &events); err != nil {
 		log.Fatalf("unmarshalling json from %s: %v", dataPath, err)
 	}
-	discTick := time.Tick(sendTickInterval)
-	for _, event := range events {
-		<-discTick
-		log.Debug("%+v", event)
-		opseeClient.Send(&event)
-	}
-	return
-}
-
-func loadAndPopulate() (err error) {
-	if dataPath != "" {
-		return reportFromDataFile(dataPath)
-	}
-	var groups []ec2.SecurityGroup
-	if groups, err = ec2Client.ScanSecurityGroups(); err != nil {
-		log.Error("scanning security groups: %s", err.Error())
-		return
-	}
-
-	for _, group := range groups {
-		if group.GroupID != nil {
-			groupMap[*group.GroupID] = group
-			instances, _ := ec2Client.ScanSecurityGroupInstances(*group.GroupID)
-			if len(instances) == 0 {
-				continue
-			}
-		} else {
-			continue
-		}
-		event := awsApiEventParser.ToEvent(group)
-		log.Debug("%+v", event)
-		opseeClient.Send(event)
-	}
-
-	lbs, _ := ec2Client.ScanLoadBalancers()
-	for _, lb := range lbs {
-		if lb.LoadBalancerName != nil {
-			event := awsApiEventParser.ToEvent(lb)
-			log.Debug("%+v", event)
-			opseeClient.Send(event)
-		}
-	}
-
-	sgs, _ := ec2Client.ScanRDSSecurityGroups()
-	sgMap := make(map[string]rds.DBSecurityGroup)
-	for _, sg := range sgs {
-		if sg.DBSecurityGroupName != nil {
-			sgMap[*sg.DBSecurityGroupName] = sg
-		}
-	}
-
-	rdbs, _ := ec2Client.ScanRDS()
-	for _, db := range rdbs {
-		event := awsApiEventParser.ToEvent(db)
-		log.Debug("%+v", event)
-		opseeClient.Send(event)
-	}
-
-	//FIN
-	event := awsApiEventParser.NewEvent("discovery")
-	event.State = "end"
-	log.Debug("%+v", event)
-	opseeClient.Send(event)
 	return
 }
