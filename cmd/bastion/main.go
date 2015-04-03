@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/GeertJohan/go.rice"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"github.com/opsee/bastion/netutil"
@@ -106,8 +105,6 @@ func MustStartServer() (server netutil.TCPServer) {
 var awsScanner *scanner.AwsApiEventParser
 
 func main() {
-	certBox := rice.MustFindBox("pkgdata/certs")
-	log.Info(certBox.Name())
 	flag.Parse()
 	if dataPath != "" {
 		startStatic()
