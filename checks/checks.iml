@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="GOPATH &lt;checks&gt;" level="project" />
     <orderEntry type="library" name="GOPATH &lt;bastion&gt;" level="project" />
+    <orderEntry type="library" name="GOPATH &lt;checks&gt;" level="project" />
   </component>
 </module>
