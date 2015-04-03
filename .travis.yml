@@ -16,3 +16,5 @@ addons:
     paths:
     - out/bastion-cf.template
     debug: true
+notifications:
+  slack: opsee:aco343GsojLTzL4bVweMHwBA
