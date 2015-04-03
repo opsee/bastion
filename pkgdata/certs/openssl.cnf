@@ -1,0 +1,230 @@
+[ CA_root ]
+dir 					= ./
+certs 					= $dir/ca.db.certs
+database 				= $dir/ca.db.index
+new_certs_dir 			= $dir/ca.db.certs
+
+certificate				= $dir/root-cert.pem
+serial					= $dir/ca.db.serial
+private_key				= $dir/root-key.pem
+RANDFILE				= $dir/.rand
+
+x509_extensions			= v3_ca
+
+name_opt				= ca_default
+cert_opt				= ca_default
+
+default_days			= 1095
+default_crl_days		= 30
+default_md				= sha512
+preserve				= no
+
+policy					= policy_match
+unique_subject			= yes
+
+[ CA_client ]
+dir 					= ./client
+certs 					= $dir/ca.db.certs
+database 				= $dir/ca.db.index
+new_certs_dir 			= $dir/ca.db.certs
+
+certificate				= $dir/client-cert.pem
+serial					= $dir/ca.db.serial
+private_key				= $dir/client-key.pem
+RANDFILE				= $dir/.rand
+
+name_opt				= ca_default
+cert_opt				= ca_default
+
+default_days			= 1095
+default_crl_days		= 30
+default_md				= sha512
+preserve				= no
+
+policy					= policy_match
+unique_subject			= yes
+x509_extensions			= v3_req
+
+[ CA_server ]
+dir 					= ./server
+certs 					= $dir/ca.db.certs
+database 				= $dir/ca.db.index
+new_certs_dir 			= $dir/ca.db.certs
+
+certificate				= $dir/server-cert.pem
+serial					= $dir/ca.db.serial
+private_key				= $dir/server-key.pem
+RANDFILE				= $dir/.rand
+
+name_opt				= ca_default
+cert_opt				= ca_default
+
+default_days			= 1095
+default_crl_days		= 30
+default_md				= sha512
+preserve				= no
+
+policy					= policy_match
+unique_subject			= yes
+x509_extensions			= v3_req
+
+[ policy_match ]
+countryName				= match
+stateOrProvinceName 	= match
+localityName			= match
+organizationName		= match
+organizationalUnitName	= optional
+commonName				= supplied
+emailAddress			= optional
+
+[ policy_anything ]
+countryName				= optional
+stateOrProvinceName		= optional
+localityName			= optional
+organizationName 		= optional
+organizationalUnitName  = optional
+commonName				= supplied
+emailAddress			= optional
+
+[ req ]
+default_bit				= 1024
+default_keyfile			= privkey.pem
+distinguished_name		= req_distinguished_name
+attributes				= req_attributes
+x509_extensions			= v3_ca
+
+string_mask 			= nombstr
+
+[ req_distinguished_name ]
+countryName         = Country Name (2 letter code)
+countryName_default     = US
+countryName_min         = 2
+countryName_max         = 2
+
+stateOrProvinceName     = State or Province Name (full name)
+stateOrProvinceName_default = CA
+
+localityName            = Locality Name (eg, city)
+localityName_default        = San Francisco
+
+0.organizationName      = Organization Name (eg, company)
+0.organizationName_default  = Opsee
+
+1.organizationName      = Second Organization Name (eg, company)
+1.organizationName_default  = 
+
+organizationalUnitName      = Organizational Unit Name (eg, section)
+organizationalUnitName_default  = Bastion CA
+
+commonName          = Common Name (eg, YOUR name)
+commonName_max          = 64
+
+emailAddress            = Email Address
+emailAddress_max        = 64
+emailAddress_default	= cliff@leaninto.it
+
+[ req_attributes ]
+
+[ usr_cert ]
+
+# These extensions are added when 'ca' signs a request.
+
+# This goes against PKIX guidelines but some CAs do it and some software
+# requires this to avoid interpreting an end user certificate as a CA.
+
+basicConstraints=CA:FALSE
+
+# Here are some examples of the usage of nsCertType. If it is omitted
+# the certificate can be used for anything *except* object signing.
+
+# This is OK for an SSL server.
+# nsCertType            = server
+
+# For an object signing certificate this would be used.
+# nsCertType = objsign
+
+# For normal client use this is typical
+# nsCertType = client, email
+
+# and for everything including object signing:
+# nsCertType = client, email, objsign
+
+# This is typical in keyUsage for a client certificate.
+# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+# This will be displayed in Netscape's comment listbox.
+nsComment           = "OpenSSL Generated Certificate"
+
+# PKIX recommendations harmless if included in all certificates.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer:always
+
+# This stuff is for subjectAltName and issuerAltname.
+# Import the email address.
+# subjectAltName=email:copy
+# An alternative to produce certificates that aren't
+# deprecated according to PKIX.
+# subjectAltName=email:move
+subjectAltName=ip:127.0.0.1
+
+# Copy subject details
+# issuerAltName=issuer:copy
+
+#nsCaRevocationUrl      = http://www.domain.dom/ca-crl.pem
+#nsBaseUrl
+#nsRevocationUrl
+#nsRenewalUrl
+#nsCaPolicyUrl
+#nsSslServerName
+
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+subjectAltName = IP:127.0.0.1
+
+[ v3_ca ]
+
+
+# Extensions for a typical CA
+
+
+# PKIX recommendation.
+
+subjectKeyIdentifier=hash
+
+authorityKeyIdentifier=keyid:always,issuer:always
+
+# This is what PKIX recommends but some broken software chokes on critical
+# extensions.
+#basicConstraints = critical,CA:true
+# So we do this instead.
+basicConstraints = CA:true
+
+# Key usage: this is typical for a CA certificate. However since it will
+# prevent it being used as an test self-signed certificate it is best
+# left out by default.
+# keyUsage = cRLSign, keyCertSign
+
+# Some might want this also
+# nsCertType = sslCA, emailCA
+
+# Include email address in subject alt name: another PKIX recommendation
+# subjectAltName=email:copy
+# Copy issuer details
+# issuerAltName=issuer:copy
+
+# DER hex encoding of an extension: beware experts only!
+# obj=DER:02:03
+# Where 'obj' is a standard or added object
+# You can even override a supported extension:
+# basicConstraints= critical, DER:30:03:01:01:FF
+
+[ crl_ext ]
+
+# CRL extensions.
+# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+
+# issuerAltName=issuer:copy
+authorityKeyIdentifier=keyid:always,issuer:always
