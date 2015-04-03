@@ -1,0 +1,117 @@
+{
+	"variables": {
+		"aws_access_key": "{{env `AWS_ACCESS_KEY`}}",
+		"aws_secret_key": "{{env `AWS_SECRET_KEY`}}"
+	},
+	"builders": [
+	{
+		"name" : "us-east-1",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "us-east-1",
+		"source_ami": "ami-9eaa1cf6",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "us-west-1",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "us-west-1",
+		"source_ami": "ami-076e6542",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "us-west-2",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "us-west-2",
+		"source_ami": "ami-3d50120d",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "eu-west-1",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "eu-west-1",
+		"source_ami": "ami-f0b11187",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "ap-southeast-1",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "ap-southeast-1",
+		"source_ami": "ami-d6e7c084",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "ap-northeast-1",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "ap-northeast-1",
+		"source_ami": "ami-e74b60e6",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "ap-southeast-2",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "ap-southeast-2",
+		"source_ami": "ami-1711732d",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	},
+	{
+		"name": "sa-east-1",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "sa-east-1",
+		"source_ami": "ami-69d26774",
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_groups": "all",
+		"ami_name": "Opsee Bastion {{timestamp}}"
+	}
+	],
+	"provisioners": [
+		{
+			"type" : "shell", 
+			"inline": [
+				"sudo apt-get upgrade -y"
+			]
+		},
+		{
+			"type" : "chef-solo",
+			"cookbook_paths": ["cookbooks"],
+			"run_list": ["runit", "bastion"]
+		}
+	]
+}

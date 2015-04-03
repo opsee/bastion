@@ -1,15 +1,35 @@
-bin
-pkg
-src/github.com
-src/golang.org
-src/code.google.com
-*.test
+.idea/
 *~
-.idea
-/packer.log
-/bastion.iml
-/bastion-cf.template
-/cookbooks/bastion/files/default/bastion
+build/*.log
+out/*
+cookbooks/bastion/files/default/bastion
+cookbooks/bastion/files/default/bastion-cf.template
 
+
+### Go template
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
+
+*.exe
+*.test
+*.prof
 
 
