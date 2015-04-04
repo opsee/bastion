@@ -10,7 +10,7 @@ cloudformation: pack-ami
 	@godep go run build/packer_to_cloudformation.go -packer_log out/packer.log -cloudform build/cloudformation.json > out/bastion-cf.template
 
 deps:
-	@godep get github.com/tools/godep
+	@go get github.com/tools/godep
 
 test: build
 	@godep go test -v ./...
