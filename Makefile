@@ -1,7 +1,4 @@
-all: cookbook-files
-
-cookbook-files: cloudformation
-	@cp -v  out/* cookbooks/bastion/files/default/
+all: cloudformation
 
 pack-ami: test
 	@packer build -debug -machine-readable -parallel=true build/packer.json | tee packer.log
@@ -20,10 +17,4 @@ build: deps out
 
 out:
 	mkdir -v out
-
-clean: 
-	@godep go clean -x -i -r ./...
-	@rm -v -f cookbooks/bastion/files/default/bastion
-	@rm -v -f cookbooks/bastion/files/default/bastion-cf.template
-	@rm -vrf out
 

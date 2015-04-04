@@ -117,8 +117,8 @@ func main() {
 }
 
 func start() {
-	hostname = MustGetHostname()
 	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
+	awsScanner.Hostname = MustGetHostname()
 	awsScanner.ConnectToOpsee(opsee)
 	if err := awsScanner.Scan(); err == nil {
 		awsScanner.RunForever()
