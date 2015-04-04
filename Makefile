@@ -10,7 +10,7 @@ cloudformation: pack-ami
 	@godep go run build/packer_to_cloudformation.go -packer_log out/packer.log -cloudform build/cloudformation.json > out/bastion-cf.template
 
 deps:
-	@go get github.com/tools/godep
+	@godep get github.com/tools/godep
 
 test: build
 	@godep go test -v ./...
@@ -22,7 +22,7 @@ out:
 	mkdir out
 
 clean: 
-	@go clean -x -i -r ./...
+	@godep go clean -x -i -r ./...
 	@rm -f cookbooks/bastion/files.default/bastion
 	@rm -f cookbooks/bastion/files.default/bastion-cf.template
 	@rm -rf out
