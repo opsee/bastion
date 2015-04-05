@@ -135,7 +135,7 @@ func startStatic() {
 	}
 }
 
-func reportStaticEvents(events []raidman.Event)  {
+func reportStaticEvents(events []raidman.Event) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick

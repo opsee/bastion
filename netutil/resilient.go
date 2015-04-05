@@ -7,11 +7,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"time"
-	"io"
 )
-
 
 type ResilientConn struct {
 	closed    bool
