@@ -128,6 +128,8 @@ func start() {
 }
 
 func startStatic() {
+	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
+	awsScanner.Hostname = MustGetHostname()
 	if events, err := loadEventsFromFile(dataPath); err != nil {
 		log.Fatal("loadEventsFromFile: %+v", events)
 	} else {
