@@ -3,7 +3,6 @@ package netutil
 import (
 	"bufio"
 	"fmt"
-	"github.com/opsee/bastion/core"
 	"io"
 	"net"
 	"reflect"
@@ -61,7 +60,7 @@ func (c *Connection) Start() (err error) {
 
 func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
 	serverRequest = &ServerRequest{server: c.Server(), span: NewSpan(fmt.Sprintf("request-%v", c.requestNum.Load()))}
-	serverRequest.ctx = core.WithValue(serverCtx, reflect.TypeOf(serverRequest), serverRequest)
+	serverRequest.ctx = WithValue(serverCtx, reflect.TypeOf(serverRequest), serverRequest)
 	serverRequest.span.Start("request")
 	serverRequest.span.Start("deserialize")
 	err = DeserializeMessage(c, serverRequest)

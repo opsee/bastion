@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
-	"github.com/opsee/bastion/core"
 	"net"
 	"os"
 	"path/filepath"
@@ -50,7 +49,7 @@ type (
 
 	ServerRequest struct {
 		*Request
-		ctx    core.Context
+		ctx    Context
 		server *BaseServer
 		reply  *Reply
 		span   *Span
@@ -60,7 +59,7 @@ type (
 var (
 	acceptorCount        int = 4
 	ErrUserCallbackClose     = errors.New("callback ordered connection closed.")
-	serverCtx            core.Context
+	serverCtx            Context
 	serverCancel         context.CancelFunc
 )
 
@@ -77,7 +76,7 @@ func GetFileDir() (dir string, err error) {
 }
 
 func NewServer(address string, handler ServerCallbacks) *BaseServer {
-	serverCtx, serverCancel = core.WithCancel(core.Background())
+	serverCtx, serverCancel = WithCancel(Background())
 	return &BaseServer{ServerCallbacks: handler, Address: address}
 }
 

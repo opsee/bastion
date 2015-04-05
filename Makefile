@@ -12,9 +12,11 @@ deps:
 test: build
 	@godep go test -v ./...
 
-build: deps out
+build: deps
 	@godep go build -p=4 -v -x  -o cookbooks/bastion/files/default/bastion  cmd/bastion/main.go
 
-out:
-	mkdir -v out
+clean:
+	@godep go clean -a -r -i -x ./...
+
+
 
