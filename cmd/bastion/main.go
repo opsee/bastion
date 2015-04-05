@@ -130,6 +130,7 @@ func start() {
 func startStatic() {
 	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
 	awsScanner.Hostname = MustGetHostname()
+	awsScanner.ConnectToOpsee(opsee)
 	if events, err := loadEventsFromFile(dataPath); err != nil {
 		log.Fatal("loadEventsFromFile: %+v", events)
 	} else {
