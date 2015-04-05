@@ -1,4 +1,4 @@
-package resilient
+package netutil
 
 import (
 	"crypto/tls"
@@ -7,16 +7,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"io/ioutil"
 	"time"
 	"io"
 )
 
-var (
-	log       = logging.MustGetLogger("resilient")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
-)
 
 type ResilientConn struct {
 	closed    bool
