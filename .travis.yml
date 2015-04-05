@@ -14,7 +14,7 @@ addons:
     bucket: opsee-bastion-cf
     region: us-west-1
     paths:
-    - out/bastion-cf.template
+    - bastion-cf.template
     debug: true
 notifications:
   slack: opsee:aco343GsojLTzL4bVweMHwBA

@@ -8,9 +8,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
-	bioutil "github.com/opsee/bastion/ioutil"
 	"io/ioutil"
 	"time"
+	"io"
 )
 
 var (
@@ -107,7 +107,7 @@ func (rc *ResilientConn) reconnLoop(startingTimeout int, timeout *int) <-chan ti
 		rc.connChan <- true
 		go rc.sender()
 	}
-	recvBuffer, err := bioutil.ReadFramed(rc.conn)
+	recvBuffer, err := ReadFramed(rc.conn)
 	if err != nil {
 		rc.conn.Close()
 		rc.conn = nil
@@ -156,4 +156,21 @@ func (rc *ResilientConn) IsConnected() bool {
 
 func (rc *ResilientConn) WaitConnect() bool {
 	return <-rc.connChan
+}
+
+func ReadFramed(reader io.Reader) ([]byte, error) {
+	var size uint16
+	err := binary.Read(reader, binary.BigEndian, &size)
+	if err != nil {
+		return nil, err
+	}
+	if size == 0 {
+		return []byte{}, nil
+	}
+	buffer := make([]byte, size, size)
+	_, err = io.ReadFull(reader, buffer)
+	if err != nil {
+		return nil, err
+	}
+	return buffer, nil
 }
