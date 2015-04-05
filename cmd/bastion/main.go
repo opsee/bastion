@@ -106,6 +106,9 @@ var awsScanner *scanner.AwsApiEventParser
 
 func main() {
 	flag.Parse()
+	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
+	awsScanner.Hostname = MustGetHostname()
+	awsScanner.ConnectToOpsee(opsee)
 	if dataPath != "" {
 		startStatic()
 	} else {
@@ -117,9 +120,6 @@ func main() {
 }
 
 func start() {
-	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
-	awsScanner.Hostname = MustGetHostname()
-	awsScanner.ConnectToOpsee(opsee)
 	if err := awsScanner.Scan(); err == nil {
 		awsScanner.RunForever()
 	} else {
@@ -135,17 +135,12 @@ func startStatic() {
 	}
 }
 
-func reportStaticEvents(events []raidman.Event) (err error) {
-	if events, err := loadEventsFromFile(dataPath); err == nil {
-		discTick := time.Tick(sendTickInterval)
-		for _, event := range events {
-			<-discTick
-			awsScanner.SendEvent(&event)
-		}
-	} else {
-		log.Fatalf("loadEventsFromDataFile %s: %v", dataPath, err)
+func reportStaticEvents(events []raidman.Event)  {
+	discTick := time.Tick(sendTickInterval)
+	for _, event := range events {
+		<-discTick
+		awsScanner.SendEvent(&event)
 	}
-	return
 }
 
 func loadEventsFromFile(dataFilePath string) (events []raidman.Event, err error) {
