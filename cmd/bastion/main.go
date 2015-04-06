@@ -94,7 +94,7 @@ func MustGetHostname() string {
 				if ipaddr, err := net.LookupAddr(ifaceip.String()); err != nil {
 					log.Error("err: %v", err)
 				} else {
-					log.Info("DNS hostname: %v", ipaddr)
+					log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
 				}
 			}
 		}
