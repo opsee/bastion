@@ -103,7 +103,8 @@ func MustGetHostname() string {
 					log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
 					if !ifaceip.IsLoopback() {
 						hostname = myhostname
-					} 
+						break
+					}
 				}
 			}
 		}
