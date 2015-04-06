@@ -87,7 +87,6 @@ func MustGetHostname() string {
 	if hostname != "" {
 		return hostname
 	}
-	var myhostname string = ""
 	if ifaces, err := net.InterfaceAddrs(); err != nil {
 		log.Panicf("getting InterfaceAddrs(): %s", err)
 	} else {
@@ -96,19 +95,22 @@ func MustGetHostname() string {
 				log.Error("ParseCIDR: %s", err)
 				continue
 			} else {
-				if ipaddr, err := net.LookupAddr(ifaceip.String()); err != nil {
+				if ipaddrs, err := net.LookupAddr(ifaceip.String()); err != nil {
 					log.Error("err: %v", err)
 					continue
 				} else {
-					log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
-					if !ifaceip.IsLoopback() {
-						hostname = myhostname
-						break
+					for _, ipaddr := range(ipaddrs) {
+						log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
+						if !ifaceip.IsLoopback() {
+							hostname = ipaddr
+							break
+						}
 					}
 				}
 			}
 		}
 	}
+	log.Info("Hostname: %s", hostname)
 	if hostname == "" {
 		if awsScanner.CredProvider.GetInstanceId() != nil {
 			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId
