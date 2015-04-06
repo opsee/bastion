@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"net"
 )
 
 var (
@@ -83,6 +84,12 @@ func (this *Server) RequestReceived(connection *netutil.Connection, request *net
 }
 
 func MustGetHostname() string {
+	if ipaddr, err := net.LookupAddr("127.0.0.1"); err != nil {
+		log.Error("err: %v", err)
+	} else {
+		log.Info("DNS hostname: %v", ipaddr)
+	}
+
 	if hostname == "" {
 		if awsScanner.CredProvider.GetInstanceId() != nil {
 			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId

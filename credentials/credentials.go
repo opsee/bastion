@@ -155,6 +155,7 @@ func (cp *CredentialsProvider) retrieveMetadataCreds() *metadataCredentials {
 		return nil
 	}
 	var metaCreds metadataCredentials
+	log.Println(metaCreds)
 	err = json.Unmarshal(body, &metaCreds)
 	if err != nil {
 		log.Println("error parsing credentials:", err)
