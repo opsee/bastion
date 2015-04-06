@@ -84,22 +84,30 @@ func (this *Server) RequestReceived(connection *netutil.Connection, request *net
 }
 
 func MustGetHostname() string {
+	if hostname != "" {
+		return hostname
+	}
+	var myhostname string = ""
 	if ifaces, err := net.InterfaceAddrs(); err != nil {
 		log.Panicf("getting InterfaceAddrs(): %s", err)
 	} else {
 		for _, iface := range (ifaces) {
 			if ifaceip, _, err := net.ParseCIDR(iface.String()); err != nil {
-				log.Fatalf("ParseCIDR: %s", err)
+				log.Error("ParseCIDR: %s", err)
+				continue
 			} else {
 				if ipaddr, err := net.LookupAddr(ifaceip.String()); err != nil {
 					log.Error("err: %v", err)
+					continue
 				} else {
 					log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
+					if !ifaceip.IsLoopback() {
+						hostname = myhostname
+					} 
 				}
 			}
 		}
 	}
-
 	if hostname == "" {
 		if awsScanner.CredProvider.GetInstanceId() != nil {
 			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId
