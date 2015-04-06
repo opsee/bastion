@@ -102,8 +102,7 @@ func MustGetHostname() string {
 					for _, ipaddr := range(ipaddrs) {
 						log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
 						if !ifaceip.IsLoopback() {
-							hostname = ipaddr
-							break
+							return ipaddr
 						}
 					}
 				}
@@ -113,7 +112,7 @@ func MustGetHostname() string {
 	log.Info("Hostname: %s", hostname)
 	if hostname == "" {
 		if awsScanner.CredProvider.GetInstanceId() != nil {
-			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId
+			return awsScanner.CredProvider.GetInstanceId().InstanceId
 		} else {
 			log.Fatal("couldn't determine hostname")
 		}
