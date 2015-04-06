@@ -84,10 +84,20 @@ func (this *Server) RequestReceived(connection *netutil.Connection, request *net
 }
 
 func MustGetHostname() string {
-	if ipaddr, err := net.LookupAddr("127.0.0.1"); err != nil {
-		log.Error("err: %v", err)
+	if ifaces, err := net.InterfaceAddrs(); err != nil {
+		log.Panicf("getting InterfaceAddrs(): %s", err)
 	} else {
-		log.Info("DNS hostname: %v", ipaddr)
+		for _, iface := range (ifaces) {
+			if ifaceip, _, err := net.ParseCIDR(iface.String()); err != nil {
+				log.Fatalf("ParseCIDR: %s", err)
+			} else {
+				if ipaddr, err := net.LookupAddr(ifaceip.String()); err != nil {
+					log.Error("err: %v", err)
+				} else {
+					log.Info("DNS hostname: %v", ipaddr)
+				}
+			}
+		}
 	}
 
 	if hostname == "" {
