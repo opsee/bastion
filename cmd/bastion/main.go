@@ -142,6 +142,7 @@ func main() {
 	if awsScanner.Hostname == "" {
 		awsScanner.Hostname = GetInstanceId()
 	}
+	log.Info("hostname: %s", hostname)
 	awsScanner.ConnectToOpsee(opsee)
 	if dataPath != "" {
 		startStatic()
