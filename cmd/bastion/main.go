@@ -109,16 +109,20 @@ func MustGetHostname() string {
 			}
 		}
 	}
-	log.Info("Hostname: %s", hostname)
-	if hostname == "" {
-		if awsScanner.CredProvider.GetInstanceId() != nil {
-			return awsScanner.CredProvider.GetInstanceId().InstanceId
-		} else {
-			log.Fatal("couldn't determine hostname")
-		}
+	return ""
+}
+
+func GetInstanceId() string {
+	if awsScanner.CredProvider == nil {
+		return ""
+	}
+	if awsScanner.CredProvider.GetInstanceId() != nil {
+		return awsScanner.CredProvider.GetInstanceId().InstanceId
+	} else {
+		log.Fatal("couldn't determine hostname")
 	}
 	log.Info("hostname: %s", hostname)
-	return hostname
+	return ""
 }
 
 func MustStartServer() (server netutil.TCPServer) {
@@ -133,8 +137,11 @@ var awsScanner *scanner.AwsApiEventParser
 
 func main() {
 	flag.Parse()
+	hostname = MustGetHostname()
 	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
-	awsScanner.Hostname = MustGetHostname()
+	if awsScanner.Hostname == "" {
+		awsScanner.Hostname = GetInstanceId()
+	}
 	awsScanner.ConnectToOpsee(opsee)
 	if dataPath != "" {
 		startStatic()
