@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"errors"
-	"golang.org/x/net/context"
+	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
 	"net"
 	"os"
 	"path/filepath"
