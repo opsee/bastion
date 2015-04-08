@@ -1,13 +1,10 @@
-all: cookbook-files
-
-cookbook-files: cloudformation
-	@cp  out/bastion out/bastion-cf.template  cookbooks/bastion/files/default/
+all: cloudformation
 
 pack-ami: test
-	@packer build -machine-readable -parallel=true build/packer.json | tee out/packer.log
+	@packer build -debug -machine-readable -parallel=true build/packer.json | tee packer.log
 
 cloudformation: pack-ami
-	@godep go run build/packer_to_cloudformation.go -packer_log out/packer.log -cloudform build/cloudformation.json > out/bastion-cf.template
+	@godep go run build/packer_to_cloudformation.go -packer_log packer.log -cloudform build/cloudformation.json > bastion-cf.template
 
 deps:
 	@go get github.com/tools/godep
@@ -15,15 +12,11 @@ deps:
 test: build
 	@godep go test -v ./...
 
-build: deps out
-	@godep go build -p=4 -v -x  -o out/bastion  cmd/bastion/main.go
+build: deps
+	@godep go build -p=4 -v -x  -o cookbooks/bastion/files/default/bastion  cmd/bastion/main.go
 
-out:
-	mkdir out
+clean:
+	@godep go clean -a -r -i -x ./...
 
-clean: 
-	@go clean -x -i -r ./...
-	@rm -f cookbooks/bastion/files.default/bastion
-	@rm -f cookbooks/bastion/files.default/bastion-cf.template
-	@rm -rf out
+
 

@@ -1,4 +1,4 @@
-package resilient
+package netutil
 
 import (
 	"fmt"

@@ -28,7 +28,7 @@ func MustConnectToOpsee(address string) *raidman.Client {
 }
 
 type AwsApiEventParser struct {
-	hostname     string
+	Hostname     string
 	accessKeyId  string
 	secretKey    string
 	region       string
@@ -43,7 +43,7 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
 	httpClient := &http.Client{}
 	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
 	return &AwsApiEventParser{
-		hostname:     hostname,
+		Hostname:     hostname,
 		accessKeyId:  accessKeyId,
 		secretKey:    secretKey,
 		region:       region,
@@ -141,7 +141,7 @@ func (a *AwsApiEventParser) SendEvent(event *raidman.Event) error {
 }
 
 func (a *AwsApiEventParser) NewEvent(service string) *raidman.Event {
-	return &raidman.Event{Ttl: defaultEventTtl, Host: a.hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
+	return &raidman.Event{Ttl: defaultEventTtl, Host: a.Hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
 }
 
 func (a *AwsApiEventParser) NewEventWithState(service string, state string) *raidman.Event {
@@ -170,7 +170,7 @@ func (e *AwsApiEventParser) ToEvent(obj interface{}) (event *raidman.Event) {
 }
 
 func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
+	event = &raidman.Event{Ttl: 120, Host: e.Hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
 	event.State = "sg"
 	event.Attributes["group_id"] = *group.GroupID
 	if group.GroupName != nil {
@@ -189,7 +189,7 @@ func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (e
 }
 
 func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+	event = &raidman.Event{Ttl: 120, Host: e.Hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	event.Attributes["group_name"] = *lb.LoadBalancerName
 	event.Attributes["group_id"] = *lb.DNSName
 	if lb.HealthCheck != nil {
@@ -203,7 +203,7 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 }
 
 func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+	event = &raidman.Event{Ttl: 120, Host: e.Hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	if db.DBName != nil {
 		event.Attributes["group_name"] = *db.DBName
 		if len(db.VPCSecurityGroups) > 0 {

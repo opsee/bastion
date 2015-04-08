@@ -1,4 +1,4 @@
-package core
+package netutil
 
 import (
 	"golang.org/x/net/context"
