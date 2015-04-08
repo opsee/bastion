@@ -46,6 +46,10 @@
 			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
+			"ImportPath": "github.com/bjdean/gonetcheck",
+			"Rev": "5f64e03f55a69972c7f414afcb07f907f8f13f9a"
+		},
+		{
 			"ImportPath": "github.com/golang/protobuf/proto",
 			"Rev": "655cdfa588ea190e901bc5590e65d5621688847c"
 		},
