@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+	"github.com/op/go-logging"
 	bioutil "github.com/opsee/bastion/ioutil"
 	"io/ioutil"
 	"time"
