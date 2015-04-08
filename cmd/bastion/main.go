@@ -106,6 +106,9 @@ var awsScanner *scanner.AwsApiEventParser
 
 func main() {
 	flag.Parse()
+	c, e := netutil.CanHasInterweb()
+	log.Info("can has: %s", c)
+	log.Info("has err?: %s", e)
 	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
 	awsScanner.Hostname = MustGetHostname()
 	awsScanner.ConnectToOpsee(opsee)
