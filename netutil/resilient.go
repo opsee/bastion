@@ -7,12 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-<<<<<<< HEAD:resilient/resilient.go
-	"github.com/op/go-logging"
-	bioutil "github.com/opsee/bastion/ioutil"
-=======
 	"io"
->>>>>>> master:netutil/resilient.go
 	"io/ioutil"
 	"time"
 )
