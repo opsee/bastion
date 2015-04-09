@@ -6,11 +6,12 @@ import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"github.com/opsee/bastion/netutil"
-	"github.com/opsee/bastion/scanner"
+	"github.com/opsee/bastion/aws"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"time"
+	"net"
 )
 
 var (
@@ -83,15 +84,45 @@ func (this *Server) RequestReceived(connection *netutil.Connection, request *net
 }
 
 func MustGetHostname() string {
-	if hostname == "" {
-		if awsScanner.CredProvider.GetInstanceId() != nil {
-			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId
-		} else {
-			log.Fatal("couldn't determine hostname")
+	if hostname != "" {
+		return hostname
+	}
+	if ifaces, err := net.InterfaceAddrs(); err != nil {
+		log.Panicf("getting InterfaceAddrs(): %s", err)
+	} else {
+		for _, iface := range (ifaces) {
+			if ifaceip, _, err := net.ParseCIDR(iface.String()); err != nil {
+				log.Error("ParseCIDR: %s", err)
+				continue
+			} else {
+				if ipaddrs, err := net.LookupAddr(ifaceip.String()); err != nil {
+					log.Error("err: %v", err)
+					continue
+				} else {
+					for _, ipaddr := range(ipaddrs) {
+						log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
+						if !ifaceip.IsLoopback() {
+							return ipaddr
+						}
+					}
+				}
+			}
 		}
 	}
+	return ""
+}
+
+func GetInstanceId() string {
+	if awsScanner.CredProvider == nil {
+		return ""
+	}
+	if awsScanner.CredProvider.GetInstanceId() != nil {
+		return awsScanner.CredProvider.GetInstanceId().InstanceId
+	} else {
+		log.Fatal("couldn't determine hostname")
+	}
 	log.Info("hostname: %s", hostname)
-	return hostname
+	return ""
 }
 
 func MustStartServer() (server netutil.TCPServer) {
@@ -102,18 +133,22 @@ func MustStartServer() (server netutil.TCPServer) {
 	return
 }
 
-var awsScanner *scanner.AwsApiEventParser
+var awsScanner *aws.AwsApiEventParser
 
 func main() {
 	flag.Parse()
 	c, e := netutil.CanHasInterweb()
 	log.Info("can has: %s", c)
 	log.Info("has err?: %s", e)
-	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
+	awsScanner = aws.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
 	awsScanner.Hostname = MustGetHostname()
+	if awsScanner.Hostname == "" {
+		awsScanner.Hostname = GetInstanceId()
+	}
+	log.Info("hostname: %s", hostname)
 	awsScanner.ConnectToOpsee(opsee)
 	if dataPath != "" {
-		startStatic()
+		go startStatic()
 	} else {
 		go start()
 	}
