@@ -2,7 +2,6 @@ package checks
 
 import (
 	"errors"
-	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
 	"time"
 )
 
@@ -12,7 +11,6 @@ var errClosing = errors.New("closing")
 type ResultChan chan CheckResults
 
 type Check interface {
-	Context() context.Context
 	RunCheck(host string, results ResultChan)
 	//    Run(context.Context) context.CancelFunc
 }
@@ -23,7 +21,6 @@ type CheckResults struct {
 	Err      error
 	Response []byte
 	Latency  time.Duration
-	Context  context.Context
 }
 
 type BaseCheck struct {

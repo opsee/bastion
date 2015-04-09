@@ -99,7 +99,7 @@ func (s *Service) AddDebugHandlers() {
 		fmt.Fprintf(out, "-----------------------------------------------------\n")
 	})
 	s.Handlers.Send.PushFront(func(r *Request) {
-		dumpedBody, _ := httputil.DumpRequest(r.HTTPRequest, true)
+		dumpedBody, _ := httputil.DumpRequestOut(r.HTTPRequest, true)
 
 		fmt.Fprintf(out, "---[ REQUEST POST-SIGN ]-----------------------------\n")
 		fmt.Fprintf(out, "%s\n", string(dumpedBody))
@@ -131,11 +131,9 @@ func retryRules(r *Request) time.Duration {
 }
 
 func shouldRetry(r *Request) bool {
-	if err := Error(r.Error); err != nil {
-		if err.StatusCode >= 500 {
-			return true
-		}
-
+	if r.HTTPResponse.StatusCode >= 500 {
+		return true
+	} else if err := Error(r.Error); err != nil {
 		switch err.Code {
 		case "ExpiredTokenException":
 		case "ProvisionedThroughputExceededException", "Throttling":

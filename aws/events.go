@@ -1,4 +1,4 @@
-package scanner
+package aws
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
-	"github.com/opsee/bastion/credentials"
 	"github.com/opsee/bastion/netutil"
 	"net/http"
 	"strconv"
@@ -33,7 +32,7 @@ type AwsApiEventParser struct {
 	secretKey    string
 	region       string
 	httpClient   *http.Client
-	CredProvider *credentials.CredentialsProvider
+	CredProvider *CredentialsProvider
 	EC2Client    EC2Scanner
 	GroupMap     map[string]ec2.SecurityGroup
 	opseeClient  *raidman.Client
@@ -41,7 +40,7 @@ type AwsApiEventParser struct {
 
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string) *AwsApiEventParser {
 	httpClient := &http.Client{}
-	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
+	credProvider := NewProvider(httpClient, accessKeyId, secretKey, region)
 	return &AwsApiEventParser{
 		Hostname:     hostname,
 		accessKeyId:  accessKeyId,
