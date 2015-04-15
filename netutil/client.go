@@ -17,6 +17,7 @@ type BaseClient struct {
 	callbacks Client
 }
 
+
 func (c *BaseClient) SendRequest(command string, data MessageData) (err error) {
 	request := NewRequest(command)
 	request.Id = nextMessageId()

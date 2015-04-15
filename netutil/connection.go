@@ -28,13 +28,9 @@ func NewConnection(conn net.Conn, server *BaseServer) *Connection {
 	}
 }
 
-func (c *Connection) Server() *BaseServer {
-	return c.server
-}
-
-func (c *Connection) ReadLine() ([]byte, bool, error) {
-	return c.reader.ReadLine()
-}
+//func (c *Connection) ReadLine() ([]byte, bool, error) {
+//	return c.reader.ReadLine()
+//}
 
 func (c *Connection) Start() (err error) {
 	for {
@@ -59,7 +55,7 @@ func (c *Connection) Start() (err error) {
 }
 
 func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
-	serverRequest = &ServerRequest{server: c.Server(), span: NewSpan(fmt.Sprintf("request-%v", c.requestNum.Load()))}
+	serverRequest = &ServerRequest{server: c.server, span: NewSpan(fmt.Sprintf("request-%v", c.requestNum.Load()))}
 	serverRequest.ctx = WithValue(serverCtx, reflect.TypeOf(serverRequest), serverRequest)
 	serverRequest.span.Start("request")
 	serverRequest.span.Start("deserialize")

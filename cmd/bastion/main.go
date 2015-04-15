@@ -40,6 +40,7 @@ var (
 	hostname    string // this machine's hostname
 )
 
+
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	logging.SetLevel(logging.DEBUG, "bastion.main")
@@ -72,12 +73,6 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 }
 
 func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (reply *netutil.Reply, keepGoing bool) {
-	keepGoing = request.Command != "shutdown"
-	if !keepGoing {
-		if err := connection.Server().Close(); err != nil {
-			log.Notice("shutdown")
-		}
-	}
 	reply = netutil.NewReply(request)
 	log.Error("giving reply %v", reply)
 	return
@@ -135,6 +130,26 @@ func MustStartServer() (server netutil.TCPServer) {
 
 var awsScanner *aws.AwsApiEventParser
 
+type client struct {}
+
+func (c *client) SslOptions() netutil.SslOptions {
+	return nil
+}
+
+func (c *client) ConnectionMade(*netutil.BaseClient) bool {
+	log.Info("ConnectionMade()")
+	return true
+}
+
+func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
+	log.Critical("ConnectionLost() : %s", err)
+}
+
+func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
+	log.Critical("REPLY: %s", reply.String())
+	return true
+}
+
 func main() {
 	flag.Parse()
 	c, e := netutil.CanHasInterweb()
@@ -146,12 +161,21 @@ func main() {
 		awsScanner.Hostname = GetInstanceId()
 	}
 	log.Info("hostname: %s", hostname)
-	awsScanner.ConnectToOpsee(opsee)
-	if dataPath != "" {
-		go startStatic()
+	callbacks := &client{}
+	if client, err := netutil.ConnectTCP("127.0.0.1:4080", callbacks); err != nil {
+		log.Fatal("ConnectTCP")
 	} else {
-		go start()
+		message := make(map[string]interface{})
+		message["id"] = 1
+		client.SendRequest("connected", message)
+
 	}
+//	awsScanner.ConnectToOpsee(opsee)
+//	if dataPath != "" {
+//		go startStatic()
+//	} else {
+//		go start()
+//	}
 	jsonServer := MustStartServer()
 	jsonServer.Join()
 
