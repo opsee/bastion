@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"sync/atomic"
-	"bytes"
 )
 
 type (
@@ -16,7 +15,6 @@ type (
 
 	Header struct {
 		Version uint32    `json:"version"`
-		Type    uint      `json:"type"`
 		Id      MessageId `json:"id"`
 	}
 
@@ -44,39 +42,20 @@ type (
 	}
 )
 
-const (
-	CallMessageType uint = iota
-	KeepAlivePingMessageType
-	KeepAlivePongMessageType
-)
-
 var (
 	crlfSlice        = []byte{'\r', '\n'}
 	messageId uint64 = 0
 )
 
 func SerializeMessage(writer io.Writer, message interface{}) (err error) {
-	log.Info("%v", message)
-	if jsonData, err := json.Marshal(message); err == nil {
-		buf := bytes.NewBuffer(append(jsonData, crlfSlice...))
-		log.Info("%s", string(buf.String()))
-		bufWriter := bufio.NewWriter(writer)
-		if n, err := bufWriter.Write(buf.Bytes()); err != nil {
-			log.Error("Write: %s", err)
-		} else {
-			log.Info("wrote %d bytes", n)
-		}
-		if err := bufWriter.Flush(); err != nil {
-			log.Error("Flush: %s", err)
-		} else {
-			log.Info("Flush OK")
-		}
-//		_, err = writer.Write(append(jsonData, crlfSlice...))
-//		_, err = writer.Write(jsonData)
-//		_, err = writer.Write([]byte{'\n'})
+	if jsonData, err := json.Marshal(message); err != nil {
+		log.Error("json.Marshal(): %s", err)
+	} else {
+		_, err = writer.Write(append(jsonData, crlfSlice...))
 	}
 	return
 }
+
 
 func DeserializeMessage(reader io.Reader, message interface{}) error {
 	bufReader := bufio.NewReader(reader)
