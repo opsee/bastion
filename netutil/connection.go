@@ -7,6 +7,7 @@ import (
 	"net"
 	"reflect"
 	"sync/atomic"
+	"github.com/opsee/bastion/util"
 )
 
 type Connection struct {
@@ -15,7 +16,7 @@ type Connection struct {
 	reader     *bufio.Reader
 	server     *BaseServer
 	span       *Span
-	requestNum AtomicCounter
+	requestNum util.AtomicCounter
 }
 
 func NewConnection(conn net.Conn, server *BaseServer) *Connection {
@@ -75,4 +76,4 @@ func (c *Connection) Close() error {
 	return c.Conn.Close()
 }
 
-var nextConnectionId AtomicCounter
+var nextConnectionId util.AtomicCounter

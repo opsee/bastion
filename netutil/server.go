@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
+	"github.com/opsee/bastion/util"
 )
 
 type (
@@ -40,7 +41,7 @@ type (
 		net.Listener
 		ServerCallbacks
 		Address         string
-		connectionCount AtomicCounter
+		connectionCount util.AtomicCounter
 		cert            tls.Certificate
 		tlsConfig       *tls.Config
 		wg              sync.WaitGroup
