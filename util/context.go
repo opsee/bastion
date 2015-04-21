@@ -1,4 +1,4 @@
-package netutil
+package util
 
 import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"

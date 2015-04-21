@@ -50,22 +50,26 @@ type (
 
 	ServerRequest struct {
 		*Request
-		ctx    Context
+		ctx    util.Context
 		server *BaseServer
 		reply  *Reply
-		span   *Span
+		span   *util.Span
 	}
 )
 
 var (
-	acceptorCount        int = 4
-	ErrUserCallbackClose     = errors.New("callback ordered connection closed.")
-	serverCtx            Context
+	ErrUserCallbackClose     				 = errors.New("callback ordered connection closed.")
+	acceptorCount        int				 = 4
+	serverCtx            util.Context
 	serverCancel         context.CancelFunc
 )
 
 func init() {
 	acceptorCount = runtime.NumCPU()
+}
+
+func CancelAll() {
+	serverCancel()
 }
 
 func GetFileDir() (dir string, err error) {
@@ -77,7 +81,7 @@ func GetFileDir() (dir string, err error) {
 }
 
 func NewServer(address string, handler ServerCallbacks) *BaseServer {
-	serverCtx, serverCancel = WithCancel(Background())
+	serverCtx, serverCancel = util.WithCancel(util.Background())
 	return &BaseServer{ServerCallbacks: handler, Address: address}
 }
 
