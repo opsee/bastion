@@ -7,6 +7,7 @@ import (
 	"net"
 	"reflect"
 	"sync/atomic"
+	"github.com/opsee/bastion/util"
 )
 
 type Connection struct {
@@ -14,8 +15,8 @@ type Connection struct {
 	id         int64
 	reader     *bufio.Reader
 	server     *BaseServer
-	span       *Span
-	requestNum AtomicCounter
+	span       *util.Span
+	requestNum util.AtomicCounter
 }
 
 func NewConnection(conn net.Conn, server *BaseServer) *Connection {
@@ -23,26 +24,21 @@ func NewConnection(conn net.Conn, server *BaseServer) *Connection {
 	return &Connection{Conn: conn,
 		reader: bufio.NewReader(conn),
 		server: server,
-		span:   NewSpan(fmt.Sprintf("conn-%d-%s-%s", connectionId, conn.RemoteAddr(), conn.LocalAddr())),
+		span:   util.NewSpan(fmt.Sprintf("conn-%d-%s-%s", connectionId, conn.RemoteAddr(), conn.LocalAddr())),
 		id:     connectionId,
 	}
 }
 
-//func (c *Connection) ReadLine() ([]byte, bool, error) {
-//	return c.reader.ReadLine()
-//}
-
-func (c *Connection) Start() (err error) {
+func (c *Connection)  Start() (err error) {
 	for {
 		c.requestNum.Increment()
-		//		var request *ServerRequest
 		if request, err := c.readRequest(); err != nil {
 			break
 		} else if err = c.handleRequest(request); err != nil {
 			break
 		}
 		select {
-		case <-serverCtx.Done():
+		case <- serverCtx.Done():
 			err = serverCtx.Err()
 			break
 		default:
@@ -55,33 +51,23 @@ func (c *Connection) Start() (err error) {
 }
 
 func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
-	serverRequest = &ServerRequest{server: c.server, span: NewSpan(fmt.Sprintf("request-%v", c.requestNum.Load()))}
-	serverRequest.ctx = WithValue(serverCtx, reflect.TypeOf(serverRequest), serverRequest)
-	serverRequest.span.Start("request")
-	serverRequest.span.Start("deserialize")
+	serverRequest = &ServerRequest{server: c.server, span: util.NewSpan(fmt.Sprintf("request-%v", c.requestNum.Load()))}
+	serverRequest.ctx = util.WithValue(serverCtx, reflect.TypeOf(serverRequest), serverRequest)
 	err = DeserializeMessage(c, serverRequest)
-	serverRequest.span.Finish("deserialize")
 	return
 }
 
 func (c *Connection) handleRequest(request *ServerRequest) (err error) {
-	request.span.Start("reply")
-	request.span.Start("process")
 	reply, keepGoing := c.server.RequestReceived(c, request)
-	request.span.Finish("process")
 	if reply != nil {
 		reply.Id = nextMessageId()
-		request.span.Start("serialize")
 		if err = SerializeMessage(c, reply); err != nil {
 			return
 		}
-		request.span.Finish("serialize")
 	}
 	if !keepGoing {
 		return io.EOF
 	}
-	request.span.Finish("reply")
-	request.span.Finish("request")
 	return
 }
 
@@ -90,4 +76,4 @@ func (c *Connection) Close() error {
 	return c.Conn.Close()
 }
 
-var nextConnectionId AtomicCounter
+var nextConnectionId util.AtomicCounter

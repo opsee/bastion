@@ -59,8 +59,7 @@ func NewProvider(client HttpClient,
 	return cp
 }
 
-func (cp *CredentialsProvider) start(overrideAccessKeyId,
-	overrideSecretAccessKey, overrideRegion string) {
+func (cp *CredentialsProvider) start(overrideAccessKeyId, overrideSecretAccessKey, overrideRegion string) {
 	go func() {
 		if overrideAccessKeyId != "" && overrideSecretAccessKey != "" && overrideRegion != "" {
 			cp.creds <- &Credentials{overrideAccessKeyId, overrideSecretAccessKey, overrideRegion}
@@ -142,20 +141,23 @@ func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
 }
 
 func (cp *CredentialsProvider) retrieveMetadataCreds() *metadataCredentials {
-	resp, err := cp.client.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee")
-	if err != nil {
+	var resp *http.Response = nil
+	var err error
+	var body []byte
+	if resp, err = cp.client.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee"); err != nil {
 		log.Error("error getting ec2 metadata:", err)
 		return nil
 	}
+	if resp == nil {
+		return nil
+	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
+	if body, err = ioutil.ReadAll(resp.Body); err != nil {
 		log.Error("error reading ec2 metadata:", err)
 		return nil
 	}
 	var metaCreds metadataCredentials
-	err = json.Unmarshal(body, &metaCreds)
-	if err != nil {
+	if err = json.Unmarshal(body, &metaCreds); err != nil {
 		log.Error("error parsing credentials:", err)
 		return nil
 	}

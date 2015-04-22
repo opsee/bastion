@@ -162,23 +162,28 @@ func main() {
 	}
 	log.Info("hostname: %s", hostname)
 	callbacks := &client{}
-	if client, err := netutil.ConnectTCP("127.0.0.1:4080", callbacks); err != nil {
+	var client *netutil.BaseClient
+	var err error
+	if client, err = netutil.ConnectTCP("127.0.0.1:4080", callbacks); err != nil {
 		log.Fatal("ConnectTCP")
-	} else {
-		message := make(map[string]interface{})
-		message["id"] = 1
-		client.SendRequest("connected", message)
-
 	}
-//	awsScanner.ConnectToOpsee(opsee)
-//	if dataPath != "" {
-//		go startStatic()
-//	} else {
-//		go start()
-//	}
+	message := make(map[string]interface{})
+	message["id"] = 1
+
+	client.SendRequest("connected", message)
+	if reply, err := client.ReadReply(); (err != nil) || reply == nil {
+		log.Fatal("ReadReply: %s", err)
+	} else {
+		log.Info("ReadReply: %s", reply)
+	}
+	//	awsScanner.ConnectToOpsee(opsee)
+	//	if dataPath != "" {
+	//		go startStatic()
+	//	} else {
+	//		go start()
+	//	}
 	jsonServer := MustStartServer()
 	jsonServer.Join()
-
 }
 
 func start() {

@@ -5,7 +5,7 @@
 // metadata) and counts (incrementers ala StatsD). At the end of a request,
 // this span is turned into JSON and logged to logger as well as the timings
 // and counters sent through the supplied StatsRecorder.
-package netutil
+package util
 
 import (
 	"bytes"
