@@ -57,7 +57,7 @@ func SerializeMessage(writer io.Writer, message interface{}) (err error) {
 }
 
 
-func DeserializeMessage(reader io.Reader, message interface{}) error {
+func DeserializeMessage(reader io.Reader, message interface{}) (err error) {
 	bufReader := bufio.NewReader(reader)
 	data, isPrefix, err := bufReader.ReadLine()
 	if err != nil || isPrefix {

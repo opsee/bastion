@@ -99,7 +99,7 @@ func (server *BaseServer) Serve() (err error) {
 	}
 	for i := 0; i < acceptorCount; i++ {
 		server.wg.Add(1)
-		go func() (err error) {
+		go func () (err error) {
 			defer server.wg.Done()
 			if err = server.loop(); err != nil {
 				log.Notice("server loop exit: %s", err.Error())
@@ -126,12 +126,17 @@ func (server *BaseServer) initTLS() (listener net.Listener, err error) {
 	return nil, err
 }
 
+func (server *BaseServer) loopOnce() (err error) {
+	if conn, err := server.Listener.Accept(); err == nil {
+		server.handleConnection(conn)
+	}
+	return
+}
+
 func (server *BaseServer) loop() (err error) {
 	for {
-		if conn, err := server.Listener.Accept(); err != nil {
-			break
-		} else {
-			server.handleConnection(conn)
+		if err = server.loopOnce(); err != nil {
+			return
 		}
 	}
 	return

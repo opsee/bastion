@@ -1,4 +1,4 @@
-all: cloudformation
+all: install
 
 pack-ami: test
 	@packer build -debug -machine-readable -parallel=true  build/packer.json | tee packer.log
@@ -12,11 +12,30 @@ deps:
 test: build
 	@godep go test -v ./...
 
-build: deps
-	@godep go build -p=4 -v -x  -o cookbooks/bastion/files/default/bastion  cmd/bastion/main.go
+build: build-bastion build-protocheck
 
-clean:
-	@godep go clean -a -r -i -x ./...
+build-bastion: deps
+	@godep go build -v -x  -o cookbooks/bastion/files/default/bastion  ./cmd/bastion
+
+build-protocheck: deps
+	@godep go build -v -x  cmd/protocheck/main.go
+
+install: install-bastion install-protocheck
+
+install-bastion: build-bastion
+	@godep go install -v -x ./cmd/bastion
+
+install-protocheck: build-protocheck
+	@godep go install -v -x ./cmd/protocheck
+
+clean:	clean-protocheck clean-bastion
+
+clean-protocheck:
+	@godep go clean -r -x -i -x ./cmd/protocheck
+
+clean-bastion:
+	@godep go clean -r -x -i -x ./cmd/protocheck
+
 
 
 
