@@ -5,5 +5,5 @@ import "log"
 
 
 func main() {
-    log.Panic("fuck")
+    log.Panic("panic")
 }

@@ -11,7 +11,6 @@ import (
 	"os"
 	"runtime"
 	"time"
-	"net"
 )
 
 var (
@@ -73,52 +72,10 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 }
 
 func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (reply *netutil.Reply, keepGoing bool) {
-	reply = netutil.NewReply(request)
-	log.Error("giving reply %v", reply)
-	return
+	return netutil.NewReply(request), true
 }
 
-func MustGetHostname() string {
-	if hostname != "" {
-		return hostname
-	}
-	if ifaces, err := net.InterfaceAddrs(); err != nil {
-		log.Panicf("getting InterfaceAddrs(): %s", err)
-	} else {
-		for _, iface := range (ifaces) {
-			if ifaceip, _, err := net.ParseCIDR(iface.String()); err != nil {
-				log.Error("ParseCIDR: %s", err)
-				continue
-			} else {
-				if ipaddrs, err := net.LookupAddr(ifaceip.String()); err != nil {
-					log.Error("err: %v", err)
-					continue
-				} else {
-					for _, ipaddr := range(ipaddrs) {
-						log.Info("DNS hostname: %v, IsLoopback: %v", ipaddr, ifaceip.IsLoopback())
-						if !ifaceip.IsLoopback() {
-							return ipaddr
-						}
-					}
-				}
-			}
-		}
-	}
-	return ""
-}
 
-func GetInstanceId() string {
-	if awsScanner.CredProvider == nil {
-		return ""
-	}
-	if awsScanner.CredProvider.GetInstanceId() != nil {
-		return awsScanner.CredProvider.GetInstanceId().InstanceId
-	} else {
-		log.Fatal("couldn't determine hostname")
-	}
-	log.Info("hostname: %s", hostname)
-	return ""
-}
 
 func MustStartServer() (server netutil.TCPServer) {
 	var err error
@@ -136,52 +93,29 @@ func (c *client) SslOptions() netutil.SslOptions {
 	return nil
 }
 
-func (c *client) ConnectionMade(*netutil.BaseClient) bool {
-	log.Info("ConnectionMade()")
+func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
+	log.Info("ConnectionMade(): ", baseclient)
 	return true
 }
 
 func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
-	log.Critical("ConnectionLost() : %s", err)
+	log.Critical("ConnectionLost(): ", err)
 }
 
 func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
-	log.Critical("REPLY: %s", reply.String())
+	log.Critical("ReplyReceived(): ", reply.String())
 	return true
 }
 
 func main() {
 	flag.Parse()
-	c, e := netutil.CanHasInterweb()
-	log.Info("can has: %s", c)
-	log.Info("has err?: %s", e)
 	awsScanner = aws.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
-	awsScanner.Hostname = MustGetHostname()
-	if awsScanner.Hostname == "" {
-		awsScanner.Hostname = GetInstanceId()
-	}
-	log.Info("hostname: %s", hostname)
-	callbacks := &client{}
-	var client *netutil.BaseClient
-	var err error
-	if client, err = netutil.ConnectTCP("127.0.0.1:4080", callbacks); err != nil {
-		log.Fatal("ConnectTCP")
-	}
-	message := make(map[string]interface{})
-	message["id"] = 1
-
-	client.SendRequest("connected", message)
-	if reply, err := client.ReadReply(); (err != nil) || reply == nil {
-		log.Fatal("ReadReply: %s", err)
+	awsScanner.ConnectToOpsee(opsee)
+	if dataPath != "" {
+		go startStatic()
 	} else {
-		log.Info("ReadReply: %s", reply)
+		go start()
 	}
-	//	awsScanner.ConnectToOpsee(opsee)
-	//	if dataPath != "" {
-	//		go startStatic()
-	//	} else {
-	//		go start()
-	//	}
 	jsonServer := MustStartServer()
 	jsonServer.Join()
 }
