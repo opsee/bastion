@@ -11,39 +11,43 @@
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/aws",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/endpoints",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/ec2query",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/query",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/signer/v4",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/service/ec2",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/service/elb",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/service/rds",
-			"Rev": "cd3645f72b55e1b15c98aa4f96c5f9cb17377a31"
+			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+		},
+		{
+			"ImportPath": "github.com/bjdean/gonetcheck",
+			"Rev": "5f64e03f55a69972c7f414afcb07f907f8f13f9a"
 		},
 		{
 			"ImportPath": "github.com/golang/protobuf/proto",
@@ -75,7 +79,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
+			"Rev": "6460565bec1e8891e29ff478184c71b9e443ac36"
 		}
 	]
 }

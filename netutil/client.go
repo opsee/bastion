@@ -2,6 +2,8 @@ package netutil
 
 import (
 	"net"
+	"bufio"
+	"encoding/json"
 )
 
 type Client interface {
@@ -20,6 +22,18 @@ type BaseClient struct {
 func (c *BaseClient) SendRequest(command string, data MessageData) (err error) {
 	request := NewRequest(command)
 	request.Id = nextMessageId()
+	request.Data["id"] = request.Id
 	request.Data = data
 	return SerializeMessage(c, request)
+}
+
+func (c *BaseClient) ReadReply() (reply *Reply, err error) {
+	bufReader := bufio.NewReader(c.TCPConn)
+	jsonData, isPrefix, err := bufReader.ReadLine()
+	if err != nil || isPrefix {
+		return nil, err
+	}
+	reply = &Reply{}
+	json.Unmarshal(jsonData, reply)
+	return reply, err
 }

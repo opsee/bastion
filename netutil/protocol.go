@@ -15,8 +15,7 @@ type (
 
 	Header struct {
 		Version uint32    `json:"version"`
-		Type    uint      `json:"type"`
-		Id      MessageId `json:"id`
+		Id      MessageId `json:"id"`
 	}
 
 	Message struct {
@@ -43,25 +42,22 @@ type (
 	}
 )
 
-const (
-	CallMessageType uint = iota
-	KeepAlivePingMessageType
-	KeepAlivePongMessageType
-)
-
 var (
 	crlfSlice        = []byte{'\r', '\n'}
 	messageId uint64 = 0
 )
 
 func SerializeMessage(writer io.Writer, message interface{}) (err error) {
-	if jsonData, err := json.Marshal(message); err == nil {
+	if jsonData, err := json.Marshal(message); err != nil {
+		log.Error("json.Marshal(): %s", err)
+	} else {
 		_, err = writer.Write(append(jsonData, crlfSlice...))
 	}
 	return
 }
 
-func DeserializeMessage(reader io.Reader, message interface{}) error {
+
+func DeserializeMessage(reader io.Reader, message interface{}) (err error) {
 	bufReader := bufio.NewReader(reader)
 	data, isPrefix, err := bufReader.ReadLine()
 	if err != nil || isPrefix {

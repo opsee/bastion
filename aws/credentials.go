@@ -1,9 +1,8 @@
-package credentials
+package aws
 
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 )
@@ -60,8 +59,7 @@ func NewProvider(client HttpClient,
 	return cp
 }
 
-func (cp *CredentialsProvider) start(overrideAccessKeyId,
-	overrideSecretAccessKey, overrideRegion string) {
+func (cp *CredentialsProvider) start(overrideAccessKeyId, overrideSecretAccessKey, overrideRegion string) {
 	go func() {
 		if overrideAccessKeyId != "" && overrideSecretAccessKey != "" && overrideRegion != "" {
 			cp.creds <- &Credentials{overrideAccessKeyId, overrideSecretAccessKey, overrideRegion}
@@ -97,7 +95,7 @@ func (cp *CredentialsProvider) loop(iid *InstanceId, overrideAccessKeyId string,
 		region = overrideRegion
 	}
 	if region == "" {
-		log.Println("No metadata available and no region supplied on cmd line. Exiting.")
+		log.Error("No metadata available and no region supplied on cmd line. Exiting.")
 		return false
 	}
 	creds := &Credentials{accessKeyId, secretAccessKey, region}
@@ -123,19 +121,19 @@ func (cp *CredentialsProvider) GetInstanceId() *InstanceId {
 func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
 	resp, err := cp.client.Get("http://169.254.169.254/latest/dynamic/instance-identity/document")
 	if err != nil {
-		log.Println("error getting ec2 instance id:", err)
+		log.Error("error getting ec2 instance id:", err)
 		return nil
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("error reading ec2 metadata:", err)
+		log.Error("error reading ec2 metadata:", err)
 		return nil
 	}
 	var iid InstanceId
 	err = json.Unmarshal(body, &iid)
 	if err != nil {
-		log.Println("error parsing instanceid:", err)
+		log.Error("error parsing instanceid:", err)
 		return nil
 	}
 	cp.instanceId = &iid
@@ -143,21 +141,24 @@ func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
 }
 
 func (cp *CredentialsProvider) retrieveMetadataCreds() *metadataCredentials {
-	resp, err := cp.client.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee")
-	if err != nil {
-		log.Println("error getting ec2 metadata:", err)
+	var resp *http.Response = nil
+	var err error
+	var body []byte
+	if resp, err = cp.client.Get("http://169.254.169.254/latest/meta-data/iam/security-credentials/opsee"); err != nil {
+		log.Error("error getting ec2 metadata:", err)
+		return nil
+	}
+	if resp == nil {
 		return nil
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("error reading ec2 metadata:", err)
+	if body, err = ioutil.ReadAll(resp.Body); err != nil {
+		log.Error("error reading ec2 metadata:", err)
 		return nil
 	}
 	var metaCreds metadataCredentials
-	err = json.Unmarshal(body, &metaCreds)
-	if err != nil {
-		log.Println("error parsing credentials:", err)
+	if err = json.Unmarshal(body, &metaCreds); err != nil {
+		log.Error("error parsing credentials:", err)
 		return nil
 	}
 	return &metaCreds

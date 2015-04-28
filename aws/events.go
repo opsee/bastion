@@ -1,4 +1,4 @@
-package scanner
+package aws
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
-	"github.com/opsee/bastion/credentials"
 	"github.com/opsee/bastion/netutil"
 	"net/http"
 	"strconv"
@@ -28,12 +27,12 @@ func MustConnectToOpsee(address string) *raidman.Client {
 }
 
 type AwsApiEventParser struct {
-	Hostname     string
+	hostname     string
 	accessKeyId  string
 	secretKey    string
 	region       string
 	httpClient   *http.Client
-	CredProvider *credentials.CredentialsProvider
+	CredProvider *CredentialsProvider
 	EC2Client    EC2Scanner
 	GroupMap     map[string]ec2.SecurityGroup
 	opseeClient  *raidman.Client
@@ -41,9 +40,9 @@ type AwsApiEventParser struct {
 
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string) *AwsApiEventParser {
 	httpClient := &http.Client{}
-	credProvider := credentials.NewProvider(httpClient, accessKeyId, secretKey, region)
-	return &AwsApiEventParser{
-		Hostname:     hostname,
+	credProvider := NewProvider(httpClient, accessKeyId, secretKey, region)
+	scanner := &AwsApiEventParser{
+		hostname:     netutil.MustGetHostname(),
 		accessKeyId:  accessKeyId,
 		secretKey:    secretKey,
 		region:       region,
@@ -52,6 +51,10 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
 		EC2Client:    NewScanner(credProvider),
 		GroupMap:     make(map[string]ec2.SecurityGroup),
 	}
+	if scanner.hostname == "" {
+		scanner.hostname = GetInstanceId(credProvider)
+	}
+	return scanner
 }
 
 func (a *AwsApiEventParser) ConnectToOpsee(address string) {
@@ -141,7 +144,7 @@ func (a *AwsApiEventParser) SendEvent(event *raidman.Event) error {
 }
 
 func (a *AwsApiEventParser) NewEvent(service string) *raidman.Event {
-	return &raidman.Event{Ttl: defaultEventTtl, Host: a.Hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
+	return &raidman.Event{Ttl: defaultEventTtl, Host: a.hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
 }
 
 func (a *AwsApiEventParser) NewEventWithState(service string, state string) *raidman.Event {
@@ -170,7 +173,7 @@ func (e *AwsApiEventParser) ToEvent(obj interface{}) (event *raidman.Event) {
 }
 
 func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.Hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
+	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
 	event.State = "sg"
 	event.Attributes["group_id"] = *group.GroupID
 	if group.GroupName != nil {
@@ -189,7 +192,7 @@ func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (e
 }
 
 func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.Hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	event.Attributes["group_name"] = *lb.LoadBalancerName
 	event.Attributes["group_id"] = *lb.DNSName
 	if lb.HealthCheck != nil {
@@ -203,7 +206,7 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 }
 
 func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.Hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	if db.DBName != nil {
 		event.Attributes["group_name"] = *db.DBName
 		if len(db.VPCSecurityGroups) > 0 {

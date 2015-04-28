@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
+	"github.com/opsee/bastion/util"
 )
 
 type (
@@ -40,7 +41,7 @@ type (
 		net.Listener
 		ServerCallbacks
 		Address         string
-		connectionCount AtomicCounter
+		connectionCount util.AtomicCounter
 		cert            tls.Certificate
 		tlsConfig       *tls.Config
 		wg              sync.WaitGroup
@@ -49,22 +50,26 @@ type (
 
 	ServerRequest struct {
 		*Request
-		ctx    Context
+		ctx    util.Context
 		server *BaseServer
 		reply  *Reply
-		span   *Span
+		span   *util.Span
 	}
 )
 
 var (
-	acceptorCount        int = 4
-	ErrUserCallbackClose     = errors.New("callback ordered connection closed.")
-	serverCtx            Context
+	ErrUserCallbackClose     				 = errors.New("callback ordered connection closed.")
+	acceptorCount        int				 = 4
+	serverCtx            util.Context
 	serverCancel         context.CancelFunc
 )
 
 func init() {
 	acceptorCount = runtime.NumCPU()
+}
+
+func CancelAll() {
+	serverCancel()
 }
 
 func GetFileDir() (dir string, err error) {
@@ -76,7 +81,7 @@ func GetFileDir() (dir string, err error) {
 }
 
 func NewServer(address string, handler ServerCallbacks) *BaseServer {
-	serverCtx, serverCancel = WithCancel(Background())
+	serverCtx, serverCancel = util.WithCancel(util.Background())
 	return &BaseServer{ServerCallbacks: handler, Address: address}
 }
 
@@ -94,7 +99,7 @@ func (server *BaseServer) Serve() (err error) {
 	}
 	for i := 0; i < acceptorCount; i++ {
 		server.wg.Add(1)
-		go func() (err error) {
+		go func () (err error) {
 			defer server.wg.Done()
 			if err = server.loop(); err != nil {
 				log.Notice("server loop exit: %s", err.Error())
@@ -121,12 +126,17 @@ func (server *BaseServer) initTLS() (listener net.Listener, err error) {
 	return nil, err
 }
 
+func (server *BaseServer) loopOnce() (err error) {
+	if conn, err := server.Listener.Accept(); err == nil {
+		server.handleConnection(conn)
+	}
+	return
+}
+
 func (server *BaseServer) loop() (err error) {
 	for {
-		if conn, err := server.Listener.Accept(); err != nil {
-			break
-		} else {
-			server.handleConnection(conn)
+		if err = server.loopOnce(); err != nil {
+			return
 		}
 	}
 	return

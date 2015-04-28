@@ -6,7 +6,7 @@ import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"github.com/opsee/bastion/netutil"
-	"github.com/opsee/bastion/scanner"
+	"github.com/opsee/bastion/aws"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -38,6 +38,7 @@ var (
 	dataPath    string // path to event logfile for replay
 	hostname    string // this machine's hostname
 )
+
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -71,28 +72,10 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 }
 
 func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (reply *netutil.Reply, keepGoing bool) {
-	keepGoing = request.Command != "shutdown"
-	if !keepGoing {
-		if err := connection.Server().Close(); err != nil {
-			log.Notice("shutdown")
-		}
-	}
-	reply = netutil.NewReply(request)
-	log.Error("giving reply %v", reply)
-	return
+	return netutil.NewReply(request), true
 }
 
-func MustGetHostname() string {
-	if hostname == "" {
-		if awsScanner.CredProvider.GetInstanceId() != nil {
-			hostname = awsScanner.CredProvider.GetInstanceId().InstanceId
-		} else {
-			log.Fatal("couldn't determine hostname")
-		}
-	}
-	log.Info("hostname: %s", hostname)
-	return hostname
-}
+
 
 func MustStartServer() (server netutil.TCPServer) {
 	var err error
@@ -102,21 +85,39 @@ func MustStartServer() (server netutil.TCPServer) {
 	return
 }
 
-var awsScanner *scanner.AwsApiEventParser
+var awsScanner *aws.AwsApiEventParser
+
+type client struct {}
+
+func (c *client) SslOptions() netutil.SslOptions {
+	return nil
+}
+
+func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
+	log.Info("ConnectionMade(): ", baseclient)
+	return true
+}
+
+func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
+	log.Critical("ConnectionLost(): ", err)
+}
+
+func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
+	log.Critical("ReplyReceived(): ", reply.String())
+	return true
+}
 
 func main() {
 	flag.Parse()
-	awsScanner = scanner.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
-	awsScanner.Hostname = MustGetHostname()
+	awsScanner = aws.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
 	awsScanner.ConnectToOpsee(opsee)
 	if dataPath != "" {
-		startStatic()
+		go startStatic()
 	} else {
 		go start()
 	}
 	jsonServer := MustStartServer()
 	jsonServer.Join()
-
 }
 
 func start() {

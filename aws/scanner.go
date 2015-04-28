@@ -1,24 +1,12 @@
-package scanner
+package aws
 
 import (
-	// "fmt"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
-	"github.com/opsee/bastion/credentials"
 )
 
-var (
-	log       = logging.MustGetLogger("bastion.json-tcp")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
-)
-
-func init() {
-	logging.SetLevel(logging.INFO, "json-tcp")
-	logging.SetFormatter(logFormat)
-}
 
 type EC2Scanner interface {
 	ScanSecurityGroups() ([]*ec2.SecurityGroup, error)
@@ -29,10 +17,10 @@ type EC2Scanner interface {
 }
 
 type eC2ScannerImpl struct {
-	credProvider *credentials.CredentialsProvider
+	credProvider *CredentialsProvider
 }
 
-func NewScanner(credProvider *credentials.CredentialsProvider) EC2Scanner {
+func NewScanner(credProvider *CredentialsProvider) EC2Scanner {
 	scanner := &eC2ScannerImpl{credProvider}
 	return scanner
 }
