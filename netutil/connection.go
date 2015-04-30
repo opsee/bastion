@@ -3,11 +3,11 @@ package netutil
 import (
 	"bufio"
 	"fmt"
+	"github.com/opsee/bastion/util"
 	"io"
 	"net"
 	"reflect"
 	"sync/atomic"
-	"github.com/opsee/bastion/util"
 )
 
 type Connection struct {
@@ -29,7 +29,7 @@ func NewConnection(conn net.Conn, server *BaseServer) *Connection {
 	}
 }
 
-func (c *Connection)  Start() (err error) {
+func (c *Connection) Start() (err error) {
 	for {
 		c.requestNum.Increment()
 		if request, err := c.readRequest(); err != nil {
@@ -38,7 +38,7 @@ func (c *Connection)  Start() (err error) {
 			break
 		}
 		select {
-		case <- serverCtx.Done():
+		case <-serverCtx.Done():
 			err = serverCtx.Err()
 			break
 		default:

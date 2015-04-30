@@ -11,39 +11,39 @@
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/aws",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/endpoints",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/ec2query",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/query",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/signer/v4",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/service/ec2",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/service/elb",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/service/rds",
-			"Rev": "a79c7d95c012010822e27aaa5551927f5e8a6ab6"
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
 		{
 			"ImportPath": "github.com/bjdean/gonetcheck",
@@ -51,7 +51,7 @@
 		},
 		{
 			"ImportPath": "github.com/golang/protobuf/proto",
-			"Rev": "655cdfa588ea190e901bc5590e65d5621688847c"
+			"Rev": "efd7476481382c195beb33acd8ec2f1527167fb4"
 		},
 		{
 			"ImportPath": "github.com/op/go-logging",
@@ -59,7 +59,7 @@
 		},
 		{
 			"ImportPath": "github.com/satori/go.uuid",
-			"Rev": "242673bbc820e051ef00033e274d32e08ece9e15"
+			"Rev": "dea5d44ec0424a3b1de1f27427810fda1217c4a1"
 		},
 		{
 			"ImportPath": "github.com/stretchr/objx",
@@ -67,11 +67,11 @@
 		},
 		{
 			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "e4ec8152c15fc46bd5056ce65997a07c7d415325"
+			"Rev": "e22aedd37671fb115be6c0c25129c405cb575cfd"
 		},
 		{
 			"ImportPath": "github.com/stretchr/testify/mock",
-			"Rev": "e4ec8152c15fc46bd5056ce65997a07c7d415325"
+			"Rev": "e22aedd37671fb115be6c0c25129c405cb575cfd"
 		},
 		{
 			"ImportPath": "github.com/vaughan0/go-ini",
@@ -79,7 +79,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "6460565bec1e8891e29ff478184c71b9e443ac36"
+			"Rev": "a8c61998a557a37435f719980da368469c10bfed"
 		}
 	]
 }
