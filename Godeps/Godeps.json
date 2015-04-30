@@ -1,0 +1,85 @@
+{
+	"ImportPath": "github.com/opsee/bastion",
+	"GoVersion": "go1.4.2",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/amir/raidman",
+			"Rev": "57b78a08c96234a4cf19a7c33c8eb28ce4214cbc"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/aws",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/endpoints",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/ec2query",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/query",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/internal/signer/v4",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/service/ec2",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/service/elb",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/awslabs/aws-sdk-go/service/rds",
+			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
+		},
+		{
+			"ImportPath": "github.com/bjdean/gonetcheck",
+			"Rev": "5f64e03f55a69972c7f414afcb07f907f8f13f9a"
+		},
+		{
+			"ImportPath": "github.com/golang/protobuf/proto",
+			"Rev": "efd7476481382c195beb33acd8ec2f1527167fb4"
+		},
+		{
+			"ImportPath": "github.com/op/go-logging",
+			"Rev": "e5fb9bb8a3a168cc269b38f092b65d2e18cebb9a"
+		},
+		{
+			"ImportPath": "github.com/satori/go.uuid",
+			"Rev": "dea5d44ec0424a3b1de1f27427810fda1217c4a1"
+		},
+		{
+			"ImportPath": "github.com/stretchr/objx",
+			"Rev": "cbeaeb16a013161a98496fad62933b1d21786672"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Rev": "e22aedd37671fb115be6c0c25129c405cb575cfd"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/mock",
+			"Rev": "e22aedd37671fb115be6c0c25129c405cb575cfd"
+		},
+		{
+			"ImportPath": "github.com/vaughan0/go-ini",
+			"Rev": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "a8c61998a557a37435f719980da368469c10bfed"
+		}
+	]
+}
