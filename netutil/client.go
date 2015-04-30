@@ -1,9 +1,9 @@
 package netutil
 
 import (
-	"net"
 	"bufio"
 	"encoding/json"
+	"net"
 )
 
 type Client interface {

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	log       = logging.MustGetLogger("bastion.json-tcp")
+	log       = logging.MustGetLogger("netutil")
 	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
 )
 
@@ -18,7 +18,7 @@ func init() {
 func ConnectTCP(address string, c Client) (client *BaseClient, err error) {
 	if tcpAddr, err := net.ResolveTCPAddr("tcp", address); err == nil {
 		if tcpConn, err := net.DialTCP("tcp", nil, tcpAddr); err == nil {
-			client = &BaseClient{TCPConn: tcpConn, Address: address, callbacks:c}
+			client = &BaseClient{TCPConn: tcpConn, Address: address, callbacks: c}
 			return client, nil
 		} else {
 			return client, err
@@ -41,7 +41,7 @@ func MustGetHostname() (hostname string) {
 	if ifaces, err := net.InterfaceAddrs(); err != nil {
 		log.Panicf("InterfaceAddrs(): %s", err)
 	} else {
-		for _, iface := range (ifaces) {
+		for _, iface := range ifaces {
 			if ifaceip, _, err := net.ParseCIDR(iface.String()); err != nil {
 				log.Error("ParseCIDR: %s", err)
 				continue
@@ -51,7 +51,7 @@ func MustGetHostname() (hostname string) {
 					log.Error("LookupAddr(): %s", err)
 					continue
 				} else {
-					for _, name := range(ipaddrs) {
+					for _, name := range ipaddrs {
 						if !ifaceip.IsLoopback() {
 							hostname = name
 						}
@@ -62,4 +62,3 @@ func MustGetHostname() (hostname string) {
 	}
 	return
 }
-

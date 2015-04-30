@@ -5,13 +5,13 @@ import (
 	"crypto/tls"
 	"errors"
 	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
+	"github.com/opsee/bastion/util"
 	"net"
 	"os"
 	"path/filepath"
 	"runtime"
 	"sync"
 	"sync/atomic"
-	"github.com/opsee/bastion/util"
 )
 
 type (
@@ -58,8 +58,8 @@ type (
 )
 
 var (
-	ErrUserCallbackClose     				 = errors.New("callback ordered connection closed.")
-	acceptorCount        int				 = 4
+	ErrUserCallbackClose     = errors.New("callback ordered connection closed.")
+	acceptorCount        int = 4
 	serverCtx            util.Context
 	serverCancel         context.CancelFunc
 )
@@ -99,7 +99,7 @@ func (server *BaseServer) Serve() (err error) {
 	}
 	for i := 0; i < acceptorCount; i++ {
 		server.wg.Add(1)
-		go func () (err error) {
+		go func() (err error) {
 			defer server.wg.Done()
 			if err = server.loop(); err != nil {
 				log.Notice("server loop exit: %s", err.Error())

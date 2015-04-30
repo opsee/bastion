@@ -5,8 +5,8 @@ import (
 	"flag"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
-	"github.com/opsee/bastion/netutil"
 	"github.com/opsee/bastion/aws"
+	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	log       = logging.MustGetLogger("main")
+	log       = logging.MustGetLogger("bastion")
 	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} [%{level:.8s}]: [%{module}] %{shortfunc} ▶ %{id:03x}%{color:reset} %{message}")
 )
 
@@ -38,7 +38,6 @@ var (
 	dataPath    string // path to event logfile for replay
 	hostname    string // this machine's hostname
 )
-
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -75,8 +74,6 @@ func (this *Server) RequestReceived(connection *netutil.Connection, request *net
 	return netutil.NewReply(request), true
 }
 
-
-
 func MustStartServer() (server netutil.TCPServer) {
 	var err error
 	if server, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
@@ -87,7 +84,7 @@ func MustStartServer() (server netutil.TCPServer) {
 
 var awsScanner *aws.AwsApiEventParser
 
-type client struct {}
+type client struct{}
 
 func (c *client) SslOptions() netutil.SslOptions {
 	return nil
