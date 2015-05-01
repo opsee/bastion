@@ -90,7 +90,7 @@ func TestConnectAndRecv(t *testing.T) {
 	c.Write([]byte(str))
 	m := conn.Recv().(map[string]interface{})
 	assert.Equal(t, "test1", m["A"])
-	assert.Equal(t, 10, m["B"])
+    assert.Equal(t, float64(10), m["B"])
 	assert.Equal(t, false, m["C"])
 	server.Close()
 }

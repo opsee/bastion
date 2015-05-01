@@ -7,7 +7,6 @@ import (
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
 )
 
-
 type EC2Scanner interface {
 	ScanSecurityGroups() ([]*ec2.SecurityGroup, error)
 	ScanSecurityGroupInstances(groupId string) ([]*ec2.Reservation, error)

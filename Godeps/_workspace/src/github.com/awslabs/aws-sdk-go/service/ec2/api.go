@@ -25,6 +25,10 @@ func (c *EC2) AcceptVPCPeeringConnectionRequest(input *AcceptVPCPeeringConnectio
 		}
 	}
 
+	if input == nil {
+		input = &AcceptVPCPeeringConnectionInput{}
+	}
+
 	req = c.newRequest(opAcceptVPCPeeringConnection, input, output)
 	output = &AcceptVPCPeeringConnectionOutput{}
 	req.Data = output
@@ -55,6 +59,10 @@ func (c *EC2) AllocateAddressRequest(input *AllocateAddressInput) (req *aws.Requ
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AllocateAddressInput{}
 	}
 
 	req = c.newRequest(opAllocateAddress, input, output)
@@ -88,6 +96,10 @@ func (c *EC2) AssignPrivateIPAddressesRequest(input *AssignPrivateIPAddressesInp
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AssignPrivateIPAddressesInput{}
 	}
 
 	req = c.newRequest(opAssignPrivateIPAddresses, input, output)
@@ -127,6 +139,10 @@ func (c *EC2) AssociateAddressRequest(input *AssociateAddressInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AssociateAddressInput{}
 	}
 
 	req = c.newRequest(opAssociateAddress, input, output)
@@ -174,6 +190,10 @@ func (c *EC2) AssociateDHCPOptionsRequest(input *AssociateDHCPOptionsInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &AssociateDHCPOptionsInput{}
+	}
+
 	req = c.newRequest(opAssociateDHCPOptions, input, output)
 	output = &AssociateDHCPOptionsOutput{}
 	req.Data = output
@@ -214,6 +234,10 @@ func (c *EC2) AssociateRouteTableRequest(input *AssociateRouteTableInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &AssociateRouteTableInput{}
+	}
+
 	req = c.newRequest(opAssociateRouteTable, input, output)
 	output = &AssociateRouteTableOutput{}
 	req.Data = output
@@ -248,6 +272,10 @@ func (c *EC2) AttachClassicLinkVPCRequest(input *AttachClassicLinkVPCInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AttachClassicLinkVPCInput{}
 	}
 
 	req = c.newRequest(opAttachClassicLinkVPC, input, output)
@@ -290,6 +318,10 @@ func (c *EC2) AttachInternetGatewayRequest(input *AttachInternetGatewayInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &AttachInternetGatewayInput{}
+	}
+
 	req = c.newRequest(opAttachInternetGateway, input, output)
 	output = &AttachInternetGatewayOutput{}
 	req.Data = output
@@ -321,6 +353,10 @@ func (c *EC2) AttachNetworkInterfaceRequest(input *AttachNetworkInterfaceInput) 
 		}
 	}
 
+	if input == nil {
+		input = &AttachNetworkInterfaceInput{}
+	}
+
 	req = c.newRequest(opAttachNetworkInterface, input, output)
 	output = &AttachNetworkInterfaceOutput{}
 	req.Data = output
@@ -348,6 +384,10 @@ func (c *EC2) AttachVPNGatewayRequest(input *AttachVPNGatewayInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AttachVPNGatewayInput{}
 	}
 
 	req = c.newRequest(opAttachVPNGateway, input, output)
@@ -379,6 +419,10 @@ func (c *EC2) AttachVolumeRequest(input *AttachVolumeInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AttachVolumeInput{}
 	}
 
 	req = c.newRequest(opAttachVolume, input, output)
@@ -435,6 +479,10 @@ func (c *EC2) AuthorizeSecurityGroupEgressRequest(input *AuthorizeSecurityGroupE
 		}
 	}
 
+	if input == nil {
+		input = &AuthorizeSecurityGroupEgressInput{}
+	}
+
 	req = c.newRequest(opAuthorizeSecurityGroupEgress, input, output)
 	output = &AuthorizeSecurityGroupEgressOutput{}
 	req.Data = output
@@ -484,6 +532,10 @@ func (c *EC2) AuthorizeSecurityGroupIngressRequest(input *AuthorizeSecurityGroup
 		}
 	}
 
+	if input == nil {
+		input = &AuthorizeSecurityGroupIngressInput{}
+	}
+
 	req = c.newRequest(opAuthorizeSecurityGroupIngress, input, output)
 	output = &AuthorizeSecurityGroupIngressOutput{}
 	req.Data = output
@@ -531,6 +583,10 @@ func (c *EC2) BundleInstanceRequest(input *BundleInstanceInput) (req *aws.Reques
 		}
 	}
 
+	if input == nil {
+		input = &BundleInstanceInput{}
+	}
+
 	req = c.newRequest(opBundleInstance, input, output)
 	output = &BundleInstanceOutput{}
 	req.Data = output
@@ -569,6 +625,10 @@ func (c *EC2) CancelBundleTaskRequest(input *CancelBundleTaskInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &CancelBundleTaskInput{}
+	}
+
 	req = c.newRequest(opCancelBundleTask, input, output)
 	output = &CancelBundleTaskOutput{}
 	req.Data = output
@@ -596,6 +656,10 @@ func (c *EC2) CancelConversionTaskRequest(input *CancelConversionTaskInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CancelConversionTaskInput{}
 	}
 
 	req = c.newRequest(opCancelConversionTask, input, output)
@@ -635,6 +699,10 @@ func (c *EC2) CancelExportTaskRequest(input *CancelExportTaskInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &CancelExportTaskInput{}
+	}
+
 	req = c.newRequest(opCancelExportTask, input, output)
 	output = &CancelExportTaskOutput{}
 	req.Data = output
@@ -654,6 +722,39 @@ func (c *EC2) CancelExportTask(input *CancelExportTaskInput) (output *CancelExpo
 
 var opCancelExportTask *aws.Operation
 
+// CancelImportTaskRequest generates a request for the CancelImportTask operation.
+func (c *EC2) CancelImportTaskRequest(input *CancelImportTaskInput) (req *aws.Request, output *CancelImportTaskOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opCancelImportTask == nil {
+		opCancelImportTask = &aws.Operation{
+			Name:       "CancelImportTask",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &CancelImportTaskInput{}
+	}
+
+	req = c.newRequest(opCancelImportTask, input, output)
+	output = &CancelImportTaskOutput{}
+	req.Data = output
+	return
+}
+
+// Cancels an in-process import virtual machine or import snapshot task.
+func (c *EC2) CancelImportTask(input *CancelImportTaskInput) (output *CancelImportTaskOutput, err error) {
+	req, out := c.CancelImportTaskRequest(input)
+	output = out
+	err = req.Send()
+	return
+}
+
+var opCancelImportTask *aws.Operation
+
 // CancelReservedInstancesListingRequest generates a request for the CancelReservedInstancesListing operation.
 func (c *EC2) CancelReservedInstancesListingRequest(input *CancelReservedInstancesListingInput) (req *aws.Request, output *CancelReservedInstancesListingOutput) {
 	oprw.Lock()
@@ -665,6 +766,10 @@ func (c *EC2) CancelReservedInstancesListingRequest(input *CancelReservedInstanc
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CancelReservedInstancesListingInput{}
 	}
 
 	req = c.newRequest(opCancelReservedInstancesListing, input, output)
@@ -698,6 +803,10 @@ func (c *EC2) CancelSpotInstanceRequestsRequest(input *CancelSpotInstanceRequest
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CancelSpotInstanceRequestsInput{}
 	}
 
 	req = c.newRequest(opCancelSpotInstanceRequests, input, output)
@@ -737,6 +846,10 @@ func (c *EC2) ConfirmProductInstanceRequest(input *ConfirmProductInstanceInput) 
 		}
 	}
 
+	if input == nil {
+		input = &ConfirmProductInstanceInput{}
+	}
+
 	req = c.newRequest(opConfirmProductInstance, input, output)
 	output = &ConfirmProductInstanceOutput{}
 	req.Data = output
@@ -767,6 +880,10 @@ func (c *EC2) CopyImageRequest(input *CopyImageInput) (req *aws.Request, output 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CopyImageInput{}
 	}
 
 	req = c.newRequest(opCopyImage, input, output)
@@ -802,6 +919,10 @@ func (c *EC2) CopySnapshotRequest(input *CopySnapshotInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CopySnapshotInput{}
 	}
 
 	req = c.newRequest(opCopySnapshot, input, output)
@@ -846,6 +967,10 @@ func (c *EC2) CreateCustomerGatewayRequest(input *CreateCustomerGatewayInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &CreateCustomerGatewayInput{}
+	}
+
 	req = c.newRequest(opCreateCustomerGateway, input, output)
 	output = &CreateCustomerGatewayOutput{}
 	req.Data = output
@@ -871,6 +996,12 @@ func (c *EC2) CreateCustomerGatewayRequest(input *CreateCustomerGatewayInput) (r
 //  For more information about VPN customer gateways, see Adding a Hardware
 // Virtual Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
+//
+//  You cannot create more than one customer gateway with the same VPN type,
+// IP address, and BGP ASN parameter values. If you run an identical request
+// more than one time, the first request creates the customer gateway, and subsequent
+// requests return information about the existing customer gateway. The subsequent
+// requests do not create new customer gateway resources.
 func (c *EC2) CreateCustomerGateway(input *CreateCustomerGatewayInput) (output *CreateCustomerGatewayOutput, err error) {
 	req, out := c.CreateCustomerGatewayRequest(input)
 	output = out
@@ -891,6 +1022,10 @@ func (c *EC2) CreateDHCPOptionsRequest(input *CreateDHCPOptionsInput) (req *aws.
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateDHCPOptionsInput{}
 	}
 
 	req = c.newRequest(opCreateDHCPOptions, input, output)
@@ -950,6 +1085,10 @@ func (c *EC2) CreateImageRequest(input *CreateImageInput) (req *aws.Request, out
 		}
 	}
 
+	if input == nil {
+		input = &CreateImageInput{}
+	}
+
 	req = c.newRequest(opCreateImage, input, output)
 	output = &CreateImageOutput{}
 	req.Data = output
@@ -988,6 +1127,10 @@ func (c *EC2) CreateInstanceExportTaskRequest(input *CreateInstanceExportTaskInp
 		}
 	}
 
+	if input == nil {
+		input = &CreateInstanceExportTaskInput{}
+	}
+
 	req = c.newRequest(opCreateInstanceExportTask, input, output)
 	output = &CreateInstanceExportTaskOutput{}
 	req.Data = output
@@ -1022,6 +1165,10 @@ func (c *EC2) CreateInternetGatewayRequest(input *CreateInternetGatewayInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &CreateInternetGatewayInput{}
+	}
+
 	req = c.newRequest(opCreateInternetGateway, input, output)
 	output = &CreateInternetGatewayOutput{}
 	req.Data = output
@@ -1053,6 +1200,10 @@ func (c *EC2) CreateKeyPairRequest(input *CreateKeyPairInput) (req *aws.Request,
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateKeyPairInput{}
 	}
 
 	req = c.newRequest(opCreateKeyPair, input, output)
@@ -1095,6 +1246,10 @@ func (c *EC2) CreateNetworkACLRequest(input *CreateNetworkACLInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &CreateNetworkACLInput{}
+	}
+
 	req = c.newRequest(opCreateNetworkACL, input, output)
 	output = &CreateNetworkACLOutput{}
 	req.Data = output
@@ -1126,6 +1281,10 @@ func (c *EC2) CreateNetworkACLEntryRequest(input *CreateNetworkACLEntryInput) (r
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateNetworkACLEntryInput{}
 	}
 
 	req = c.newRequest(opCreateNetworkACLEntry, input, output)
@@ -1173,6 +1332,10 @@ func (c *EC2) CreateNetworkInterfaceRequest(input *CreateNetworkInterfaceInput) 
 		}
 	}
 
+	if input == nil {
+		input = &CreateNetworkInterfaceInput{}
+	}
+
 	req = c.newRequest(opCreateNetworkInterface, input, output)
 	output = &CreateNetworkInterfaceOutput{}
 	req.Data = output
@@ -1204,6 +1367,10 @@ func (c *EC2) CreatePlacementGroupRequest(input *CreatePlacementGroupInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreatePlacementGroupInput{}
 	}
 
 	req = c.newRequest(opCreatePlacementGroup, input, output)
@@ -1238,6 +1405,10 @@ func (c *EC2) CreateReservedInstancesListingRequest(input *CreateReservedInstanc
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateReservedInstancesListingInput{}
 	}
 
 	req = c.newRequest(opCreateReservedInstancesListing, input, output)
@@ -1288,6 +1459,10 @@ func (c *EC2) CreateRouteRequest(input *CreateRouteInput) (req *aws.Request, out
 		}
 	}
 
+	if input == nil {
+		input = &CreateRouteInput{}
+	}
+
 	req = c.newRequest(opCreateRoute, input, output)
 	output = &CreateRouteOutput{}
 	req.Data = output
@@ -1335,6 +1510,10 @@ func (c *EC2) CreateRouteTableRequest(input *CreateRouteTableInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &CreateRouteTableInput{}
+	}
+
 	req = c.newRequest(opCreateRouteTable, input, output)
 	output = &CreateRouteTableOutput{}
 	req.Data = output
@@ -1366,6 +1545,10 @@ func (c *EC2) CreateSecurityGroupRequest(input *CreateSecurityGroupInput) (req *
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateSecurityGroupInput{}
 	}
 
 	req = c.newRequest(opCreateSecurityGroup, input, output)
@@ -1421,6 +1604,10 @@ func (c *EC2) CreateSnapshotRequest(input *CreateSnapshotInput) (req *aws.Reques
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateSnapshotInput{}
 	}
 
 	req = c.newRequest(opCreateSnapshot, input, output)
@@ -1480,6 +1667,10 @@ func (c *EC2) CreateSpotDatafeedSubscriptionRequest(input *CreateSpotDatafeedSub
 		}
 	}
 
+	if input == nil {
+		input = &CreateSpotDatafeedSubscriptionInput{}
+	}
+
 	req = c.newRequest(opCreateSpotDatafeedSubscription, input, output)
 	output = &CreateSpotDatafeedSubscriptionOutput{}
 	req.Data = output
@@ -1510,6 +1701,10 @@ func (c *EC2) CreateSubnetRequest(input *CreateSubnetInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateSubnetInput{}
 	}
 
 	req = c.newRequest(opCreateSubnet, input, output)
@@ -1565,6 +1760,10 @@ func (c *EC2) CreateTagsRequest(input *CreateTagsInput) (req *aws.Request, outpu
 		}
 	}
 
+	if input == nil {
+		input = &CreateTagsInput{}
+	}
+
 	req = c.newRequest(opCreateTags, input, output)
 	output = &CreateTagsOutput{}
 	req.Data = output
@@ -1597,6 +1796,10 @@ func (c *EC2) CreateVPCRequest(input *CreateVPCInput) (req *aws.Request, output 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateVPCInput{}
 	}
 
 	req = c.newRequest(opCreateVPC, input, output)
@@ -1638,6 +1841,10 @@ func (c *EC2) CreateVPCPeeringConnectionRequest(input *CreateVPCPeeringConnectio
 		}
 	}
 
+	if input == nil {
+		input = &CreateVPCPeeringConnectionInput{}
+	}
+
 	req = c.newRequest(opCreateVPCPeeringConnection, input, output)
 	output = &CreateVPCPeeringConnectionOutput{}
 	req.Data = output
@@ -1675,6 +1882,10 @@ func (c *EC2) CreateVPNConnectionRequest(input *CreateVPNConnectionInput) (req *
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateVPNConnectionInput{}
 	}
 
 	req = c.newRequest(opCreateVPNConnection, input, output)
@@ -1722,6 +1933,10 @@ func (c *EC2) CreateVPNConnectionRouteRequest(input *CreateVPNConnectionRouteInp
 		}
 	}
 
+	if input == nil {
+		input = &CreateVPNConnectionRouteInput{}
+	}
+
 	req = c.newRequest(opCreateVPNConnectionRoute, input, output)
 	output = &CreateVPNConnectionRouteOutput{}
 	req.Data = output
@@ -1758,6 +1973,10 @@ func (c *EC2) CreateVPNGatewayRequest(input *CreateVPNGatewayInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &CreateVPNGatewayInput{}
+	}
+
 	req = c.newRequest(opCreateVPNGateway, input, output)
 	output = &CreateVPNGatewayOutput{}
 	req.Data = output
@@ -1791,6 +2010,10 @@ func (c *EC2) CreateVolumeRequest(input *CreateVolumeInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateVolumeInput{}
 	}
 
 	req = c.newRequest(opCreateVolume, input, output)
@@ -1838,6 +2061,10 @@ func (c *EC2) DeleteCustomerGatewayRequest(input *DeleteCustomerGatewayInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &DeleteCustomerGatewayInput{}
+	}
+
 	req = c.newRequest(opDeleteCustomerGateway, input, output)
 	output = &DeleteCustomerGatewayOutput{}
 	req.Data = output
@@ -1866,6 +2093,10 @@ func (c *EC2) DeleteDHCPOptionsRequest(input *DeleteDHCPOptionsInput) (req *aws.
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteDHCPOptionsInput{}
 	}
 
 	req = c.newRequest(opDeleteDHCPOptions, input, output)
@@ -1900,6 +2131,10 @@ func (c *EC2) DeleteInternetGatewayRequest(input *DeleteInternetGatewayInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &DeleteInternetGatewayInput{}
+	}
+
 	req = c.newRequest(opDeleteInternetGateway, input, output)
 	output = &DeleteInternetGatewayOutput{}
 	req.Data = output
@@ -1930,6 +2165,10 @@ func (c *EC2) DeleteKeyPairRequest(input *DeleteKeyPairInput) (req *aws.Request,
 		}
 	}
 
+	if input == nil {
+		input = &DeleteKeyPairInput{}
+	}
+
 	req = c.newRequest(opDeleteKeyPair, input, output)
 	output = &DeleteKeyPairOutput{}
 	req.Data = output
@@ -1957,6 +2196,10 @@ func (c *EC2) DeleteNetworkACLRequest(input *DeleteNetworkACLInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteNetworkACLInput{}
 	}
 
 	req = c.newRequest(opDeleteNetworkACL, input, output)
@@ -1989,6 +2232,10 @@ func (c *EC2) DeleteNetworkACLEntryRequest(input *DeleteNetworkACLEntryInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &DeleteNetworkACLEntryInput{}
+	}
+
 	req = c.newRequest(opDeleteNetworkACLEntry, input, output)
 	output = &DeleteNetworkACLEntryOutput{}
 	req.Data = output
@@ -2019,6 +2266,10 @@ func (c *EC2) DeleteNetworkInterfaceRequest(input *DeleteNetworkInterfaceInput) 
 		}
 	}
 
+	if input == nil {
+		input = &DeleteNetworkInterfaceInput{}
+	}
+
 	req = c.newRequest(opDeleteNetworkInterface, input, output)
 	output = &DeleteNetworkInterfaceOutput{}
 	req.Data = output
@@ -2047,6 +2298,10 @@ func (c *EC2) DeletePlacementGroupRequest(input *DeletePlacementGroupInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeletePlacementGroupInput{}
 	}
 
 	req = c.newRequest(opDeletePlacementGroup, input, output)
@@ -2081,6 +2336,10 @@ func (c *EC2) DeleteRouteRequest(input *DeleteRouteInput) (req *aws.Request, out
 		}
 	}
 
+	if input == nil {
+		input = &DeleteRouteInput{}
+	}
+
 	req = c.newRequest(opDeleteRoute, input, output)
 	output = &DeleteRouteOutput{}
 	req.Data = output
@@ -2108,6 +2367,10 @@ func (c *EC2) DeleteRouteTableRequest(input *DeleteRouteTableInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteRouteTableInput{}
 	}
 
 	req = c.newRequest(opDeleteRouteTable, input, output)
@@ -2141,6 +2404,10 @@ func (c *EC2) DeleteSecurityGroupRequest(input *DeleteSecurityGroupInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DeleteSecurityGroupInput{}
+	}
+
 	req = c.newRequest(opDeleteSecurityGroup, input, output)
 	output = &DeleteSecurityGroupOutput{}
 	req.Data = output
@@ -2172,6 +2439,10 @@ func (c *EC2) DeleteSnapshotRequest(input *DeleteSnapshotInput) (req *aws.Reques
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteSnapshotInput{}
 	}
 
 	req = c.newRequest(opDeleteSnapshot, input, output)
@@ -2217,6 +2488,10 @@ func (c *EC2) DeleteSpotDatafeedSubscriptionRequest(input *DeleteSpotDatafeedSub
 		}
 	}
 
+	if input == nil {
+		input = &DeleteSpotDatafeedSubscriptionInput{}
+	}
+
 	req = c.newRequest(opDeleteSpotDatafeedSubscription, input, output)
 	output = &DeleteSpotDatafeedSubscriptionOutput{}
 	req.Data = output
@@ -2248,6 +2523,10 @@ func (c *EC2) DeleteSubnetRequest(input *DeleteSubnetInput) (req *aws.Request, o
 		}
 	}
 
+	if input == nil {
+		input = &DeleteSubnetInput{}
+	}
+
 	req = c.newRequest(opDeleteSubnet, input, output)
 	output = &DeleteSubnetOutput{}
 	req.Data = output
@@ -2276,6 +2555,10 @@ func (c *EC2) DeleteTagsRequest(input *DeleteTagsInput) (req *aws.Request, outpu
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteTagsInput{}
 	}
 
 	req = c.newRequest(opDeleteTags, input, output)
@@ -2311,6 +2594,10 @@ func (c *EC2) DeleteVPCRequest(input *DeleteVPCInput) (req *aws.Request, output 
 		}
 	}
 
+	if input == nil {
+		input = &DeleteVPCInput{}
+	}
+
 	req = c.newRequest(opDeleteVPC, input, output)
 	output = &DeleteVPCOutput{}
 	req.Data = output
@@ -2344,6 +2631,10 @@ func (c *EC2) DeleteVPCPeeringConnectionRequest(input *DeleteVPCPeeringConnectio
 		}
 	}
 
+	if input == nil {
+		input = &DeleteVPCPeeringConnectionInput{}
+	}
+
 	req = c.newRequest(opDeleteVPCPeeringConnection, input, output)
 	output = &DeleteVPCPeeringConnectionOutput{}
 	req.Data = output
@@ -2374,6 +2665,10 @@ func (c *EC2) DeleteVPNConnectionRequest(input *DeleteVPNConnectionInput) (req *
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteVPNConnectionInput{}
 	}
 
 	req = c.newRequest(opDeleteVPNConnection, input, output)
@@ -2414,6 +2709,10 @@ func (c *EC2) DeleteVPNConnectionRouteRequest(input *DeleteVPNConnectionRouteInp
 		}
 	}
 
+	if input == nil {
+		input = &DeleteVPNConnectionRouteInput{}
+	}
+
 	req = c.newRequest(opDeleteVPNConnectionRoute, input, output)
 	output = &DeleteVPNConnectionRouteOutput{}
 	req.Data = output
@@ -2444,6 +2743,10 @@ func (c *EC2) DeleteVPNGatewayRequest(input *DeleteVPNGatewayInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteVPNGatewayInput{}
 	}
 
 	req = c.newRequest(opDeleteVPNGateway, input, output)
@@ -2477,6 +2780,10 @@ func (c *EC2) DeleteVolumeRequest(input *DeleteVolumeInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteVolumeInput{}
 	}
 
 	req = c.newRequest(opDeleteVolume, input, output)
@@ -2514,6 +2821,10 @@ func (c *EC2) DeregisterImageRequest(input *DeregisterImageInput) (req *aws.Requ
 		}
 	}
 
+	if input == nil {
+		input = &DeregisterImageInput{}
+	}
+
 	req = c.newRequest(opDeregisterImage, input, output)
 	output = &DeregisterImageOutput{}
 	req.Data = output
@@ -2544,6 +2855,10 @@ func (c *EC2) DescribeAccountAttributesRequest(input *DescribeAccountAttributesI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeAccountAttributesInput{}
 	}
 
 	req = c.newRequest(opDescribeAccountAttributes, input, output)
@@ -2593,6 +2908,10 @@ func (c *EC2) DescribeAddressesRequest(input *DescribeAddressesInput) (req *aws.
 		}
 	}
 
+	if input == nil {
+		input = &DescribeAddressesInput{}
+	}
+
 	req = c.newRequest(opDescribeAddresses, input, output)
 	output = &DescribeAddressesOutput{}
 	req.Data = output
@@ -2624,6 +2943,10 @@ func (c *EC2) DescribeAvailabilityZonesRequest(input *DescribeAvailabilityZonesI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeAvailabilityZonesInput{}
 	}
 
 	req = c.newRequest(opDescribeAvailabilityZones, input, output)
@@ -2661,6 +2984,10 @@ func (c *EC2) DescribeBundleTasksRequest(input *DescribeBundleTasksInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeBundleTasksInput{}
+	}
+
 	req = c.newRequest(opDescribeBundleTasks, input, output)
 	output = &DescribeBundleTasksOutput{}
 	req.Data = output
@@ -2695,6 +3022,10 @@ func (c *EC2) DescribeClassicLinkInstancesRequest(input *DescribeClassicLinkInst
 		}
 	}
 
+	if input == nil {
+		input = &DescribeClassicLinkInstancesInput{}
+	}
+
 	req = c.newRequest(opDescribeClassicLinkInstances, input, output)
 	output = &DescribeClassicLinkInstancesOutput{}
 	req.Data = output
@@ -2727,6 +3058,10 @@ func (c *EC2) DescribeConversionTasksRequest(input *DescribeConversionTasksInput
 		}
 	}
 
+	if input == nil {
+		input = &DescribeConversionTasksInput{}
+	}
+
 	req = c.newRequest(opDescribeConversionTasks, input, output)
 	output = &DescribeConversionTasksOutput{}
 	req.Data = output
@@ -2757,6 +3092,10 @@ func (c *EC2) DescribeCustomerGatewaysRequest(input *DescribeCustomerGatewaysInp
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeCustomerGatewaysInput{}
 	}
 
 	req = c.newRequest(opDescribeCustomerGateways, input, output)
@@ -2792,6 +3131,10 @@ func (c *EC2) DescribeDHCPOptionsRequest(input *DescribeDHCPOptionsInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeDHCPOptionsInput{}
+	}
+
 	req = c.newRequest(opDescribeDHCPOptions, input, output)
 	output = &DescribeDHCPOptionsOutput{}
 	req.Data = output
@@ -2824,6 +3167,10 @@ func (c *EC2) DescribeExportTasksRequest(input *DescribeExportTasksInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeExportTasksInput{}
+	}
+
 	req = c.newRequest(opDescribeExportTasks, input, output)
 	output = &DescribeExportTasksOutput{}
 	req.Data = output
@@ -2851,6 +3198,10 @@ func (c *EC2) DescribeImageAttributeRequest(input *DescribeImageAttributeInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeImageAttributeInput{}
 	}
 
 	req = c.newRequest(opDescribeImageAttribute, input, output)
@@ -2883,6 +3234,10 @@ func (c *EC2) DescribeImagesRequest(input *DescribeImagesInput) (req *aws.Reques
 		}
 	}
 
+	if input == nil {
+		input = &DescribeImagesInput{}
+	}
+
 	req = c.newRequest(opDescribeImages, input, output)
 	output = &DescribeImagesOutput{}
 	req.Data = output
@@ -2905,6 +3260,73 @@ func (c *EC2) DescribeImages(input *DescribeImagesInput) (output *DescribeImages
 
 var opDescribeImages *aws.Operation
 
+// DescribeImportImageTasksRequest generates a request for the DescribeImportImageTasks operation.
+func (c *EC2) DescribeImportImageTasksRequest(input *DescribeImportImageTasksInput) (req *aws.Request, output *DescribeImportImageTasksOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeImportImageTasks == nil {
+		opDescribeImportImageTasks = &aws.Operation{
+			Name:       "DescribeImportImageTasks",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeImportImageTasksInput{}
+	}
+
+	req = c.newRequest(opDescribeImportImageTasks, input, output)
+	output = &DescribeImportImageTasksOutput{}
+	req.Data = output
+	return
+}
+
+// Displays details about an import virtual machine or import snapshot tasks
+// that are already created.
+func (c *EC2) DescribeImportImageTasks(input *DescribeImportImageTasksInput) (output *DescribeImportImageTasksOutput, err error) {
+	req, out := c.DescribeImportImageTasksRequest(input)
+	output = out
+	err = req.Send()
+	return
+}
+
+var opDescribeImportImageTasks *aws.Operation
+
+// DescribeImportSnapshotTasksRequest generates a request for the DescribeImportSnapshotTasks operation.
+func (c *EC2) DescribeImportSnapshotTasksRequest(input *DescribeImportSnapshotTasksInput) (req *aws.Request, output *DescribeImportSnapshotTasksOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeImportSnapshotTasks == nil {
+		opDescribeImportSnapshotTasks = &aws.Operation{
+			Name:       "DescribeImportSnapshotTasks",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeImportSnapshotTasksInput{}
+	}
+
+	req = c.newRequest(opDescribeImportSnapshotTasks, input, output)
+	output = &DescribeImportSnapshotTasksOutput{}
+	req.Data = output
+	return
+}
+
+// Displays details about an import snapshot tasks that is already created.
+func (c *EC2) DescribeImportSnapshotTasks(input *DescribeImportSnapshotTasksInput) (output *DescribeImportSnapshotTasksOutput, err error) {
+	req, out := c.DescribeImportSnapshotTasksRequest(input)
+	output = out
+	err = req.Send()
+	return
+}
+
+var opDescribeImportSnapshotTasks *aws.Operation
+
 // DescribeInstanceAttributeRequest generates a request for the DescribeInstanceAttribute operation.
 func (c *EC2) DescribeInstanceAttributeRequest(input *DescribeInstanceAttributeInput) (req *aws.Request, output *DescribeInstanceAttributeOutput) {
 	oprw.Lock()
@@ -2916,6 +3338,10 @@ func (c *EC2) DescribeInstanceAttributeRequest(input *DescribeInstanceAttributeI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeInstanceAttributeInput{}
 	}
 
 	req = c.newRequest(opDescribeInstanceAttribute, input, output)
@@ -2949,6 +3375,10 @@ func (c *EC2) DescribeInstanceStatusRequest(input *DescribeInstanceStatusInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeInstanceStatusInput{}
 	}
 
 	req = c.newRequest(opDescribeInstanceStatus, input, output)
@@ -3038,6 +3468,10 @@ func (c *EC2) DescribeInstancesRequest(input *DescribeInstancesInput) (req *aws.
 		}
 	}
 
+	if input == nil {
+		input = &DescribeInstancesInput{}
+	}
+
 	req = c.newRequest(opDescribeInstances, input, output)
 	output = &DescribeInstancesOutput{}
 	req.Data = output
@@ -3076,6 +3510,10 @@ func (c *EC2) DescribeInternetGatewaysRequest(input *DescribeInternetGatewaysInp
 		}
 	}
 
+	if input == nil {
+		input = &DescribeInternetGatewaysInput{}
+	}
+
 	req = c.newRequest(opDescribeInternetGateways, input, output)
 	output = &DescribeInternetGatewaysOutput{}
 	req.Data = output
@@ -3103,6 +3541,10 @@ func (c *EC2) DescribeKeyPairsRequest(input *DescribeKeyPairsInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeKeyPairsInput{}
 	}
 
 	req = c.newRequest(opDescribeKeyPairs, input, output)
@@ -3137,6 +3579,10 @@ func (c *EC2) DescribeNetworkACLsRequest(input *DescribeNetworkACLsInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeNetworkACLsInput{}
+	}
+
 	req = c.newRequest(opDescribeNetworkACLs, input, output)
 	output = &DescribeNetworkACLsOutput{}
 	req.Data = output
@@ -3169,6 +3615,10 @@ func (c *EC2) DescribeNetworkInterfaceAttributeRequest(input *DescribeNetworkInt
 		}
 	}
 
+	if input == nil {
+		input = &DescribeNetworkInterfaceAttributeInput{}
+	}
+
 	req = c.newRequest(opDescribeNetworkInterfaceAttribute, input, output)
 	output = &DescribeNetworkInterfaceAttributeOutput{}
 	req.Data = output
@@ -3197,6 +3647,10 @@ func (c *EC2) DescribeNetworkInterfacesRequest(input *DescribeNetworkInterfacesI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeNetworkInterfacesInput{}
 	}
 
 	req = c.newRequest(opDescribeNetworkInterfaces, input, output)
@@ -3228,6 +3682,10 @@ func (c *EC2) DescribePlacementGroupsRequest(input *DescribePlacementGroupsInput
 		}
 	}
 
+	if input == nil {
+		input = &DescribePlacementGroupsInput{}
+	}
+
 	req = c.newRequest(opDescribePlacementGroups, input, output)
 	output = &DescribePlacementGroupsOutput{}
 	req.Data = output
@@ -3257,6 +3715,10 @@ func (c *EC2) DescribeRegionsRequest(input *DescribeRegionsInput) (req *aws.Requ
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeRegionsInput{}
 	}
 
 	req = c.newRequest(opDescribeRegions, input, output)
@@ -3291,6 +3753,10 @@ func (c *EC2) DescribeReservedInstancesRequest(input *DescribeReservedInstancesI
 		}
 	}
 
+	if input == nil {
+		input = &DescribeReservedInstancesInput{}
+	}
+
 	req = c.newRequest(opDescribeReservedInstances, input, output)
 	output = &DescribeReservedInstancesOutput{}
 	req.Data = output
@@ -3321,6 +3787,10 @@ func (c *EC2) DescribeReservedInstancesListingsRequest(input *DescribeReservedIn
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeReservedInstancesListingsInput{}
 	}
 
 	req = c.newRequest(opDescribeReservedInstancesListings, input, output)
@@ -3373,6 +3843,10 @@ func (c *EC2) DescribeReservedInstancesModificationsRequest(input *DescribeReser
 		}
 	}
 
+	if input == nil {
+		input = &DescribeReservedInstancesModificationsInput{}
+	}
+
 	req = c.newRequest(opDescribeReservedInstancesModifications, input, output)
 	output = &DescribeReservedInstancesModificationsOutput{}
 	req.Data = output
@@ -3406,6 +3880,10 @@ func (c *EC2) DescribeReservedInstancesOfferingsRequest(input *DescribeReservedI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeReservedInstancesOfferingsInput{}
 	}
 
 	req = c.newRequest(opDescribeReservedInstancesOfferings, input, output)
@@ -3444,6 +3922,10 @@ func (c *EC2) DescribeRouteTablesRequest(input *DescribeRouteTablesInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeRouteTablesInput{}
+	}
+
 	req = c.newRequest(opDescribeRouteTables, input, output)
 	output = &DescribeRouteTablesOutput{}
 	req.Data = output
@@ -3474,6 +3956,10 @@ func (c *EC2) DescribeSecurityGroupsRequest(input *DescribeSecurityGroupsInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeSecurityGroupsInput{}
 	}
 
 	req = c.newRequest(opDescribeSecurityGroups, input, output)
@@ -3512,6 +3998,10 @@ func (c *EC2) DescribeSnapshotAttributeRequest(input *DescribeSnapshotAttributeI
 		}
 	}
 
+	if input == nil {
+		input = &DescribeSnapshotAttributeInput{}
+	}
+
 	req = c.newRequest(opDescribeSnapshotAttribute, input, output)
 	output = &DescribeSnapshotAttributeOutput{}
 	req.Data = output
@@ -3543,6 +4033,10 @@ func (c *EC2) DescribeSnapshotsRequest(input *DescribeSnapshotsInput) (req *aws.
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeSnapshotsInput{}
 	}
 
 	req = c.newRequest(opDescribeSnapshots, input, output)
@@ -3613,6 +4107,10 @@ func (c *EC2) DescribeSpotDatafeedSubscriptionRequest(input *DescribeSpotDatafee
 		}
 	}
 
+	if input == nil {
+		input = &DescribeSpotDatafeedSubscriptionInput{}
+	}
+
 	req = c.newRequest(opDescribeSpotDatafeedSubscription, input, output)
 	output = &DescribeSpotDatafeedSubscriptionOutput{}
 	req.Data = output
@@ -3642,6 +4140,10 @@ func (c *EC2) DescribeSpotInstanceRequestsRequest(input *DescribeSpotInstanceReq
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeSpotInstanceRequestsInput{}
 	}
 
 	req = c.newRequest(opDescribeSpotInstanceRequests, input, output)
@@ -3684,6 +4186,10 @@ func (c *EC2) DescribeSpotPriceHistoryRequest(input *DescribeSpotPriceHistoryInp
 		}
 	}
 
+	if input == nil {
+		input = &DescribeSpotPriceHistoryInput{}
+	}
+
 	req = c.newRequest(opDescribeSpotPriceHistory, input, output)
 	output = &DescribeSpotPriceHistoryOutput{}
 	req.Data = output
@@ -3721,6 +4227,10 @@ func (c *EC2) DescribeSubnetsRequest(input *DescribeSubnetsInput) (req *aws.Requ
 		}
 	}
 
+	if input == nil {
+		input = &DescribeSubnetsInput{}
+	}
+
 	req = c.newRequest(opDescribeSubnets, input, output)
 	output = &DescribeSubnetsOutput{}
 	req.Data = output
@@ -3751,6 +4261,10 @@ func (c *EC2) DescribeTagsRequest(input *DescribeTagsInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeTagsInput{}
 	}
 
 	req = c.newRequest(opDescribeTags, input, output)
@@ -3785,6 +4299,10 @@ func (c *EC2) DescribeVPCAttributeRequest(input *DescribeVPCAttributeInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &DescribeVPCAttributeInput{}
+	}
+
 	req = c.newRequest(opDescribeVPCAttribute, input, output)
 	output = &DescribeVPCAttributeOutput{}
 	req.Data = output
@@ -3813,6 +4331,10 @@ func (c *EC2) DescribeVPCClassicLinkRequest(input *DescribeVPCClassicLinkInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeVPCClassicLinkInput{}
 	}
 
 	req = c.newRequest(opDescribeVPCClassicLink, input, output)
@@ -3844,6 +4366,10 @@ func (c *EC2) DescribeVPCPeeringConnectionsRequest(input *DescribeVPCPeeringConn
 		}
 	}
 
+	if input == nil {
+		input = &DescribeVPCPeeringConnectionsInput{}
+	}
+
 	req = c.newRequest(opDescribeVPCPeeringConnections, input, output)
 	output = &DescribeVPCPeeringConnectionsOutput{}
 	req.Data = output
@@ -3873,6 +4399,10 @@ func (c *EC2) DescribeVPCsRequest(input *DescribeVPCsInput) (req *aws.Request, o
 		}
 	}
 
+	if input == nil {
+		input = &DescribeVPCsInput{}
+	}
+
 	req = c.newRequest(opDescribeVPCs, input, output)
 	output = &DescribeVPCsOutput{}
 	req.Data = output
@@ -3900,6 +4430,10 @@ func (c *EC2) DescribeVPNConnectionsRequest(input *DescribeVPNConnectionsInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeVPNConnectionsInput{}
 	}
 
 	req = c.newRequest(opDescribeVPNConnections, input, output)
@@ -3935,6 +4469,10 @@ func (c *EC2) DescribeVPNGatewaysRequest(input *DescribeVPNGatewaysInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeVPNGatewaysInput{}
+	}
+
 	req = c.newRequest(opDescribeVPNGateways, input, output)
 	output = &DescribeVPNGatewaysOutput{}
 	req.Data = output
@@ -3968,6 +4506,10 @@ func (c *EC2) DescribeVolumeAttributeRequest(input *DescribeVolumeAttributeInput
 		}
 	}
 
+	if input == nil {
+		input = &DescribeVolumeAttributeInput{}
+	}
+
 	req = c.newRequest(opDescribeVolumeAttribute, input, output)
 	output = &DescribeVolumeAttributeOutput{}
 	req.Data = output
@@ -3999,6 +4541,10 @@ func (c *EC2) DescribeVolumeStatusRequest(input *DescribeVolumeStatusInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeVolumeStatusInput{}
 	}
 
 	req = c.newRequest(opDescribeVolumeStatus, input, output)
@@ -4064,6 +4610,10 @@ func (c *EC2) DescribeVolumesRequest(input *DescribeVolumesInput) (req *aws.Requ
 		}
 	}
 
+	if input == nil {
+		input = &DescribeVolumesInput{}
+	}
+
 	req = c.newRequest(opDescribeVolumes, input, output)
 	output = &DescribeVolumesOutput{}
 	req.Data = output
@@ -4103,6 +4653,10 @@ func (c *EC2) DetachClassicLinkVPCRequest(input *DetachClassicLinkVPCInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &DetachClassicLinkVPCInput{}
+	}
+
 	req = c.newRequest(opDetachClassicLinkVPC, input, output)
 	output = &DetachClassicLinkVPCOutput{}
 	req.Data = output
@@ -4132,6 +4686,10 @@ func (c *EC2) DetachInternetGatewayRequest(input *DetachInternetGatewayInput) (r
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DetachInternetGatewayInput{}
 	}
 
 	req = c.newRequest(opDetachInternetGateway, input, output)
@@ -4165,6 +4723,10 @@ func (c *EC2) DetachNetworkInterfaceRequest(input *DetachNetworkInterfaceInput) 
 		}
 	}
 
+	if input == nil {
+		input = &DetachNetworkInterfaceInput{}
+	}
+
 	req = c.newRequest(opDetachNetworkInterface, input, output)
 	output = &DetachNetworkInterfaceOutput{}
 	req.Data = output
@@ -4192,6 +4754,10 @@ func (c *EC2) DetachVPNGatewayRequest(input *DetachVPNGatewayInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DetachVPNGatewayInput{}
 	}
 
 	req = c.newRequest(opDetachVPNGateway, input, output)
@@ -4228,6 +4794,10 @@ func (c *EC2) DetachVolumeRequest(input *DetachVolumeInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DetachVolumeInput{}
 	}
 
 	req = c.newRequest(opDetachVolume, input, output)
@@ -4272,6 +4842,10 @@ func (c *EC2) DisableVGWRoutePropagationRequest(input *DisableVGWRoutePropagatio
 		}
 	}
 
+	if input == nil {
+		input = &DisableVGWRoutePropagationInput{}
+	}
+
 	req = c.newRequest(opDisableVGWRoutePropagation, input, output)
 	output = &DisableVGWRoutePropagationOutput{}
 	req.Data = output
@@ -4302,6 +4876,10 @@ func (c *EC2) DisableVPCClassicLinkRequest(input *DisableVPCClassicLinkInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &DisableVPCClassicLinkInput{}
+	}
+
 	req = c.newRequest(opDisableVPCClassicLink, input, output)
 	output = &DisableVPCClassicLinkOutput{}
 	req.Data = output
@@ -4330,6 +4908,10 @@ func (c *EC2) DisassociateAddressRequest(input *DisassociateAddressInput) (req *
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DisassociateAddressInput{}
 	}
 
 	req = c.newRequest(opDisassociateAddress, input, output)
@@ -4369,6 +4951,10 @@ func (c *EC2) DisassociateRouteTableRequest(input *DisassociateRouteTableInput) 
 		}
 	}
 
+	if input == nil {
+		input = &DisassociateRouteTableInput{}
+	}
+
 	req = c.newRequest(opDisassociateRouteTable, input, output)
 	output = &DisassociateRouteTableOutput{}
 	req.Data = output
@@ -4403,6 +4989,10 @@ func (c *EC2) EnableVGWRoutePropagationRequest(input *EnableVGWRoutePropagationI
 		}
 	}
 
+	if input == nil {
+		input = &EnableVGWRoutePropagationInput{}
+	}
+
 	req = c.newRequest(opEnableVGWRoutePropagation, input, output)
 	output = &EnableVGWRoutePropagationOutput{}
 	req.Data = output
@@ -4431,6 +5021,10 @@ func (c *EC2) EnableVPCClassicLinkRequest(input *EnableVPCClassicLinkInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &EnableVPCClassicLinkInput{}
 	}
 
 	req = c.newRequest(opEnableVPCClassicLink, input, output)
@@ -4468,6 +5062,10 @@ func (c *EC2) EnableVolumeIORequest(input *EnableVolumeIOInput) (req *aws.Reques
 		}
 	}
 
+	if input == nil {
+		input = &EnableVolumeIOInput{}
+	}
+
 	req = c.newRequest(opEnableVolumeIO, input, output)
 	output = &EnableVolumeIOOutput{}
 	req.Data = output
@@ -4496,6 +5094,10 @@ func (c *EC2) GetConsoleOutputRequest(input *GetConsoleOutputInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &GetConsoleOutputInput{}
 	}
 
 	req = c.newRequest(opGetConsoleOutput, input, output)
@@ -4544,6 +5146,10 @@ func (c *EC2) GetPasswordDataRequest(input *GetPasswordDataInput) (req *aws.Requ
 		}
 	}
 
+	if input == nil {
+		input = &GetPasswordDataInput{}
+	}
+
 	req = c.newRequest(opGetPasswordData, input, output)
 	output = &GetPasswordDataOutput{}
 	req.Data = output
@@ -4573,6 +5179,40 @@ func (c *EC2) GetPasswordData(input *GetPasswordDataInput) (output *GetPasswordD
 
 var opGetPasswordData *aws.Operation
 
+// ImportImageRequest generates a request for the ImportImage operation.
+func (c *EC2) ImportImageRequest(input *ImportImageInput) (req *aws.Request, output *ImportImageOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opImportImage == nil {
+		opImportImage = &aws.Operation{
+			Name:       "ImportImage",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &ImportImageInput{}
+	}
+
+	req = c.newRequest(opImportImage, input, output)
+	output = &ImportImageOutput{}
+	req.Data = output
+	return
+}
+
+// Import single or multi-volume disk images or Amazon EBS snapshots into an
+// Amazon Machine Image (AMI).
+func (c *EC2) ImportImage(input *ImportImageInput) (output *ImportImageOutput, err error) {
+	req, out := c.ImportImageRequest(input)
+	output = out
+	err = req.Send()
+	return
+}
+
+var opImportImage *aws.Operation
+
 // ImportInstanceRequest generates a request for the ImportInstance operation.
 func (c *EC2) ImportInstanceRequest(input *ImportInstanceInput) (req *aws.Request, output *ImportInstanceOutput) {
 	oprw.Lock()
@@ -4586,6 +5226,10 @@ func (c *EC2) ImportInstanceRequest(input *ImportInstanceInput) (req *aws.Reques
 		}
 	}
 
+	if input == nil {
+		input = &ImportInstanceInput{}
+	}
+
 	req = c.newRequest(opImportInstance, input, output)
 	output = &ImportInstanceOutput{}
 	req.Data = output
@@ -4593,10 +5237,12 @@ func (c *EC2) ImportInstanceRequest(input *ImportInstanceInput) (req *aws.Reques
 }
 
 // Creates an import instance task using metadata from the specified disk image.
-// After importing the image, you then upload it using the ec2-import-volume
-// command in the EC2 command line tools. For more information, see Using the
-// Command Line Tools to Import Your Virtual Machine to Amazon EC2 in the Amazon
-// Elastic Compute Cloud User Guide.
+// ImportInstance only supports single-volume VMs. To import multi-volume VMs,
+// use ImportImage. After importing the image, you then upload it using the
+// ec2-import-volume command in the EC2 command line tools. For more information,
+// see Using the Command Line Tools to Import Your Virtual Machine to Amazon
+// EC2 (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UploadingYourInstancesandVolumes.html)
+// in the Amazon Elastic Compute Cloud User Guide.
 func (c *EC2) ImportInstance(input *ImportInstanceInput) (output *ImportInstanceOutput, err error) {
 	req, out := c.ImportInstanceRequest(input)
 	output = out
@@ -4617,6 +5263,10 @@ func (c *EC2) ImportKeyPairRequest(input *ImportKeyPairInput) (req *aws.Request,
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ImportKeyPairInput{}
 	}
 
 	req = c.newRequest(opImportKeyPair, input, output)
@@ -4642,6 +5292,39 @@ func (c *EC2) ImportKeyPair(input *ImportKeyPairInput) (output *ImportKeyPairOut
 
 var opImportKeyPair *aws.Operation
 
+// ImportSnapshotRequest generates a request for the ImportSnapshot operation.
+func (c *EC2) ImportSnapshotRequest(input *ImportSnapshotInput) (req *aws.Request, output *ImportSnapshotOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opImportSnapshot == nil {
+		opImportSnapshot = &aws.Operation{
+			Name:       "ImportSnapshot",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &ImportSnapshotInput{}
+	}
+
+	req = c.newRequest(opImportSnapshot, input, output)
+	output = &ImportSnapshotOutput{}
+	req.Data = output
+	return
+}
+
+// Import a disk into an Amazon Elastic Block Store (Amazon EBS) snapshot.
+func (c *EC2) ImportSnapshot(input *ImportSnapshotInput) (output *ImportSnapshotOutput, err error) {
+	req, out := c.ImportSnapshotRequest(input)
+	output = out
+	err = req.Send()
+	return
+}
+
+var opImportSnapshot *aws.Operation
+
 // ImportVolumeRequest generates a request for the ImportVolume operation.
 func (c *EC2) ImportVolumeRequest(input *ImportVolumeInput) (req *aws.Request, output *ImportVolumeOutput) {
 	oprw.Lock()
@@ -4653,6 +5336,10 @@ func (c *EC2) ImportVolumeRequest(input *ImportVolumeInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ImportVolumeInput{}
 	}
 
 	req = c.newRequest(opImportVolume, input, output)
@@ -4689,6 +5376,10 @@ func (c *EC2) ModifyImageAttributeRequest(input *ModifyImageAttributeInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &ModifyImageAttributeInput{}
+	}
+
 	req = c.newRequest(opModifyImageAttribute, input, output)
 	output = &ModifyImageAttributeOutput{}
 	req.Data = output
@@ -4720,6 +5411,10 @@ func (c *EC2) ModifyInstanceAttributeRequest(input *ModifyInstanceAttributeInput
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ModifyInstanceAttributeInput{}
 	}
 
 	req = c.newRequest(opModifyInstanceAttribute, input, output)
@@ -4756,6 +5451,10 @@ func (c *EC2) ModifyNetworkInterfaceAttributeRequest(input *ModifyNetworkInterfa
 		}
 	}
 
+	if input == nil {
+		input = &ModifyNetworkInterfaceAttributeInput{}
+	}
+
 	req = c.newRequest(opModifyNetworkInterfaceAttribute, input, output)
 	output = &ModifyNetworkInterfaceAttributeOutput{}
 	req.Data = output
@@ -4784,6 +5483,10 @@ func (c *EC2) ModifyReservedInstancesRequest(input *ModifyReservedInstancesInput
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ModifyReservedInstancesInput{}
 	}
 
 	req = c.newRequest(opModifyReservedInstances, input, output)
@@ -4819,6 +5522,10 @@ func (c *EC2) ModifySnapshotAttributeRequest(input *ModifySnapshotAttributeInput
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ModifySnapshotAttributeInput{}
 	}
 
 	req = c.newRequest(opModifySnapshotAttribute, input, output)
@@ -4860,6 +5567,10 @@ func (c *EC2) ModifySubnetAttributeRequest(input *ModifySubnetAttributeInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &ModifySubnetAttributeInput{}
+	}
+
 	req = c.newRequest(opModifySubnetAttribute, input, output)
 	output = &ModifySubnetAttributeOutput{}
 	req.Data = output
@@ -4889,6 +5600,10 @@ func (c *EC2) ModifyVPCAttributeRequest(input *ModifyVPCAttributeInput) (req *aw
 		}
 	}
 
+	if input == nil {
+		input = &ModifyVPCAttributeInput{}
+	}
+
 	req = c.newRequest(opModifyVPCAttribute, input, output)
 	output = &ModifyVPCAttributeOutput{}
 	req.Data = output
@@ -4916,6 +5631,10 @@ func (c *EC2) ModifyVolumeAttributeRequest(input *ModifyVolumeAttributeInput) (r
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ModifyVolumeAttributeInput{}
 	}
 
 	req = c.newRequest(opModifyVolumeAttribute, input, output)
@@ -4956,6 +5675,10 @@ func (c *EC2) MonitorInstancesRequest(input *MonitorInstancesInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &MonitorInstancesInput{}
+	}
+
 	req = c.newRequest(opMonitorInstances, input, output)
 	output = &MonitorInstancesOutput{}
 	req.Data = output
@@ -4985,6 +5708,10 @@ func (c *EC2) PurchaseReservedInstancesOfferingRequest(input *PurchaseReservedIn
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &PurchaseReservedInstancesOfferingInput{}
 	}
 
 	req = c.newRequest(opPurchaseReservedInstancesOffering, input, output)
@@ -5028,6 +5755,10 @@ func (c *EC2) RebootInstancesRequest(input *RebootInstancesInput) (req *aws.Requ
 		}
 	}
 
+	if input == nil {
+		input = &RebootInstancesInput{}
+	}
+
 	req = c.newRequest(opRebootInstances, input, output)
 	output = &RebootInstancesOutput{}
 	req.Data = output
@@ -5065,6 +5796,10 @@ func (c *EC2) RegisterImageRequest(input *RegisterImageInput) (req *aws.Request,
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RegisterImageInput{}
 	}
 
 	req = c.newRequest(opRegisterImage, input, output)
@@ -5115,6 +5850,10 @@ func (c *EC2) RejectVPCPeeringConnectionRequest(input *RejectVPCPeeringConnectio
 		}
 	}
 
+	if input == nil {
+		input = &RejectVPCPeeringConnectionInput{}
+	}
+
 	req = c.newRequest(opRejectVPCPeeringConnection, input, output)
 	output = &RejectVPCPeeringConnectionOutput{}
 	req.Data = output
@@ -5146,6 +5885,10 @@ func (c *EC2) ReleaseAddressRequest(input *ReleaseAddressInput) (req *aws.Reques
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ReleaseAddressInput{}
 	}
 
 	req = c.newRequest(opReleaseAddress, input, output)
@@ -5191,6 +5934,10 @@ func (c *EC2) ReplaceNetworkACLAssociationRequest(input *ReplaceNetworkACLAssoci
 		}
 	}
 
+	if input == nil {
+		input = &ReplaceNetworkACLAssociationInput{}
+	}
+
 	req = c.newRequest(opReplaceNetworkACLAssociation, input, output)
 	output = &ReplaceNetworkACLAssociationOutput{}
 	req.Data = output
@@ -5223,6 +5970,10 @@ func (c *EC2) ReplaceNetworkACLEntryRequest(input *ReplaceNetworkACLEntryInput) 
 		}
 	}
 
+	if input == nil {
+		input = &ReplaceNetworkACLEntryInput{}
+	}
+
 	req = c.newRequest(opReplaceNetworkACLEntry, input, output)
 	output = &ReplaceNetworkACLEntryOutput{}
 	req.Data = output
@@ -5252,6 +6003,10 @@ func (c *EC2) ReplaceRouteRequest(input *ReplaceRouteInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ReplaceRouteInput{}
 	}
 
 	req = c.newRequest(opReplaceRoute, input, output)
@@ -5286,6 +6041,10 @@ func (c *EC2) ReplaceRouteTableAssociationRequest(input *ReplaceRouteTableAssoci
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ReplaceRouteTableAssociationInput{}
 	}
 
 	req = c.newRequest(opReplaceRouteTableAssociation, input, output)
@@ -5325,6 +6084,10 @@ func (c *EC2) ReportInstanceStatusRequest(input *ReportInstanceStatusInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &ReportInstanceStatusInput{}
+	}
+
 	req = c.newRequest(opReportInstanceStatus, input, output)
 	output = &ReportInstanceStatusOutput{}
 	req.Data = output
@@ -5358,6 +6121,10 @@ func (c *EC2) RequestSpotInstancesRequest(input *RequestSpotInstancesInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RequestSpotInstancesInput{}
 	}
 
 	req = c.newRequest(opRequestSpotInstances, input, output)
@@ -5394,6 +6161,10 @@ func (c *EC2) ResetImageAttributeRequest(input *ResetImageAttributeInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &ResetImageAttributeInput{}
+	}
+
 	req = c.newRequest(opResetImageAttribute, input, output)
 	output = &ResetImageAttributeOutput{}
 	req.Data = output
@@ -5423,6 +6194,10 @@ func (c *EC2) ResetInstanceAttributeRequest(input *ResetInstanceAttributeInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ResetInstanceAttributeInput{}
 	}
 
 	req = c.newRequest(opResetInstanceAttribute, input, output)
@@ -5462,6 +6237,10 @@ func (c *EC2) ResetNetworkInterfaceAttributeRequest(input *ResetNetworkInterface
 		}
 	}
 
+	if input == nil {
+		input = &ResetNetworkInterfaceAttributeInput{}
+	}
+
 	req = c.newRequest(opResetNetworkInterfaceAttribute, input, output)
 	output = &ResetNetworkInterfaceAttributeOutput{}
 	req.Data = output
@@ -5490,6 +6269,10 @@ func (c *EC2) ResetSnapshotAttributeRequest(input *ResetSnapshotAttributeInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ResetSnapshotAttributeInput{}
 	}
 
 	req = c.newRequest(opResetSnapshotAttribute, input, output)
@@ -5523,6 +6306,10 @@ func (c *EC2) RevokeSecurityGroupEgressRequest(input *RevokeSecurityGroupEgressI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RevokeSecurityGroupEgressInput{}
 	}
 
 	req = c.newRequest(opRevokeSecurityGroupEgress, input, output)
@@ -5564,6 +6351,10 @@ func (c *EC2) RevokeSecurityGroupIngressRequest(input *RevokeSecurityGroupIngres
 		}
 	}
 
+	if input == nil {
+		input = &RevokeSecurityGroupIngressInput{}
+	}
+
 	req = c.newRequest(opRevokeSecurityGroupIngress, input, output)
 	output = &RevokeSecurityGroupIngressOutput{}
 	req.Data = output
@@ -5601,6 +6392,10 @@ func (c *EC2) RunInstancesRequest(input *RunInstancesInput) (req *aws.Request, o
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RunInstancesInput{}
 	}
 
 	req = c.newRequest(opRunInstances, input, output)
@@ -5664,6 +6459,10 @@ func (c *EC2) StartInstancesRequest(input *StartInstancesInput) (req *aws.Reques
 		}
 	}
 
+	if input == nil {
+		input = &StartInstancesInput{}
+	}
+
 	req = c.newRequest(opStartInstances, input, output)
 	output = &StartInstancesOutput{}
 	req.Data = output
@@ -5709,6 +6508,10 @@ func (c *EC2) StopInstancesRequest(input *StopInstancesInput) (req *aws.Request,
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &StopInstancesInput{}
 	}
 
 	req = c.newRequest(opStopInstances, input, output)
@@ -5770,6 +6573,10 @@ func (c *EC2) TerminateInstancesRequest(input *TerminateInstancesInput) (req *aw
 		}
 	}
 
+	if input == nil {
+		input = &TerminateInstancesInput{}
+	}
+
 	req = c.newRequest(opTerminateInstances, input, output)
 	output = &TerminateInstancesOutput{}
 	req.Data = output
@@ -5820,6 +6627,10 @@ func (c *EC2) UnassignPrivateIPAddressesRequest(input *UnassignPrivateIPAddresse
 		}
 	}
 
+	if input == nil {
+		input = &UnassignPrivateIPAddressesInput{}
+	}
+
 	req = c.newRequest(opUnassignPrivateIPAddresses, input, output)
 	output = &UnassignPrivateIPAddressesOutput{}
 	req.Data = output
@@ -5849,6 +6660,10 @@ func (c *EC2) UnmonitorInstancesRequest(input *UnmonitorInstancesInput) (req *aw
 		}
 	}
 
+	if input == nil {
+		input = &UnmonitorInstancesInput{}
+	}
+
 	req = c.newRequest(opUnmonitorInstances, input, output)
 	output = &UnmonitorInstancesOutput{}
 	req.Data = output
@@ -5873,7 +6688,7 @@ type AcceptVPCPeeringConnectionInput struct {
 	// The ID of the VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string"`
 
-	metadataAcceptVPCPeeringConnectionInput `json:"-", xml:"-"`
+	metadataAcceptVPCPeeringConnectionInput `json:"-" xml:"-"`
 }
 
 type metadataAcceptVPCPeeringConnectionInput struct {
@@ -5884,7 +6699,7 @@ type AcceptVPCPeeringConnectionOutput struct {
 	// Information about the VPC peering connection.
 	VPCPeeringConnection *VPCPeeringConnection `locationName:"vpcPeeringConnection" type:"structure"`
 
-	metadataAcceptVPCPeeringConnectionOutput `json:"-", xml:"-"`
+	metadataAcceptVPCPeeringConnectionOutput `json:"-" xml:"-"`
 }
 
 type metadataAcceptVPCPeeringConnectionOutput struct {
@@ -5899,7 +6714,7 @@ type AccountAttribute struct {
 	// One or more values for the account attribute.
 	AttributeValues []*AccountAttributeValue `locationName:"attributeValueSet" locationNameList:"item" type:"list"`
 
-	metadataAccountAttribute `json:"-", xml:"-"`
+	metadataAccountAttribute `json:"-" xml:"-"`
 }
 
 type metadataAccountAttribute struct {
@@ -5911,7 +6726,7 @@ type AccountAttributeValue struct {
 	// The value of the attribute.
 	AttributeValue *string `locationName:"attributeValue" type:"string"`
 
-	metadataAccountAttributeValue `json:"-", xml:"-"`
+	metadataAccountAttributeValue `json:"-" xml:"-"`
 }
 
 type metadataAccountAttributeValue struct {
@@ -5946,7 +6761,7 @@ type Address struct {
 	// The Elastic IP address.
 	PublicIP *string `locationName:"publicIp" type:"string"`
 
-	metadataAddress `json:"-", xml:"-"`
+	metadataAddress `json:"-" xml:"-"`
 }
 
 type metadataAddress struct {
@@ -5961,7 +6776,7 @@ type AllocateAddressInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataAllocateAddressInput `json:"-", xml:"-"`
+	metadataAllocateAddressInput `json:"-" xml:"-"`
 }
 
 type metadataAllocateAddressInput struct {
@@ -5980,7 +6795,7 @@ type AllocateAddressOutput struct {
 	// The Elastic IP address.
 	PublicIP *string `locationName:"publicIp" type:"string"`
 
-	metadataAllocateAddressOutput `json:"-", xml:"-"`
+	metadataAllocateAddressOutput `json:"-" xml:"-"`
 }
 
 type metadataAllocateAddressOutput struct {
@@ -6007,7 +6822,7 @@ type AssignPrivateIPAddressesInput struct {
 	// You can't specify this parameter when also specifying private IP addresses.
 	SecondaryPrivateIPAddressCount *int64 `locationName:"secondaryPrivateIpAddressCount" type:"integer"`
 
-	metadataAssignPrivateIPAddressesInput `json:"-", xml:"-"`
+	metadataAssignPrivateIPAddressesInput `json:"-" xml:"-"`
 }
 
 type metadataAssignPrivateIPAddressesInput struct {
@@ -6015,7 +6830,7 @@ type metadataAssignPrivateIPAddressesInput struct {
 }
 
 type AssignPrivateIPAddressesOutput struct {
-	metadataAssignPrivateIPAddressesOutput `json:"-", xml:"-"`
+	metadataAssignPrivateIPAddressesOutput `json:"-" xml:"-"`
 }
 
 type metadataAssignPrivateIPAddressesOutput struct {
@@ -6053,7 +6868,7 @@ type AssociateAddressInput struct {
 	// The Elastic IP address. This is required for EC2-Classic.
 	PublicIP *string `locationName:"PublicIp" type:"string"`
 
-	metadataAssociateAddressInput `json:"-", xml:"-"`
+	metadataAssociateAddressInput `json:"-" xml:"-"`
 }
 
 type metadataAssociateAddressInput struct {
@@ -6065,7 +6880,7 @@ type AssociateAddressOutput struct {
 	// with an instance.
 	AssociationID *string `locationName:"associationId" type:"string"`
 
-	metadataAssociateAddressOutput `json:"-", xml:"-"`
+	metadataAssociateAddressOutput `json:"-" xml:"-"`
 }
 
 type metadataAssociateAddressOutput struct {
@@ -6082,7 +6897,7 @@ type AssociateDHCPOptionsInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"VpcId" type:"string" required:"true"`
 
-	metadataAssociateDHCPOptionsInput `json:"-", xml:"-"`
+	metadataAssociateDHCPOptionsInput `json:"-" xml:"-"`
 }
 
 type metadataAssociateDHCPOptionsInput struct {
@@ -6090,7 +6905,7 @@ type metadataAssociateDHCPOptionsInput struct {
 }
 
 type AssociateDHCPOptionsOutput struct {
-	metadataAssociateDHCPOptionsOutput `json:"-", xml:"-"`
+	metadataAssociateDHCPOptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataAssociateDHCPOptionsOutput struct {
@@ -6106,7 +6921,7 @@ type AssociateRouteTableInput struct {
 	// The ID of the subnet.
 	SubnetID *string `locationName:"subnetId" type:"string" required:"true"`
 
-	metadataAssociateRouteTableInput `json:"-", xml:"-"`
+	metadataAssociateRouteTableInput `json:"-" xml:"-"`
 }
 
 type metadataAssociateRouteTableInput struct {
@@ -6117,7 +6932,7 @@ type AssociateRouteTableOutput struct {
 	// The route table association ID (needed to disassociate the route table).
 	AssociationID *string `locationName:"associationId" type:"string"`
 
-	metadataAssociateRouteTableOutput `json:"-", xml:"-"`
+	metadataAssociateRouteTableOutput `json:"-" xml:"-"`
 }
 
 type metadataAssociateRouteTableOutput struct {
@@ -6137,7 +6952,7 @@ type AttachClassicLinkVPCInput struct {
 	// The ID of a ClassicLink-enabled VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataAttachClassicLinkVPCInput `json:"-", xml:"-"`
+	metadataAttachClassicLinkVPCInput `json:"-" xml:"-"`
 }
 
 type metadataAttachClassicLinkVPCInput struct {
@@ -6148,7 +6963,7 @@ type AttachClassicLinkVPCOutput struct {
 	// Returns true if the request succeeds; otherwise, it returns an error.
 	Return *bool `locationName:"return" type:"boolean"`
 
-	metadataAttachClassicLinkVPCOutput `json:"-", xml:"-"`
+	metadataAttachClassicLinkVPCOutput `json:"-" xml:"-"`
 }
 
 type metadataAttachClassicLinkVPCOutput struct {
@@ -6164,7 +6979,7 @@ type AttachInternetGatewayInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataAttachInternetGatewayInput `json:"-", xml:"-"`
+	metadataAttachInternetGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataAttachInternetGatewayInput struct {
@@ -6172,7 +6987,7 @@ type metadataAttachInternetGatewayInput struct {
 }
 
 type AttachInternetGatewayOutput struct {
-	metadataAttachInternetGatewayOutput `json:"-", xml:"-"`
+	metadataAttachInternetGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataAttachInternetGatewayOutput struct {
@@ -6191,7 +7006,7 @@ type AttachNetworkInterfaceInput struct {
 	// The ID of the network interface.
 	NetworkInterfaceID *string `locationName:"networkInterfaceId" type:"string" required:"true"`
 
-	metadataAttachNetworkInterfaceInput `json:"-", xml:"-"`
+	metadataAttachNetworkInterfaceInput `json:"-" xml:"-"`
 }
 
 type metadataAttachNetworkInterfaceInput struct {
@@ -6202,7 +7017,7 @@ type AttachNetworkInterfaceOutput struct {
 	// The ID of the network interface attachment.
 	AttachmentID *string `locationName:"attachmentId" type:"string"`
 
-	metadataAttachNetworkInterfaceOutput `json:"-", xml:"-"`
+	metadataAttachNetworkInterfaceOutput `json:"-" xml:"-"`
 }
 
 type metadataAttachNetworkInterfaceOutput struct {
@@ -6218,7 +7033,7 @@ type AttachVPNGatewayInput struct {
 	// The ID of the virtual private gateway.
 	VPNGatewayID *string `locationName:"VpnGatewayId" type:"string" required:"true"`
 
-	metadataAttachVPNGatewayInput `json:"-", xml:"-"`
+	metadataAttachVPNGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataAttachVPNGatewayInput struct {
@@ -6229,7 +7044,7 @@ type AttachVPNGatewayOutput struct {
 	// Information about the attachment.
 	VPCAttachment *VPCAttachment `locationName:"attachment" type:"structure"`
 
-	metadataAttachVPNGatewayOutput `json:"-", xml:"-"`
+	metadataAttachVPNGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataAttachVPNGatewayOutput struct {
@@ -6249,7 +7064,7 @@ type AttachVolumeInput struct {
 	// same Availability Zone.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
-	metadataAttachVolumeInput `json:"-", xml:"-"`
+	metadataAttachVolumeInput `json:"-" xml:"-"`
 }
 
 type metadataAttachVolumeInput struct {
@@ -6261,7 +7076,7 @@ type AttributeBooleanValue struct {
 	// Valid values are true or false.
 	Value *bool `locationName:"value" type:"boolean"`
 
-	metadataAttributeBooleanValue `json:"-", xml:"-"`
+	metadataAttributeBooleanValue `json:"-" xml:"-"`
 }
 
 type metadataAttributeBooleanValue struct {
@@ -6273,7 +7088,7 @@ type AttributeValue struct {
 	// Valid values are case-sensitive and vary by action.
 	Value *string `locationName:"value" type:"string"`
 
-	metadataAttributeValue `json:"-", xml:"-"`
+	metadataAttributeValue `json:"-" xml:"-"`
 }
 
 type metadataAttributeValue struct {
@@ -6314,7 +7129,7 @@ type AuthorizeSecurityGroupEgressInput struct {
 	// For the ICMP code number, use -1 to specify all ICMP codes for the ICMP type.
 	ToPort *int64 `locationName:"toPort" type:"integer"`
 
-	metadataAuthorizeSecurityGroupEgressInput `json:"-", xml:"-"`
+	metadataAuthorizeSecurityGroupEgressInput `json:"-" xml:"-"`
 }
 
 type metadataAuthorizeSecurityGroupEgressInput struct {
@@ -6322,7 +7137,7 @@ type metadataAuthorizeSecurityGroupEgressInput struct {
 }
 
 type AuthorizeSecurityGroupEgressOutput struct {
-	metadataAuthorizeSecurityGroupEgressOutput `json:"-", xml:"-"`
+	metadataAuthorizeSecurityGroupEgressOutput `json:"-" xml:"-"`
 }
 
 type metadataAuthorizeSecurityGroupEgressOutput struct {
@@ -6366,7 +7181,7 @@ type AuthorizeSecurityGroupIngressInput struct {
 	// For the ICMP code number, use -1 to specify all ICMP codes for the ICMP type.
 	ToPort *int64 `type:"integer"`
 
-	metadataAuthorizeSecurityGroupIngressInput `json:"-", xml:"-"`
+	metadataAuthorizeSecurityGroupIngressInput `json:"-" xml:"-"`
 }
 
 type metadataAuthorizeSecurityGroupIngressInput struct {
@@ -6374,7 +7189,7 @@ type metadataAuthorizeSecurityGroupIngressInput struct {
 }
 
 type AuthorizeSecurityGroupIngressOutput struct {
-	metadataAuthorizeSecurityGroupIngressOutput `json:"-", xml:"-"`
+	metadataAuthorizeSecurityGroupIngressOutput `json:"-" xml:"-"`
 }
 
 type metadataAuthorizeSecurityGroupIngressOutput struct {
@@ -6395,7 +7210,7 @@ type AvailabilityZone struct {
 	// The name of the Availability Zone.
 	ZoneName *string `locationName:"zoneName" type:"string"`
 
-	metadataAvailabilityZone `json:"-", xml:"-"`
+	metadataAvailabilityZone `json:"-" xml:"-"`
 }
 
 type metadataAvailabilityZone struct {
@@ -6407,7 +7222,7 @@ type AvailabilityZoneMessage struct {
 	// The message about the Availability Zone.
 	Message *string `locationName:"message" type:"string"`
 
-	metadataAvailabilityZoneMessage `json:"-", xml:"-"`
+	metadataAvailabilityZoneMessage `json:"-" xml:"-"`
 }
 
 type metadataAvailabilityZoneMessage struct {
@@ -6417,7 +7232,7 @@ type metadataAvailabilityZoneMessage struct {
 type BlobAttributeValue struct {
 	Value []byte `locationName:"value" type:"blob"`
 
-	metadataBlobAttributeValue `json:"-", xml:"-"`
+	metadataBlobAttributeValue `json:"-" xml:"-"`
 }
 
 type metadataBlobAttributeValue struct {
@@ -6426,7 +7241,7 @@ type metadataBlobAttributeValue struct {
 
 // Describes a block device mapping.
 type BlockDeviceMapping struct {
-	// The device name exposed to the instance (for example, /dev/sdh).
+	// The device name exposed to the instance (for example, /dev/sdh or xvdh).
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
 	// Parameters used to automatically set up Amazon EBS volumes when the instance
@@ -6449,7 +7264,7 @@ type BlockDeviceMapping struct {
 	// for the AMI.
 	VirtualName *string `locationName:"virtualName" type:"string"`
 
-	metadataBlockDeviceMapping `json:"-", xml:"-"`
+	metadataBlockDeviceMapping `json:"-" xml:"-"`
 }
 
 type metadataBlockDeviceMapping struct {
@@ -6473,7 +7288,7 @@ type BundleInstanceInput struct {
 	// a bucket that belongs to someone else, Amazon EC2 returns an error.
 	Storage *Storage `type:"structure" required:"true"`
 
-	metadataBundleInstanceInput `json:"-", xml:"-"`
+	metadataBundleInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataBundleInstanceInput struct {
@@ -6484,7 +7299,7 @@ type BundleInstanceOutput struct {
 	// Information about the bundle task.
 	BundleTask *BundleTask `locationName:"bundleInstanceTask" type:"structure"`
 
-	metadataBundleInstanceOutput `json:"-", xml:"-"`
+	metadataBundleInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataBundleInstanceOutput struct {
@@ -6517,7 +7332,7 @@ type BundleTask struct {
 	// The time of the most recent update for the task.
 	UpdateTime *time.Time `locationName:"updateTime" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataBundleTask `json:"-", xml:"-"`
+	metadataBundleTask `json:"-" xml:"-"`
 }
 
 type metadataBundleTask struct {
@@ -6532,7 +7347,7 @@ type BundleTaskError struct {
 	// The error message.
 	Message *string `locationName:"message" type:"string"`
 
-	metadataBundleTaskError `json:"-", xml:"-"`
+	metadataBundleTaskError `json:"-" xml:"-"`
 }
 
 type metadataBundleTaskError struct {
@@ -6545,7 +7360,7 @@ type CancelBundleTaskInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataCancelBundleTaskInput `json:"-", xml:"-"`
+	metadataCancelBundleTaskInput `json:"-" xml:"-"`
 }
 
 type metadataCancelBundleTaskInput struct {
@@ -6556,7 +7371,7 @@ type CancelBundleTaskOutput struct {
 	// The bundle task.
 	BundleTask *BundleTask `locationName:"bundleInstanceTask" type:"structure"`
 
-	metadataCancelBundleTaskOutput `json:"-", xml:"-"`
+	metadataCancelBundleTaskOutput `json:"-" xml:"-"`
 }
 
 type metadataCancelBundleTaskOutput struct {
@@ -6571,7 +7386,7 @@ type CancelConversionTaskInput struct {
 
 	ReasonMessage *string `locationName:"reasonMessage" type:"string"`
 
-	metadataCancelConversionTaskInput `json:"-", xml:"-"`
+	metadataCancelConversionTaskInput `json:"-" xml:"-"`
 }
 
 type metadataCancelConversionTaskInput struct {
@@ -6579,7 +7394,7 @@ type metadataCancelConversionTaskInput struct {
 }
 
 type CancelConversionTaskOutput struct {
-	metadataCancelConversionTaskOutput `json:"-", xml:"-"`
+	metadataCancelConversionTaskOutput `json:"-" xml:"-"`
 }
 
 type metadataCancelConversionTaskOutput struct {
@@ -6590,7 +7405,7 @@ type CancelExportTaskInput struct {
 	// The ID of the export task. This is the ID returned by CreateInstanceExportTask.
 	ExportTaskID *string `locationName:"exportTaskId" type:"string" required:"true"`
 
-	metadataCancelExportTaskInput `json:"-", xml:"-"`
+	metadataCancelExportTaskInput `json:"-" xml:"-"`
 }
 
 type metadataCancelExportTaskInput struct {
@@ -6598,10 +7413,43 @@ type metadataCancelExportTaskInput struct {
 }
 
 type CancelExportTaskOutput struct {
-	metadataCancelExportTaskOutput `json:"-", xml:"-"`
+	metadataCancelExportTaskOutput `json:"-" xml:"-"`
 }
 
 type metadataCancelExportTaskOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type CancelImportTaskInput struct {
+	// The reason for canceling the task.
+	CancelReason *string `type:"string"`
+
+	DryRun *bool `type:"boolean"`
+
+	// The ID of the ImportImage or ImportSnapshot task to be cancelled.
+	ImportTaskID *string `locationName:"ImportTaskId" type:"string"`
+
+	metadataCancelImportTaskInput `json:"-" xml:"-"`
+}
+
+type metadataCancelImportTaskInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type CancelImportTaskOutput struct {
+	// The task ID of the ImportImage or ImportSnapshot task being canceled.
+	ImportTaskID *string `locationName:"importTaskId" type:"string"`
+
+	// The current state of the ImportImage or ImportSnapshot task being canceled.
+	PreviousState *string `locationName:"previousState" type:"string"`
+
+	// The current state of the ImportImage or ImportSnapshot task being canceled.
+	State *string `locationName:"state" type:"string"`
+
+	metadataCancelImportTaskOutput `json:"-" xml:"-"`
+}
+
+type metadataCancelImportTaskOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -6609,7 +7457,7 @@ type CancelReservedInstancesListingInput struct {
 	// The ID of the Reserved Instance listing.
 	ReservedInstancesListingID *string `locationName:"reservedInstancesListingId" type:"string" required:"true"`
 
-	metadataCancelReservedInstancesListingInput `json:"-", xml:"-"`
+	metadataCancelReservedInstancesListingInput `json:"-" xml:"-"`
 }
 
 type metadataCancelReservedInstancesListingInput struct {
@@ -6620,7 +7468,7 @@ type CancelReservedInstancesListingOutput struct {
 	// The Reserved Instance listing.
 	ReservedInstancesListings []*ReservedInstancesListing `locationName:"reservedInstancesListingsSet" locationNameList:"item" type:"list"`
 
-	metadataCancelReservedInstancesListingOutput `json:"-", xml:"-"`
+	metadataCancelReservedInstancesListingOutput `json:"-" xml:"-"`
 }
 
 type metadataCancelReservedInstancesListingOutput struct {
@@ -6633,7 +7481,7 @@ type CancelSpotInstanceRequestsInput struct {
 	// One or more Spot Instance request IDs.
 	SpotInstanceRequestIDs []*string `locationName:"SpotInstanceRequestId" locationNameList:"SpotInstanceRequestId" type:"list" required:"true"`
 
-	metadataCancelSpotInstanceRequestsInput `json:"-", xml:"-"`
+	metadataCancelSpotInstanceRequestsInput `json:"-" xml:"-"`
 }
 
 type metadataCancelSpotInstanceRequestsInput struct {
@@ -6644,7 +7492,7 @@ type CancelSpotInstanceRequestsOutput struct {
 	// One or more Spot Instance requests.
 	CancelledSpotInstanceRequests []*CancelledSpotInstanceRequest `locationName:"spotInstanceRequestSet" locationNameList:"item" type:"list"`
 
-	metadataCancelSpotInstanceRequestsOutput `json:"-", xml:"-"`
+	metadataCancelSpotInstanceRequestsOutput `json:"-" xml:"-"`
 }
 
 type metadataCancelSpotInstanceRequestsOutput struct {
@@ -6659,7 +7507,7 @@ type CancelledSpotInstanceRequest struct {
 	// The state of the Spot Instance request.
 	State *string `locationName:"state" type:"string"`
 
-	metadataCancelledSpotInstanceRequest `json:"-", xml:"-"`
+	metadataCancelledSpotInstanceRequest `json:"-" xml:"-"`
 }
 
 type metadataCancelledSpotInstanceRequest struct {
@@ -6680,10 +7528,31 @@ type ClassicLinkInstance struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataClassicLinkInstance `json:"-", xml:"-"`
+	metadataClassicLinkInstance `json:"-" xml:"-"`
 }
 
 type metadataClassicLinkInstance struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Client-specific data.
+type ClientData struct {
+	// User-defined comment about the upload.
+	Comment *string `type:"string"`
+
+	// The time that the disk upload ends.
+	UploadEnd *time.Time `type:"timestamp" timestampFormat:"iso8601"`
+
+	// The size of the uploaded disk image.
+	UploadSize *float64 `type:"double"`
+
+	// The time that the disk upload starts.
+	UploadStart *time.Time `type:"timestamp" timestampFormat:"iso8601"`
+
+	metadataClientData `json:"-" xml:"-"`
+}
+
+type metadataClientData struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -6696,7 +7565,7 @@ type ConfirmProductInstanceInput struct {
 	// The product code. This must be a product code that you own.
 	ProductCode *string `type:"string" required:"true"`
 
-	metadataConfirmProductInstanceInput `json:"-", xml:"-"`
+	metadataConfirmProductInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataConfirmProductInstanceInput struct {
@@ -6708,7 +7577,7 @@ type ConfirmProductInstanceOutput struct {
 	// code is attached to the instance.
 	OwnerID *string `locationName:"ownerId" type:"string"`
 
-	metadataConfirmProductInstanceOutput `json:"-", xml:"-"`
+	metadataConfirmProductInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataConfirmProductInstanceOutput struct {
@@ -6740,7 +7609,7 @@ type ConversionTask struct {
 
 	Tags []*Tag `locationName:"tagSet" locationNameList:"item" type:"list"`
 
-	metadataConversionTask `json:"-", xml:"-"`
+	metadataConversionTask `json:"-" xml:"-"`
 }
 
 type metadataConversionTask struct {
@@ -6767,7 +7636,7 @@ type CopyImageInput struct {
 	// The name of the region that contains the AMI to copy.
 	SourceRegion *string `type:"string" required:"true"`
 
-	metadataCopyImageInput `json:"-", xml:"-"`
+	metadataCopyImageInput `json:"-" xml:"-"`
 }
 
 type metadataCopyImageInput struct {
@@ -6778,7 +7647,7 @@ type CopyImageOutput struct {
 	// The ID of the new AMI.
 	ImageID *string `locationName:"imageId" type:"string"`
 
-	metadataCopyImageOutput `json:"-", xml:"-"`
+	metadataCopyImageOutput `json:"-" xml:"-"`
 }
 
 type metadataCopyImageOutput struct {
@@ -6789,8 +7658,14 @@ type CopySnapshotInput struct {
 	// A description for the new Amazon EBS snapshot.
 	Description *string `type:"string"`
 
-	// The destination region of the snapshot copy operation. This parameter is
-	// required in the PresignedUrl.
+	// The destination region to use in the PresignedUrl parameter of a snapshot
+	// copy operation. This parameter is only valid for specifying the destination
+	// region in a PresignedUrl parameter, where it is required.
+	//
+	//  CopySnapshot sends the snapshot copy to the regional endpoint that you
+	// send the HTTP request to, such as ec2.us-east-1.amazonaws.com (in the AWS
+	// CLI, this is specified with the --region parameter or the default region
+	// in your AWS configuration file).
 	DestinationRegion *string `locationName:"destinationRegion" type:"string"`
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
@@ -6815,7 +7690,7 @@ type CopySnapshotInput struct {
 	// The ID of the Amazon EBS snapshot to copy.
 	SourceSnapshotID *string `locationName:"SourceSnapshotId" type:"string" required:"true"`
 
-	metadataCopySnapshotInput `json:"-", xml:"-"`
+	metadataCopySnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataCopySnapshotInput struct {
@@ -6826,7 +7701,7 @@ type CopySnapshotOutput struct {
 	// The ID of the new snapshot.
 	SnapshotID *string `locationName:"snapshotId" type:"string"`
 
-	metadataCopySnapshotOutput `json:"-", xml:"-"`
+	metadataCopySnapshotOutput `json:"-" xml:"-"`
 }
 
 type metadataCopySnapshotOutput struct {
@@ -6848,7 +7723,7 @@ type CreateCustomerGatewayInput struct {
 	// The type of VPN connection that this customer gateway supports (ipsec.1).
 	Type *string `type:"string" required:"true"`
 
-	metadataCreateCustomerGatewayInput `json:"-", xml:"-"`
+	metadataCreateCustomerGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataCreateCustomerGatewayInput struct {
@@ -6859,7 +7734,7 @@ type CreateCustomerGatewayOutput struct {
 	// Information about the customer gateway.
 	CustomerGateway *CustomerGateway `locationName:"customerGateway" type:"structure"`
 
-	metadataCreateCustomerGatewayOutput `json:"-", xml:"-"`
+	metadataCreateCustomerGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateCustomerGatewayOutput struct {
@@ -6872,7 +7747,7 @@ type CreateDHCPOptionsInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataCreateDHCPOptionsInput `json:"-", xml:"-"`
+	metadataCreateDHCPOptionsInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDHCPOptionsInput struct {
@@ -6883,7 +7758,7 @@ type CreateDHCPOptionsOutput struct {
 	// A set of DHCP options.
 	DHCPOptions *DHCPOptions `locationName:"dhcpOptions" type:"structure"`
 
-	metadataCreateDHCPOptionsOutput `json:"-", xml:"-"`
+	metadataCreateDHCPOptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDHCPOptionsOutput struct {
@@ -6916,7 +7791,7 @@ type CreateImageInput struct {
 	// system integrity on the created image can't be guaranteed.
 	NoReboot *bool `locationName:"noReboot" type:"boolean"`
 
-	metadataCreateImageInput `json:"-", xml:"-"`
+	metadataCreateImageInput `json:"-" xml:"-"`
 }
 
 type metadataCreateImageInput struct {
@@ -6927,7 +7802,7 @@ type CreateImageOutput struct {
 	// The ID of the new AMI.
 	ImageID *string `locationName:"imageId" type:"string"`
 
-	metadataCreateImageOutput `json:"-", xml:"-"`
+	metadataCreateImageOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateImageOutput struct {
@@ -6947,7 +7822,7 @@ type CreateInstanceExportTaskInput struct {
 	// The target virtualization environment.
 	TargetEnvironment *string `locationName:"targetEnvironment" type:"string"`
 
-	metadataCreateInstanceExportTaskInput `json:"-", xml:"-"`
+	metadataCreateInstanceExportTaskInput `json:"-" xml:"-"`
 }
 
 type metadataCreateInstanceExportTaskInput struct {
@@ -6958,7 +7833,7 @@ type CreateInstanceExportTaskOutput struct {
 	// Describes an export task.
 	ExportTask *ExportTask `locationName:"exportTask" type:"structure"`
 
-	metadataCreateInstanceExportTaskOutput `json:"-", xml:"-"`
+	metadataCreateInstanceExportTaskOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateInstanceExportTaskOutput struct {
@@ -6968,7 +7843,7 @@ type metadataCreateInstanceExportTaskOutput struct {
 type CreateInternetGatewayInput struct {
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataCreateInternetGatewayInput `json:"-", xml:"-"`
+	metadataCreateInternetGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataCreateInternetGatewayInput struct {
@@ -6979,7 +7854,7 @@ type CreateInternetGatewayOutput struct {
 	// Information about the Internet gateway.
 	InternetGateway *InternetGateway `locationName:"internetGateway" type:"structure"`
 
-	metadataCreateInternetGatewayOutput `json:"-", xml:"-"`
+	metadataCreateInternetGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateInternetGatewayOutput struct {
@@ -6994,7 +7869,7 @@ type CreateKeyPairInput struct {
 	// Constraints: Up to 255 ASCII characters
 	KeyName *string `type:"string" required:"true"`
 
-	metadataCreateKeyPairInput `json:"-", xml:"-"`
+	metadataCreateKeyPairInput `json:"-" xml:"-"`
 }
 
 type metadataCreateKeyPairInput struct {
@@ -7012,7 +7887,7 @@ type CreateKeyPairOutput struct {
 	// The name of the key pair.
 	KeyName *string `locationName:"keyName" type:"string"`
 
-	metadataCreateKeyPairOutput `json:"-", xml:"-"`
+	metadataCreateKeyPairOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateKeyPairOutput struct {
@@ -7051,7 +7926,7 @@ type CreateNetworkACLEntryInput struct {
 	// Constraints: Positive integer from 1 to 32766
 	RuleNumber *int64 `locationName:"ruleNumber" type:"integer" required:"true"`
 
-	metadataCreateNetworkACLEntryInput `json:"-", xml:"-"`
+	metadataCreateNetworkACLEntryInput `json:"-" xml:"-"`
 }
 
 type metadataCreateNetworkACLEntryInput struct {
@@ -7059,7 +7934,7 @@ type metadataCreateNetworkACLEntryInput struct {
 }
 
 type CreateNetworkACLEntryOutput struct {
-	metadataCreateNetworkACLEntryOutput `json:"-", xml:"-"`
+	metadataCreateNetworkACLEntryOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateNetworkACLEntryOutput struct {
@@ -7072,7 +7947,7 @@ type CreateNetworkACLInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataCreateNetworkACLInput `json:"-", xml:"-"`
+	metadataCreateNetworkACLInput `json:"-" xml:"-"`
 }
 
 type metadataCreateNetworkACLInput struct {
@@ -7083,7 +7958,7 @@ type CreateNetworkACLOutput struct {
 	// Information about the network ACL.
 	NetworkACL *NetworkACL `locationName:"networkAcl" type:"structure"`
 
-	metadataCreateNetworkACLOutput `json:"-", xml:"-"`
+	metadataCreateNetworkACLOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateNetworkACLOutput struct {
@@ -7122,7 +7997,7 @@ type CreateNetworkInterfaceInput struct {
 	// The ID of the subnet to associate with the network interface.
 	SubnetID *string `locationName:"subnetId" type:"string" required:"true"`
 
-	metadataCreateNetworkInterfaceInput `json:"-", xml:"-"`
+	metadataCreateNetworkInterfaceInput `json:"-" xml:"-"`
 }
 
 type metadataCreateNetworkInterfaceInput struct {
@@ -7133,7 +8008,7 @@ type CreateNetworkInterfaceOutput struct {
 	// Information about the network interface.
 	NetworkInterface *NetworkInterface `locationName:"networkInterface" type:"structure"`
 
-	metadataCreateNetworkInterfaceOutput `json:"-", xml:"-"`
+	metadataCreateNetworkInterfaceOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateNetworkInterfaceOutput struct {
@@ -7151,7 +8026,7 @@ type CreatePlacementGroupInput struct {
 	// The placement strategy.
 	Strategy *string `locationName:"strategy" type:"string" required:"true"`
 
-	metadataCreatePlacementGroupInput `json:"-", xml:"-"`
+	metadataCreatePlacementGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCreatePlacementGroupInput struct {
@@ -7159,7 +8034,7 @@ type metadataCreatePlacementGroupInput struct {
 }
 
 type CreatePlacementGroupOutput struct {
-	metadataCreatePlacementGroupOutput `json:"-", xml:"-"`
+	metadataCreatePlacementGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCreatePlacementGroupOutput struct {
@@ -7169,8 +8044,7 @@ type metadataCreatePlacementGroupOutput struct {
 type CreateReservedInstancesListingInput struct {
 	// Unique, case-sensitive identifier you provide to ensure idempotency of your
 	// listings. This helps avoid duplicate listings. For more information, see
-	// Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Run_Instance_Idempotency.html)
-	// in the Amazon Elastic Compute Cloud User Guide.
+	// Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
 	ClientToken *string `locationName:"clientToken" type:"string" required:"true"`
 
 	// The number of instances that are a part of a Reserved Instance account to
@@ -7186,7 +8060,7 @@ type CreateReservedInstancesListingInput struct {
 	// The ID of the active Reserved Instance.
 	ReservedInstancesID *string `locationName:"reservedInstancesId" type:"string" required:"true"`
 
-	metadataCreateReservedInstancesListingInput `json:"-", xml:"-"`
+	metadataCreateReservedInstancesListingInput `json:"-" xml:"-"`
 }
 
 type metadataCreateReservedInstancesListingInput struct {
@@ -7197,7 +8071,7 @@ type CreateReservedInstancesListingOutput struct {
 	// Information about the Reserved Instances listing.
 	ReservedInstancesListings []*ReservedInstancesListing `locationName:"reservedInstancesListingsSet" locationNameList:"item" type:"list"`
 
-	metadataCreateReservedInstancesListingOutput `json:"-", xml:"-"`
+	metadataCreateReservedInstancesListingOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateReservedInstancesListingOutput struct {
@@ -7228,7 +8102,7 @@ type CreateRouteInput struct {
 	// The ID of a VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string"`
 
-	metadataCreateRouteInput `json:"-", xml:"-"`
+	metadataCreateRouteInput `json:"-" xml:"-"`
 }
 
 type metadataCreateRouteInput struct {
@@ -7236,7 +8110,7 @@ type metadataCreateRouteInput struct {
 }
 
 type CreateRouteOutput struct {
-	metadataCreateRouteOutput `json:"-", xml:"-"`
+	metadataCreateRouteOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateRouteOutput struct {
@@ -7249,7 +8123,7 @@ type CreateRouteTableInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataCreateRouteTableInput `json:"-", xml:"-"`
+	metadataCreateRouteTableInput `json:"-" xml:"-"`
 }
 
 type metadataCreateRouteTableInput struct {
@@ -7260,7 +8134,7 @@ type CreateRouteTableOutput struct {
 	// Information about the route table.
 	RouteTable *RouteTable `locationName:"routeTable" type:"structure"`
 
-	metadataCreateRouteTableOutput `json:"-", xml:"-"`
+	metadataCreateRouteTableOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateRouteTableOutput struct {
@@ -7291,7 +8165,7 @@ type CreateSecurityGroupInput struct {
 	// [EC2-VPC] The ID of the VPC. Required for EC2-VPC.
 	VPCID *string `locationName:"VpcId" type:"string"`
 
-	metadataCreateSecurityGroupInput `json:"-", xml:"-"`
+	metadataCreateSecurityGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCreateSecurityGroupInput struct {
@@ -7302,7 +8176,7 @@ type CreateSecurityGroupOutput struct {
 	// The ID of the security group.
 	GroupID *string `locationName:"groupId" type:"string"`
 
-	metadataCreateSecurityGroupOutput `json:"-", xml:"-"`
+	metadataCreateSecurityGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateSecurityGroupOutput struct {
@@ -7318,7 +8192,7 @@ type CreateSnapshotInput struct {
 	// The ID of the Amazon EBS volume.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
-	metadataCreateSnapshotInput `json:"-", xml:"-"`
+	metadataCreateSnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataCreateSnapshotInput struct {
@@ -7334,7 +8208,7 @@ type CreateSpotDatafeedSubscriptionInput struct {
 	// A prefix for the data feed file names.
 	Prefix *string `locationName:"prefix" type:"string"`
 
-	metadataCreateSpotDatafeedSubscriptionInput `json:"-", xml:"-"`
+	metadataCreateSpotDatafeedSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataCreateSpotDatafeedSubscriptionInput struct {
@@ -7345,7 +8219,7 @@ type CreateSpotDatafeedSubscriptionOutput struct {
 	// The Spot Instance data feed subscription.
 	SpotDatafeedSubscription *SpotDatafeedSubscription `locationName:"spotDatafeedSubscription" type:"structure"`
 
-	metadataCreateSpotDatafeedSubscriptionOutput `json:"-", xml:"-"`
+	metadataCreateSpotDatafeedSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateSpotDatafeedSubscriptionOutput struct {
@@ -7366,7 +8240,7 @@ type CreateSubnetInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"VpcId" type:"string" required:"true"`
 
-	metadataCreateSubnetInput `json:"-", xml:"-"`
+	metadataCreateSubnetInput `json:"-" xml:"-"`
 }
 
 type metadataCreateSubnetInput struct {
@@ -7377,7 +8251,7 @@ type CreateSubnetOutput struct {
 	// Information about the subnet.
 	Subnet *Subnet `locationName:"subnet" type:"structure"`
 
-	metadataCreateSubnetOutput `json:"-", xml:"-"`
+	metadataCreateSubnetOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateSubnetOutput struct {
@@ -7395,7 +8269,7 @@ type CreateTagsInput struct {
 	// the value to an empty string.
 	Tags []*Tag `locationName:"Tag" locationNameList:"item" type:"list" required:"true"`
 
-	metadataCreateTagsInput `json:"-", xml:"-"`
+	metadataCreateTagsInput `json:"-" xml:"-"`
 }
 
 type metadataCreateTagsInput struct {
@@ -7403,7 +8277,7 @@ type metadataCreateTagsInput struct {
 }
 
 type CreateTagsOutput struct {
-	metadataCreateTagsOutput `json:"-", xml:"-"`
+	metadataCreateTagsOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateTagsOutput struct {
@@ -7425,7 +8299,7 @@ type CreateVPCInput struct {
 	// Default: default
 	InstanceTenancy *string `locationName:"instanceTenancy" type:"string"`
 
-	metadataCreateVPCInput `json:"-", xml:"-"`
+	metadataCreateVPCInput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPCInput struct {
@@ -7436,7 +8310,7 @@ type CreateVPCOutput struct {
 	// Information about the VPC.
 	VPC *VPC `locationName:"vpc" type:"structure"`
 
-	metadataCreateVPCOutput `json:"-", xml:"-"`
+	metadataCreateVPCOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPCOutput struct {
@@ -7457,7 +8331,7 @@ type CreateVPCPeeringConnectionInput struct {
 	// The ID of the requester VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataCreateVPCPeeringConnectionInput `json:"-", xml:"-"`
+	metadataCreateVPCPeeringConnectionInput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPCPeeringConnectionInput struct {
@@ -7468,7 +8342,7 @@ type CreateVPCPeeringConnectionOutput struct {
 	// Information about the VPC peering connection.
 	VPCPeeringConnection *VPCPeeringConnection `locationName:"vpcPeeringConnection" type:"structure"`
 
-	metadataCreateVPCPeeringConnectionOutput `json:"-", xml:"-"`
+	metadataCreateVPCPeeringConnectionOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPCPeeringConnectionOutput struct {
@@ -7494,7 +8368,7 @@ type CreateVPNConnectionInput struct {
 	// The ID of the virtual private gateway.
 	VPNGatewayID *string `locationName:"VpnGatewayId" type:"string" required:"true"`
 
-	metadataCreateVPNConnectionInput `json:"-", xml:"-"`
+	metadataCreateVPNConnectionInput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPNConnectionInput struct {
@@ -7505,7 +8379,7 @@ type CreateVPNConnectionOutput struct {
 	// Information about the VPN connection.
 	VPNConnection *VPNConnection `locationName:"vpnConnection" type:"structure"`
 
-	metadataCreateVPNConnectionOutput `json:"-", xml:"-"`
+	metadataCreateVPNConnectionOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPNConnectionOutput struct {
@@ -7519,7 +8393,7 @@ type CreateVPNConnectionRouteInput struct {
 	// The ID of the VPN connection.
 	VPNConnectionID *string `locationName:"VpnConnectionId" type:"string" required:"true"`
 
-	metadataCreateVPNConnectionRouteInput `json:"-", xml:"-"`
+	metadataCreateVPNConnectionRouteInput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPNConnectionRouteInput struct {
@@ -7527,7 +8401,7 @@ type metadataCreateVPNConnectionRouteInput struct {
 }
 
 type CreateVPNConnectionRouteOutput struct {
-	metadataCreateVPNConnectionRouteOutput `json:"-", xml:"-"`
+	metadataCreateVPNConnectionRouteOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPNConnectionRouteOutput struct {
@@ -7543,7 +8417,7 @@ type CreateVPNGatewayInput struct {
 	// The type of VPN connection this virtual private gateway supports.
 	Type *string `type:"string" required:"true"`
 
-	metadataCreateVPNGatewayInput `json:"-", xml:"-"`
+	metadataCreateVPNGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPNGatewayInput struct {
@@ -7554,7 +8428,7 @@ type CreateVPNGatewayOutput struct {
 	// Information about the virtual private gateway.
 	VPNGateway *VPNGateway `locationName:"vpnGateway" type:"structure"`
 
-	metadataCreateVPNGatewayOutput `json:"-", xml:"-"`
+	metadataCreateVPNGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateVPNGatewayOutput struct {
@@ -7578,7 +8452,10 @@ type CreateVolumeInput struct {
 	Encrypted *bool `locationName:"encrypted" type:"boolean"`
 
 	// Only valid for Provisioned IOPS (SSD) volumes. The number of I/O operations
-	// per second (IOPS) to provision for the volume.
+	// per second (IOPS) to provision for the volume, with a maximum ratio of 30
+	// IOPS/GiB.
+	//
+	// Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes
 	IOPS *int64 `locationName:"Iops" type:"integer"`
 
 	// The full ARN of the AWS Key Management Service (KMS) master key to use when
@@ -7591,10 +8468,9 @@ type CreateVolumeInput struct {
 
 	// The size of the volume, in GiBs.
 	//
-	// Constraints: If the volume type is io1, the minimum size of the volume is
-	// 4 GiB; otherwise, the minimum size is 1 GiB. The maximum volume size is 1024
-	// GiB. If you specify a snapshot, the volume size must be equal to or larger
-	// than the snapshot size.
+	// Constraints: 1-1024 for standard volumes, 1-16384 for gp2 volumes, and 4-16384
+	// for io1 volumes. If you specify a snapshot, the volume size must be equal
+	// to or larger than the snapshot size.
 	//
 	// Default: If you're creating the volume from a snapshot and don't specify
 	// a volume size, the default is the snapshot size.
@@ -7609,7 +8485,7 @@ type CreateVolumeInput struct {
 	// Default: standard
 	VolumeType *string `type:"string"`
 
-	metadataCreateVolumeInput `json:"-", xml:"-"`
+	metadataCreateVolumeInput `json:"-" xml:"-"`
 }
 
 type metadataCreateVolumeInput struct {
@@ -7625,7 +8501,7 @@ type CreateVolumePermission struct {
 	// list of create volume permissions.
 	UserID *string `locationName:"userId" type:"string"`
 
-	metadataCreateVolumePermission `json:"-", xml:"-"`
+	metadataCreateVolumePermission `json:"-" xml:"-"`
 }
 
 type metadataCreateVolumePermission struct {
@@ -7641,7 +8517,7 @@ type CreateVolumePermissionModifications struct {
 	// volume permissions.
 	Remove []*CreateVolumePermission `locationNameList:"item" type:"list"`
 
-	metadataCreateVolumePermissionModifications `json:"-", xml:"-"`
+	metadataCreateVolumePermissionModifications `json:"-" xml:"-"`
 }
 
 type metadataCreateVolumePermissionModifications struct {
@@ -7670,7 +8546,7 @@ type CustomerGateway struct {
 	// The type of VPN connection the customer gateway supports (ipsec.1).
 	Type *string `locationName:"type" type:"string"`
 
-	metadataCustomerGateway `json:"-", xml:"-"`
+	metadataCustomerGateway `json:"-" xml:"-"`
 }
 
 type metadataCustomerGateway struct {
@@ -7685,7 +8561,7 @@ type DHCPConfiguration struct {
 	// One or more values for the DHCP option.
 	Values []*AttributeValue `locationName:"valueSet" locationNameList:"item" type:"list"`
 
-	metadataDHCPConfiguration `json:"-", xml:"-"`
+	metadataDHCPConfiguration `json:"-" xml:"-"`
 }
 
 type metadataDHCPConfiguration struct {
@@ -7703,7 +8579,7 @@ type DHCPOptions struct {
 	// Any tags assigned to the DHCP options set.
 	Tags []*Tag `locationName:"tagSet" locationNameList:"item" type:"list"`
 
-	metadataDHCPOptions `json:"-", xml:"-"`
+	metadataDHCPOptions `json:"-" xml:"-"`
 }
 
 type metadataDHCPOptions struct {
@@ -7716,7 +8592,7 @@ type DeleteCustomerGatewayInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataDeleteCustomerGatewayInput `json:"-", xml:"-"`
+	metadataDeleteCustomerGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteCustomerGatewayInput struct {
@@ -7724,7 +8600,7 @@ type metadataDeleteCustomerGatewayInput struct {
 }
 
 type DeleteCustomerGatewayOutput struct {
-	metadataDeleteCustomerGatewayOutput `json:"-", xml:"-"`
+	metadataDeleteCustomerGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteCustomerGatewayOutput struct {
@@ -7737,7 +8613,7 @@ type DeleteDHCPOptionsInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataDeleteDHCPOptionsInput `json:"-", xml:"-"`
+	metadataDeleteDHCPOptionsInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDHCPOptionsInput struct {
@@ -7745,7 +8621,7 @@ type metadataDeleteDHCPOptionsInput struct {
 }
 
 type DeleteDHCPOptionsOutput struct {
-	metadataDeleteDHCPOptionsOutput `json:"-", xml:"-"`
+	metadataDeleteDHCPOptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDHCPOptionsOutput struct {
@@ -7758,7 +8634,7 @@ type DeleteInternetGatewayInput struct {
 	// The ID of the Internet gateway.
 	InternetGatewayID *string `locationName:"internetGatewayId" type:"string" required:"true"`
 
-	metadataDeleteInternetGatewayInput `json:"-", xml:"-"`
+	metadataDeleteInternetGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteInternetGatewayInput struct {
@@ -7766,7 +8642,7 @@ type metadataDeleteInternetGatewayInput struct {
 }
 
 type DeleteInternetGatewayOutput struct {
-	metadataDeleteInternetGatewayOutput `json:"-", xml:"-"`
+	metadataDeleteInternetGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteInternetGatewayOutput struct {
@@ -7779,7 +8655,7 @@ type DeleteKeyPairInput struct {
 	// The name of the key pair.
 	KeyName *string `type:"string" required:"true"`
 
-	metadataDeleteKeyPairInput `json:"-", xml:"-"`
+	metadataDeleteKeyPairInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteKeyPairInput struct {
@@ -7787,7 +8663,7 @@ type metadataDeleteKeyPairInput struct {
 }
 
 type DeleteKeyPairOutput struct {
-	metadataDeleteKeyPairOutput `json:"-", xml:"-"`
+	metadataDeleteKeyPairOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteKeyPairOutput struct {
@@ -7806,7 +8682,7 @@ type DeleteNetworkACLEntryInput struct {
 	// The rule number of the entry to delete.
 	RuleNumber *int64 `locationName:"ruleNumber" type:"integer" required:"true"`
 
-	metadataDeleteNetworkACLEntryInput `json:"-", xml:"-"`
+	metadataDeleteNetworkACLEntryInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteNetworkACLEntryInput struct {
@@ -7814,7 +8690,7 @@ type metadataDeleteNetworkACLEntryInput struct {
 }
 
 type DeleteNetworkACLEntryOutput struct {
-	metadataDeleteNetworkACLEntryOutput `json:"-", xml:"-"`
+	metadataDeleteNetworkACLEntryOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteNetworkACLEntryOutput struct {
@@ -7827,7 +8703,7 @@ type DeleteNetworkACLInput struct {
 	// The ID of the network ACL.
 	NetworkACLID *string `locationName:"networkAclId" type:"string" required:"true"`
 
-	metadataDeleteNetworkACLInput `json:"-", xml:"-"`
+	metadataDeleteNetworkACLInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteNetworkACLInput struct {
@@ -7835,7 +8711,7 @@ type metadataDeleteNetworkACLInput struct {
 }
 
 type DeleteNetworkACLOutput struct {
-	metadataDeleteNetworkACLOutput `json:"-", xml:"-"`
+	metadataDeleteNetworkACLOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteNetworkACLOutput struct {
@@ -7848,7 +8724,7 @@ type DeleteNetworkInterfaceInput struct {
 	// The ID of the network interface.
 	NetworkInterfaceID *string `locationName:"networkInterfaceId" type:"string" required:"true"`
 
-	metadataDeleteNetworkInterfaceInput `json:"-", xml:"-"`
+	metadataDeleteNetworkInterfaceInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteNetworkInterfaceInput struct {
@@ -7856,7 +8732,7 @@ type metadataDeleteNetworkInterfaceInput struct {
 }
 
 type DeleteNetworkInterfaceOutput struct {
-	metadataDeleteNetworkInterfaceOutput `json:"-", xml:"-"`
+	metadataDeleteNetworkInterfaceOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteNetworkInterfaceOutput struct {
@@ -7869,7 +8745,7 @@ type DeletePlacementGroupInput struct {
 	// The name of the placement group.
 	GroupName *string `locationName:"groupName" type:"string" required:"true"`
 
-	metadataDeletePlacementGroupInput `json:"-", xml:"-"`
+	metadataDeletePlacementGroupInput `json:"-" xml:"-"`
 }
 
 type metadataDeletePlacementGroupInput struct {
@@ -7877,7 +8753,7 @@ type metadataDeletePlacementGroupInput struct {
 }
 
 type DeletePlacementGroupOutput struct {
-	metadataDeletePlacementGroupOutput `json:"-", xml:"-"`
+	metadataDeletePlacementGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataDeletePlacementGroupOutput struct {
@@ -7894,7 +8770,7 @@ type DeleteRouteInput struct {
 	// The ID of the route table.
 	RouteTableID *string `locationName:"routeTableId" type:"string" required:"true"`
 
-	metadataDeleteRouteInput `json:"-", xml:"-"`
+	metadataDeleteRouteInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteRouteInput struct {
@@ -7902,7 +8778,7 @@ type metadataDeleteRouteInput struct {
 }
 
 type DeleteRouteOutput struct {
-	metadataDeleteRouteOutput `json:"-", xml:"-"`
+	metadataDeleteRouteOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteRouteOutput struct {
@@ -7915,7 +8791,7 @@ type DeleteRouteTableInput struct {
 	// The ID of the route table.
 	RouteTableID *string `locationName:"routeTableId" type:"string" required:"true"`
 
-	metadataDeleteRouteTableInput `json:"-", xml:"-"`
+	metadataDeleteRouteTableInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteRouteTableInput struct {
@@ -7923,7 +8799,7 @@ type metadataDeleteRouteTableInput struct {
 }
 
 type DeleteRouteTableOutput struct {
-	metadataDeleteRouteTableOutput `json:"-", xml:"-"`
+	metadataDeleteRouteTableOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteRouteTableOutput struct {
@@ -7940,7 +8816,7 @@ type DeleteSecurityGroupInput struct {
 	// either the security group name or the security group ID.
 	GroupName *string `type:"string"`
 
-	metadataDeleteSecurityGroupInput `json:"-", xml:"-"`
+	metadataDeleteSecurityGroupInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSecurityGroupInput struct {
@@ -7948,7 +8824,7 @@ type metadataDeleteSecurityGroupInput struct {
 }
 
 type DeleteSecurityGroupOutput struct {
-	metadataDeleteSecurityGroupOutput `json:"-", xml:"-"`
+	metadataDeleteSecurityGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSecurityGroupOutput struct {
@@ -7961,7 +8837,7 @@ type DeleteSnapshotInput struct {
 	// The ID of the Amazon EBS snapshot.
 	SnapshotID *string `locationName:"SnapshotId" type:"string" required:"true"`
 
-	metadataDeleteSnapshotInput `json:"-", xml:"-"`
+	metadataDeleteSnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSnapshotInput struct {
@@ -7969,7 +8845,7 @@ type metadataDeleteSnapshotInput struct {
 }
 
 type DeleteSnapshotOutput struct {
-	metadataDeleteSnapshotOutput `json:"-", xml:"-"`
+	metadataDeleteSnapshotOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSnapshotOutput struct {
@@ -7979,7 +8855,7 @@ type metadataDeleteSnapshotOutput struct {
 type DeleteSpotDatafeedSubscriptionInput struct {
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataDeleteSpotDatafeedSubscriptionInput `json:"-", xml:"-"`
+	metadataDeleteSpotDatafeedSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSpotDatafeedSubscriptionInput struct {
@@ -7987,7 +8863,7 @@ type metadataDeleteSpotDatafeedSubscriptionInput struct {
 }
 
 type DeleteSpotDatafeedSubscriptionOutput struct {
-	metadataDeleteSpotDatafeedSubscriptionOutput `json:"-", xml:"-"`
+	metadataDeleteSpotDatafeedSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSpotDatafeedSubscriptionOutput struct {
@@ -8000,7 +8876,7 @@ type DeleteSubnetInput struct {
 	// The ID of the subnet.
 	SubnetID *string `locationName:"SubnetId" type:"string" required:"true"`
 
-	metadataDeleteSubnetInput `json:"-", xml:"-"`
+	metadataDeleteSubnetInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSubnetInput struct {
@@ -8008,7 +8884,7 @@ type metadataDeleteSubnetInput struct {
 }
 
 type DeleteSubnetOutput struct {
-	metadataDeleteSubnetOutput `json:"-", xml:"-"`
+	metadataDeleteSubnetOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteSubnetOutput struct {
@@ -8027,7 +8903,7 @@ type DeleteTagsInput struct {
 	// string as the value, we delete the key only if its value is an empty string.
 	Tags []*Tag `locationName:"tag" locationNameList:"item" type:"list"`
 
-	metadataDeleteTagsInput `json:"-", xml:"-"`
+	metadataDeleteTagsInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteTagsInput struct {
@@ -8035,7 +8911,7 @@ type metadataDeleteTagsInput struct {
 }
 
 type DeleteTagsOutput struct {
-	metadataDeleteTagsOutput `json:"-", xml:"-"`
+	metadataDeleteTagsOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteTagsOutput struct {
@@ -8048,7 +8924,7 @@ type DeleteVPCInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"VpcId" type:"string" required:"true"`
 
-	metadataDeleteVPCInput `json:"-", xml:"-"`
+	metadataDeleteVPCInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPCInput struct {
@@ -8056,7 +8932,7 @@ type metadataDeleteVPCInput struct {
 }
 
 type DeleteVPCOutput struct {
-	metadataDeleteVPCOutput `json:"-", xml:"-"`
+	metadataDeleteVPCOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPCOutput struct {
@@ -8069,7 +8945,7 @@ type DeleteVPCPeeringConnectionInput struct {
 	// The ID of the VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string" required:"true"`
 
-	metadataDeleteVPCPeeringConnectionInput `json:"-", xml:"-"`
+	metadataDeleteVPCPeeringConnectionInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPCPeeringConnectionInput struct {
@@ -8080,7 +8956,7 @@ type DeleteVPCPeeringConnectionOutput struct {
 	// Returns true if the request succeeds; otherwise, it returns an error.
 	Return *bool `locationName:"return" type:"boolean"`
 
-	metadataDeleteVPCPeeringConnectionOutput `json:"-", xml:"-"`
+	metadataDeleteVPCPeeringConnectionOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPCPeeringConnectionOutput struct {
@@ -8093,7 +8969,7 @@ type DeleteVPNConnectionInput struct {
 	// The ID of the VPN connection.
 	VPNConnectionID *string `locationName:"VpnConnectionId" type:"string" required:"true"`
 
-	metadataDeleteVPNConnectionInput `json:"-", xml:"-"`
+	metadataDeleteVPNConnectionInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPNConnectionInput struct {
@@ -8101,7 +8977,7 @@ type metadataDeleteVPNConnectionInput struct {
 }
 
 type DeleteVPNConnectionOutput struct {
-	metadataDeleteVPNConnectionOutput `json:"-", xml:"-"`
+	metadataDeleteVPNConnectionOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPNConnectionOutput struct {
@@ -8115,7 +8991,7 @@ type DeleteVPNConnectionRouteInput struct {
 	// The ID of the VPN connection.
 	VPNConnectionID *string `locationName:"VpnConnectionId" type:"string" required:"true"`
 
-	metadataDeleteVPNConnectionRouteInput `json:"-", xml:"-"`
+	metadataDeleteVPNConnectionRouteInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPNConnectionRouteInput struct {
@@ -8123,7 +8999,7 @@ type metadataDeleteVPNConnectionRouteInput struct {
 }
 
 type DeleteVPNConnectionRouteOutput struct {
-	metadataDeleteVPNConnectionRouteOutput `json:"-", xml:"-"`
+	metadataDeleteVPNConnectionRouteOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPNConnectionRouteOutput struct {
@@ -8136,7 +9012,7 @@ type DeleteVPNGatewayInput struct {
 	// The ID of the virtual private gateway.
 	VPNGatewayID *string `locationName:"VpnGatewayId" type:"string" required:"true"`
 
-	metadataDeleteVPNGatewayInput `json:"-", xml:"-"`
+	metadataDeleteVPNGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPNGatewayInput struct {
@@ -8144,7 +9020,7 @@ type metadataDeleteVPNGatewayInput struct {
 }
 
 type DeleteVPNGatewayOutput struct {
-	metadataDeleteVPNGatewayOutput `json:"-", xml:"-"`
+	metadataDeleteVPNGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVPNGatewayOutput struct {
@@ -8157,7 +9033,7 @@ type DeleteVolumeInput struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
-	metadataDeleteVolumeInput `json:"-", xml:"-"`
+	metadataDeleteVolumeInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVolumeInput struct {
@@ -8165,7 +9041,7 @@ type metadataDeleteVolumeInput struct {
 }
 
 type DeleteVolumeOutput struct {
-	metadataDeleteVolumeOutput `json:"-", xml:"-"`
+	metadataDeleteVolumeOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteVolumeOutput struct {
@@ -8178,7 +9054,7 @@ type DeregisterImageInput struct {
 	// The ID of the AMI.
 	ImageID *string `locationName:"ImageId" type:"string" required:"true"`
 
-	metadataDeregisterImageInput `json:"-", xml:"-"`
+	metadataDeregisterImageInput `json:"-" xml:"-"`
 }
 
 type metadataDeregisterImageInput struct {
@@ -8186,7 +9062,7 @@ type metadataDeregisterImageInput struct {
 }
 
 type DeregisterImageOutput struct {
-	metadataDeregisterImageOutput `json:"-", xml:"-"`
+	metadataDeregisterImageOutput `json:"-" xml:"-"`
 }
 
 type metadataDeregisterImageOutput struct {
@@ -8199,7 +9075,7 @@ type DescribeAccountAttributesInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataDescribeAccountAttributesInput `json:"-", xml:"-"`
+	metadataDescribeAccountAttributesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeAccountAttributesInput struct {
@@ -8210,7 +9086,7 @@ type DescribeAccountAttributesOutput struct {
 	// Information about one or more account attributes.
 	AccountAttributes []*AccountAttribute `locationName:"accountAttributeSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeAccountAttributesOutput `json:"-", xml:"-"`
+	metadataDescribeAccountAttributesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeAccountAttributesOutput struct {
@@ -8253,7 +9129,7 @@ type DescribeAddressesInput struct {
 	// Default: Describes all your Elastic IP addresses.
 	PublicIPs []*string `locationName:"PublicIp" locationNameList:"PublicIp" type:"list"`
 
-	metadataDescribeAddressesInput `json:"-", xml:"-"`
+	metadataDescribeAddressesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeAddressesInput struct {
@@ -8264,7 +9140,7 @@ type DescribeAddressesOutput struct {
 	// Information about one or more Elastic IP addresses.
 	Addresses []*Address `locationName:"addressesSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeAddressesOutput `json:"-", xml:"-"`
+	metadataDescribeAddressesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeAddressesOutput struct {
@@ -8289,7 +9165,7 @@ type DescribeAvailabilityZonesInput struct {
 	// The names of one or more Availability Zones.
 	ZoneNames []*string `locationName:"ZoneName" locationNameList:"ZoneName" type:"list"`
 
-	metadataDescribeAvailabilityZonesInput `json:"-", xml:"-"`
+	metadataDescribeAvailabilityZonesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeAvailabilityZonesInput struct {
@@ -8300,7 +9176,7 @@ type DescribeAvailabilityZonesOutput struct {
 	// Information about one or more Availability Zones.
 	AvailabilityZones []*AvailabilityZone `locationName:"availabilityZoneInfo" locationNameList:"item" type:"list"`
 
-	metadataDescribeAvailabilityZonesOutput `json:"-", xml:"-"`
+	metadataDescribeAvailabilityZonesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeAvailabilityZonesOutput struct {
@@ -8340,7 +9216,7 @@ type DescribeBundleTasksInput struct {
 	//   update-time - The time of the most recent update for the task.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	metadataDescribeBundleTasksInput `json:"-", xml:"-"`
+	metadataDescribeBundleTasksInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeBundleTasksInput struct {
@@ -8351,7 +9227,7 @@ type DescribeBundleTasksOutput struct {
 	// Information about one or more bundle tasks.
 	BundleTasks []*BundleTask `locationName:"bundleInstanceTasksSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeBundleTasksOutput `json:"-", xml:"-"`
+	metadataDescribeBundleTasksOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeBundleTasksOutput struct {
@@ -8385,19 +9261,20 @@ type DescribeClassicLinkInstancesInput struct {
 	// One or more instance IDs. Must be instances linked to a VPC through ClassicLink.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list"`
 
-	// The maximum number of items to return for this request. The request returns
-	// a token that you can specify in a subsequent call to get the next set of
-	// results. You cannot specify this parameter and the instance IDs parameter
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. This value can be between 5 and
+	// 1000; if MaxResults is given a value larger than 1000, only 1000 results
+	// are returned. You cannot specify this parameter and the instance IDs parameter
 	// in the same request.
 	//
 	// Constraint: If the value is greater than 1000, we return only 1000 items.
 	MaxResults *int64 `locationName:"maxResults" type:"integer"`
 
-	// The token for the next set of items to return. (You received this token from
-	// a prior call.)
+	// The token to retrieve the next page of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
-	metadataDescribeClassicLinkInstancesInput `json:"-", xml:"-"`
+	metadataDescribeClassicLinkInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeClassicLinkInstancesInput struct {
@@ -8408,11 +9285,11 @@ type DescribeClassicLinkInstancesOutput struct {
 	// Information about one or more linked EC2-Classic instances.
 	Instances []*ClassicLinkInstance `locationName:"instancesSet" locationNameList:"item" type:"list"`
 
-	// The token to use when requesting the next set of items. If there are no additional
-	// items to return, the string is empty.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
-	metadataDescribeClassicLinkInstancesOutput `json:"-", xml:"-"`
+	metadataDescribeClassicLinkInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeClassicLinkInstancesOutput struct {
@@ -8427,7 +9304,7 @@ type DescribeConversionTasksInput struct {
 
 	Filters []*Filter `locationName:"filter" locationNameList:"Filter" type:"list"`
 
-	metadataDescribeConversionTasksInput `json:"-", xml:"-"`
+	metadataDescribeConversionTasksInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeConversionTasksInput struct {
@@ -8437,7 +9314,7 @@ type metadataDescribeConversionTasksInput struct {
 type DescribeConversionTasksOutput struct {
 	ConversionTasks []*ConversionTask `locationName:"conversionTasks" locationNameList:"item" type:"list"`
 
-	metadataDescribeConversionTasksOutput `json:"-", xml:"-"`
+	metadataDescribeConversionTasksOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeConversionTasksOutput struct {
@@ -8481,7 +9358,7 @@ type DescribeCustomerGatewaysInput struct {
 	// independent of the tag-key filter.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	metadataDescribeCustomerGatewaysInput `json:"-", xml:"-"`
+	metadataDescribeCustomerGatewaysInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeCustomerGatewaysInput struct {
@@ -8492,7 +9369,7 @@ type DescribeCustomerGatewaysOutput struct {
 	// Information about one or more customer gateways.
 	CustomerGateways []*CustomerGateway `locationName:"customerGatewaySet" locationNameList:"item" type:"list"`
 
-	metadataDescribeCustomerGatewaysOutput `json:"-", xml:"-"`
+	metadataDescribeCustomerGatewaysOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeCustomerGatewaysOutput struct {
@@ -8528,7 +9405,7 @@ type DescribeDHCPOptionsInput struct {
 	// independent of the tag-key filter.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	metadataDescribeDHCPOptionsInput `json:"-", xml:"-"`
+	metadataDescribeDHCPOptionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDHCPOptionsInput struct {
@@ -8539,7 +9416,7 @@ type DescribeDHCPOptionsOutput struct {
 	// Information about one or more DHCP options sets.
 	DHCPOptions []*DHCPOptions `locationName:"dhcpOptionsSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeDHCPOptionsOutput `json:"-", xml:"-"`
+	metadataDescribeDHCPOptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDHCPOptionsOutput struct {
@@ -8550,7 +9427,7 @@ type DescribeExportTasksInput struct {
 	// One or more export task IDs.
 	ExportTaskIDs []*string `locationName:"exportTaskId" locationNameList:"ExportTaskId" type:"list"`
 
-	metadataDescribeExportTasksInput `json:"-", xml:"-"`
+	metadataDescribeExportTasksInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeExportTasksInput struct {
@@ -8560,7 +9437,7 @@ type metadataDescribeExportTasksInput struct {
 type DescribeExportTasksOutput struct {
 	ExportTasks []*ExportTask `locationName:"exportTaskSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeExportTasksOutput `json:"-", xml:"-"`
+	metadataDescribeExportTasksOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeExportTasksOutput struct {
@@ -8580,7 +9457,7 @@ type DescribeImageAttributeInput struct {
 	// The ID of the AMI.
 	ImageID *string `locationName:"ImageId" type:"string" required:"true"`
 
-	metadataDescribeImageAttributeInput `json:"-", xml:"-"`
+	metadataDescribeImageAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeImageAttributeInput struct {
@@ -8613,7 +9490,7 @@ type DescribeImageAttributeOutput struct {
 	// The value to use for a resource attribute.
 	SRIOVNetSupport *AttributeValue `locationName:"sriovNetSupport" type:"structure"`
 
-	metadataDescribeImageAttributeOutput `json:"-", xml:"-"`
+	metadataDescribeImageAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeImageAttributeOutput struct {
@@ -8710,7 +9587,7 @@ type DescribeImagesInput struct {
 	// you have launch permissions, regardless of ownership.
 	Owners []*string `locationName:"Owner" locationNameList:"Owner" type:"list"`
 
-	metadataDescribeImagesInput `json:"-", xml:"-"`
+	metadataDescribeImagesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeImagesInput struct {
@@ -8721,10 +9598,84 @@ type DescribeImagesOutput struct {
 	// Information about one or more images.
 	Images []*Image `locationName:"imagesSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeImagesOutput `json:"-", xml:"-"`
+	metadataDescribeImagesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeImagesOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeImportImageTasksInput struct {
+	DryRun *bool `type:"boolean"`
+
+	// Filters to be applied on a describe request.
+	Filters []*Filter `locationNameList:"Filter" type:"list"`
+
+	// A list of ImportImage task IDs to describe.
+	ImportTaskIDs []*string `locationName:"ImportTaskId" locationNameList:"ImportTaskId" type:"list"`
+
+	// The maximum number of results in a page.
+	MaxResults *int64 `type:"integer"`
+
+	// The token to get the next page of paginated describe requests.
+	NextToken *string `type:"string"`
+
+	metadataDescribeImportImageTasksInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeImportImageTasksInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeImportImageTasksOutput struct {
+	// A list of zero or more ImportImage tasks that are currently active or completed/cancelled
+	// in the previous 7 days.
+	ImportImageTasks []*ImportImageTask `locationName:"importImageTaskSet" locationNameList:"item" type:"list"`
+
+	// The token to get the next page of paginated describe requests.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	metadataDescribeImportImageTasksOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeImportImageTasksOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeImportSnapshotTasksInput struct {
+	DryRun *bool `type:"boolean"`
+
+	// The filters to be applied on a describe request.
+	Filters []*Filter `locationNameList:"Filter" type:"list"`
+
+	// A list of IDs of the ImportSnapshot tasks to describe.
+	ImportTaskIDs []*string `locationName:"ImportTaskId" locationNameList:"ImportTaskId" type:"list"`
+
+	// The maximum number of results in a page.
+	MaxResults *int64 `type:"integer"`
+
+	// The token to get to the next page of paginated describe requests.
+	NextToken *string `type:"string"`
+
+	metadataDescribeImportSnapshotTasksInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeImportSnapshotTasksInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeImportSnapshotTasksOutput struct {
+	// A list of zero or more ImportSnapshot tasks that are currently active or
+	// completed/cancelled in the previous 7 days.
+	ImportSnapshotTasks []*ImportSnapshotTask `locationName:"importSnapshotTaskSet" locationNameList:"item" type:"list"`
+
+	// The token to get to the next page of paginated describe requests.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	metadataDescribeImportSnapshotTasksOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeImportSnapshotTasksOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -8737,7 +9688,7 @@ type DescribeInstanceAttributeInput struct {
 	// The ID of the instance.
 	InstanceID *string `locationName:"instanceId" type:"string" required:"true"`
 
-	metadataDescribeInstanceAttributeInput `json:"-", xml:"-"`
+	metadataDescribeInstanceAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInstanceAttributeInput struct {
@@ -8778,7 +9729,7 @@ type DescribeInstanceAttributeOutput struct {
 	// The RAM disk ID.
 	RAMDiskID *AttributeValue `locationName:"ramdisk" type:"structure"`
 
-	// The name of the root device (for example, /dev/sda1).
+	// The name of the root device (for example, /dev/sda1 or /dev/xvda).
 	RootDeviceName *AttributeValue `locationName:"rootDeviceName" type:"structure"`
 
 	// The value to use for a resource attribute.
@@ -8792,7 +9743,7 @@ type DescribeInstanceAttributeOutput struct {
 	// The Base64-encoded MIME user data.
 	UserData *AttributeValue `locationName:"userData" type:"structure"`
 
-	metadataDescribeInstanceAttributeOutput `json:"-", xml:"-"`
+	metadataDescribeInstanceAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInstanceAttributeOutput struct {
@@ -8852,20 +9803,18 @@ type DescribeInstanceStatusInput struct {
 	// Constraints: Maximum 100 explicitly specified instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list"`
 
-	// The maximum number of paginated instance items per response. The call also
-	// returns a token that you can specify in a subsequent call to get the next
-	// set of results. If the value is greater than 1000, we return only 1000 items.
-	// You cannot specify this parameter and the instance IDs parameter in the same
-	// request.
-	//
-	// Default: 1000
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. This value can be between 5 and
+	// 1000; if MaxResults is given a value larger than 1000, only 1000 results
+	// are returned. You cannot specify this parameter and the instance IDs parameter
+	// in the same request.
 	MaxResults *int64 `type:"integer"`
 
-	// The next paginated set of results to return. (You received this token from
-	// a prior call.)
+	// The token to retrieve the next page of results.
 	NextToken *string `type:"string"`
 
-	metadataDescribeInstanceStatusInput `json:"-", xml:"-"`
+	metadataDescribeInstanceStatusInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInstanceStatusInput struct {
@@ -8876,10 +9825,11 @@ type DescribeInstanceStatusOutput struct {
 	// One or more instance status descriptions.
 	InstanceStatuses []*InstanceStatus `locationName:"instanceStatusSet" locationNameList:"item" type:"list"`
 
-	// The next paginated set of results to return.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
-	metadataDescribeInstanceStatusOutput `json:"-", xml:"-"`
+	metadataDescribeInstanceStatusOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInstanceStatusOutput struct {
@@ -8902,7 +9852,7 @@ type DescribeInstancesInput struct {
 	// whether the Amazon EBS volume is deleted on instance termination.
 	//
 	//   block-device-mapping.device-name - The device name for the Amazon EBS
-	// volume (for example, /dev/sdh).
+	// volume (for example, /dev/sdh or xvdh).
 	//
 	//   block-device-mapping.status - The status for the Amazon EBS volume (attaching
 	// | attached | detaching | detached).
@@ -8940,7 +9890,7 @@ type DescribeInstancesInput struct {
 	//   instance-state-name - The state of the instance (pending | running | shutting-down
 	// | terminated | stopping | stopped).
 	//
-	//   instance-type - The type of instance (for example, m1.small).
+	//   instance-type - The type of instance (for example, t2.micro).
 	//
 	//   instance.group-id - The ID of the security group for the instance.
 	//
@@ -8994,7 +9944,7 @@ type DescribeInstancesInput struct {
 	// get one reservation ID.
 	//
 	//   root-device-name - The name of the root device for the instance (for example,
-	// /dev/sda1).
+	// /dev/sda1 or /dev/xvda).
 	//
 	//   root-device-type - The type of root device that the instance uses (ebs
 	// | instance-store).
@@ -9058,9 +10008,9 @@ type DescribeInstancesInput struct {
 	//   network-interface-private-dns-name - The private DNS name of the network
 	// interface.
 	//
-	//   network-interface.source-destination-check - Whether the network interface
-	// performs source/destination checking. A value of true means checking is enabled,
-	// and false means checking is disabled. The value must be false for the network
+	//   network-interface.source-dest-check - Whether the network interface performs
+	// source/destination checking. A value of true means checking is enabled, and
+	// false means checking is disabled. The value must be false for the network
 	// interface to perform network address translation (NAT) in your VPC.
 	//
 	//   network-interface.group-id - The ID of a security group associated with
@@ -9119,18 +10069,18 @@ type DescribeInstancesInput struct {
 	// Default: Describes all your instances.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list"`
 
-	// The maximum number of items to return for this call. The call also returns
-	// a token that you can specify in a subsequent call to get the next set of
-	// results. If the value is greater than 1000, we return only 1000 items. You
-	// cannot specify this parameter and the instance IDs parameter in the same
-	// request.
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. This value can be between 5 and
+	// 1000; if MaxResults is given a value larger than 1000, only 1000 results
+	// are returned. You cannot specify this parameter and the instance IDs parameter
+	// in the same request.
 	MaxResults *int64 `locationName:"maxResults" type:"integer"`
 
-	// The token for the next set of items to return. (You received this token from
-	// a prior call.)
+	// The token to request the next page of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
-	metadataDescribeInstancesInput `json:"-", xml:"-"`
+	metadataDescribeInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInstancesInput struct {
@@ -9138,14 +10088,14 @@ type metadataDescribeInstancesInput struct {
 }
 
 type DescribeInstancesOutput struct {
-	// The token to use when requesting the next set of items. If there are no additional
-	// items to return, the string is empty.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// One or more reservations.
 	Reservations []*Reservation `locationName:"reservationSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeInstancesOutput `json:"-", xml:"-"`
+	metadataDescribeInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInstancesOutput struct {
@@ -9182,7 +10132,7 @@ type DescribeInternetGatewaysInput struct {
 	// Default: Describes all your Internet gateways.
 	InternetGatewayIDs []*string `locationName:"internetGatewayId" locationNameList:"item" type:"list"`
 
-	metadataDescribeInternetGatewaysInput `json:"-", xml:"-"`
+	metadataDescribeInternetGatewaysInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInternetGatewaysInput struct {
@@ -9193,7 +10143,7 @@ type DescribeInternetGatewaysOutput struct {
 	// Information about one or more Internet gateways.
 	InternetGateways []*InternetGateway `locationName:"internetGatewaySet" locationNameList:"item" type:"list"`
 
-	metadataDescribeInternetGatewaysOutput `json:"-", xml:"-"`
+	metadataDescribeInternetGatewaysOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeInternetGatewaysOutput struct {
@@ -9215,7 +10165,7 @@ type DescribeKeyPairsInput struct {
 	// Default: Describes all your key pairs.
 	KeyNames []*string `locationName:"KeyName" locationNameList:"KeyName" type:"list"`
 
-	metadataDescribeKeyPairsInput `json:"-", xml:"-"`
+	metadataDescribeKeyPairsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeKeyPairsInput struct {
@@ -9226,7 +10176,7 @@ type DescribeKeyPairsOutput struct {
 	// Information about one or more key pairs.
 	KeyPairs []*KeyPairInfo `locationName:"keySet" locationNameList:"item" type:"list"`
 
-	metadataDescribeKeyPairsOutput `json:"-", xml:"-"`
+	metadataDescribeKeyPairsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeKeyPairsOutput struct {
@@ -9290,7 +10240,7 @@ type DescribeNetworkACLsInput struct {
 	// Default: Describes all your network ACLs.
 	NetworkACLIDs []*string `locationName:"NetworkAclId" locationNameList:"item" type:"list"`
 
-	metadataDescribeNetworkACLsInput `json:"-", xml:"-"`
+	metadataDescribeNetworkACLsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeNetworkACLsInput struct {
@@ -9301,7 +10251,7 @@ type DescribeNetworkACLsOutput struct {
 	// Information about one or more network ACLs.
 	NetworkACLs []*NetworkACL `locationName:"networkAclSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeNetworkACLsOutput `json:"-", xml:"-"`
+	metadataDescribeNetworkACLsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeNetworkACLsOutput struct {
@@ -9317,7 +10267,7 @@ type DescribeNetworkInterfaceAttributeInput struct {
 	// The ID of the network interface.
 	NetworkInterfaceID *string `locationName:"networkInterfaceId" type:"string" required:"true"`
 
-	metadataDescribeNetworkInterfaceAttributeInput `json:"-", xml:"-"`
+	metadataDescribeNetworkInterfaceAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeNetworkInterfaceAttributeInput struct {
@@ -9340,7 +10290,7 @@ type DescribeNetworkInterfaceAttributeOutput struct {
 	// Indicates whether source/destination checking is enabled.
 	SourceDestCheck *AttributeBooleanValue `locationName:"sourceDestCheck" type:"structure"`
 
-	metadataDescribeNetworkInterfaceAttributeOutput `json:"-", xml:"-"`
+	metadataDescribeNetworkInterfaceAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeNetworkInterfaceAttributeOutput struct {
@@ -9456,7 +10406,7 @@ type DescribeNetworkInterfacesInput struct {
 	// Default: Describes all your network interfaces.
 	NetworkInterfaceIDs []*string `locationName:"NetworkInterfaceId" locationNameList:"item" type:"list"`
 
-	metadataDescribeNetworkInterfacesInput `json:"-", xml:"-"`
+	metadataDescribeNetworkInterfacesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeNetworkInterfacesInput struct {
@@ -9467,7 +10417,7 @@ type DescribeNetworkInterfacesOutput struct {
 	// Information about one or more network interfaces.
 	NetworkInterfaces []*NetworkInterface `locationName:"networkInterfaceSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeNetworkInterfacesOutput `json:"-", xml:"-"`
+	metadataDescribeNetworkInterfacesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeNetworkInterfacesOutput struct {
@@ -9492,7 +10442,7 @@ type DescribePlacementGroupsInput struct {
 	// Default: Describes all your placement groups, or only those otherwise specified.
 	GroupNames []*string `locationName:"groupName" type:"list"`
 
-	metadataDescribePlacementGroupsInput `json:"-", xml:"-"`
+	metadataDescribePlacementGroupsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribePlacementGroupsInput struct {
@@ -9503,7 +10453,7 @@ type DescribePlacementGroupsOutput struct {
 	// One or more placement groups.
 	PlacementGroups []*PlacementGroup `locationName:"placementGroupSet" locationNameList:"item" type:"list"`
 
-	metadataDescribePlacementGroupsOutput `json:"-", xml:"-"`
+	metadataDescribePlacementGroupsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribePlacementGroupsOutput struct {
@@ -9523,7 +10473,7 @@ type DescribeRegionsInput struct {
 	// The names of one or more regions.
 	RegionNames []*string `locationName:"RegionName" locationNameList:"RegionName" type:"list"`
 
-	metadataDescribeRegionsInput `json:"-", xml:"-"`
+	metadataDescribeRegionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeRegionsInput struct {
@@ -9534,7 +10484,7 @@ type DescribeRegionsOutput struct {
 	// Information about one or more regions.
 	Regions []*Region `locationName:"regionInfo" locationNameList:"item" type:"list"`
 
-	metadataDescribeRegionsOutput `json:"-", xml:"-"`
+	metadataDescribeRegionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeRegionsOutput struct {
@@ -9598,7 +10548,7 @@ type DescribeReservedInstancesInput struct {
 	// specified.
 	ReservedInstancesIDs []*string `locationName:"ReservedInstancesId" locationNameList:"ReservedInstancesId" type:"list"`
 
-	metadataDescribeReservedInstancesInput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesInput struct {
@@ -9624,7 +10574,7 @@ type DescribeReservedInstancesListingsInput struct {
 	// One or more Reserved Instance Listing IDs.
 	ReservedInstancesListingID *string `locationName:"reservedInstancesListingId" type:"string"`
 
-	metadataDescribeReservedInstancesListingsInput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesListingsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesListingsInput struct {
@@ -9635,7 +10585,7 @@ type DescribeReservedInstancesListingsOutput struct {
 	// Information about the Reserved Instance listing.
 	ReservedInstancesListings []*ReservedInstancesListing `locationName:"reservedInstancesListingsSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeReservedInstancesListingsOutput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesListingsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesListingsOutput struct {
@@ -9679,13 +10629,13 @@ type DescribeReservedInstancesModificationsInput struct {
 	//   update-date - The time when the modification request was last updated.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	// The token for the next page of data.
+	// The token to retrieve the next page of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// IDs for the submitted modification request.
 	ReservedInstancesModificationIDs []*string `locationName:"ReservedInstancesModificationId" locationNameList:"ReservedInstancesModificationId" type:"list"`
 
-	metadataDescribeReservedInstancesModificationsInput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesModificationsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesModificationsInput struct {
@@ -9693,13 +10643,14 @@ type metadataDescribeReservedInstancesModificationsInput struct {
 }
 
 type DescribeReservedInstancesModificationsOutput struct {
-	// The token for the next page of data.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// The Reserved Instance modification information.
 	ReservedInstancesModifications []*ReservedInstancesModification `locationName:"reservedInstancesModificationsSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeReservedInstancesModificationsOutput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesModificationsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesModificationsOutput struct {
@@ -9764,7 +10715,9 @@ type DescribeReservedInstancesOfferingsInput struct {
 	// Default: 20
 	MaxInstanceCount *int64 `type:"integer"`
 
-	// The maximum number of offerings to return. The maximum is 100.
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. The maximum is 100.
 	//
 	// Default: 100
 	MaxResults *int64 `locationName:"maxResults" type:"integer"`
@@ -9774,7 +10727,7 @@ type DescribeReservedInstancesOfferingsInput struct {
 	// Default: 2592000 (1 month)
 	MinDuration *int64 `type:"long"`
 
-	// The token to use when requesting the next paginated set of offerings.
+	// The token to retrieve the next page of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// The Reserved Instance offering type. If you are using tools that predate
@@ -9789,7 +10742,7 @@ type DescribeReservedInstancesOfferingsInput struct {
 	// One or more Reserved Instances offering IDs.
 	ReservedInstancesOfferingIDs []*string `locationName:"ReservedInstancesOfferingId" type:"list"`
 
-	metadataDescribeReservedInstancesOfferingsInput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesOfferingsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesOfferingsInput struct {
@@ -9797,13 +10750,14 @@ type metadataDescribeReservedInstancesOfferingsInput struct {
 }
 
 type DescribeReservedInstancesOfferingsOutput struct {
-	// The next paginated set of results to return.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// A list of Reserved Instances offerings.
 	ReservedInstancesOfferings []*ReservedInstancesOffering `locationName:"reservedInstancesOfferingsSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeReservedInstancesOfferingsOutput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesOfferingsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesOfferingsOutput struct {
@@ -9814,7 +10768,7 @@ type DescribeReservedInstancesOutput struct {
 	// A list of Reserved Instances.
 	ReservedInstances []*ReservedInstances `locationName:"reservedInstancesSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeReservedInstancesOutput `json:"-", xml:"-"`
+	metadataDescribeReservedInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedInstancesOutput struct {
@@ -9881,7 +10835,7 @@ type DescribeRouteTablesInput struct {
 	// Default: Describes all your route tables.
 	RouteTableIDs []*string `locationName:"RouteTableId" locationNameList:"item" type:"list"`
 
-	metadataDescribeRouteTablesInput `json:"-", xml:"-"`
+	metadataDescribeRouteTablesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeRouteTablesInput struct {
@@ -9892,7 +10846,7 @@ type DescribeRouteTablesOutput struct {
 	// Information about one or more route tables.
 	RouteTables []*RouteTable `locationName:"routeTableSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeRouteTablesOutput `json:"-", xml:"-"`
+	metadataDescribeRouteTablesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeRouteTablesOutput struct {
@@ -9953,7 +10907,7 @@ type DescribeSecurityGroupsInput struct {
 	// Default: Describes all your security groups.
 	GroupNames []*string `locationName:"GroupName" locationNameList:"GroupName" type:"list"`
 
-	metadataDescribeSecurityGroupsInput `json:"-", xml:"-"`
+	metadataDescribeSecurityGroupsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSecurityGroupsInput struct {
@@ -9964,7 +10918,7 @@ type DescribeSecurityGroupsOutput struct {
 	// Information about one or more security groups.
 	SecurityGroups []*SecurityGroup `locationName:"securityGroupInfo" locationNameList:"item" type:"list"`
 
-	metadataDescribeSecurityGroupsOutput `json:"-", xml:"-"`
+	metadataDescribeSecurityGroupsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSecurityGroupsOutput struct {
@@ -9980,7 +10934,7 @@ type DescribeSnapshotAttributeInput struct {
 	// The ID of the Amazon EBS snapshot.
 	SnapshotID *string `locationName:"SnapshotId" type:"string" required:"true"`
 
-	metadataDescribeSnapshotAttributeInput `json:"-", xml:"-"`
+	metadataDescribeSnapshotAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSnapshotAttributeInput struct {
@@ -9997,7 +10951,7 @@ type DescribeSnapshotAttributeOutput struct {
 	// The ID of the Amazon EBS snapshot.
 	SnapshotID *string `locationName:"snapshotId" type:"string"`
 
-	metadataDescribeSnapshotAttributeOutput `json:"-", xml:"-"`
+	metadataDescribeSnapshotAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSnapshotAttributeOutput struct {
@@ -10072,7 +11026,7 @@ type DescribeSnapshotsInput struct {
 	// Default: Describes snapshots for which you have launch permissions.
 	SnapshotIDs []*string `locationName:"SnapshotId" locationNameList:"SnapshotId" type:"list"`
 
-	metadataDescribeSnapshotsInput `json:"-", xml:"-"`
+	metadataDescribeSnapshotsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSnapshotsInput struct {
@@ -10088,7 +11042,7 @@ type DescribeSnapshotsOutput struct {
 
 	Snapshots []*Snapshot `locationName:"snapshotSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeSnapshotsOutput `json:"-", xml:"-"`
+	metadataDescribeSnapshotsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSnapshotsOutput struct {
@@ -10098,7 +11052,7 @@ type metadataDescribeSnapshotsOutput struct {
 type DescribeSpotDatafeedSubscriptionInput struct {
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataDescribeSpotDatafeedSubscriptionInput `json:"-", xml:"-"`
+	metadataDescribeSpotDatafeedSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSpotDatafeedSubscriptionInput struct {
@@ -10109,7 +11063,7 @@ type DescribeSpotDatafeedSubscriptionOutput struct {
 	// The Spot Instance data feed subscription.
 	SpotDatafeedSubscription *SpotDatafeedSubscription `locationName:"spotDatafeedSubscription" type:"structure"`
 
-	metadataDescribeSpotDatafeedSubscriptionOutput `json:"-", xml:"-"`
+	metadataDescribeSpotDatafeedSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSpotDatafeedSubscriptionOutput struct {
@@ -10232,7 +11186,7 @@ type DescribeSpotInstanceRequestsInput struct {
 	// One or more Spot Instance request IDs.
 	SpotInstanceRequestIDs []*string `locationName:"SpotInstanceRequestId" locationNameList:"SpotInstanceRequestId" type:"list"`
 
-	metadataDescribeSpotInstanceRequestsInput `json:"-", xml:"-"`
+	metadataDescribeSpotInstanceRequestsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSpotInstanceRequestsInput struct {
@@ -10243,7 +11197,7 @@ type DescribeSpotInstanceRequestsOutput struct {
 	// One or more Spot Instance requests.
 	SpotInstanceRequests []*SpotInstanceRequest `locationName:"spotInstanceRequestSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeSpotInstanceRequestsOutput `json:"-", xml:"-"`
+	metadataDescribeSpotInstanceRequestsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSpotInstanceRequestsOutput struct {
@@ -10281,13 +11235,14 @@ type DescribeSpotPriceHistoryInput struct {
 	// Filters the results by the specified instance types.
 	InstanceTypes []*string `locationName:"InstanceType" type:"list"`
 
-	// The maximum number of items to return for this call. The call also returns
-	// a token that you can specify in a subsequent call to get the next set of
-	// results.
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. This value can be between 5 and
+	// 1000; if MaxResults is given a value larger than 1000, only 1000 results
+	// are returned.
 	MaxResults *int64 `locationName:"maxResults" type:"integer"`
 
-	// The token for the next set of items. (You received this token from a prior
-	// call.)
+	// The token to retrieve the next page of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// Filters the results by the specified basic product descriptions.
@@ -10297,7 +11252,7 @@ type DescribeSpotPriceHistoryInput struct {
 	// the price history data.
 	StartTime *time.Time `locationName:"startTime" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataDescribeSpotPriceHistoryInput `json:"-", xml:"-"`
+	metadataDescribeSpotPriceHistoryInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSpotPriceHistoryInput struct {
@@ -10305,14 +11260,14 @@ type metadataDescribeSpotPriceHistoryInput struct {
 }
 
 type DescribeSpotPriceHistoryOutput struct {
-	// The token to use when requesting the next set of items. If there are no additional
-	// items to return, the string is empty.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// The historical Spot Prices.
 	SpotPriceHistory []*SpotPrice `locationName:"spotPriceHistorySet" locationNameList:"item" type:"list"`
 
-	metadataDescribeSpotPriceHistoryOutput `json:"-", xml:"-"`
+	metadataDescribeSpotPriceHistoryOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSpotPriceHistoryOutput struct {
@@ -10361,7 +11316,7 @@ type DescribeSubnetsInput struct {
 	// Default: Describes all your subnets.
 	SubnetIDs []*string `locationName:"SubnetId" locationNameList:"SubnetId" type:"list"`
 
-	metadataDescribeSubnetsInput `json:"-", xml:"-"`
+	metadataDescribeSubnetsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSubnetsInput struct {
@@ -10372,7 +11327,7 @@ type DescribeSubnetsOutput struct {
 	// Information about one or more subnets.
 	Subnets []*Subnet `locationName:"subnetSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeSubnetsOutput `json:"-", xml:"-"`
+	metadataDescribeSubnetsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeSubnetsOutput struct {
@@ -10396,16 +11351,17 @@ type DescribeTagsInput struct {
 	//   value - The tag value.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	// The maximum number of items to return for this call. The call also returns
-	// a token that you can specify in a subsequent call to get the next set of
-	// results. If the value is greater than 1000, we return only 1000 items.
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. This value can be between 5 and
+	// 1000; if MaxResults is given a value larger than 1000, only 1000 results
+	// are returned.
 	MaxResults *int64 `locationName:"maxResults" type:"integer"`
 
-	// The token for the next set of items to return. (You received this token from
-	// a prior call.)
+	// The token to retrieve the next page of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
-	metadataDescribeTagsInput `json:"-", xml:"-"`
+	metadataDescribeTagsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeTagsInput struct {
@@ -10413,14 +11369,14 @@ type metadataDescribeTagsInput struct {
 }
 
 type DescribeTagsOutput struct {
-	// The token to use when requesting the next set of items. If there are no additional
-	// items to return, the string is empty.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return..
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// A list of tags.
 	Tags []*TagDescription `locationName:"tagSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeTagsOutput `json:"-", xml:"-"`
+	metadataDescribeTagsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeTagsOutput struct {
@@ -10436,7 +11392,7 @@ type DescribeVPCAttributeInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"VpcId" type:"string" required:"true"`
 
-	metadataDescribeVPCAttributeInput `json:"-", xml:"-"`
+	metadataDescribeVPCAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCAttributeInput struct {
@@ -10457,7 +11413,7 @@ type DescribeVPCAttributeOutput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataDescribeVPCAttributeOutput `json:"-", xml:"-"`
+	metadataDescribeVPCAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCAttributeOutput struct {
@@ -10488,7 +11444,7 @@ type DescribeVPCClassicLinkInput struct {
 	// One or more VPCs for which you want to describe the ClassicLink status.
 	VPCIDs []*string `locationName:"VpcId" locationNameList:"VpcId" type:"list"`
 
-	metadataDescribeVPCClassicLinkInput `json:"-", xml:"-"`
+	metadataDescribeVPCClassicLinkInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCClassicLinkInput struct {
@@ -10499,7 +11455,7 @@ type DescribeVPCClassicLinkOutput struct {
 	// The ClassicLink status of one or more VPCs.
 	VPCs []*VPCClassicLink `locationName:"vpcSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVPCClassicLinkOutput `json:"-", xml:"-"`
+	metadataDescribeVPCClassicLinkOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCClassicLinkOutput struct {
@@ -10553,7 +11509,7 @@ type DescribeVPCPeeringConnectionsInput struct {
 	// Default: Describes all your VPC peering connections.
 	VPCPeeringConnectionIDs []*string `locationName:"VpcPeeringConnectionId" locationNameList:"item" type:"list"`
 
-	metadataDescribeVPCPeeringConnectionsInput `json:"-", xml:"-"`
+	metadataDescribeVPCPeeringConnectionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCPeeringConnectionsInput struct {
@@ -10564,7 +11520,7 @@ type DescribeVPCPeeringConnectionsOutput struct {
 	// Information about the VPC peering connections.
 	VPCPeeringConnections []*VPCPeeringConnection `locationName:"vpcPeeringConnectionSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVPCPeeringConnectionsOutput `json:"-", xml:"-"`
+	metadataDescribeVPCPeeringConnectionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCPeeringConnectionsOutput struct {
@@ -10606,7 +11562,7 @@ type DescribeVPCsInput struct {
 	// Default: Describes all your VPCs.
 	VPCIDs []*string `locationName:"VpcId" locationNameList:"VpcId" type:"list"`
 
-	metadataDescribeVPCsInput `json:"-", xml:"-"`
+	metadataDescribeVPCsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCsInput struct {
@@ -10617,7 +11573,7 @@ type DescribeVPCsOutput struct {
 	// Information about one or more VPCs.
 	VPCs []*VPC `locationName:"vpcSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVPCsOutput `json:"-", xml:"-"`
+	metadataDescribeVPCsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPCsOutput struct {
@@ -10674,7 +11630,7 @@ type DescribeVPNConnectionsInput struct {
 	// Default: Describes your VPN connections.
 	VPNConnectionIDs []*string `locationName:"VpnConnectionId" locationNameList:"VpnConnectionId" type:"list"`
 
-	metadataDescribeVPNConnectionsInput `json:"-", xml:"-"`
+	metadataDescribeVPNConnectionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPNConnectionsInput struct {
@@ -10685,7 +11641,7 @@ type DescribeVPNConnectionsOutput struct {
 	// Information about one or more VPN connections.
 	VPNConnections []*VPNConnection `locationName:"vpnConnectionSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVPNConnectionsOutput `json:"-", xml:"-"`
+	metadataDescribeVPNConnectionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPNConnectionsOutput struct {
@@ -10730,7 +11686,7 @@ type DescribeVPNGatewaysInput struct {
 	// Default: Describes all your virtual private gateways.
 	VPNGatewayIDs []*string `locationName:"VpnGatewayId" locationNameList:"VpnGatewayId" type:"list"`
 
-	metadataDescribeVPNGatewaysInput `json:"-", xml:"-"`
+	metadataDescribeVPNGatewaysInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPNGatewaysInput struct {
@@ -10741,7 +11697,7 @@ type DescribeVPNGatewaysOutput struct {
 	// Information about one or more virtual private gateways.
 	VPNGateways []*VPNGateway `locationName:"vpnGatewaySet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVPNGatewaysOutput `json:"-", xml:"-"`
+	metadataDescribeVPNGatewaysOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVPNGatewaysOutput struct {
@@ -10757,7 +11713,7 @@ type DescribeVolumeAttributeInput struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
-	metadataDescribeVolumeAttributeInput `json:"-", xml:"-"`
+	metadataDescribeVolumeAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVolumeAttributeInput struct {
@@ -10774,7 +11730,7 @@ type DescribeVolumeAttributeOutput struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"volumeId" type:"string"`
 
-	metadataDescribeVolumeAttributeOutput `json:"-", xml:"-"`
+	metadataDescribeVolumeAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVolumeAttributeOutput struct {
@@ -10817,12 +11773,20 @@ type DescribeVolumeStatusInput struct {
 	// | insufficient-data).
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
-	// The maximum number of paginated volume items per response. You cannot specify
-	// this parameter and the volume IDs parameter in the same request.
+	// The maximum number of volume results returned by DescribeVolumeStatus in
+	// paginated output. When this parameter is used, the request only returns MaxResults
+	// results in a single page along with a NextToken response element. The remaining
+	// results of the initial request can be seen by sending another request with
+	// the returned NextToken value. This value can be between 5 and 1000; if MaxResults
+	// is given a value larger than 1000, only 1000 results are returned. If this
+	// parameter is not used, then DescribeVolumeStatus returns all results. You
+	// cannot specify this parameter and the volume IDs parameter in the same request.
 	MaxResults *int64 `type:"integer"`
 
-	// The next paginated set of results to return using the pagination token returned
-	// by a previous call.
+	// The NextToken value to include in a future DescribeVolumeStatus request.
+	// When the results of the request exceed MaxResults, this value can be used
+	// to retrieve the next page of results. This value is null when there are no
+	// more results to return.
 	NextToken *string `type:"string"`
 
 	// One or more volume IDs.
@@ -10830,7 +11794,7 @@ type DescribeVolumeStatusInput struct {
 	// Default: Describes all your volumes.
 	VolumeIDs []*string `locationName:"VolumeId" locationNameList:"VolumeId" type:"list"`
 
-	metadataDescribeVolumeStatusInput `json:"-", xml:"-"`
+	metadataDescribeVolumeStatusInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVolumeStatusInput struct {
@@ -10838,13 +11802,14 @@ type metadataDescribeVolumeStatusInput struct {
 }
 
 type DescribeVolumeStatusOutput struct {
-	// The next paginated set of results to return.
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// A list of volumes.
 	VolumeStatuses []*VolumeStatusItem `locationName:"volumeStatusSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVolumeStatusOutput `json:"-", xml:"-"`
+	metadataDescribeVolumeStatusOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVolumeStatusOutput struct {
@@ -10922,7 +11887,7 @@ type DescribeVolumesInput struct {
 	// One or more volume IDs.
 	VolumeIDs []*string `locationName:"VolumeId" locationNameList:"VolumeId" type:"list"`
 
-	metadataDescribeVolumesInput `json:"-", xml:"-"`
+	metadataDescribeVolumesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVolumesInput struct {
@@ -10938,7 +11903,7 @@ type DescribeVolumesOutput struct {
 
 	Volumes []*Volume `locationName:"volumeSet" locationNameList:"item" type:"list"`
 
-	metadataDescribeVolumesOutput `json:"-", xml:"-"`
+	metadataDescribeVolumesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeVolumesOutput struct {
@@ -10954,7 +11919,7 @@ type DetachClassicLinkVPCInput struct {
 	// The ID of the VPC to which the instance is linked.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataDetachClassicLinkVPCInput `json:"-", xml:"-"`
+	metadataDetachClassicLinkVPCInput `json:"-" xml:"-"`
 }
 
 type metadataDetachClassicLinkVPCInput struct {
@@ -10965,7 +11930,7 @@ type DetachClassicLinkVPCOutput struct {
 	// Returns true if the request succeeds; otherwise, it returns an error.
 	Return *bool `locationName:"return" type:"boolean"`
 
-	metadataDetachClassicLinkVPCOutput `json:"-", xml:"-"`
+	metadataDetachClassicLinkVPCOutput `json:"-" xml:"-"`
 }
 
 type metadataDetachClassicLinkVPCOutput struct {
@@ -10981,7 +11946,7 @@ type DetachInternetGatewayInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataDetachInternetGatewayInput `json:"-", xml:"-"`
+	metadataDetachInternetGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataDetachInternetGatewayInput struct {
@@ -10989,7 +11954,7 @@ type metadataDetachInternetGatewayInput struct {
 }
 
 type DetachInternetGatewayOutput struct {
-	metadataDetachInternetGatewayOutput `json:"-", xml:"-"`
+	metadataDetachInternetGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataDetachInternetGatewayOutput struct {
@@ -11005,7 +11970,7 @@ type DetachNetworkInterfaceInput struct {
 	// Specifies whether to force a detachment.
 	Force *bool `locationName:"force" type:"boolean"`
 
-	metadataDetachNetworkInterfaceInput `json:"-", xml:"-"`
+	metadataDetachNetworkInterfaceInput `json:"-" xml:"-"`
 }
 
 type metadataDetachNetworkInterfaceInput struct {
@@ -11013,7 +11978,7 @@ type metadataDetachNetworkInterfaceInput struct {
 }
 
 type DetachNetworkInterfaceOutput struct {
-	metadataDetachNetworkInterfaceOutput `json:"-", xml:"-"`
+	metadataDetachNetworkInterfaceOutput `json:"-" xml:"-"`
 }
 
 type metadataDetachNetworkInterfaceOutput struct {
@@ -11029,7 +11994,7 @@ type DetachVPNGatewayInput struct {
 	// The ID of the virtual private gateway.
 	VPNGatewayID *string `locationName:"VpnGatewayId" type:"string" required:"true"`
 
-	metadataDetachVPNGatewayInput `json:"-", xml:"-"`
+	metadataDetachVPNGatewayInput `json:"-" xml:"-"`
 }
 
 type metadataDetachVPNGatewayInput struct {
@@ -11037,7 +12002,7 @@ type metadataDetachVPNGatewayInput struct {
 }
 
 type DetachVPNGatewayOutput struct {
-	metadataDetachVPNGatewayOutput `json:"-", xml:"-"`
+	metadataDetachVPNGatewayOutput `json:"-" xml:"-"`
 }
 
 type metadataDetachVPNGatewayOutput struct {
@@ -11065,7 +12030,7 @@ type DetachVolumeInput struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
-	metadataDetachVolumeInput `json:"-", xml:"-"`
+	metadataDetachVolumeInput `json:"-" xml:"-"`
 }
 
 type metadataDetachVolumeInput struct {
@@ -11079,7 +12044,7 @@ type DisableVGWRoutePropagationInput struct {
 	// The ID of the route table.
 	RouteTableID *string `locationName:"RouteTableId" type:"string" required:"true"`
 
-	metadataDisableVGWRoutePropagationInput `json:"-", xml:"-"`
+	metadataDisableVGWRoutePropagationInput `json:"-" xml:"-"`
 }
 
 type metadataDisableVGWRoutePropagationInput struct {
@@ -11087,7 +12052,7 @@ type metadataDisableVGWRoutePropagationInput struct {
 }
 
 type DisableVGWRoutePropagationOutput struct {
-	metadataDisableVGWRoutePropagationOutput `json:"-", xml:"-"`
+	metadataDisableVGWRoutePropagationOutput `json:"-" xml:"-"`
 }
 
 type metadataDisableVGWRoutePropagationOutput struct {
@@ -11100,7 +12065,7 @@ type DisableVPCClassicLinkInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataDisableVPCClassicLinkInput `json:"-", xml:"-"`
+	metadataDisableVPCClassicLinkInput `json:"-" xml:"-"`
 }
 
 type metadataDisableVPCClassicLinkInput struct {
@@ -11111,7 +12076,7 @@ type DisableVPCClassicLinkOutput struct {
 	// Returns true if the request succeeds; otherwise, it returns an error.
 	Return *bool `locationName:"return" type:"boolean"`
 
-	metadataDisableVPCClassicLinkOutput `json:"-", xml:"-"`
+	metadataDisableVPCClassicLinkOutput `json:"-" xml:"-"`
 }
 
 type metadataDisableVPCClassicLinkOutput struct {
@@ -11127,7 +12092,7 @@ type DisassociateAddressInput struct {
 	// [EC2-Classic] The Elastic IP address. Required for EC2-Classic.
 	PublicIP *string `locationName:"PublicIp" type:"string"`
 
-	metadataDisassociateAddressInput `json:"-", xml:"-"`
+	metadataDisassociateAddressInput `json:"-" xml:"-"`
 }
 
 type metadataDisassociateAddressInput struct {
@@ -11135,7 +12100,7 @@ type metadataDisassociateAddressInput struct {
 }
 
 type DisassociateAddressOutput struct {
-	metadataDisassociateAddressOutput `json:"-", xml:"-"`
+	metadataDisassociateAddressOutput `json:"-" xml:"-"`
 }
 
 type metadataDisassociateAddressOutput struct {
@@ -11149,7 +12114,7 @@ type DisassociateRouteTableInput struct {
 
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	metadataDisassociateRouteTableInput `json:"-", xml:"-"`
+	metadataDisassociateRouteTableInput `json:"-" xml:"-"`
 }
 
 type metadataDisassociateRouteTableInput struct {
@@ -11157,7 +12122,7 @@ type metadataDisassociateRouteTableInput struct {
 }
 
 type DisassociateRouteTableOutput struct {
-	metadataDisassociateRouteTableOutput `json:"-", xml:"-"`
+	metadataDisassociateRouteTableOutput `json:"-" xml:"-"`
 }
 
 type metadataDisassociateRouteTableOutput struct {
@@ -11173,7 +12138,7 @@ type DiskImage struct {
 	// Describes an Amazon EBS volume.
 	Volume *VolumeDetail `type:"structure"`
 
-	metadataDiskImage `json:"-", xml:"-"`
+	metadataDiskImage `json:"-" xml:"-"`
 }
 
 type metadataDiskImage struct {
@@ -11197,7 +12162,7 @@ type DiskImageDescription struct {
 	// The size of the disk image.
 	Size *int64 `locationName:"size" type:"long" required:"true"`
 
-	metadataDiskImageDescription `json:"-", xml:"-"`
+	metadataDiskImageDescription `json:"-" xml:"-"`
 }
 
 type metadataDiskImageDescription struct {
@@ -11217,7 +12182,7 @@ type DiskImageDetail struct {
 	// topic in the Amazon Simple Storage Service Developer Guide.
 	ImportManifestURL *string `locationName:"importManifestUrl" type:"string" required:"true"`
 
-	metadataDiskImageDetail `json:"-", xml:"-"`
+	metadataDiskImageDetail `json:"-" xml:"-"`
 }
 
 type metadataDiskImageDetail struct {
@@ -11231,7 +12196,7 @@ type DiskImageVolumeDescription struct {
 	// The size of the volume.
 	Size *int64 `locationName:"size" type:"long"`
 
-	metadataDiskImageVolumeDescription `json:"-", xml:"-"`
+	metadataDiskImageVolumeDescription `json:"-" xml:"-"`
 }
 
 type metadataDiskImageVolumeDescription struct {
@@ -11255,8 +12220,8 @@ type EBSBlockDevice struct {
 	// performance, I/O credits, and bursting, see Amazon EBS Volume Types (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Constraint: Range is 100 to 4000 for Provisioned IOPS (SSD) volumes and
-	// 3 to 3072 for General Purpose (SSD) volumes.
+	// Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes and
+	// 3 to 10000 for General Purpose (SSD) volumes.
 	//
 	// Condition: This parameter is required for requests to create io1 volumes;
 	// it is not used in requests to create standard or gp2 volumes.
@@ -11267,10 +12232,9 @@ type EBSBlockDevice struct {
 
 	// The size of the volume, in GiB.
 	//
-	// Constraints: If the volume type is io1, the minimum size of the volume is
-	// 4 GiB; otherwise, the minimum size is 1 GiB. The maximum volume size is 1024
-	// GiB. If you specify a snapshot, the volume size must be equal to or larger
-	// than the snapshot size.
+	// Constraints: 1-1024 for standard volumes, 1-16384 for gp2 volumes, and 4-16384
+	// for io1 volumes. If you specify a snapshot, the volume size must be equal
+	// to or larger than the snapshot size.
 	//
 	// Default: If you're creating the volume from a snapshot and don't specify
 	// a volume size, the default is the snapshot size.
@@ -11282,7 +12246,7 @@ type EBSBlockDevice struct {
 	// Default: standard
 	VolumeType *string `locationName:"volumeType" type:"string"`
 
-	metadataEBSBlockDevice `json:"-", xml:"-"`
+	metadataEBSBlockDevice `json:"-" xml:"-"`
 }
 
 type metadataEBSBlockDevice struct {
@@ -11304,7 +12268,7 @@ type EBSInstanceBlockDevice struct {
 	// The ID of the Amazon EBS volume.
 	VolumeID *string `locationName:"volumeId" type:"string"`
 
-	metadataEBSInstanceBlockDevice `json:"-", xml:"-"`
+	metadataEBSInstanceBlockDevice `json:"-" xml:"-"`
 }
 
 type metadataEBSInstanceBlockDevice struct {
@@ -11318,7 +12282,7 @@ type EBSInstanceBlockDeviceSpecification struct {
 	// The ID of the Amazon EBS volume.
 	VolumeID *string `locationName:"volumeId" type:"string"`
 
-	metadataEBSInstanceBlockDeviceSpecification `json:"-", xml:"-"`
+	metadataEBSInstanceBlockDeviceSpecification `json:"-" xml:"-"`
 }
 
 type metadataEBSInstanceBlockDeviceSpecification struct {
@@ -11332,7 +12296,7 @@ type EnableVGWRoutePropagationInput struct {
 	// The ID of the route table.
 	RouteTableID *string `locationName:"RouteTableId" type:"string" required:"true"`
 
-	metadataEnableVGWRoutePropagationInput `json:"-", xml:"-"`
+	metadataEnableVGWRoutePropagationInput `json:"-" xml:"-"`
 }
 
 type metadataEnableVGWRoutePropagationInput struct {
@@ -11340,7 +12304,7 @@ type metadataEnableVGWRoutePropagationInput struct {
 }
 
 type EnableVGWRoutePropagationOutput struct {
-	metadataEnableVGWRoutePropagationOutput `json:"-", xml:"-"`
+	metadataEnableVGWRoutePropagationOutput `json:"-" xml:"-"`
 }
 
 type metadataEnableVGWRoutePropagationOutput struct {
@@ -11353,7 +12317,7 @@ type EnableVPCClassicLinkInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataEnableVPCClassicLinkInput `json:"-", xml:"-"`
+	metadataEnableVPCClassicLinkInput `json:"-" xml:"-"`
 }
 
 type metadataEnableVPCClassicLinkInput struct {
@@ -11364,7 +12328,7 @@ type EnableVPCClassicLinkOutput struct {
 	// Returns true if the request succeeds; otherwise, it returns an error.
 	Return *bool `locationName:"return" type:"boolean"`
 
-	metadataEnableVPCClassicLinkOutput `json:"-", xml:"-"`
+	metadataEnableVPCClassicLinkOutput `json:"-" xml:"-"`
 }
 
 type metadataEnableVPCClassicLinkOutput struct {
@@ -11377,7 +12341,7 @@ type EnableVolumeIOInput struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"volumeId" type:"string" required:"true"`
 
-	metadataEnableVolumeIOInput `json:"-", xml:"-"`
+	metadataEnableVolumeIOInput `json:"-" xml:"-"`
 }
 
 type metadataEnableVolumeIOInput struct {
@@ -11385,7 +12349,7 @@ type metadataEnableVolumeIOInput struct {
 }
 
 type EnableVolumeIOOutput struct {
-	metadataEnableVolumeIOOutput `json:"-", xml:"-"`
+	metadataEnableVolumeIOOutput `json:"-" xml:"-"`
 }
 
 type metadataEnableVolumeIOOutput struct {
@@ -11411,7 +12375,7 @@ type ExportTask struct {
 	// The status message related to the export task.
 	StatusMessage *string `locationName:"statusMessage" type:"string"`
 
-	metadataExportTask `json:"-", xml:"-"`
+	metadataExportTask `json:"-" xml:"-"`
 }
 
 type metadataExportTask struct {
@@ -11427,12 +12391,12 @@ type ExportToS3Task struct {
 	DiskImageFormat *string `locationName:"diskImageFormat" type:"string"`
 
 	// The Amazon S3 bucket for the destination image. The destination bucket must
-	// exist and grant WRITE and READ_ACL permissions to the AWS account vm-import-export@amazon.com.
+	// exist and grant WRITE and READ_ACP permissions to the AWS account vm-import-export@amazon.com.
 	S3Bucket *string `locationName:"s3Bucket" type:"string"`
 
 	S3Key *string `locationName:"s3Key" type:"string"`
 
-	metadataExportToS3Task `json:"-", xml:"-"`
+	metadataExportToS3Task `json:"-" xml:"-"`
 }
 
 type metadataExportToS3Task struct {
@@ -11450,7 +12414,7 @@ type ExportToS3TaskSpecification struct {
 	// key s3prefix + exportTaskId + '.' + diskImageFormat.
 	S3Prefix *string `locationName:"s3Prefix" type:"string"`
 
-	metadataExportToS3TaskSpecification `json:"-", xml:"-"`
+	metadataExportToS3TaskSpecification `json:"-" xml:"-"`
 }
 
 type metadataExportToS3TaskSpecification struct {
@@ -11467,7 +12431,7 @@ type Filter struct {
 	// One or more filter values. Filter values are case-sensitive.
 	Values []*string `locationName:"Value" locationNameList:"item" type:"list"`
 
-	metadataFilter `json:"-", xml:"-"`
+	metadataFilter `json:"-" xml:"-"`
 }
 
 type metadataFilter struct {
@@ -11480,7 +12444,7 @@ type GetConsoleOutputInput struct {
 	// The ID of the instance.
 	InstanceID *string `locationName:"InstanceId" type:"string" required:"true"`
 
-	metadataGetConsoleOutputInput `json:"-", xml:"-"`
+	metadataGetConsoleOutputInput `json:"-" xml:"-"`
 }
 
 type metadataGetConsoleOutputInput struct {
@@ -11497,7 +12461,7 @@ type GetConsoleOutputOutput struct {
 	// The time the output was last updated.
 	Timestamp *time.Time `locationName:"timestamp" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataGetConsoleOutputOutput `json:"-", xml:"-"`
+	metadataGetConsoleOutputOutput `json:"-" xml:"-"`
 }
 
 type metadataGetConsoleOutputOutput struct {
@@ -11510,7 +12474,7 @@ type GetPasswordDataInput struct {
 	// The ID of the Windows instance.
 	InstanceID *string `locationName:"InstanceId" type:"string" required:"true"`
 
-	metadataGetPasswordDataInput `json:"-", xml:"-"`
+	metadataGetPasswordDataInput `json:"-" xml:"-"`
 }
 
 type metadataGetPasswordDataInput struct {
@@ -11527,7 +12491,7 @@ type GetPasswordDataOutput struct {
 	// The time the data was last updated.
 	Timestamp *time.Time `locationName:"timestamp" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataGetPasswordDataOutput `json:"-", xml:"-"`
+	metadataGetPasswordDataOutput `json:"-" xml:"-"`
 }
 
 type metadataGetPasswordDataOutput struct {
@@ -11542,7 +12506,7 @@ type GroupIdentifier struct {
 	// The name of the security group.
 	GroupName *string `locationName:"groupName" type:"string"`
 
-	metadataGroupIdentifier `json:"-", xml:"-"`
+	metadataGroupIdentifier `json:"-" xml:"-"`
 }
 
 type metadataGroupIdentifier struct {
@@ -11557,7 +12521,7 @@ type IAMInstanceProfile struct {
 	// The ID of the instance profile.
 	ID *string `locationName:"id" type:"string"`
 
-	metadataIAMInstanceProfile `json:"-", xml:"-"`
+	metadataIAMInstanceProfile `json:"-" xml:"-"`
 }
 
 type metadataIAMInstanceProfile struct {
@@ -11572,7 +12536,7 @@ type IAMInstanceProfileSpecification struct {
 	// The name of the instance profile.
 	Name *string `locationName:"name" type:"string"`
 
-	metadataIAMInstanceProfileSpecification `json:"-", xml:"-"`
+	metadataIAMInstanceProfileSpecification `json:"-" xml:"-"`
 }
 
 type metadataIAMInstanceProfileSpecification struct {
@@ -11587,7 +12551,7 @@ type ICMPTypeCode struct {
 	// The ICMP code. A value of -1 means all codes for the specified ICMP type.
 	Type *int64 `locationName:"type" type:"integer"`
 
-	metadataICMPTypeCode `json:"-", xml:"-"`
+	metadataICMPTypeCode `json:"-" xml:"-"`
 }
 
 type metadataICMPTypeCode struct {
@@ -11620,7 +12584,7 @@ type IPPermission struct {
 	// One or more security group and AWS account ID pairs.
 	UserIDGroupPairs []*UserIDGroupPair `locationName:"groups" locationNameList:"item" type:"list"`
 
-	metadataIPPermission `json:"-", xml:"-"`
+	metadataIPPermission `json:"-" xml:"-"`
 }
 
 type metadataIPPermission struct {
@@ -11633,7 +12597,7 @@ type IPRange struct {
 	// group, not both.
 	CIDRIP *string `locationName:"cidrIp" type:"string"`
 
-	metadataIPRange `json:"-", xml:"-"`
+	metadataIPRange `json:"-" xml:"-"`
 }
 
 type metadataIPRange struct {
@@ -11695,7 +12659,7 @@ type Image struct {
 	// images.
 	RAMDiskID *string `locationName:"ramdiskId" type:"string"`
 
-	// The device name of the root device (for example, /dev/sda1 or xvda).
+	// The device name of the root device (for example, /dev/sda1 or /dev/xvda).
 	RootDeviceName *string `locationName:"rootDeviceName" type:"string"`
 
 	// The type of root device used by the AMI. The AMI can use an Amazon EBS volume
@@ -11718,10 +12682,163 @@ type Image struct {
 	// The type of virtualization of the AMI.
 	VirtualizationType *string `locationName:"virtualizationType" type:"string"`
 
-	metadataImage `json:"-", xml:"-"`
+	metadataImage `json:"-" xml:"-"`
 }
 
 type metadataImage struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// The disk container object for an ImportImage task.
+type ImageDiskContainer struct {
+	// The description of the disk image (optional).
+	Description *string `type:"string"`
+
+	// The Amazon EBS block device mapping for the disk (optional).
+	DeviceName *string `type:"string"`
+
+	// The format of the disk image being imported (optional).
+	Format *string `type:"string"`
+
+	// The Amazon EBS snapshot ID to be used for importing the snapshot.
+	SnapshotID *string `locationName:"SnapshotId" type:"string"`
+
+	// The URL to the Amazon S3-based disk image being imported. The URL can either
+	// be a https URL (https://..) or an Amazon S3 URL (s3://..)
+	URL *string `locationName:"Url" type:"string"`
+
+	// User's Amazon S3 bucket details used to access the image.
+	UserBucket *UserBucket `type:"structure"`
+
+	metadataImageDiskContainer `json:"-" xml:"-"`
+}
+
+type metadataImageDiskContainer struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ImportImageInput struct {
+	// The architecture of the virtual machine being imported (optional).
+	Architecture *string `type:"string"`
+
+	// Client-specific data.
+	ClientData *ClientData `type:"structure"`
+
+	// The token to enable idempotency for VM import requests (optional).
+	ClientToken *string `type:"string"`
+
+	// A description string for the import image task (optional).
+	Description *string `type:"string"`
+
+	DiskContainers []*ImageDiskContainer `locationName:"DiskContainer" locationNameList:"item" type:"list"`
+
+	DryRun *bool `type:"boolean"`
+
+	// The target hypervisor platform to use (optional).
+	Hypervisor *string `type:"string"`
+
+	// The license type to be used for the Amazon Machine Image (AMI) after importing
+	// (optional).
+	//
+	// Note: You may only use BYOL if you have existing licenses with rights to
+	// use these licenses in a third party cloud like AWS. For more information,
+	// see VM Import/Export Prerequisites (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/VMImportPrerequisites.html)
+	// in the Amazon Elastic Compute Cloud User Guide.
+	//
+	// Valid Values: AWS | BYOL
+	LicenseType *string `type:"string"`
+
+	// The operating system of the virtual machine being imported (optional).
+	Platform *string `type:"string"`
+
+	// The name of the role to use when not using the default role name 'vmimport'
+	// (optional).
+	RoleName *string `type:"string"`
+
+	metadataImportImageInput `json:"-" xml:"-"`
+}
+
+type metadataImportImageInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ImportImageOutput struct {
+	// Architecture of the virtual machine being imported.
+	Architecture *string `locationName:"architecture" type:"string"`
+
+	// A description of the import task.
+	Description *string `locationName:"description" type:"string"`
+
+	// Target hypervisor of the import task.
+	Hypervisor *string `locationName:"hypervisor" type:"string"`
+
+	// The Amazon Machine Image (AMI) ID created by the import task.
+	ImageID *string `locationName:"imageId" type:"string"`
+
+	// The task id of the ImportImage task.
+	ImportTaskID *string `locationName:"importTaskId" type:"string"`
+
+	// License type of the virtual machine being imported.
+	LicenseType *string `locationName:"licenseType" type:"string"`
+
+	// Operating system of the VM being imported.
+	Platform *string `locationName:"platform" type:"string"`
+
+	// The task's progress.
+	Progress *string `locationName:"progress" type:"string"`
+
+	SnapshotDetails []*SnapshotDetail `locationName:"snapshotDetailSet" locationNameList:"item" type:"list"`
+
+	// A brief status of the task.
+	Status *string `locationName:"status" type:"string"`
+
+	// A detailed status message of the import task.
+	StatusMessage *string `locationName:"statusMessage" type:"string"`
+
+	metadataImportImageOutput `json:"-" xml:"-"`
+}
+
+type metadataImportImageOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ImportImageTask struct {
+	// Architecture of the VM being imported.
+	Architecture *string `locationName:"architecture" type:"string"`
+
+	// Description of the import task.
+	Description *string `locationName:"description" type:"string"`
+
+	// Target hypervisor for the import task.
+	Hypervisor *string `locationName:"hypervisor" type:"string"`
+
+	// The Amazon Machine Image (AMI) ID of the imported virtual machine.
+	ImageID *string `locationName:"imageId" type:"string"`
+
+	// The ID of the import task.
+	ImportTaskID *string `locationName:"importTaskId" type:"string"`
+
+	// License type of the VM being imported.
+	LicenseType *string `locationName:"licenseType" type:"string"`
+
+	// The description string for the import image task.
+	Platform *string `locationName:"platform" type:"string"`
+
+	// The percentage of progress of the ImportImage task.
+	Progress *string `locationName:"progress" type:"string"`
+
+	SnapshotDetails []*SnapshotDetail `locationName:"snapshotDetailSet" locationNameList:"item" type:"list"`
+
+	// A brief status for the ImportImage task.
+	Status *string `locationName:"status" type:"string"`
+
+	// A descriptive status message for the ImportImage task.
+	StatusMessage *string `locationName:"statusMessage" type:"string"`
+
+	metadataImportImageTask `json:"-" xml:"-"`
+}
+
+type metadataImportImageTask struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -11738,7 +12855,7 @@ type ImportInstanceInput struct {
 	// The instance operating system.
 	Platform *string `locationName:"platform" type:"string" required:"true"`
 
-	metadataImportInstanceInput `json:"-", xml:"-"`
+	metadataImportInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataImportInstanceInput struct {
@@ -11785,7 +12902,7 @@ type ImportInstanceLaunchSpecification struct {
 	// User data to be made available to the instance.
 	UserData *UserData `locationName:"userData" type:"structure"`
 
-	metadataImportInstanceLaunchSpecification `json:"-", xml:"-"`
+	metadataImportInstanceLaunchSpecification `json:"-" xml:"-"`
 }
 
 type metadataImportInstanceLaunchSpecification struct {
@@ -11796,7 +12913,7 @@ type ImportInstanceOutput struct {
 	// Describes a conversion task.
 	ConversionTask *ConversionTask `locationName:"conversionTask" type:"structure"`
 
-	metadataImportInstanceOutput `json:"-", xml:"-"`
+	metadataImportInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataImportInstanceOutput struct {
@@ -11813,7 +12930,7 @@ type ImportInstanceTaskDetails struct {
 
 	Volumes []*ImportInstanceVolumeDetailItem `locationName:"volumes" locationNameList:"item" type:"list" required:"true"`
 
-	metadataImportInstanceTaskDetails `json:"-", xml:"-"`
+	metadataImportInstanceTaskDetails `json:"-" xml:"-"`
 }
 
 type metadataImportInstanceTaskDetails struct {
@@ -11842,7 +12959,7 @@ type ImportInstanceVolumeDetailItem struct {
 	// The volume.
 	Volume *DiskImageVolumeDescription `locationName:"volume" type:"structure" required:"true"`
 
-	metadataImportInstanceVolumeDetailItem `json:"-", xml:"-"`
+	metadataImportInstanceVolumeDetailItem `json:"-" xml:"-"`
 }
 
 type metadataImportInstanceVolumeDetailItem struct {
@@ -11859,7 +12976,7 @@ type ImportKeyPairInput struct {
 	// it to AWS.
 	PublicKeyMaterial []byte `locationName:"publicKeyMaterial" type:"blob" required:"true"`
 
-	metadataImportKeyPairInput `json:"-", xml:"-"`
+	metadataImportKeyPairInput `json:"-" xml:"-"`
 }
 
 type metadataImportKeyPairInput struct {
@@ -11873,10 +12990,70 @@ type ImportKeyPairOutput struct {
 	// The key pair name you provided.
 	KeyName *string `locationName:"keyName" type:"string"`
 
-	metadataImportKeyPairOutput `json:"-", xml:"-"`
+	metadataImportKeyPairOutput `json:"-" xml:"-"`
 }
 
 type metadataImportKeyPairOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ImportSnapshotInput struct {
+	// Client-specific data.
+	ClientData *ClientData `type:"structure"`
+
+	// Token to enable idempotency for VM import requests (optional).
+	ClientToken *string `type:"string"`
+
+	// The description string for the ImportSnapshot task.
+	Description *string `type:"string"`
+
+	// The disk container object for the ImportSnapshot request.
+	DiskContainer *SnapshotDiskContainer `type:"structure"`
+
+	DryRun *bool `type:"boolean"`
+
+	// The name of the role to use when not using the default role name 'vmimport'
+	// (optional).
+	RoleName *string `type:"string"`
+
+	metadataImportSnapshotInput `json:"-" xml:"-"`
+}
+
+type metadataImportSnapshotInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ImportSnapshotOutput struct {
+	// Description of the import snapshot task.
+	Description *string `locationName:"description" type:"string"`
+
+	// Task ID of the ImportSnapshot task.
+	ImportTaskID *string `locationName:"importTaskId" type:"string"`
+
+	// Details about the import snapshot task.
+	SnapshotTaskDetail *SnapshotTaskDetail `locationName:"snapshotTaskDetail" type:"structure"`
+
+	metadataImportSnapshotOutput `json:"-" xml:"-"`
+}
+
+type metadataImportSnapshotOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ImportSnapshotTask struct {
+	// Description for the import snapshot task.
+	Description *string `locationName:"description" type:"string"`
+
+	// The task ID of the ImportSnapshot task.
+	ImportTaskID *string `locationName:"importTaskId" type:"string"`
+
+	// Details about the import snapshot task.
+	SnapshotTaskDetail *SnapshotTaskDetail `locationName:"snapshotTaskDetail" type:"structure"`
+
+	metadataImportSnapshotTask `json:"-" xml:"-"`
+}
+
+type metadataImportSnapshotTask struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -11894,7 +13071,7 @@ type ImportVolumeInput struct {
 	// Describes an Amazon EBS volume.
 	Volume *VolumeDetail `locationName:"volume" type:"structure" required:"true"`
 
-	metadataImportVolumeInput `json:"-", xml:"-"`
+	metadataImportVolumeInput `json:"-" xml:"-"`
 }
 
 type metadataImportVolumeInput struct {
@@ -11905,7 +13082,7 @@ type ImportVolumeOutput struct {
 	// Describes a conversion task.
 	ConversionTask *ConversionTask `locationName:"conversionTask" type:"structure"`
 
-	metadataImportVolumeOutput `json:"-", xml:"-"`
+	metadataImportVolumeOutput `json:"-" xml:"-"`
 }
 
 type metadataImportVolumeOutput struct {
@@ -11929,7 +13106,7 @@ type ImportVolumeTaskDetails struct {
 	// The volume.
 	Volume *DiskImageVolumeDescription `locationName:"volume" type:"structure" required:"true"`
 
-	metadataImportVolumeTaskDetails `json:"-", xml:"-"`
+	metadataImportVolumeTaskDetails `json:"-" xml:"-"`
 }
 
 type metadataImportVolumeTaskDetails struct {
@@ -12019,7 +13196,7 @@ type Instance struct {
 	// The RAM disk associated with this instance.
 	RAMDiskID *string `locationName:"ramdiskId" type:"string"`
 
-	// The root device name (for example, /dev/sda1).
+	// The root device name (for example, /dev/sda1 or /dev/xvda).
 	RootDeviceName *string `locationName:"rootDeviceName" type:"string"`
 
 	// The root device type used by the AMI. The AMI can use an Amazon EBS volume
@@ -12064,7 +13241,7 @@ type Instance struct {
 	// The virtualization type of the instance.
 	VirtualizationType *string `locationName:"virtualizationType" type:"string"`
 
-	metadataInstance `json:"-", xml:"-"`
+	metadataInstance `json:"-" xml:"-"`
 }
 
 type metadataInstance struct {
@@ -12073,14 +13250,14 @@ type metadataInstance struct {
 
 // Describes a block device mapping.
 type InstanceBlockDeviceMapping struct {
-	// The device name exposed to the instance (for example, /dev/sdh).
+	// The device name exposed to the instance (for example, /dev/sdh or xvdh).
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
 	// Parameters used to automatically set up Amazon EBS volumes when the instance
 	// is launched.
 	EBS *EBSInstanceBlockDevice `locationName:"ebs" type:"structure"`
 
-	metadataInstanceBlockDeviceMapping `json:"-", xml:"-"`
+	metadataInstanceBlockDeviceMapping `json:"-" xml:"-"`
 }
 
 type metadataInstanceBlockDeviceMapping struct {
@@ -12089,7 +13266,7 @@ type metadataInstanceBlockDeviceMapping struct {
 
 // Describes a block device mapping entry.
 type InstanceBlockDeviceMappingSpecification struct {
-	// The device name exposed to the instance (for example, /dev/sdh).
+	// The device name exposed to the instance (for example, /dev/sdh or xvdh).
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
 	// Parameters used to automatically set up Amazon EBS volumes when the instance
@@ -12102,7 +13279,7 @@ type InstanceBlockDeviceMappingSpecification struct {
 	// The virtual device name.
 	VirtualName *string `locationName:"virtualName" type:"string"`
 
-	metadataInstanceBlockDeviceMappingSpecification `json:"-", xml:"-"`
+	metadataInstanceBlockDeviceMappingSpecification `json:"-" xml:"-"`
 }
 
 type metadataInstanceBlockDeviceMappingSpecification struct {
@@ -12117,7 +13294,7 @@ type InstanceCount struct {
 	// The states of the listed Reserved Instances.
 	State *string `locationName:"state" type:"string"`
 
-	metadataInstanceCount `json:"-", xml:"-"`
+	metadataInstanceCount `json:"-" xml:"-"`
 }
 
 type metadataInstanceCount struct {
@@ -12132,7 +13309,7 @@ type InstanceExportDetails struct {
 	// The target virtualization environment.
 	TargetEnvironment *string `locationName:"targetEnvironment" type:"string"`
 
-	metadataInstanceExportDetails `json:"-", xml:"-"`
+	metadataInstanceExportDetails `json:"-" xml:"-"`
 }
 
 type metadataInstanceExportDetails struct {
@@ -12147,7 +13324,7 @@ type InstanceMonitoring struct {
 	// The monitoring information.
 	Monitoring *Monitoring `locationName:"monitoring" type:"structure"`
 
-	metadataInstanceMonitoring `json:"-", xml:"-"`
+	metadataInstanceMonitoring `json:"-" xml:"-"`
 }
 
 type metadataInstanceMonitoring struct {
@@ -12199,7 +13376,7 @@ type InstanceNetworkInterface struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataInstanceNetworkInterface `json:"-", xml:"-"`
+	metadataInstanceNetworkInterface `json:"-" xml:"-"`
 }
 
 type metadataInstanceNetworkInterface struct {
@@ -12217,7 +13394,7 @@ type InstanceNetworkInterfaceAssociation struct {
 	// The public IP address or Elastic IP address bound to the network interface.
 	PublicIP *string `locationName:"publicIp" type:"string"`
 
-	metadataInstanceNetworkInterfaceAssociation `json:"-", xml:"-"`
+	metadataInstanceNetworkInterfaceAssociation `json:"-" xml:"-"`
 }
 
 type metadataInstanceNetworkInterfaceAssociation struct {
@@ -12241,7 +13418,7 @@ type InstanceNetworkInterfaceAttachment struct {
 	// The attachment state.
 	Status *string `locationName:"status" type:"string"`
 
-	metadataInstanceNetworkInterfaceAttachment `json:"-", xml:"-"`
+	metadataInstanceNetworkInterfaceAttachment `json:"-" xml:"-"`
 }
 
 type metadataInstanceNetworkInterfaceAttachment struct {
@@ -12295,7 +13472,7 @@ type InstanceNetworkInterfaceSpecification struct {
 	// creating a network interface when launching an instance.
 	SubnetID *string `locationName:"subnetId" type:"string"`
 
-	metadataInstanceNetworkInterfaceSpecification `json:"-", xml:"-"`
+	metadataInstanceNetworkInterfaceSpecification `json:"-" xml:"-"`
 }
 
 type metadataInstanceNetworkInterfaceSpecification struct {
@@ -12317,7 +13494,7 @@ type InstancePrivateIPAddress struct {
 	// The private IP address of the network interface.
 	PrivateIPAddress *string `locationName:"privateIpAddress" type:"string"`
 
-	metadataInstancePrivateIPAddress `json:"-", xml:"-"`
+	metadataInstancePrivateIPAddress `json:"-" xml:"-"`
 }
 
 type metadataInstancePrivateIPAddress struct {
@@ -12345,7 +13522,7 @@ type InstanceState struct {
 	// The current state of the instance.
 	Name *string `locationName:"name" type:"string"`
 
-	metadataInstanceState `json:"-", xml:"-"`
+	metadataInstanceState `json:"-" xml:"-"`
 }
 
 type metadataInstanceState struct {
@@ -12363,7 +13540,7 @@ type InstanceStateChange struct {
 	// The previous state of the instance.
 	PreviousState *InstanceState `locationName:"previousState" type:"structure"`
 
-	metadataInstanceStateChange `json:"-", xml:"-"`
+	metadataInstanceStateChange `json:"-" xml:"-"`
 }
 
 type metadataInstanceStateChange struct {
@@ -12394,7 +13571,7 @@ type InstanceStatus struct {
 	// problems.
 	SystemStatus *InstanceStatusSummary `locationName:"systemStatus" type:"structure"`
 
-	metadataInstanceStatus `json:"-", xml:"-"`
+	metadataInstanceStatus `json:"-" xml:"-"`
 }
 
 type metadataInstanceStatus struct {
@@ -12413,7 +13590,7 @@ type InstanceStatusDetails struct {
 	// The status.
 	Status *string `locationName:"status" type:"string"`
 
-	metadataInstanceStatusDetails `json:"-", xml:"-"`
+	metadataInstanceStatusDetails `json:"-" xml:"-"`
 }
 
 type metadataInstanceStatusDetails struct {
@@ -12434,7 +13611,7 @@ type InstanceStatusEvent struct {
 	// The earliest scheduled start time for the event.
 	NotBefore *time.Time `locationName:"notBefore" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataInstanceStatusEvent `json:"-", xml:"-"`
+	metadataInstanceStatusEvent `json:"-" xml:"-"`
 }
 
 type metadataInstanceStatusEvent struct {
@@ -12449,7 +13626,7 @@ type InstanceStatusSummary struct {
 	// The status.
 	Status *string `locationName:"status" type:"string"`
 
-	metadataInstanceStatusSummary `json:"-", xml:"-"`
+	metadataInstanceStatusSummary `json:"-" xml:"-"`
 }
 
 type metadataInstanceStatusSummary struct {
@@ -12467,7 +13644,7 @@ type InternetGateway struct {
 	// Any tags assigned to the Internet gateway.
 	Tags []*Tag `locationName:"tagSet" locationNameList:"item" type:"list"`
 
-	metadataInternetGateway `json:"-", xml:"-"`
+	metadataInternetGateway `json:"-" xml:"-"`
 }
 
 type metadataInternetGateway struct {
@@ -12482,7 +13659,7 @@ type InternetGatewayAttachment struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataInternetGatewayAttachment `json:"-", xml:"-"`
+	metadataInternetGatewayAttachment `json:"-" xml:"-"`
 }
 
 type metadataInternetGatewayAttachment struct {
@@ -12500,7 +13677,7 @@ type KeyPairInfo struct {
 	// The name of the key pair.
 	KeyName *string `locationName:"keyName" type:"string"`
 
-	metadataKeyPairInfo `json:"-", xml:"-"`
+	metadataKeyPairInfo `json:"-" xml:"-"`
 }
 
 type metadataKeyPairInfo struct {
@@ -12515,7 +13692,7 @@ type LaunchPermission struct {
 	// The AWS account ID.
 	UserID *string `locationName:"userId" type:"string"`
 
-	metadataLaunchPermission `json:"-", xml:"-"`
+	metadataLaunchPermission `json:"-" xml:"-"`
 }
 
 type metadataLaunchPermission struct {
@@ -12531,7 +13708,7 @@ type LaunchPermissionModifications struct {
 	// AMI.
 	Remove []*LaunchPermission `locationNameList:"item" type:"list"`
 
-	metadataLaunchPermissionModifications `json:"-", xml:"-"`
+	metadataLaunchPermissionModifications `json:"-" xml:"-"`
 }
 
 type metadataLaunchPermissionModifications struct {
@@ -12594,7 +13771,7 @@ type LaunchSpecification struct {
 	// The Base64-encoded MIME user data to make available to the instances.
 	UserData *string `locationName:"userData" type:"string"`
 
-	metadataLaunchSpecification `json:"-", xml:"-"`
+	metadataLaunchSpecification `json:"-" xml:"-"`
 }
 
 type metadataLaunchSpecification struct {
@@ -12613,6 +13790,7 @@ type ModifyImageAttributeInput struct {
 	// The ID of the AMI.
 	ImageID *string `locationName:"ImageId" type:"string" required:"true"`
 
+	// A launch permission modification.
 	LaunchPermission *LaunchPermissionModifications `type:"structure"`
 
 	// The operation type.
@@ -12634,7 +13812,7 @@ type ModifyImageAttributeInput struct {
 	// the description attribute.
 	Value *string `type:"string"`
 
-	metadataModifyImageAttributeInput `json:"-", xml:"-"`
+	metadataModifyImageAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifyImageAttributeInput struct {
@@ -12642,7 +13820,7 @@ type metadataModifyImageAttributeInput struct {
 }
 
 type ModifyImageAttributeOutput struct {
-	metadataModifyImageAttributeOutput `json:"-", xml:"-"`
+	metadataModifyImageAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyImageAttributeOutput struct {
@@ -12680,9 +13858,6 @@ type ModifyInstanceAttributeInput struct {
 	// [EC2-VPC] Changes the security groups of the instance. You must specify at
 	// least one security group, even if it's just the default security group for
 	// the VPC. You must specify the security group ID, not the security group name.
-	//
-	// For example, if you want the instance to be in sg-1a1a1a1a and sg-9b9b9b9b,
-	// specify GroupId.1=sg-1a1a1a1a and GroupId.2=sg-9b9b9b9b.
 	Groups []*string `locationName:"GroupId" locationNameList:"groupId" type:"list"`
 
 	// The ID of the instance.
@@ -12727,7 +13902,7 @@ type ModifyInstanceAttributeInput struct {
 	// disableApiTermination, or intanceInitiateShutdownBehavior attribute.
 	Value *string `locationName:"value" type:"string"`
 
-	metadataModifyInstanceAttributeInput `json:"-", xml:"-"`
+	metadataModifyInstanceAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifyInstanceAttributeInput struct {
@@ -12735,7 +13910,7 @@ type metadataModifyInstanceAttributeInput struct {
 }
 
 type ModifyInstanceAttributeOutput struct {
-	metadataModifyInstanceAttributeOutput `json:"-", xml:"-"`
+	metadataModifyInstanceAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyInstanceAttributeOutput struct {
@@ -12768,7 +13943,7 @@ type ModifyNetworkInterfaceAttributeInput struct {
 	// in the Amazon Virtual Private Cloud User Guide.
 	SourceDestCheck *AttributeBooleanValue `locationName:"sourceDestCheck" type:"structure"`
 
-	metadataModifyNetworkInterfaceAttributeInput `json:"-", xml:"-"`
+	metadataModifyNetworkInterfaceAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifyNetworkInterfaceAttributeInput struct {
@@ -12776,7 +13951,7 @@ type metadataModifyNetworkInterfaceAttributeInput struct {
 }
 
 type ModifyNetworkInterfaceAttributeOutput struct {
-	metadataModifyNetworkInterfaceAttributeOutput `json:"-", xml:"-"`
+	metadataModifyNetworkInterfaceAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyNetworkInterfaceAttributeOutput struct {
@@ -12785,7 +13960,7 @@ type metadataModifyNetworkInterfaceAttributeOutput struct {
 
 type ModifyReservedInstancesInput struct {
 	// A unique, case-sensitive token you provide to ensure idempotency of your
-	// modification request.
+	// modification request. For more information, see Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
 	ClientToken *string `locationName:"clientToken" type:"string"`
 
 	// The IDs of the Reserved Instances to modify.
@@ -12794,7 +13969,7 @@ type ModifyReservedInstancesInput struct {
 	// The configuration settings for the Reserved Instances to modify.
 	TargetConfigurations []*ReservedInstancesConfiguration `locationName:"ReservedInstancesConfigurationSetItemType" locationNameList:"item" type:"list" required:"true"`
 
-	metadataModifyReservedInstancesInput `json:"-", xml:"-"`
+	metadataModifyReservedInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataModifyReservedInstancesInput struct {
@@ -12805,7 +13980,7 @@ type ModifyReservedInstancesOutput struct {
 	// The ID for the modification.
 	ReservedInstancesModificationID *string `locationName:"reservedInstancesModificationId" type:"string"`
 
-	metadataModifyReservedInstancesOutput `json:"-", xml:"-"`
+	metadataModifyReservedInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyReservedInstancesOutput struct {
@@ -12833,7 +14008,7 @@ type ModifySnapshotAttributeInput struct {
 	// The account ID to modify for the snapshot.
 	UserIDs []*string `locationName:"UserId" locationNameList:"UserId" type:"list"`
 
-	metadataModifySnapshotAttributeInput `json:"-", xml:"-"`
+	metadataModifySnapshotAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifySnapshotAttributeInput struct {
@@ -12841,7 +14016,7 @@ type metadataModifySnapshotAttributeInput struct {
 }
 
 type ModifySnapshotAttributeOutput struct {
-	metadataModifySnapshotAttributeOutput `json:"-", xml:"-"`
+	metadataModifySnapshotAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifySnapshotAttributeOutput struct {
@@ -12849,13 +14024,14 @@ type metadataModifySnapshotAttributeOutput struct {
 }
 
 type ModifySubnetAttributeInput struct {
-	// The value to use when a resource attribute accepts a Boolean value.
+	// Specify true to indicate that instances launched into the specified subnet
+	// should be assigned public IP address.
 	MapPublicIPOnLaunch *AttributeBooleanValue `locationName:"MapPublicIpOnLaunch" type:"structure"`
 
 	// The ID of the subnet.
 	SubnetID *string `locationName:"subnetId" type:"string" required:"true"`
 
-	metadataModifySubnetAttributeInput `json:"-", xml:"-"`
+	metadataModifySubnetAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifySubnetAttributeInput struct {
@@ -12863,7 +14039,7 @@ type metadataModifySubnetAttributeInput struct {
 }
 
 type ModifySubnetAttributeOutput struct {
-	metadataModifySubnetAttributeOutput `json:"-", xml:"-"`
+	metadataModifySubnetAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifySubnetAttributeOutput struct {
@@ -12887,7 +14063,7 @@ type ModifyVPCAttributeInput struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string" required:"true"`
 
-	metadataModifyVPCAttributeInput `json:"-", xml:"-"`
+	metadataModifyVPCAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifyVPCAttributeInput struct {
@@ -12895,7 +14071,7 @@ type metadataModifyVPCAttributeInput struct {
 }
 
 type ModifyVPCAttributeOutput struct {
-	metadataModifyVPCAttributeOutput `json:"-", xml:"-"`
+	metadataModifyVPCAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyVPCAttributeOutput struct {
@@ -12911,7 +14087,7 @@ type ModifyVolumeAttributeInput struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
-	metadataModifyVolumeAttributeInput `json:"-", xml:"-"`
+	metadataModifyVolumeAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataModifyVolumeAttributeInput struct {
@@ -12919,7 +14095,7 @@ type metadataModifyVolumeAttributeInput struct {
 }
 
 type ModifyVolumeAttributeOutput struct {
-	metadataModifyVolumeAttributeOutput `json:"-", xml:"-"`
+	metadataModifyVolumeAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyVolumeAttributeOutput struct {
@@ -12932,7 +14108,7 @@ type MonitorInstancesInput struct {
 	// One or more instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list" required:"true"`
 
-	metadataMonitorInstancesInput `json:"-", xml:"-"`
+	metadataMonitorInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataMonitorInstancesInput struct {
@@ -12943,7 +14119,7 @@ type MonitorInstancesOutput struct {
 	// Monitoring information for one or more instances.
 	InstanceMonitorings []*InstanceMonitoring `locationName:"instancesSet" locationNameList:"item" type:"list"`
 
-	metadataMonitorInstancesOutput `json:"-", xml:"-"`
+	metadataMonitorInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataMonitorInstancesOutput struct {
@@ -12955,7 +14131,7 @@ type Monitoring struct {
 	// Indicates whether monitoring is enabled for the instance.
 	State *string `locationName:"state" type:"string"`
 
-	metadataMonitoring `json:"-", xml:"-"`
+	metadataMonitoring `json:"-" xml:"-"`
 }
 
 type metadataMonitoring struct {
@@ -12982,7 +14158,7 @@ type NetworkACL struct {
 	// The ID of the VPC for the network ACL.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataNetworkACL `json:"-", xml:"-"`
+	metadataNetworkACL `json:"-" xml:"-"`
 }
 
 type metadataNetworkACL struct {
@@ -13000,7 +14176,7 @@ type NetworkACLAssociation struct {
 	// The ID of the subnet.
 	SubnetID *string `locationName:"subnetId" type:"string"`
 
-	metadataNetworkACLAssociation `json:"-", xml:"-"`
+	metadataNetworkACLAssociation `json:"-" xml:"-"`
 }
 
 type metadataNetworkACLAssociation struct {
@@ -13032,7 +14208,7 @@ type NetworkACLEntry struct {
 	// by rule number.
 	RuleNumber *int64 `locationName:"ruleNumber" type:"integer"`
 
-	metadataNetworkACLEntry `json:"-", xml:"-"`
+	metadataNetworkACLEntry `json:"-" xml:"-"`
 }
 
 type metadataNetworkACLEntry struct {
@@ -13097,7 +14273,7 @@ type NetworkInterface struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataNetworkInterface `json:"-", xml:"-"`
+	metadataNetworkInterface `json:"-" xml:"-"`
 }
 
 type metadataNetworkInterface struct {
@@ -13121,7 +14297,7 @@ type NetworkInterfaceAssociation struct {
 	// The address of the Elastic IP address bound to the network interface.
 	PublicIP *string `locationName:"publicIp" type:"string"`
 
-	metadataNetworkInterfaceAssociation `json:"-", xml:"-"`
+	metadataNetworkInterfaceAssociation `json:"-" xml:"-"`
 }
 
 type metadataNetworkInterfaceAssociation struct {
@@ -13151,7 +14327,7 @@ type NetworkInterfaceAttachment struct {
 	// The attachment state.
 	Status *string `locationName:"status" type:"string"`
 
-	metadataNetworkInterfaceAttachment `json:"-", xml:"-"`
+	metadataNetworkInterfaceAttachment `json:"-" xml:"-"`
 }
 
 type metadataNetworkInterfaceAttachment struct {
@@ -13166,7 +14342,7 @@ type NetworkInterfaceAttachmentChanges struct {
 	// Indicates whether the network interface is deleted when the instance is terminated.
 	DeleteOnTermination *bool `locationName:"deleteOnTermination" type:"boolean"`
 
-	metadataNetworkInterfaceAttachmentChanges `json:"-", xml:"-"`
+	metadataNetworkInterfaceAttachmentChanges `json:"-" xml:"-"`
 }
 
 type metadataNetworkInterfaceAttachmentChanges struct {
@@ -13189,7 +14365,7 @@ type NetworkInterfacePrivateIPAddress struct {
 	// The private IP address.
 	PrivateIPAddress *string `locationName:"privateIpAddress" type:"string"`
 
-	metadataNetworkInterfacePrivateIPAddress `json:"-", xml:"-"`
+	metadataNetworkInterfacePrivateIPAddress `json:"-" xml:"-"`
 }
 
 type metadataNetworkInterfacePrivateIPAddress struct {
@@ -13201,7 +14377,7 @@ type NewDHCPConfiguration struct {
 
 	Values []*string `locationName:"Value" locationNameList:"item" type:"list"`
 
-	metadataNewDHCPConfiguration `json:"-", xml:"-"`
+	metadataNewDHCPConfiguration `json:"-" xml:"-"`
 }
 
 type metadataNewDHCPConfiguration struct {
@@ -13220,7 +14396,7 @@ type Placement struct {
 	// with a tenancy of dedicated runs on single-tenant hardware.
 	Tenancy *string `locationName:"tenancy" type:"string"`
 
-	metadataPlacement `json:"-", xml:"-"`
+	metadataPlacement `json:"-" xml:"-"`
 }
 
 type metadataPlacement struct {
@@ -13238,7 +14414,7 @@ type PlacementGroup struct {
 	// The placement strategy.
 	Strategy *string `locationName:"strategy" type:"string"`
 
-	metadataPlacementGroup `json:"-", xml:"-"`
+	metadataPlacementGroup `json:"-" xml:"-"`
 }
 
 type metadataPlacementGroup struct {
@@ -13253,7 +14429,7 @@ type PortRange struct {
 	// The last port in the range.
 	To *int64 `locationName:"to" type:"integer"`
 
-	metadataPortRange `json:"-", xml:"-"`
+	metadataPortRange `json:"-" xml:"-"`
 }
 
 type metadataPortRange struct {
@@ -13285,7 +14461,7 @@ type PriceSchedule struct {
 	// second to the last month before the capacity reservation expires.
 	Term *int64 `locationName:"term" type:"long"`
 
-	metadataPriceSchedule `json:"-", xml:"-"`
+	metadataPriceSchedule `json:"-" xml:"-"`
 }
 
 type metadataPriceSchedule struct {
@@ -13305,7 +14481,7 @@ type PriceScheduleSpecification struct {
 	// second to the last month before the capacity reservation expires.
 	Term *int64 `locationName:"term" type:"long"`
 
-	metadataPriceScheduleSpecification `json:"-", xml:"-"`
+	metadataPriceScheduleSpecification `json:"-" xml:"-"`
 }
 
 type metadataPriceScheduleSpecification struct {
@@ -13320,7 +14496,7 @@ type PricingDetail struct {
 	// The price per instance.
 	Price *float64 `locationName:"price" type:"double"`
 
-	metadataPricingDetail `json:"-", xml:"-"`
+	metadataPricingDetail `json:"-" xml:"-"`
 }
 
 type metadataPricingDetail struct {
@@ -13336,7 +14512,7 @@ type PrivateIPAddressSpecification struct {
 	// The private IP addresses.
 	PrivateIPAddress *string `locationName:"privateIpAddress" type:"string" required:"true"`
 
-	metadataPrivateIPAddressSpecification `json:"-", xml:"-"`
+	metadataPrivateIPAddressSpecification `json:"-" xml:"-"`
 }
 
 type metadataPrivateIPAddressSpecification struct {
@@ -13351,7 +14527,7 @@ type ProductCode struct {
 	// The type of product code.
 	ProductCodeType *string `locationName:"type" type:"string"`
 
-	metadataProductCode `json:"-", xml:"-"`
+	metadataProductCode `json:"-" xml:"-"`
 }
 
 type metadataProductCode struct {
@@ -13363,7 +14539,7 @@ type PropagatingVGW struct {
 	// The ID of the virtual private gateway (VGW).
 	GatewayID *string `locationName:"gatewayId" type:"string"`
 
-	metadataPropagatingVGW `json:"-", xml:"-"`
+	metadataPropagatingVGW `json:"-" xml:"-"`
 }
 
 type metadataPropagatingVGW struct {
@@ -13384,7 +14560,7 @@ type PurchaseReservedInstancesOfferingInput struct {
 	// The ID of the Reserved Instance offering to purchase.
 	ReservedInstancesOfferingID *string `locationName:"ReservedInstancesOfferingId" type:"string" required:"true"`
 
-	metadataPurchaseReservedInstancesOfferingInput `json:"-", xml:"-"`
+	metadataPurchaseReservedInstancesOfferingInput `json:"-" xml:"-"`
 }
 
 type metadataPurchaseReservedInstancesOfferingInput struct {
@@ -13395,7 +14571,7 @@ type PurchaseReservedInstancesOfferingOutput struct {
 	// The IDs of the purchased Reserved Instances.
 	ReservedInstancesID *string `locationName:"reservedInstancesId" type:"string"`
 
-	metadataPurchaseReservedInstancesOfferingOutput `json:"-", xml:"-"`
+	metadataPurchaseReservedInstancesOfferingOutput `json:"-" xml:"-"`
 }
 
 type metadataPurchaseReservedInstancesOfferingOutput struct {
@@ -13408,7 +14584,7 @@ type RebootInstancesInput struct {
 	// One or more instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list" required:"true"`
 
-	metadataRebootInstancesInput `json:"-", xml:"-"`
+	metadataRebootInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataRebootInstancesInput struct {
@@ -13416,7 +14592,7 @@ type metadataRebootInstancesInput struct {
 }
 
 type RebootInstancesOutput struct {
-	metadataRebootInstancesOutput `json:"-", xml:"-"`
+	metadataRebootInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataRebootInstancesOutput struct {
@@ -13431,7 +14607,7 @@ type RecurringCharge struct {
 	// The frequency of the recurring charge.
 	Frequency *string `locationName:"frequency" type:"string"`
 
-	metadataRecurringCharge `json:"-", xml:"-"`
+	metadataRecurringCharge `json:"-" xml:"-"`
 }
 
 type metadataRecurringCharge struct {
@@ -13446,7 +14622,7 @@ type Region struct {
 	// The name of the region.
 	RegionName *string `locationName:"regionName" type:"string"`
 
-	metadataRegion `json:"-", xml:"-"`
+	metadataRegion `json:"-" xml:"-"`
 }
 
 type metadataRegion struct {
@@ -13484,7 +14660,7 @@ type RegisterImageInput struct {
 	// The ID of the RAM disk.
 	RAMDiskID *string `locationName:"ramdiskId" type:"string"`
 
-	// The name of the root device (for example, /dev/sda1, or xvda).
+	// The name of the root device (for example, /dev/sda1, or /dev/xvda).
 	RootDeviceName *string `locationName:"rootDeviceName" type:"string"`
 
 	// Set to simple to enable enhanced networking for the AMI and any instances
@@ -13501,7 +14677,7 @@ type RegisterImageInput struct {
 	// Default: paravirtual
 	VirtualizationType *string `locationName:"virtualizationType" type:"string"`
 
-	metadataRegisterImageInput `json:"-", xml:"-"`
+	metadataRegisterImageInput `json:"-" xml:"-"`
 }
 
 type metadataRegisterImageInput struct {
@@ -13512,7 +14688,7 @@ type RegisterImageOutput struct {
 	// The ID of the newly registered AMI.
 	ImageID *string `locationName:"imageId" type:"string"`
 
-	metadataRegisterImageOutput `json:"-", xml:"-"`
+	metadataRegisterImageOutput `json:"-" xml:"-"`
 }
 
 type metadataRegisterImageOutput struct {
@@ -13525,7 +14701,7 @@ type RejectVPCPeeringConnectionInput struct {
 	// The ID of the VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string" required:"true"`
 
-	metadataRejectVPCPeeringConnectionInput `json:"-", xml:"-"`
+	metadataRejectVPCPeeringConnectionInput `json:"-" xml:"-"`
 }
 
 type metadataRejectVPCPeeringConnectionInput struct {
@@ -13536,7 +14712,7 @@ type RejectVPCPeeringConnectionOutput struct {
 	// Returns true if the request succeeds; otherwise, it returns an error.
 	Return *bool `locationName:"return" type:"boolean"`
 
-	metadataRejectVPCPeeringConnectionOutput `json:"-", xml:"-"`
+	metadataRejectVPCPeeringConnectionOutput `json:"-" xml:"-"`
 }
 
 type metadataRejectVPCPeeringConnectionOutput struct {
@@ -13552,7 +14728,7 @@ type ReleaseAddressInput struct {
 	// [EC2-Classic] The Elastic IP address. Required for EC2-Classic.
 	PublicIP *string `locationName:"PublicIp" type:"string"`
 
-	metadataReleaseAddressInput `json:"-", xml:"-"`
+	metadataReleaseAddressInput `json:"-" xml:"-"`
 }
 
 type metadataReleaseAddressInput struct {
@@ -13560,7 +14736,7 @@ type metadataReleaseAddressInput struct {
 }
 
 type ReleaseAddressOutput struct {
-	metadataReleaseAddressOutput `json:"-", xml:"-"`
+	metadataReleaseAddressOutput `json:"-" xml:"-"`
 }
 
 type metadataReleaseAddressOutput struct {
@@ -13577,7 +14753,7 @@ type ReplaceNetworkACLAssociationInput struct {
 	// The ID of the new network ACL to associate with the subnet.
 	NetworkACLID *string `locationName:"networkAclId" type:"string" required:"true"`
 
-	metadataReplaceNetworkACLAssociationInput `json:"-", xml:"-"`
+	metadataReplaceNetworkACLAssociationInput `json:"-" xml:"-"`
 }
 
 type metadataReplaceNetworkACLAssociationInput struct {
@@ -13588,7 +14764,7 @@ type ReplaceNetworkACLAssociationOutput struct {
 	// The ID of the new association.
 	NewAssociationID *string `locationName:"newAssociationId" type:"string"`
 
-	metadataReplaceNetworkACLAssociationOutput `json:"-", xml:"-"`
+	metadataReplaceNetworkACLAssociationOutput `json:"-" xml:"-"`
 }
 
 type metadataReplaceNetworkACLAssociationOutput struct {
@@ -13626,7 +14802,7 @@ type ReplaceNetworkACLEntryInput struct {
 	// The rule number of the entry to replace.
 	RuleNumber *int64 `locationName:"ruleNumber" type:"integer" required:"true"`
 
-	metadataReplaceNetworkACLEntryInput `json:"-", xml:"-"`
+	metadataReplaceNetworkACLEntryInput `json:"-" xml:"-"`
 }
 
 type metadataReplaceNetworkACLEntryInput struct {
@@ -13634,7 +14810,7 @@ type metadataReplaceNetworkACLEntryInput struct {
 }
 
 type ReplaceNetworkACLEntryOutput struct {
-	metadataReplaceNetworkACLEntryOutput `json:"-", xml:"-"`
+	metadataReplaceNetworkACLEntryOutput `json:"-" xml:"-"`
 }
 
 type metadataReplaceNetworkACLEntryOutput struct {
@@ -13663,7 +14839,7 @@ type ReplaceRouteInput struct {
 	// The ID of a VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string"`
 
-	metadataReplaceRouteInput `json:"-", xml:"-"`
+	metadataReplaceRouteInput `json:"-" xml:"-"`
 }
 
 type metadataReplaceRouteInput struct {
@@ -13671,7 +14847,7 @@ type metadataReplaceRouteInput struct {
 }
 
 type ReplaceRouteOutput struct {
-	metadataReplaceRouteOutput `json:"-", xml:"-"`
+	metadataReplaceRouteOutput `json:"-" xml:"-"`
 }
 
 type metadataReplaceRouteOutput struct {
@@ -13687,7 +14863,7 @@ type ReplaceRouteTableAssociationInput struct {
 	// The ID of the new route table to associate with the subnet.
 	RouteTableID *string `locationName:"routeTableId" type:"string" required:"true"`
 
-	metadataReplaceRouteTableAssociationInput `json:"-", xml:"-"`
+	metadataReplaceRouteTableAssociationInput `json:"-" xml:"-"`
 }
 
 type metadataReplaceRouteTableAssociationInput struct {
@@ -13698,7 +14874,7 @@ type ReplaceRouteTableAssociationOutput struct {
 	// The ID of the new association.
 	NewAssociationID *string `locationName:"newAssociationId" type:"string"`
 
-	metadataReplaceRouteTableAssociationOutput `json:"-", xml:"-"`
+	metadataReplaceRouteTableAssociationOutput `json:"-" xml:"-"`
 }
 
 type metadataReplaceRouteTableAssociationOutput struct {
@@ -13747,7 +14923,7 @@ type ReportInstanceStatusInput struct {
 	// The status of all instances listed.
 	Status *string `locationName:"status" type:"string" required:"true"`
 
-	metadataReportInstanceStatusInput `json:"-", xml:"-"`
+	metadataReportInstanceStatusInput `json:"-" xml:"-"`
 }
 
 type metadataReportInstanceStatusInput struct {
@@ -13755,7 +14931,7 @@ type metadataReportInstanceStatusInput struct {
 }
 
 type ReportInstanceStatusOutput struct {
-	metadataReportInstanceStatusOutput `json:"-", xml:"-"`
+	metadataReportInstanceStatusOutput `json:"-" xml:"-"`
 }
 
 type metadataReportInstanceStatusOutput struct {
@@ -13826,7 +15002,7 @@ type RequestSpotInstancesInput struct {
 	// Default: The request is effective indefinitely.
 	ValidUntil *time.Time `locationName:"validUntil" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataRequestSpotInstancesInput `json:"-", xml:"-"`
+	metadataRequestSpotInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataRequestSpotInstancesInput struct {
@@ -13837,7 +15013,7 @@ type RequestSpotInstancesOutput struct {
 	// One or more Spot Instance requests.
 	SpotInstanceRequests []*SpotInstanceRequest `locationName:"spotInstanceRequestSet" locationNameList:"item" type:"list"`
 
-	metadataRequestSpotInstancesOutput `json:"-", xml:"-"`
+	metadataRequestSpotInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataRequestSpotInstancesOutput struct {
@@ -13898,7 +15074,7 @@ type RequestSpotLaunchSpecification struct {
 	// The Base64-encoded MIME user data to make available to the instances.
 	UserData *string `locationName:"userData" type:"string"`
 
-	metadataRequestSpotLaunchSpecification `json:"-", xml:"-"`
+	metadataRequestSpotLaunchSpecification `json:"-" xml:"-"`
 }
 
 type metadataRequestSpotLaunchSpecification struct {
@@ -13923,7 +15099,7 @@ type Reservation struct {
 	// The ID of the reservation.
 	ReservationID *string `locationName:"reservationId" type:"string"`
 
-	metadataReservation `json:"-", xml:"-"`
+	metadataReservation `json:"-" xml:"-"`
 }
 
 type metadataReservation struct {
@@ -13940,7 +15116,7 @@ type ReservedInstanceLimitPrice struct {
 	// only supported currency is USD.
 	CurrencyCode *string `locationName:"currencyCode" type:"string"`
 
-	metadataReservedInstanceLimitPrice `json:"-", xml:"-"`
+	metadataReservedInstanceLimitPrice `json:"-" xml:"-"`
 }
 
 type metadataReservedInstanceLimitPrice struct {
@@ -13998,7 +15174,7 @@ type ReservedInstances struct {
 	// The usage price of the Reserved Instance, per hour.
 	UsagePrice *float64 `locationName:"usagePrice" type:"float"`
 
-	metadataReservedInstances `json:"-", xml:"-"`
+	metadataReservedInstances `json:"-" xml:"-"`
 }
 
 type metadataReservedInstances struct {
@@ -14020,7 +15196,7 @@ type ReservedInstancesConfiguration struct {
 	// EC2-Classic or EC2-VPC.
 	Platform *string `locationName:"platform" type:"string"`
 
-	metadataReservedInstancesConfiguration `json:"-", xml:"-"`
+	metadataReservedInstancesConfiguration `json:"-" xml:"-"`
 }
 
 type metadataReservedInstancesConfiguration struct {
@@ -14032,7 +15208,7 @@ type ReservedInstancesID struct {
 	// The ID of the Reserved Instance.
 	ReservedInstancesID *string `locationName:"reservedInstancesId" type:"string"`
 
-	metadataReservedInstancesID `json:"-", xml:"-"`
+	metadataReservedInstancesID `json:"-" xml:"-"`
 }
 
 type metadataReservedInstancesID struct {
@@ -14041,7 +15217,8 @@ type metadataReservedInstancesID struct {
 
 // Describes a Reserved Instance listing.
 type ReservedInstancesListing struct {
-	// The idempotency token you provided when you created the listing.
+	// A unique, case-sensitive key supplied by the client to ensure that the request
+	// is idempotent. For more information, see Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
 	ClientToken *string `locationName:"clientToken" type:"string"`
 
 	// The time the listing was created.
@@ -14072,7 +15249,7 @@ type ReservedInstancesListing struct {
 	// The last modified timestamp of the listing.
 	UpdateDate *time.Time `locationName:"updateDate" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataReservedInstancesListing `json:"-", xml:"-"`
+	metadataReservedInstancesListing `json:"-" xml:"-"`
 }
 
 type metadataReservedInstancesListing struct {
@@ -14081,8 +15258,8 @@ type metadataReservedInstancesListing struct {
 
 // Describes a Reserved Instance modification.
 type ReservedInstancesModification struct {
-	// A unique, case-sensitive key supplied by the client to ensure that the modification
-	// request is idempotent.
+	// A unique, case-sensitive key supplied by the client to ensure that the request
+	// is idempotent. For more information, see Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
 	ClientToken *string `locationName:"clientToken" type:"string"`
 
 	// The time when the modification request was created.
@@ -14110,7 +15287,7 @@ type ReservedInstancesModification struct {
 	// The time when the modification request was last updated.
 	UpdateDate *time.Time `locationName:"updateDate" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataReservedInstancesModification `json:"-", xml:"-"`
+	metadataReservedInstancesModification `json:"-" xml:"-"`
 }
 
 type metadataReservedInstancesModification struct {
@@ -14126,7 +15303,7 @@ type ReservedInstancesModificationResult struct {
 	// request.
 	TargetConfiguration *ReservedInstancesConfiguration `locationName:"targetConfiguration" type:"structure"`
 
-	metadataReservedInstancesModificationResult `json:"-", xml:"-"`
+	metadataReservedInstancesModificationResult `json:"-" xml:"-"`
 }
 
 type metadataReservedInstancesModificationResult struct {
@@ -14178,7 +15355,7 @@ type ReservedInstancesOffering struct {
 	// The usage price of the Reserved Instance, per hour.
 	UsagePrice *float64 `locationName:"usagePrice" type:"float"`
 
-	metadataReservedInstancesOffering `json:"-", xml:"-"`
+	metadataReservedInstancesOffering `json:"-" xml:"-"`
 }
 
 type metadataReservedInstancesOffering struct {
@@ -14195,7 +15372,7 @@ type ResetImageAttributeInput struct {
 	// The ID of the AMI.
 	ImageID *string `locationName:"ImageId" type:"string" required:"true"`
 
-	metadataResetImageAttributeInput `json:"-", xml:"-"`
+	metadataResetImageAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataResetImageAttributeInput struct {
@@ -14203,7 +15380,7 @@ type metadataResetImageAttributeInput struct {
 }
 
 type ResetImageAttributeOutput struct {
-	metadataResetImageAttributeOutput `json:"-", xml:"-"`
+	metadataResetImageAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataResetImageAttributeOutput struct {
@@ -14219,7 +15396,7 @@ type ResetInstanceAttributeInput struct {
 	// The ID of the instance.
 	InstanceID *string `locationName:"instanceId" type:"string" required:"true"`
 
-	metadataResetInstanceAttributeInput `json:"-", xml:"-"`
+	metadataResetInstanceAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataResetInstanceAttributeInput struct {
@@ -14227,7 +15404,7 @@ type metadataResetInstanceAttributeInput struct {
 }
 
 type ResetInstanceAttributeOutput struct {
-	metadataResetInstanceAttributeOutput `json:"-", xml:"-"`
+	metadataResetInstanceAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataResetInstanceAttributeOutput struct {
@@ -14243,7 +15420,7 @@ type ResetNetworkInterfaceAttributeInput struct {
 	// The source/destination checking attribute. Resets the value to true.
 	SourceDestCheck *string `locationName:"sourceDestCheck" type:"string"`
 
-	metadataResetNetworkInterfaceAttributeInput `json:"-", xml:"-"`
+	metadataResetNetworkInterfaceAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataResetNetworkInterfaceAttributeInput struct {
@@ -14251,7 +15428,7 @@ type metadataResetNetworkInterfaceAttributeInput struct {
 }
 
 type ResetNetworkInterfaceAttributeOutput struct {
-	metadataResetNetworkInterfaceAttributeOutput `json:"-", xml:"-"`
+	metadataResetNetworkInterfaceAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataResetNetworkInterfaceAttributeOutput struct {
@@ -14268,7 +15445,7 @@ type ResetSnapshotAttributeInput struct {
 	// The ID of the snapshot.
 	SnapshotID *string `locationName:"SnapshotId" type:"string" required:"true"`
 
-	metadataResetSnapshotAttributeInput `json:"-", xml:"-"`
+	metadataResetSnapshotAttributeInput `json:"-" xml:"-"`
 }
 
 type metadataResetSnapshotAttributeInput struct {
@@ -14276,7 +15453,7 @@ type metadataResetSnapshotAttributeInput struct {
 }
 
 type ResetSnapshotAttributeOutput struct {
-	metadataResetSnapshotAttributeOutput `json:"-", xml:"-"`
+	metadataResetSnapshotAttributeOutput `json:"-" xml:"-"`
 }
 
 type metadataResetSnapshotAttributeOutput struct {
@@ -14317,7 +15494,7 @@ type RevokeSecurityGroupEgressInput struct {
 	// For the ICMP code number, use -1 to specify all ICMP codes for the ICMP type.
 	ToPort *int64 `locationName:"toPort" type:"integer"`
 
-	metadataRevokeSecurityGroupEgressInput `json:"-", xml:"-"`
+	metadataRevokeSecurityGroupEgressInput `json:"-" xml:"-"`
 }
 
 type metadataRevokeSecurityGroupEgressInput struct {
@@ -14325,7 +15502,7 @@ type metadataRevokeSecurityGroupEgressInput struct {
 }
 
 type RevokeSecurityGroupEgressOutput struct {
-	metadataRevokeSecurityGroupEgressOutput `json:"-", xml:"-"`
+	metadataRevokeSecurityGroupEgressOutput `json:"-" xml:"-"`
 }
 
 type metadataRevokeSecurityGroupEgressOutput struct {
@@ -14369,7 +15546,7 @@ type RevokeSecurityGroupIngressInput struct {
 	// For the ICMP code number, use -1 to specify all ICMP codes for the ICMP type.
 	ToPort *int64 `type:"integer"`
 
-	metadataRevokeSecurityGroupIngressInput `json:"-", xml:"-"`
+	metadataRevokeSecurityGroupIngressInput `json:"-" xml:"-"`
 }
 
 type metadataRevokeSecurityGroupIngressInput struct {
@@ -14377,7 +15554,7 @@ type metadataRevokeSecurityGroupIngressInput struct {
 }
 
 type RevokeSecurityGroupIngressOutput struct {
-	metadataRevokeSecurityGroupIngressOutput `json:"-", xml:"-"`
+	metadataRevokeSecurityGroupIngressOutput `json:"-" xml:"-"`
 }
 
 type metadataRevokeSecurityGroupIngressOutput struct {
@@ -14417,7 +15594,7 @@ type Route struct {
 	// The ID of the VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string"`
 
-	metadataRoute `json:"-", xml:"-"`
+	metadataRoute `json:"-" xml:"-"`
 }
 
 type metadataRoute struct {
@@ -14444,7 +15621,7 @@ type RouteTable struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataRouteTable `json:"-", xml:"-"`
+	metadataRouteTable `json:"-" xml:"-"`
 }
 
 type metadataRouteTable struct {
@@ -14465,7 +15642,7 @@ type RouteTableAssociation struct {
 	// The ID of the subnet.
 	SubnetID *string `locationName:"subnetId" type:"string"`
 
-	metadataRouteTableAssociation `json:"-", xml:"-"`
+	metadataRouteTableAssociation `json:"-" xml:"-"`
 }
 
 type metadataRouteTableAssociation struct {
@@ -14480,8 +15657,7 @@ type RunInstancesInput struct {
 	BlockDeviceMappings []*BlockDeviceMapping `locationName:"BlockDeviceMapping" locationNameList:"BlockDeviceMapping" type:"list"`
 
 	// Unique, case-sensitive identifier you provide to ensure the idempotency of
-	// the request. For more information, see How to Ensure Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Run_Instance_Idempotency.html)
-	// in the Amazon Elastic Compute Cloud User Guide.
+	// the request. For more information, see Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
 	//
 	// Constraints: Maximum 64 ASCII characters
 	ClientToken *string `locationName:"clientToken" type:"string"`
@@ -14603,7 +15779,7 @@ type RunInstancesInput struct {
 	// The Base64-encoded MIME user data for the instances.
 	UserData *string `type:"string"`
 
-	metadataRunInstancesInput `json:"-", xml:"-"`
+	metadataRunInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataRunInstancesInput struct {
@@ -14615,7 +15791,7 @@ type RunInstancesMonitoringEnabled struct {
 	// Indicates whether monitoring is enabled for the instance.
 	Enabled *bool `locationName:"enabled" type:"boolean" required:"true"`
 
-	metadataRunInstancesMonitoringEnabled `json:"-", xml:"-"`
+	metadataRunInstancesMonitoringEnabled `json:"-" xml:"-"`
 }
 
 type metadataRunInstancesMonitoringEnabled struct {
@@ -14645,7 +15821,7 @@ type S3Storage struct {
 	// The signature of the Base64 encoded JSON document.
 	UploadPolicySignature *string `locationName:"uploadPolicySignature" type:"string"`
 
-	metadataS3Storage `json:"-", xml:"-"`
+	metadataS3Storage `json:"-" xml:"-"`
 }
 
 type metadataS3Storage struct {
@@ -14678,7 +15854,7 @@ type SecurityGroup struct {
 	// [EC2-VPC] The ID of the VPC for the security group.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataSecurityGroup `json:"-", xml:"-"`
+	metadataSecurityGroup `json:"-" xml:"-"`
 }
 
 type metadataSecurityGroup struct {
@@ -14725,10 +15901,107 @@ type Snapshot struct {
 	// The size of the volume, in GiB.
 	VolumeSize *int64 `locationName:"volumeSize" type:"integer"`
 
-	metadataSnapshot `json:"-", xml:"-"`
+	metadataSnapshot `json:"-" xml:"-"`
 }
 
 type metadataSnapshot struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// The details of the snapshot created from the imported disk.
+type SnapshotDetail struct {
+	// Description for the snapshot.
+	Description *string `locationName:"description" type:"string"`
+
+	// The Amazon EBS block device mapping for the snapshot.
+	DeviceName *string `locationName:"deviceName" type:"string"`
+
+	// The size of the disk in the snapshot.
+	DiskImageSize *float64 `locationName:"diskImageSize" type:"double"`
+
+	// The format of the disk image from which the snapshot is created.
+	Format *string `locationName:"format" type:"string"`
+
+	// The percentage of progress for the task.
+	Progress *string `locationName:"progress" type:"string"`
+
+	// The snapshot ID of the disk being imported.
+	SnapshotID *string `locationName:"snapshotId" type:"string"`
+
+	// A brief status of the snapshot creation.
+	Status *string `locationName:"status" type:"string"`
+
+	// A detailed status message for the snapshot creation.
+	StatusMessage *string `locationName:"statusMessage" type:"string"`
+
+	// The URL used to access the disk image.
+	URL *string `locationName:"url" type:"string"`
+
+	// User's Amazon S3 bucket details used to access the image.
+	UserBucket *UserBucketDetails `locationName:"userBucket" type:"structure"`
+
+	metadataSnapshotDetail `json:"-" xml:"-"`
+}
+
+type metadataSnapshotDetail struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// The disk container object for the ImportSnapshot request.
+type SnapshotDiskContainer struct {
+	// The description of the disk image being imported.
+	Description *string `type:"string"`
+
+	// The format of the disk image being imported.
+	Format *string `type:"string"`
+
+	// The URL to the Amazon S3-based disk image being imported. It can either be
+	// a https URL (https://..) or an Amazon S3 URL (s3://..).
+	URL *string `locationName:"Url" type:"string"`
+
+	// User's Amazon S3 bucket details used to access the image.
+	UserBucket *UserBucket `type:"structure"`
+
+	metadataSnapshotDiskContainer `json:"-" xml:"-"`
+}
+
+type metadataSnapshotDiskContainer struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Details about the import snapshot task.
+type SnapshotTaskDetail struct {
+	// The description of the snapshot.
+	Description *string `locationName:"description" type:"string"`
+
+	// The size of the disk in the snapshot.
+	DiskImageSize *float64 `locationName:"diskImageSize" type:"double"`
+
+	// The format of the disk image from which the snapshot is created.
+	Format *string `locationName:"format" type:"string"`
+
+	// The percentage of completion for the ImportSnapshot task.
+	Progress *string `locationName:"progress" type:"string"`
+
+	// The snapshot ID of the disk being imported.
+	SnapshotID *string `locationName:"snapshotId" type:"string"`
+
+	// A brief status for the ImportSnapshot task.
+	Status *string `locationName:"status" type:"string"`
+
+	// A detailed status message for the ImportSnapshot task.
+	StatusMessage *string `locationName:"statusMessage" type:"string"`
+
+	// The URL of the disk image from which the snapshot is created.
+	URL *string `locationName:"url" type:"string"`
+
+	// User's Amazon S3 bucket details used to access the image.
+	UserBucket *UserBucketDetails `locationName:"userBucket" type:"structure"`
+
+	metadataSnapshotTaskDetail `json:"-" xml:"-"`
+}
+
+type metadataSnapshotTaskDetail struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -14749,7 +16022,7 @@ type SpotDatafeedSubscription struct {
 	// The state of the Spot Instance data feed subscription.
 	State *string `locationName:"state" type:"string"`
 
-	metadataSpotDatafeedSubscription `json:"-", xml:"-"`
+	metadataSpotDatafeedSubscription `json:"-" xml:"-"`
 }
 
 type metadataSpotDatafeedSubscription struct {
@@ -14821,7 +16094,7 @@ type SpotInstanceRequest struct {
 	// or this date is reached.
 	ValidUntil *time.Time `locationName:"validUntil" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataSpotInstanceRequest `json:"-", xml:"-"`
+	metadataSpotInstanceRequest `json:"-" xml:"-"`
 }
 
 type metadataSpotInstanceRequest struct {
@@ -14836,7 +16109,7 @@ type SpotInstanceStateFault struct {
 	// The message for the Spot Instance state change.
 	Message *string `locationName:"message" type:"string"`
 
-	metadataSpotInstanceStateFault `json:"-", xml:"-"`
+	metadataSpotInstanceStateFault `json:"-" xml:"-"`
 }
 
 type metadataSpotInstanceStateFault struct {
@@ -14854,7 +16127,7 @@ type SpotInstanceStatus struct {
 	// The time of the most recent status update.
 	UpdateTime *time.Time `locationName:"updateTime" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataSpotInstanceStatus `json:"-", xml:"-"`
+	metadataSpotInstanceStatus `json:"-" xml:"-"`
 }
 
 type metadataSpotInstanceStatus struct {
@@ -14869,7 +16142,7 @@ type SpotPlacement struct {
 	// The name of the placement group (for cluster instances).
 	GroupName *string `locationName:"groupName" type:"string"`
 
-	metadataSpotPlacement `json:"-", xml:"-"`
+	metadataSpotPlacement `json:"-" xml:"-"`
 }
 
 type metadataSpotPlacement struct {
@@ -14894,7 +16167,7 @@ type SpotPrice struct {
 	// The date and time the request was created.
 	Timestamp *time.Time `locationName:"timestamp" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataSpotPrice `json:"-", xml:"-"`
+	metadataSpotPrice `json:"-" xml:"-"`
 }
 
 type metadataSpotPrice struct {
@@ -14910,7 +16183,7 @@ type StartInstancesInput struct {
 	// One or more instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list" required:"true"`
 
-	metadataStartInstancesInput `json:"-", xml:"-"`
+	metadataStartInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataStartInstancesInput struct {
@@ -14921,7 +16194,7 @@ type StartInstancesOutput struct {
 	// Information about one or more started instances.
 	StartingInstances []*InstanceStateChange `locationName:"instancesSet" locationNameList:"item" type:"list"`
 
-	metadataStartInstancesOutput `json:"-", xml:"-"`
+	metadataStartInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataStartInstancesOutput struct {
@@ -14958,7 +16231,7 @@ type StateReason struct {
 	// Client.InvalidSnapshot.NotFound: The specified snapshot was not found.
 	Message *string `locationName:"message" type:"string"`
 
-	metadataStateReason `json:"-", xml:"-"`
+	metadataStateReason `json:"-" xml:"-"`
 }
 
 type metadataStateReason struct {
@@ -14979,7 +16252,7 @@ type StopInstancesInput struct {
 	// One or more instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list" required:"true"`
 
-	metadataStopInstancesInput `json:"-", xml:"-"`
+	metadataStopInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataStopInstancesInput struct {
@@ -14990,7 +16263,7 @@ type StopInstancesOutput struct {
 	// Information about one or more stopped instances.
 	StoppingInstances []*InstanceStateChange `locationName:"instancesSet" locationNameList:"item" type:"list"`
 
-	metadataStopInstancesOutput `json:"-", xml:"-"`
+	metadataStopInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataStopInstancesOutput struct {
@@ -15002,7 +16275,7 @@ type Storage struct {
 	// An Amazon S3 storage location.
 	S3 *S3Storage `type:"structure"`
 
-	metadataStorage `json:"-", xml:"-"`
+	metadataStorage `json:"-" xml:"-"`
 }
 
 type metadataStorage struct {
@@ -15039,7 +16312,7 @@ type Subnet struct {
 	// The ID of the VPC the subnet is in.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataSubnet `json:"-", xml:"-"`
+	metadataSubnet `json:"-" xml:"-"`
 }
 
 type metadataSubnet struct {
@@ -15060,7 +16333,7 @@ type Tag struct {
 	// characters.
 	Value *string `locationName:"value" type:"string"`
 
-	metadataTag `json:"-", xml:"-"`
+	metadataTag `json:"-" xml:"-"`
 }
 
 type metadataTag struct {
@@ -15081,7 +16354,7 @@ type TagDescription struct {
 	// The tag value.
 	Value *string `locationName:"value" type:"string"`
 
-	metadataTagDescription `json:"-", xml:"-"`
+	metadataTagDescription `json:"-" xml:"-"`
 }
 
 type metadataTagDescription struct {
@@ -15094,7 +16367,7 @@ type TerminateInstancesInput struct {
 	// One or more instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list" required:"true"`
 
-	metadataTerminateInstancesInput `json:"-", xml:"-"`
+	metadataTerminateInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataTerminateInstancesInput struct {
@@ -15105,7 +16378,7 @@ type TerminateInstancesOutput struct {
 	// Information about one or more terminated instances.
 	TerminatingInstances []*InstanceStateChange `locationName:"instancesSet" locationNameList:"item" type:"list"`
 
-	metadataTerminateInstancesOutput `json:"-", xml:"-"`
+	metadataTerminateInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataTerminateInstancesOutput struct {
@@ -15120,7 +16393,7 @@ type UnassignPrivateIPAddressesInput struct {
 	// You can specify this option multiple times to unassign more than one IP address.
 	PrivateIPAddresses []*string `locationName:"privateIpAddress" locationNameList:"PrivateIpAddress" type:"list" required:"true"`
 
-	metadataUnassignPrivateIPAddressesInput `json:"-", xml:"-"`
+	metadataUnassignPrivateIPAddressesInput `json:"-" xml:"-"`
 }
 
 type metadataUnassignPrivateIPAddressesInput struct {
@@ -15128,7 +16401,7 @@ type metadataUnassignPrivateIPAddressesInput struct {
 }
 
 type UnassignPrivateIPAddressesOutput struct {
-	metadataUnassignPrivateIPAddressesOutput `json:"-", xml:"-"`
+	metadataUnassignPrivateIPAddressesOutput `json:"-" xml:"-"`
 }
 
 type metadataUnassignPrivateIPAddressesOutput struct {
@@ -15141,7 +16414,7 @@ type UnmonitorInstancesInput struct {
 	// One or more instance IDs.
 	InstanceIDs []*string `locationName:"InstanceId" locationNameList:"InstanceId" type:"list" required:"true"`
 
-	metadataUnmonitorInstancesInput `json:"-", xml:"-"`
+	metadataUnmonitorInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataUnmonitorInstancesInput struct {
@@ -15152,17 +16425,47 @@ type UnmonitorInstancesOutput struct {
 	// Monitoring information for one or more instances.
 	InstanceMonitorings []*InstanceMonitoring `locationName:"instancesSet" locationNameList:"item" type:"list"`
 
-	metadataUnmonitorInstancesOutput `json:"-", xml:"-"`
+	metadataUnmonitorInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataUnmonitorInstancesOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// User's Amazon S3 bucket details used to access the image.
+type UserBucket struct {
+	// The Amazon S3 bucket name where the disk image is located.
+	S3Bucket *string `type:"string"`
+
+	// The Amazon S3 Key for the disk image.
+	S3Key *string `type:"string"`
+
+	metadataUserBucket `json:"-" xml:"-"`
+}
+
+type metadataUserBucket struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// User's Amazon S3 bucket details used to access the image.
+type UserBucketDetails struct {
+	// The Amazon S3 bucket from which the disk image was created.
+	S3Bucket *string `locationName:"s3Bucket" type:"string"`
+
+	// The Amazon S3 key from which the disk image was created.
+	S3Key *string `locationName:"s3Key" type:"string"`
+
+	metadataUserBucketDetails `json:"-" xml:"-"`
+}
+
+type metadataUserBucketDetails struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type UserData struct {
 	Data *string `locationName:"data" type:"string"`
 
-	metadataUserData `json:"-", xml:"-"`
+	metadataUserData `json:"-" xml:"-"`
 }
 
 type metadataUserData struct {
@@ -15182,7 +16485,7 @@ type UserIDGroupPair struct {
 	// The ID of an AWS account. EC2-Classic only.
 	UserID *string `locationName:"userId" type:"string"`
 
-	metadataUserIDGroupPair `json:"-", xml:"-"`
+	metadataUserIDGroupPair `json:"-" xml:"-"`
 }
 
 type metadataUserIDGroupPair struct {
@@ -15207,7 +16510,7 @@ type VGWTelemetry struct {
 	// If an error occurs, a description of the error.
 	StatusMessage *string `locationName:"statusMessage" type:"string"`
 
-	metadataVGWTelemetry `json:"-", xml:"-"`
+	metadataVGWTelemetry `json:"-" xml:"-"`
 }
 
 type metadataVGWTelemetry struct {
@@ -15238,7 +16541,7 @@ type VPC struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataVPC `json:"-", xml:"-"`
+	metadataVPC `json:"-" xml:"-"`
 }
 
 type metadataVPC struct {
@@ -15253,7 +16556,7 @@ type VPCAttachment struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataVPCAttachment `json:"-", xml:"-"`
+	metadataVPCAttachment `json:"-" xml:"-"`
 }
 
 type metadataVPCAttachment struct {
@@ -15271,7 +16574,7 @@ type VPCClassicLink struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataVPCClassicLink `json:"-", xml:"-"`
+	metadataVPCClassicLink `json:"-" xml:"-"`
 }
 
 type metadataVPCClassicLink struct {
@@ -15298,7 +16601,7 @@ type VPCPeeringConnection struct {
 	// The ID of the VPC peering connection.
 	VPCPeeringConnectionID *string `locationName:"vpcPeeringConnectionId" type:"string"`
 
-	metadataVPCPeeringConnection `json:"-", xml:"-"`
+	metadataVPCPeeringConnection `json:"-" xml:"-"`
 }
 
 type metadataVPCPeeringConnection struct {
@@ -15313,7 +16616,7 @@ type VPCPeeringConnectionStateReason struct {
 	// A message that provides more information about the status, if applicable.
 	Message *string `locationName:"message" type:"string"`
 
-	metadataVPCPeeringConnectionStateReason `json:"-", xml:"-"`
+	metadataVPCPeeringConnectionStateReason `json:"-" xml:"-"`
 }
 
 type metadataVPCPeeringConnectionStateReason struct {
@@ -15331,7 +16634,7 @@ type VPCPeeringConnectionVPCInfo struct {
 	// The ID of the VPC.
 	VPCID *string `locationName:"vpcId" type:"string"`
 
-	metadataVPCPeeringConnectionVPCInfo `json:"-", xml:"-"`
+	metadataVPCPeeringConnectionVPCInfo `json:"-" xml:"-"`
 }
 
 type metadataVPCPeeringConnectionVPCInfo struct {
@@ -15373,7 +16676,7 @@ type VPNConnection struct {
 	// The ID of the virtual private gateway at the AWS side of the VPN connection.
 	VPNGatewayID *string `locationName:"vpnGatewayId" type:"string"`
 
-	metadataVPNConnection `json:"-", xml:"-"`
+	metadataVPNConnection `json:"-" xml:"-"`
 }
 
 type metadataVPNConnection struct {
@@ -15386,7 +16689,7 @@ type VPNConnectionOptions struct {
 	// must be used for devices that don't support BGP.
 	StaticRoutesOnly *bool `locationName:"staticRoutesOnly" type:"boolean"`
 
-	metadataVPNConnectionOptions `json:"-", xml:"-"`
+	metadataVPNConnectionOptions `json:"-" xml:"-"`
 }
 
 type metadataVPNConnectionOptions struct {
@@ -15399,7 +16702,7 @@ type VPNConnectionOptionsSpecification struct {
 	// must be used for devices that don't support BGP.
 	StaticRoutesOnly *bool `locationName:"staticRoutesOnly" type:"boolean"`
 
-	metadataVPNConnectionOptionsSpecification `json:"-", xml:"-"`
+	metadataVPNConnectionOptionsSpecification `json:"-" xml:"-"`
 }
 
 type metadataVPNConnectionOptionsSpecification struct {
@@ -15426,7 +16729,7 @@ type VPNGateway struct {
 	// The ID of the virtual private gateway.
 	VPNGatewayID *string `locationName:"vpnGatewayId" type:"string"`
 
-	metadataVPNGateway `json:"-", xml:"-"`
+	metadataVPNGateway `json:"-" xml:"-"`
 }
 
 type metadataVPNGateway struct {
@@ -15444,7 +16747,7 @@ type VPNStaticRoute struct {
 	// The current state of the static route.
 	State *string `locationName:"state" type:"string"`
 
-	metadataVPNStaticRoute `json:"-", xml:"-"`
+	metadataVPNStaticRoute `json:"-" xml:"-"`
 }
 
 type metadataVPNStaticRoute struct {
@@ -15472,8 +16775,8 @@ type Volume struct {
 	// performance, I/O credits, and bursting, see Amazon EBS Volume Types (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Constraint: Range is 100 to 4000 for Provisioned IOPS (SSD) volumes and
-	// 3 to 3072 for General Purpose (SSD) volumes.
+	// Constraint: Range is 100 to 20000 for Provisioned IOPS (SSD) volumes and
+	// 3 to 10000 for General Purpose (SSD) volumes.
 	//
 	// Condition: This parameter is required for requests to create io1 volumes;
 	// it is not used in requests to create standard or gp2 volumes.
@@ -15502,7 +16805,7 @@ type Volume struct {
 	// Provisioned IOPS (SSD) volumes, or standard for Magnetic volumes.
 	VolumeType *string `locationName:"volumeType" type:"string"`
 
-	metadataVolume `json:"-", xml:"-"`
+	metadataVolume `json:"-" xml:"-"`
 }
 
 type metadataVolume struct {
@@ -15529,7 +16832,7 @@ type VolumeAttachment struct {
 	// The ID of the volume.
 	VolumeID *string `locationName:"volumeId" type:"string"`
 
-	metadataVolumeAttachment `json:"-", xml:"-"`
+	metadataVolumeAttachment `json:"-" xml:"-"`
 }
 
 type metadataVolumeAttachment struct {
@@ -15541,7 +16844,7 @@ type VolumeDetail struct {
 	// The size of the volume, in GiB.
 	Size *int64 `locationName:"size" type:"long" required:"true"`
 
-	metadataVolumeDetail `json:"-", xml:"-"`
+	metadataVolumeDetail `json:"-" xml:"-"`
 }
 
 type metadataVolumeDetail struct {
@@ -15562,7 +16865,7 @@ type VolumeStatusAction struct {
 	// The event type associated with this operation.
 	EventType *string `locationName:"eventType" type:"string"`
 
-	metadataVolumeStatusAction `json:"-", xml:"-"`
+	metadataVolumeStatusAction `json:"-" xml:"-"`
 }
 
 type metadataVolumeStatusAction struct {
@@ -15577,7 +16880,7 @@ type VolumeStatusDetails struct {
 	// The intended status of the volume status.
 	Status *string `locationName:"status" type:"string"`
 
-	metadataVolumeStatusDetails `json:"-", xml:"-"`
+	metadataVolumeStatusDetails `json:"-" xml:"-"`
 }
 
 type metadataVolumeStatusDetails struct {
@@ -15601,7 +16904,7 @@ type VolumeStatusEvent struct {
 	// The earliest start time of the event.
 	NotBefore *time.Time `locationName:"notBefore" type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataVolumeStatusEvent `json:"-", xml:"-"`
+	metadataVolumeStatusEvent `json:"-" xml:"-"`
 }
 
 type metadataVolumeStatusEvent struct {
@@ -15616,7 +16919,7 @@ type VolumeStatusInfo struct {
 	// The status of the volume.
 	Status *string `locationName:"status" type:"string"`
 
-	metadataVolumeStatusInfo `json:"-", xml:"-"`
+	metadataVolumeStatusInfo `json:"-" xml:"-"`
 }
 
 type metadataVolumeStatusInfo struct {
@@ -15640,7 +16943,7 @@ type VolumeStatusItem struct {
 	// The volume status.
 	VolumeStatus *VolumeStatusInfo `locationName:"volumeStatus" type:"structure"`
 
-	metadataVolumeStatusItem `json:"-", xml:"-"`
+	metadataVolumeStatusItem `json:"-" xml:"-"`
 }
 
 type metadataVolumeStatusItem struct {

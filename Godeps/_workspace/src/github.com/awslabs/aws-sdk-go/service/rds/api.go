@@ -25,6 +25,10 @@ func (c *RDS) AddSourceIdentifierToSubscriptionRequest(input *AddSourceIdentifie
 		}
 	}
 
+	if input == nil {
+		input = &AddSourceIdentifierToSubscriptionInput{}
+	}
+
 	req = c.newRequest(opAddSourceIdentifierToSubscription, input, output)
 	output = &AddSourceIdentifierToSubscriptionOutput{}
 	req.Data = output
@@ -52,6 +56,10 @@ func (c *RDS) AddTagsToResourceRequest(input *AddTagsToResourceInput) (req *aws.
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AddTagsToResourceInput{}
 	}
 
 	req = c.newRequest(opAddTagsToResource, input, output)
@@ -88,6 +96,10 @@ func (c *RDS) ApplyPendingMaintenanceActionRequest(input *ApplyPendingMaintenanc
 		}
 	}
 
+	if input == nil {
+		input = &ApplyPendingMaintenanceActionInput{}
+	}
+
 	req = c.newRequest(opApplyPendingMaintenanceAction, input, output)
 	output = &ApplyPendingMaintenanceActionOutput{}
 	req.Data = output
@@ -115,6 +127,10 @@ func (c *RDS) AuthorizeDBSecurityGroupIngressRequest(input *AuthorizeDBSecurityG
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &AuthorizeDBSecurityGroupIngressInput{}
 	}
 
 	req = c.newRequest(opAuthorizeDBSecurityGroupIngress, input, output)
@@ -157,6 +173,10 @@ func (c *RDS) CopyDBParameterGroupRequest(input *CopyDBParameterGroupInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &CopyDBParameterGroupInput{}
+	}
+
 	req = c.newRequest(opCopyDBParameterGroup, input, output)
 	output = &CopyDBParameterGroupOutput{}
 	req.Data = output
@@ -184,6 +204,10 @@ func (c *RDS) CopyDBSnapshotRequest(input *CopyDBSnapshotInput) (req *aws.Reques
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CopyDBSnapshotInput{}
 	}
 
 	req = c.newRequest(opCopyDBSnapshot, input, output)
@@ -216,6 +240,10 @@ func (c *RDS) CopyOptionGroupRequest(input *CopyOptionGroupInput) (req *aws.Requ
 		}
 	}
 
+	if input == nil {
+		input = &CopyOptionGroupInput{}
+	}
+
 	req = c.newRequest(opCopyOptionGroup, input, output)
 	output = &CopyOptionGroupOutput{}
 	req.Data = output
@@ -245,6 +273,10 @@ func (c *RDS) CreateDBInstanceRequest(input *CreateDBInstanceInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &CreateDBInstanceInput{}
+	}
+
 	req = c.newRequest(opCreateDBInstance, input, output)
 	output = &CreateDBInstanceOutput{}
 	req.Data = output
@@ -272,6 +304,10 @@ func (c *RDS) CreateDBInstanceReadReplicaRequest(input *CreateDBInstanceReadRepl
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateDBInstanceReadReplicaInput{}
 	}
 
 	req = c.newRequest(opCreateDBInstanceReadReplica, input, output)
@@ -308,6 +344,10 @@ func (c *RDS) CreateDBParameterGroupRequest(input *CreateDBParameterGroupInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateDBParameterGroupInput{}
 	}
 
 	req = c.newRequest(opCreateDBParameterGroup, input, output)
@@ -359,6 +399,10 @@ func (c *RDS) CreateDBSecurityGroupRequest(input *CreateDBSecurityGroupInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &CreateDBSecurityGroupInput{}
+	}
+
 	req = c.newRequest(opCreateDBSecurityGroup, input, output)
 	output = &CreateDBSecurityGroupOutput{}
 	req.Data = output
@@ -387,6 +431,10 @@ func (c *RDS) CreateDBSnapshotRequest(input *CreateDBSnapshotInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateDBSnapshotInput{}
 	}
 
 	req = c.newRequest(opCreateDBSnapshot, input, output)
@@ -418,6 +466,10 @@ func (c *RDS) CreateDBSubnetGroupRequest(input *CreateDBSubnetGroupInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &CreateDBSubnetGroupInput{}
+	}
+
 	req = c.newRequest(opCreateDBSubnetGroup, input, output)
 	output = &CreateDBSubnetGroupOutput{}
 	req.Data = output
@@ -446,6 +498,10 @@ func (c *RDS) CreateEventSubscriptionRequest(input *CreateEventSubscriptionInput
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &CreateEventSubscriptionInput{}
 	}
 
 	req = c.newRequest(opCreateEventSubscription, input, output)
@@ -495,6 +551,10 @@ func (c *RDS) CreateOptionGroupRequest(input *CreateOptionGroupInput) (req *aws.
 		}
 	}
 
+	if input == nil {
+		input = &CreateOptionGroupInput{}
+	}
+
 	req = c.newRequest(opCreateOptionGroup, input, output)
 	output = &CreateOptionGroupOutput{}
 	req.Data = output
@@ -522,6 +582,10 @@ func (c *RDS) DeleteDBInstanceRequest(input *DeleteDBInstanceInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteDBInstanceInput{}
 	}
 
 	req = c.newRequest(opDeleteDBInstance, input, output)
@@ -562,6 +626,10 @@ func (c *RDS) DeleteDBParameterGroupRequest(input *DeleteDBParameterGroupInput) 
 		}
 	}
 
+	if input == nil {
+		input = &DeleteDBParameterGroupInput{}
+	}
+
 	req = c.newRequest(opDeleteDBParameterGroup, input, output)
 	output = &DeleteDBParameterGroupOutput{}
 	req.Data = output
@@ -594,6 +662,10 @@ func (c *RDS) DeleteDBSecurityGroupRequest(input *DeleteDBSecurityGroupInput) (r
 		}
 	}
 
+	if input == nil {
+		input = &DeleteDBSecurityGroupInput{}
+	}
+
 	req = c.newRequest(opDeleteDBSecurityGroup, input, output)
 	output = &DeleteDBSecurityGroupOutput{}
 	req.Data = output
@@ -623,6 +695,10 @@ func (c *RDS) DeleteDBSnapshotRequest(input *DeleteDBSnapshotInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteDBSnapshotInput{}
 	}
 
 	req = c.newRequest(opDeleteDBSnapshot, input, output)
@@ -657,6 +733,10 @@ func (c *RDS) DeleteDBSubnetGroupRequest(input *DeleteDBSubnetGroupInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DeleteDBSubnetGroupInput{}
+	}
+
 	req = c.newRequest(opDeleteDBSubnetGroup, input, output)
 	output = &DeleteDBSubnetGroupOutput{}
 	req.Data = output
@@ -688,6 +768,10 @@ func (c *RDS) DeleteEventSubscriptionRequest(input *DeleteEventSubscriptionInput
 		}
 	}
 
+	if input == nil {
+		input = &DeleteEventSubscriptionInput{}
+	}
+
 	req = c.newRequest(opDeleteEventSubscription, input, output)
 	output = &DeleteEventSubscriptionOutput{}
 	req.Data = output
@@ -715,6 +799,10 @@ func (c *RDS) DeleteOptionGroupRequest(input *DeleteOptionGroupInput) (req *aws.
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DeleteOptionGroupInput{}
 	}
 
 	req = c.newRequest(opDeleteOptionGroup, input, output)
@@ -746,6 +834,10 @@ func (c *RDS) DescribeDBEngineVersionsRequest(input *DescribeDBEngineVersionsInp
 		}
 	}
 
+	if input == nil {
+		input = &DescribeDBEngineVersionsInput{}
+	}
+
 	req = c.newRequest(opDescribeDBEngineVersions, input, output)
 	output = &DescribeDBEngineVersionsOutput{}
 	req.Data = output
@@ -773,6 +865,10 @@ func (c *RDS) DescribeDBInstancesRequest(input *DescribeDBInstancesInput) (req *
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeDBInstancesInput{}
 	}
 
 	req = c.newRequest(opDescribeDBInstances, input, output)
@@ -804,6 +900,10 @@ func (c *RDS) DescribeDBLogFilesRequest(input *DescribeDBLogFilesInput) (req *aw
 		}
 	}
 
+	if input == nil {
+		input = &DescribeDBLogFilesInput{}
+	}
+
 	req = c.newRequest(opDescribeDBLogFiles, input, output)
 	output = &DescribeDBLogFilesOutput{}
 	req.Data = output
@@ -831,6 +931,10 @@ func (c *RDS) DescribeDBParameterGroupsRequest(input *DescribeDBParameterGroupsI
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeDBParameterGroupsInput{}
 	}
 
 	req = c.newRequest(opDescribeDBParameterGroups, input, output)
@@ -864,6 +968,10 @@ func (c *RDS) DescribeDBParametersRequest(input *DescribeDBParametersInput) (req
 		}
 	}
 
+	if input == nil {
+		input = &DescribeDBParametersInput{}
+	}
+
 	req = c.newRequest(opDescribeDBParameters, input, output)
 	output = &DescribeDBParametersOutput{}
 	req.Data = output
@@ -891,6 +999,10 @@ func (c *RDS) DescribeDBSecurityGroupsRequest(input *DescribeDBSecurityGroupsInp
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeDBSecurityGroupsInput{}
 	}
 
 	req = c.newRequest(opDescribeDBSecurityGroups, input, output)
@@ -924,6 +1036,10 @@ func (c *RDS) DescribeDBSnapshotsRequest(input *DescribeDBSnapshotsInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &DescribeDBSnapshotsInput{}
+	}
+
 	req = c.newRequest(opDescribeDBSnapshots, input, output)
 	output = &DescribeDBSnapshotsOutput{}
 	req.Data = output
@@ -951,6 +1067,10 @@ func (c *RDS) DescribeDBSubnetGroupsRequest(input *DescribeDBSubnetGroupsInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeDBSubnetGroupsInput{}
 	}
 
 	req = c.newRequest(opDescribeDBSubnetGroups, input, output)
@@ -985,6 +1105,10 @@ func (c *RDS) DescribeEngineDefaultParametersRequest(input *DescribeEngineDefaul
 		}
 	}
 
+	if input == nil {
+		input = &DescribeEngineDefaultParametersInput{}
+	}
+
 	req = c.newRequest(opDescribeEngineDefaultParameters, input, output)
 	output = &DescribeEngineDefaultParametersOutput{}
 	req.Data = output
@@ -1013,6 +1137,10 @@ func (c *RDS) DescribeEventCategoriesRequest(input *DescribeEventCategoriesInput
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeEventCategoriesInput{}
 	}
 
 	req = c.newRequest(opDescribeEventCategories, input, output)
@@ -1045,6 +1173,10 @@ func (c *RDS) DescribeEventSubscriptionsRequest(input *DescribeEventSubscription
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeEventSubscriptionsInput{}
 	}
 
 	req = c.newRequest(opDescribeEventSubscriptions, input, output)
@@ -1080,6 +1212,10 @@ func (c *RDS) DescribeEventsRequest(input *DescribeEventsInput) (req *aws.Reques
 		}
 	}
 
+	if input == nil {
+		input = &DescribeEventsInput{}
+	}
+
 	req = c.newRequest(opDescribeEvents, input, output)
 	output = &DescribeEventsOutput{}
 	req.Data = output
@@ -1113,6 +1249,10 @@ func (c *RDS) DescribeOptionGroupOptionsRequest(input *DescribeOptionGroupOption
 		}
 	}
 
+	if input == nil {
+		input = &DescribeOptionGroupOptionsInput{}
+	}
+
 	req = c.newRequest(opDescribeOptionGroupOptions, input, output)
 	output = &DescribeOptionGroupOptionsOutput{}
 	req.Data = output
@@ -1140,6 +1280,10 @@ func (c *RDS) DescribeOptionGroupsRequest(input *DescribeOptionGroupsInput) (req
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeOptionGroupsInput{}
 	}
 
 	req = c.newRequest(opDescribeOptionGroups, input, output)
@@ -1171,6 +1315,10 @@ func (c *RDS) DescribeOrderableDBInstanceOptionsRequest(input *DescribeOrderable
 		}
 	}
 
+	if input == nil {
+		input = &DescribeOrderableDBInstanceOptionsInput{}
+	}
+
 	req = c.newRequest(opDescribeOrderableDBInstanceOptions, input, output)
 	output = &DescribeOrderableDBInstanceOptionsOutput{}
 	req.Data = output
@@ -1198,6 +1346,10 @@ func (c *RDS) DescribePendingMaintenanceActionsRequest(input *DescribePendingMai
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribePendingMaintenanceActionsInput{}
 	}
 
 	req = c.newRequest(opDescribePendingMaintenanceActions, input, output)
@@ -1230,6 +1382,10 @@ func (c *RDS) DescribeReservedDBInstancesRequest(input *DescribeReservedDBInstan
 		}
 	}
 
+	if input == nil {
+		input = &DescribeReservedDBInstancesInput{}
+	}
+
 	req = c.newRequest(opDescribeReservedDBInstances, input, output)
 	output = &DescribeReservedDBInstancesOutput{}
 	req.Data = output
@@ -1258,6 +1414,10 @@ func (c *RDS) DescribeReservedDBInstancesOfferingsRequest(input *DescribeReserve
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &DescribeReservedDBInstancesOfferingsInput{}
 	}
 
 	req = c.newRequest(opDescribeReservedDBInstancesOfferings, input, output)
@@ -1289,6 +1449,10 @@ func (c *RDS) DownloadDBLogFilePortionRequest(input *DownloadDBLogFilePortionInp
 		}
 	}
 
+	if input == nil {
+		input = &DownloadDBLogFilePortionInput{}
+	}
+
 	req = c.newRequest(opDownloadDBLogFilePortion, input, output)
 	output = &DownloadDBLogFilePortionOutput{}
 	req.Data = output
@@ -1316,6 +1480,10 @@ func (c *RDS) ListTagsForResourceRequest(input *ListTagsForResourceInput) (req *
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ListTagsForResourceInput{}
 	}
 
 	req = c.newRequest(opListTagsForResource, input, output)
@@ -1350,6 +1518,10 @@ func (c *RDS) ModifyDBInstanceRequest(input *ModifyDBInstanceInput) (req *aws.Re
 		}
 	}
 
+	if input == nil {
+		input = &ModifyDBInstanceInput{}
+	}
+
 	req = c.newRequest(opModifyDBInstance, input, output)
 	output = &ModifyDBInstanceOutput{}
 	req.Data = output
@@ -1378,6 +1550,10 @@ func (c *RDS) ModifyDBParameterGroupRequest(input *ModifyDBParameterGroupInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ModifyDBParameterGroupInput{}
 	}
 
 	req = c.newRequest(opModifyDBParameterGroup, input, output)
@@ -1426,6 +1602,10 @@ func (c *RDS) ModifyDBSubnetGroupRequest(input *ModifyDBSubnetGroupInput) (req *
 		}
 	}
 
+	if input == nil {
+		input = &ModifyDBSubnetGroupInput{}
+	}
+
 	req = c.newRequest(opModifyDBSubnetGroup, input, output)
 	output = &ModifyDBSubnetGroupOutput{}
 	req.Data = output
@@ -1454,6 +1634,10 @@ func (c *RDS) ModifyEventSubscriptionRequest(input *ModifyEventSubscriptionInput
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ModifyEventSubscriptionInput{}
 	}
 
 	req = c.newRequest(opModifyEventSubscription, input, output)
@@ -1493,6 +1677,10 @@ func (c *RDS) ModifyOptionGroupRequest(input *ModifyOptionGroupInput) (req *aws.
 		}
 	}
 
+	if input == nil {
+		input = &ModifyOptionGroupInput{}
+	}
+
 	req = c.newRequest(opModifyOptionGroup, input, output)
 	output = &ModifyOptionGroupOutput{}
 	req.Data = output
@@ -1520,6 +1708,10 @@ func (c *RDS) PromoteReadReplicaRequest(input *PromoteReadReplicaInput) (req *aw
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &PromoteReadReplicaInput{}
 	}
 
 	req = c.newRequest(opPromoteReadReplica, input, output)
@@ -1556,6 +1748,10 @@ func (c *RDS) PurchaseReservedDBInstancesOfferingRequest(input *PurchaseReserved
 		}
 	}
 
+	if input == nil {
+		input = &PurchaseReservedDBInstancesOfferingInput{}
+	}
+
 	req = c.newRequest(opPurchaseReservedDBInstancesOffering, input, output)
 	output = &PurchaseReservedDBInstancesOfferingOutput{}
 	req.Data = output
@@ -1583,6 +1779,10 @@ func (c *RDS) RebootDBInstanceRequest(input *RebootDBInstanceInput) (req *aws.Re
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RebootDBInstanceInput{}
 	}
 
 	req = c.newRequest(opRebootDBInstance, input, output)
@@ -1630,6 +1830,10 @@ func (c *RDS) RemoveSourceIdentifierFromSubscriptionRequest(input *RemoveSourceI
 		}
 	}
 
+	if input == nil {
+		input = &RemoveSourceIdentifierFromSubscriptionInput{}
+	}
+
 	req = c.newRequest(opRemoveSourceIdentifierFromSubscription, input, output)
 	output = &RemoveSourceIdentifierFromSubscriptionOutput{}
 	req.Data = output
@@ -1657,6 +1861,10 @@ func (c *RDS) RemoveTagsFromResourceRequest(input *RemoveTagsFromResourceInput) 
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RemoveTagsFromResourceInput{}
 	}
 
 	req = c.newRequest(opRemoveTagsFromResource, input, output)
@@ -1689,6 +1897,10 @@ func (c *RDS) ResetDBParameterGroupRequest(input *ResetDBParameterGroupInput) (r
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &ResetDBParameterGroupInput{}
 	}
 
 	req = c.newRequest(opResetDBParameterGroup, input, output)
@@ -1724,6 +1936,10 @@ func (c *RDS) RestoreDBInstanceFromDBSnapshotRequest(input *RestoreDBInstanceFro
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RestoreDBInstanceFromDBSnapshotInput{}
 	}
 
 	req = c.newRequest(opRestoreDBInstanceFromDBSnapshot, input, output)
@@ -1767,6 +1983,10 @@ func (c *RDS) RestoreDBInstanceToPointInTimeRequest(input *RestoreDBInstanceToPo
 		}
 	}
 
+	if input == nil {
+		input = &RestoreDBInstanceToPointInTimeInput{}
+	}
+
 	req = c.newRequest(opRestoreDBInstanceToPointInTime, input, output)
 	output = &RestoreDBInstanceToPointInTimeOutput{}
 	req.Data = output
@@ -1798,6 +2018,10 @@ func (c *RDS) RevokeDBSecurityGroupIngressRequest(input *RevokeDBSecurityGroupIn
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
 		}
+	}
+
+	if input == nil {
+		input = &RevokeDBSecurityGroupIngressInput{}
 	}
 
 	req = c.newRequest(opRevokeDBSecurityGroupIngress, input, output)
@@ -1837,7 +2061,7 @@ type AddSourceIdentifierToSubscriptionInput struct {
 	// identifier to.
 	SubscriptionName *string `type:"string" required:"true"`
 
-	metadataAddSourceIdentifierToSubscriptionInput `json:"-", xml:"-"`
+	metadataAddSourceIdentifierToSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataAddSourceIdentifierToSubscriptionInput struct {
@@ -1849,7 +2073,7 @@ type AddSourceIdentifierToSubscriptionOutput struct {
 	// action.
 	EventSubscription *EventSubscription `type:"structure"`
 
-	metadataAddSourceIdentifierToSubscriptionOutput `json:"-", xml:"-"`
+	metadataAddSourceIdentifierToSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataAddSourceIdentifierToSubscriptionOutput struct {
@@ -1865,7 +2089,7 @@ type AddTagsToResourceInput struct {
 	// The tags to be assigned to the Amazon RDS resource.
 	Tags []*Tag `locationNameList:"Tag" type:"list" required:"true"`
 
-	metadataAddTagsToResourceInput `json:"-", xml:"-"`
+	metadataAddTagsToResourceInput `json:"-" xml:"-"`
 }
 
 type metadataAddTagsToResourceInput struct {
@@ -1873,7 +2097,7 @@ type metadataAddTagsToResourceInput struct {
 }
 
 type AddTagsToResourceOutput struct {
-	metadataAddTagsToResourceOutput `json:"-", xml:"-"`
+	metadataAddTagsToResourceOutput `json:"-" xml:"-"`
 }
 
 type metadataAddTagsToResourceOutput struct {
@@ -1898,7 +2122,7 @@ type ApplyPendingMaintenanceActionInput struct {
 	// action applies to.
 	ResourceIdentifier *string `type:"string" required:"true"`
 
-	metadataApplyPendingMaintenanceActionInput `json:"-", xml:"-"`
+	metadataApplyPendingMaintenanceActionInput `json:"-" xml:"-"`
 }
 
 type metadataApplyPendingMaintenanceActionInput struct {
@@ -1909,7 +2133,7 @@ type ApplyPendingMaintenanceActionOutput struct {
 	// Describes the pending maintenance actions for a resource.
 	ResourcePendingMaintenanceActions *ResourcePendingMaintenanceActions `type:"structure"`
 
-	metadataApplyPendingMaintenanceActionOutput `json:"-", xml:"-"`
+	metadataApplyPendingMaintenanceActionOutput `json:"-" xml:"-"`
 }
 
 type metadataApplyPendingMaintenanceActionOutput struct {
@@ -1940,7 +2164,7 @@ type AuthorizeDBSecurityGroupIngressInput struct {
 	// must be provided.
 	EC2SecurityGroupOwnerID *string `locationName:"EC2SecurityGroupOwnerId" type:"string"`
 
-	metadataAuthorizeDBSecurityGroupIngressInput `json:"-", xml:"-"`
+	metadataAuthorizeDBSecurityGroupIngressInput `json:"-" xml:"-"`
 }
 
 type metadataAuthorizeDBSecurityGroupIngressInput struct {
@@ -1955,7 +2179,7 @@ type AuthorizeDBSecurityGroupIngressOutput struct {
 	// in the DescribeDBSecurityGroups action.
 	DBSecurityGroup *DBSecurityGroup `type:"structure"`
 
-	metadataAuthorizeDBSecurityGroupIngressOutput `json:"-", xml:"-"`
+	metadataAuthorizeDBSecurityGroupIngressOutput `json:"-" xml:"-"`
 }
 
 type metadataAuthorizeDBSecurityGroupIngressOutput struct {
@@ -1969,7 +2193,7 @@ type AvailabilityZone struct {
 	// The name of the availability zone.
 	Name *string `type:"string"`
 
-	metadataAvailabilityZone `json:"-", xml:"-"`
+	metadataAvailabilityZone `json:"-" xml:"-"`
 }
 
 type metadataAvailabilityZone struct {
@@ -1984,7 +2208,7 @@ type CharacterSet struct {
 	// The name of the character set.
 	CharacterSetName *string `type:"string"`
 
-	metadataCharacterSet `json:"-", xml:"-"`
+	metadataCharacterSet `json:"-" xml:"-"`
 }
 
 type metadataCharacterSet struct {
@@ -2018,7 +2242,7 @@ type CopyDBParameterGroupInput struct {
 	// hyphen or contain two consecutive hyphens  Example: my-db-parameter-group
 	TargetDBParameterGroupIdentifier *string `type:"string" required:"true"`
 
-	metadataCopyDBParameterGroupInput `json:"-", xml:"-"`
+	metadataCopyDBParameterGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCopyDBParameterGroupInput struct {
@@ -2033,7 +2257,7 @@ type CopyDBParameterGroupOutput struct {
 	// action, and as a response element in the DescribeDBParameterGroups action.
 	DBParameterGroup *DBParameterGroup `type:"structure"`
 
-	metadataCopyDBParameterGroupOutput `json:"-", xml:"-"`
+	metadataCopyDBParameterGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCopyDBParameterGroupOutput struct {
@@ -2067,7 +2291,7 @@ type CopyDBSnapshotInput struct {
 	// hyphen or contain two consecutive hyphens  Example: my-db-snapshot
 	TargetDBSnapshotIdentifier *string `type:"string" required:"true"`
 
-	metadataCopyDBSnapshotInput `json:"-", xml:"-"`
+	metadataCopyDBSnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataCopyDBSnapshotInput struct {
@@ -2081,7 +2305,7 @@ type CopyDBSnapshotOutput struct {
 	// element in the DescribeDBSnapshots action.
 	DBSnapshot *DBSnapshot `type:"structure"`
 
-	metadataCopyDBSnapshotOutput `json:"-", xml:"-"`
+	metadataCopyDBSnapshotOutput `json:"-" xml:"-"`
 }
 
 type metadataCopyDBSnapshotOutput struct {
@@ -2114,7 +2338,7 @@ type CopyOptionGroupInput struct {
 	// hyphen or contain two consecutive hyphens  Example: my-option-group
 	TargetOptionGroupIdentifier *string `type:"string" required:"true"`
 
-	metadataCopyOptionGroupInput `json:"-", xml:"-"`
+	metadataCopyOptionGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCopyOptionGroupInput struct {
@@ -2124,7 +2348,7 @@ type metadataCopyOptionGroupInput struct {
 type CopyOptionGroupOutput struct {
 	OptionGroup *OptionGroup `type:"structure"`
 
-	metadataCopyOptionGroupOutput `json:"-", xml:"-"`
+	metadataCopyOptionGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCopyOptionGroupOutput struct {
@@ -2491,7 +2715,7 @@ type CreateDBInstanceInput struct {
 	//  Default: The default EC2 VPC security group for the DB subnet group's VPC.
 	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
 
-	metadataCreateDBInstanceInput `json:"-", xml:"-"`
+	metadataCreateDBInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBInstanceInput struct {
@@ -2505,7 +2729,7 @@ type CreateDBInstanceOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataCreateDBInstanceOutput `json:"-", xml:"-"`
+	metadataCreateDBInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBInstanceOutput struct {
@@ -2613,7 +2837,7 @@ type CreateDBInstanceReadReplicaInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateDBInstanceReadReplicaInput `json:"-", xml:"-"`
+	metadataCreateDBInstanceReadReplicaInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBInstanceReadReplicaInput struct {
@@ -2627,7 +2851,7 @@ type CreateDBInstanceReadReplicaOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataCreateDBInstanceReadReplicaOutput `json:"-", xml:"-"`
+	metadataCreateDBInstanceReadReplicaOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBInstanceReadReplicaOutput struct {
@@ -2656,7 +2880,7 @@ type CreateDBParameterGroupInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateDBParameterGroupInput `json:"-", xml:"-"`
+	metadataCreateDBParameterGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBParameterGroupInput struct {
@@ -2671,7 +2895,7 @@ type CreateDBParameterGroupOutput struct {
 	// action, and as a response element in the DescribeDBParameterGroups action.
 	DBParameterGroup *DBParameterGroup `type:"structure"`
 
-	metadataCreateDBParameterGroupOutput `json:"-", xml:"-"`
+	metadataCreateDBParameterGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBParameterGroupOutput struct {
@@ -2694,7 +2918,7 @@ type CreateDBSecurityGroupInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateDBSecurityGroupInput `json:"-", xml:"-"`
+	metadataCreateDBSecurityGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBSecurityGroupInput struct {
@@ -2709,7 +2933,7 @@ type CreateDBSecurityGroupOutput struct {
 	// in the DescribeDBSecurityGroups action.
 	DBSecurityGroup *DBSecurityGroup `type:"structure"`
 
-	metadataCreateDBSecurityGroupOutput `json:"-", xml:"-"`
+	metadataCreateDBSecurityGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBSecurityGroupOutput struct {
@@ -2737,7 +2961,7 @@ type CreateDBSnapshotInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateDBSnapshotInput `json:"-", xml:"-"`
+	metadataCreateDBSnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBSnapshotInput struct {
@@ -2751,7 +2975,7 @@ type CreateDBSnapshotOutput struct {
 	// element in the DescribeDBSnapshots action.
 	DBSnapshot *DBSnapshot `type:"structure"`
 
-	metadataCreateDBSnapshotOutput `json:"-", xml:"-"`
+	metadataCreateDBSnapshotOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBSnapshotOutput struct {
@@ -2776,7 +3000,7 @@ type CreateDBSubnetGroupInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateDBSubnetGroupInput `json:"-", xml:"-"`
+	metadataCreateDBSubnetGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBSubnetGroupInput struct {
@@ -2791,7 +3015,7 @@ type CreateDBSubnetGroupOutput struct {
 	// action.
 	DBSubnetGroup *DBSubnetGroup `type:"structure"`
 
-	metadataCreateDBSubnetGroupOutput `json:"-", xml:"-"`
+	metadataCreateDBSubnetGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateDBSubnetGroupOutput struct {
@@ -2846,7 +3070,7 @@ type CreateEventSubscriptionInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateEventSubscriptionInput `json:"-", xml:"-"`
+	metadataCreateEventSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataCreateEventSubscriptionInput struct {
@@ -2858,7 +3082,7 @@ type CreateEventSubscriptionOutput struct {
 	// action.
 	EventSubscription *EventSubscription `type:"structure"`
 
-	metadataCreateEventSubscriptionOutput `json:"-", xml:"-"`
+	metadataCreateEventSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateEventSubscriptionOutput struct {
@@ -2889,7 +3113,7 @@ type CreateOptionGroupInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataCreateOptionGroupInput `json:"-", xml:"-"`
+	metadataCreateOptionGroupInput `json:"-" xml:"-"`
 }
 
 type metadataCreateOptionGroupInput struct {
@@ -2899,7 +3123,7 @@ type metadataCreateOptionGroupInput struct {
 type CreateOptionGroupOutput struct {
 	OptionGroup *OptionGroup `type:"structure"`
 
-	metadataCreateOptionGroupOutput `json:"-", xml:"-"`
+	metadataCreateOptionGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataCreateOptionGroupOutput struct {
@@ -2931,7 +3155,7 @@ type DBEngineVersion struct {
 	// parameter of the CreateDBInstance API.
 	SupportedCharacterSets []*CharacterSet `locationNameList:"CharacterSet" type:"list"`
 
-	metadataDBEngineVersion `json:"-", xml:"-"`
+	metadataDBEngineVersion `json:"-" xml:"-"`
 }
 
 type metadataDBEngineVersion struct {
@@ -3096,7 +3320,7 @@ type DBInstance struct {
 	// to.
 	VPCSecurityGroups []*VPCSecurityGroupMembership `locationName:"VpcSecurityGroups" locationNameList:"VpcSecurityGroupMembership" type:"list"`
 
-	metadataDBInstance `json:"-", xml:"-"`
+	metadataDBInstance `json:"-" xml:"-"`
 }
 
 type metadataDBInstance struct {
@@ -3120,7 +3344,7 @@ type DBInstanceStatusInfo struct {
 	// This value is currently "read replication."
 	StatusType *string `type:"string"`
 
-	metadataDBInstanceStatusInfo `json:"-", xml:"-"`
+	metadataDBInstanceStatusInfo `json:"-" xml:"-"`
 }
 
 type metadataDBInstanceStatusInfo struct {
@@ -3143,7 +3367,7 @@ type DBParameterGroup struct {
 	// Provides the customer-specified description for this DB parameter group.
 	Description *string `type:"string"`
 
-	metadataDBParameterGroup `json:"-", xml:"-"`
+	metadataDBParameterGroup `json:"-" xml:"-"`
 }
 
 type metadataDBParameterGroup struct {
@@ -3156,7 +3380,7 @@ type DBParameterGroupNameMessage struct {
 	// The name of the DB parameter group.
 	DBParameterGroupName *string `type:"string"`
 
-	metadataDBParameterGroupNameMessage `json:"-", xml:"-"`
+	metadataDBParameterGroupNameMessage `json:"-" xml:"-"`
 }
 
 type metadataDBParameterGroupNameMessage struct {
@@ -3176,7 +3400,7 @@ type DBParameterGroupStatus struct {
 	// The status of parameter updates.
 	ParameterApplyStatus *string `type:"string"`
 
-	metadataDBParameterGroupStatus `json:"-", xml:"-"`
+	metadataDBParameterGroupStatus `json:"-" xml:"-"`
 }
 
 type metadataDBParameterGroupStatus struct {
@@ -3207,7 +3431,7 @@ type DBSecurityGroup struct {
 	// Provides the VpcId of the DB security group.
 	VPCID *string `locationName:"VpcId" type:"string"`
 
-	metadataDBSecurityGroup `json:"-", xml:"-"`
+	metadataDBSecurityGroup `json:"-" xml:"-"`
 }
 
 type metadataDBSecurityGroup struct {
@@ -3224,7 +3448,7 @@ type DBSecurityGroupMembership struct {
 	// The status of the DB security group.
 	Status *string `type:"string"`
 
-	metadataDBSecurityGroupMembership `json:"-", xml:"-"`
+	metadataDBSecurityGroupMembership `json:"-" xml:"-"`
 }
 
 type metadataDBSecurityGroupMembership struct {
@@ -3306,7 +3530,7 @@ type DBSnapshot struct {
 	// Provides the Vpc Id associated with the DB snapshot.
 	VPCID *string `locationName:"VpcId" type:"string"`
 
-	metadataDBSnapshot `json:"-", xml:"-"`
+	metadataDBSnapshot `json:"-" xml:"-"`
 }
 
 type metadataDBSnapshot struct {
@@ -3334,7 +3558,7 @@ type DBSubnetGroup struct {
 	// Provides the VpcId of the DB subnet group.
 	VPCID *string `locationName:"VpcId" type:"string"`
 
-	metadataDBSubnetGroup `json:"-", xml:"-"`
+	metadataDBSubnetGroup `json:"-" xml:"-"`
 }
 
 type metadataDBSubnetGroup struct {
@@ -3372,7 +3596,7 @@ type DeleteDBInstanceInput struct {
 	// is false. Default: false
 	SkipFinalSnapshot *bool `type:"boolean"`
 
-	metadataDeleteDBInstanceInput `json:"-", xml:"-"`
+	metadataDeleteDBInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBInstanceInput struct {
@@ -3386,7 +3610,7 @@ type DeleteDBInstanceOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataDeleteDBInstanceOutput `json:"-", xml:"-"`
+	metadataDeleteDBInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBInstanceOutput struct {
@@ -3402,7 +3626,7 @@ type DeleteDBParameterGroupInput struct {
 	// default DB parameter group Cannot be associated with any DB instances
 	DBParameterGroupName *string `type:"string" required:"true"`
 
-	metadataDeleteDBParameterGroupInput `json:"-", xml:"-"`
+	metadataDeleteDBParameterGroupInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBParameterGroupInput struct {
@@ -3410,7 +3634,7 @@ type metadataDeleteDBParameterGroupInput struct {
 }
 
 type DeleteDBParameterGroupOutput struct {
-	metadataDeleteDBParameterGroupOutput `json:"-", xml:"-"`
+	metadataDeleteDBParameterGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBParameterGroupOutput struct {
@@ -3427,7 +3651,7 @@ type DeleteDBSecurityGroupInput struct {
 	// May not contain spaces
 	DBSecurityGroupName *string `type:"string" required:"true"`
 
-	metadataDeleteDBSecurityGroupInput `json:"-", xml:"-"`
+	metadataDeleteDBSecurityGroupInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBSecurityGroupInput struct {
@@ -3435,7 +3659,7 @@ type metadataDeleteDBSecurityGroupInput struct {
 }
 
 type DeleteDBSecurityGroupOutput struct {
-	metadataDeleteDBSecurityGroupOutput `json:"-", xml:"-"`
+	metadataDeleteDBSecurityGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBSecurityGroupOutput struct {
@@ -3449,7 +3673,7 @@ type DeleteDBSnapshotInput struct {
 	// state.
 	DBSnapshotIdentifier *string `type:"string" required:"true"`
 
-	metadataDeleteDBSnapshotInput `json:"-", xml:"-"`
+	metadataDeleteDBSnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBSnapshotInput struct {
@@ -3463,7 +3687,7 @@ type DeleteDBSnapshotOutput struct {
 	// element in the DescribeDBSnapshots action.
 	DBSnapshot *DBSnapshot `type:"structure"`
 
-	metadataDeleteDBSnapshotOutput `json:"-", xml:"-"`
+	metadataDeleteDBSnapshotOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBSnapshotOutput struct {
@@ -3479,7 +3703,7 @@ type DeleteDBSubnetGroupInput struct {
 	// Cannot end with a hyphen or contain two consecutive hyphens
 	DBSubnetGroupName *string `type:"string" required:"true"`
 
-	metadataDeleteDBSubnetGroupInput `json:"-", xml:"-"`
+	metadataDeleteDBSubnetGroupInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBSubnetGroupInput struct {
@@ -3487,7 +3711,7 @@ type metadataDeleteDBSubnetGroupInput struct {
 }
 
 type DeleteDBSubnetGroupOutput struct {
-	metadataDeleteDBSubnetGroupOutput `json:"-", xml:"-"`
+	metadataDeleteDBSubnetGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteDBSubnetGroupOutput struct {
@@ -3498,7 +3722,7 @@ type DeleteEventSubscriptionInput struct {
 	// The name of the RDS event notification subscription you want to delete.
 	SubscriptionName *string `type:"string" required:"true"`
 
-	metadataDeleteEventSubscriptionInput `json:"-", xml:"-"`
+	metadataDeleteEventSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteEventSubscriptionInput struct {
@@ -3510,7 +3734,7 @@ type DeleteEventSubscriptionOutput struct {
 	// action.
 	EventSubscription *EventSubscription `type:"structure"`
 
-	metadataDeleteEventSubscriptionOutput `json:"-", xml:"-"`
+	metadataDeleteEventSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteEventSubscriptionOutput struct {
@@ -3523,7 +3747,7 @@ type DeleteOptionGroupInput struct {
 	// You cannot delete default option groups.
 	OptionGroupName *string `type:"string" required:"true"`
 
-	metadataDeleteOptionGroupInput `json:"-", xml:"-"`
+	metadataDeleteOptionGroupInput `json:"-" xml:"-"`
 }
 
 type metadataDeleteOptionGroupInput struct {
@@ -3531,7 +3755,7 @@ type metadataDeleteOptionGroupInput struct {
 }
 
 type DeleteOptionGroupOutput struct {
-	metadataDeleteOptionGroupOutput `json:"-", xml:"-"`
+	metadataDeleteOptionGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataDeleteOptionGroupOutput struct {
@@ -3581,7 +3805,7 @@ type DescribeDBEngineVersionsInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeDBEngineVersionsInput `json:"-", xml:"-"`
+	metadataDescribeDBEngineVersionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBEngineVersionsInput struct {
@@ -3599,7 +3823,7 @@ type DescribeDBEngineVersionsOutput struct {
 	// the value specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	metadataDescribeDBEngineVersionsOutput `json:"-", xml:"-"`
+	metadataDescribeDBEngineVersionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBEngineVersionsOutput struct {
@@ -3634,7 +3858,7 @@ type DescribeDBInstancesInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeDBInstancesInput `json:"-", xml:"-"`
+	metadataDescribeDBInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBInstancesInput struct {
@@ -3652,7 +3876,7 @@ type DescribeDBInstancesOutput struct {
 	// the value specified by MaxRecords .
 	Marker *string `type:"string"`
 
-	metadataDescribeDBInstancesOutput `json:"-", xml:"-"`
+	metadataDescribeDBInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBInstancesOutput struct {
@@ -3670,7 +3894,7 @@ type DescribeDBLogFilesDetails struct {
 	// The size, in bytes, of the log file for the specified DB instance.
 	Size *int64 `type:"long"`
 
-	metadataDescribeDBLogFilesDetails `json:"-", xml:"-"`
+	metadataDescribeDBLogFilesDetails `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBLogFilesDetails struct {
@@ -3711,7 +3935,7 @@ type DescribeDBLogFilesInput struct {
 	// is included in the response so that the remaining results can be retrieved.
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeDBLogFilesInput `json:"-", xml:"-"`
+	metadataDescribeDBLogFilesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBLogFilesInput struct {
@@ -3726,7 +3950,7 @@ type DescribeDBLogFilesOutput struct {
 	// A pagination token that can be used in a subsequent DescribeDBLogFiles request.
 	Marker *string `type:"string"`
 
-	metadataDescribeDBLogFilesOutput `json:"-", xml:"-"`
+	metadataDescribeDBLogFilesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBLogFilesOutput struct {
@@ -3759,7 +3983,7 @@ type DescribeDBParameterGroupsInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeDBParameterGroupsInput `json:"-", xml:"-"`
+	metadataDescribeDBParameterGroupsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBParameterGroupsInput struct {
@@ -3777,7 +4001,7 @@ type DescribeDBParameterGroupsOutput struct {
 	// the value specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	metadataDescribeDBParameterGroupsOutput `json:"-", xml:"-"`
+	metadataDescribeDBParameterGroupsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBParameterGroupsOutput struct {
@@ -3817,7 +4041,7 @@ type DescribeDBParametersInput struct {
 	// Valid Values: user | system | engine-default
 	Source *string `type:"string"`
 
-	metadataDescribeDBParametersInput `json:"-", xml:"-"`
+	metadataDescribeDBParametersInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBParametersInput struct {
@@ -3835,7 +4059,7 @@ type DescribeDBParametersOutput struct {
 	// A list of Parameter values.
 	Parameters []*Parameter `locationNameList:"Parameter" type:"list"`
 
-	metadataDescribeDBParametersOutput `json:"-", xml:"-"`
+	metadataDescribeDBParametersOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBParametersOutput struct {
@@ -3863,7 +4087,7 @@ type DescribeDBSecurityGroupsInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeDBSecurityGroupsInput `json:"-", xml:"-"`
+	metadataDescribeDBSecurityGroupsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBSecurityGroupsInput struct {
@@ -3881,7 +4105,7 @@ type DescribeDBSecurityGroupsOutput struct {
 	// the value specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	metadataDescribeDBSecurityGroupsOutput `json:"-", xml:"-"`
+	metadataDescribeDBSecurityGroupsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBSecurityGroupsOutput struct {
@@ -3932,7 +4156,7 @@ type DescribeDBSnapshotsInput struct {
 	// types.
 	SnapshotType *string `type:"string"`
 
-	metadataDescribeDBSnapshotsInput `json:"-", xml:"-"`
+	metadataDescribeDBSnapshotsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBSnapshotsInput struct {
@@ -3950,7 +4174,7 @@ type DescribeDBSnapshotsOutput struct {
 	// the value specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	metadataDescribeDBSnapshotsOutput `json:"-", xml:"-"`
+	metadataDescribeDBSnapshotsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBSnapshotsOutput struct {
@@ -3978,7 +4202,7 @@ type DescribeDBSubnetGroupsInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeDBSubnetGroupsInput `json:"-", xml:"-"`
+	metadataDescribeDBSubnetGroupsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBSubnetGroupsInput struct {
@@ -3996,7 +4220,7 @@ type DescribeDBSubnetGroupsOutput struct {
 	// the value specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	metadataDescribeDBSubnetGroupsOutput `json:"-", xml:"-"`
+	metadataDescribeDBSubnetGroupsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeDBSubnetGroupsOutput struct {
@@ -4024,7 +4248,7 @@ type DescribeEngineDefaultParametersInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeEngineDefaultParametersInput `json:"-", xml:"-"`
+	metadataDescribeEngineDefaultParametersInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEngineDefaultParametersInput struct {
@@ -4036,7 +4260,7 @@ type DescribeEngineDefaultParametersOutput struct {
 	// action.
 	EngineDefaults *EngineDefaults `type:"structure"`
 
-	metadataDescribeEngineDefaultParametersOutput `json:"-", xml:"-"`
+	metadataDescribeEngineDefaultParametersOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEngineDefaultParametersOutput struct {
@@ -4052,7 +4276,7 @@ type DescribeEventCategoriesInput struct {
 	// Valid values: db-instance | db-parameter-group | db-security-group | db-snapshot
 	SourceType *string `type:"string"`
 
-	metadataDescribeEventCategoriesInput `json:"-", xml:"-"`
+	metadataDescribeEventCategoriesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEventCategoriesInput struct {
@@ -4064,7 +4288,7 @@ type DescribeEventCategoriesOutput struct {
 	// A list of EventCategoriesMap data types.
 	EventCategoriesMapList []*EventCategoriesMap `locationNameList:"EventCategoriesMap" type:"list"`
 
-	metadataDescribeEventCategoriesOutput `json:"-", xml:"-"`
+	metadataDescribeEventCategoriesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEventCategoriesOutput struct {
@@ -4092,7 +4316,7 @@ type DescribeEventSubscriptionsInput struct {
 	// The name of the RDS event notification subscription you want to describe.
 	SubscriptionName *string `type:"string"`
 
-	metadataDescribeEventSubscriptionsInput `json:"-", xml:"-"`
+	metadataDescribeEventSubscriptionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEventSubscriptionsInput struct {
@@ -4109,7 +4333,7 @@ type DescribeEventSubscriptionsOutput struct {
 	// beyond the marker, up to the value specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	metadataDescribeEventSubscriptionsOutput `json:"-", xml:"-"`
+	metadataDescribeEventSubscriptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEventSubscriptionsOutput struct {
@@ -4174,7 +4398,7 @@ type DescribeEventsInput struct {
 	// Example: 2009-07-08T18:00Z
 	StartTime *time.Time `type:"timestamp" timestampFormat:"iso8601"`
 
-	metadataDescribeEventsInput `json:"-", xml:"-"`
+	metadataDescribeEventsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEventsInput struct {
@@ -4191,7 +4415,7 @@ type DescribeEventsOutput struct {
 	// up to the value specified by MaxRecords .
 	Marker *string `type:"string"`
 
-	metadataDescribeEventsOutput `json:"-", xml:"-"`
+	metadataDescribeEventsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeEventsOutput struct {
@@ -4224,7 +4448,7 @@ type DescribeOptionGroupOptionsInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	metadataDescribeOptionGroupOptionsInput `json:"-", xml:"-"`
+	metadataDescribeOptionGroupOptionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeOptionGroupOptionsInput struct {
@@ -4240,7 +4464,7 @@ type DescribeOptionGroupOptionsOutput struct {
 	// List of available option group options.
 	OptionGroupOptions []*OptionGroupOption `locationNameList:"OptionGroupOption" type:"list"`
 
-	metadataDescribeOptionGroupOptionsOutput `json:"-", xml:"-"`
+	metadataDescribeOptionGroupOptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeOptionGroupOptionsOutput struct {
@@ -4278,7 +4502,7 @@ type DescribeOptionGroupsInput struct {
 	// EngineName or MajorEngineVersion.
 	OptionGroupName *string `type:"string"`
 
-	metadataDescribeOptionGroupsInput `json:"-", xml:"-"`
+	metadataDescribeOptionGroupsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeOptionGroupsInput struct {
@@ -4295,7 +4519,7 @@ type DescribeOptionGroupsOutput struct {
 	// List of option groups.
 	OptionGroupsList []*OptionGroup `locationNameList:"OptionGroup" type:"list"`
 
-	metadataDescribeOptionGroupsOutput `json:"-", xml:"-"`
+	metadataDescribeOptionGroupsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeOptionGroupsOutput struct {
@@ -4339,7 +4563,7 @@ type DescribeOrderableDBInstanceOptionsInput struct {
 	// or non-VPC offerings.
 	VPC *bool `locationName:"Vpc" type:"boolean"`
 
-	metadataDescribeOrderableDBInstanceOptionsInput `json:"-", xml:"-"`
+	metadataDescribeOrderableDBInstanceOptionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeOrderableDBInstanceOptionsInput struct {
@@ -4358,7 +4582,7 @@ type DescribeOrderableDBInstanceOptionsOutput struct {
 	// options for the DB instance.
 	OrderableDBInstanceOptions []*OrderableDBInstanceOption `locationNameList:"OrderableDBInstanceOption" type:"list"`
 
-	metadataDescribeOrderableDBInstanceOptionsOutput `json:"-", xml:"-"`
+	metadataDescribeOrderableDBInstanceOptionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeOrderableDBInstanceOptionsOutput struct {
@@ -4390,7 +4614,7 @@ type DescribePendingMaintenanceActionsInput struct {
 	// The ARN of the resource to return pending maintenance actions for.
 	ResourceIdentifier *string `type:"string"`
 
-	metadataDescribePendingMaintenanceActionsInput `json:"-", xml:"-"`
+	metadataDescribePendingMaintenanceActionsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribePendingMaintenanceActionsInput struct {
@@ -4407,7 +4631,7 @@ type DescribePendingMaintenanceActionsOutput struct {
 	// Provides a list of the pending maintenance actions for the resource.
 	PendingMaintenanceActions []*ResourcePendingMaintenanceActions `locationNameList:"ResourcePendingMaintenanceActions" type:"list"`
 
-	metadataDescribePendingMaintenanceActionsOutput `json:"-", xml:"-"`
+	metadataDescribePendingMaintenanceActionsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribePendingMaintenanceActionsOutput struct {
@@ -4464,7 +4688,7 @@ type DescribeReservedDBInstancesInput struct {
 	// purchased reservations matching the specified offering identifier.
 	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string"`
 
-	metadataDescribeReservedDBInstancesInput `json:"-", xml:"-"`
+	metadataDescribeReservedDBInstancesInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedDBInstancesInput struct {
@@ -4519,7 +4743,7 @@ type DescribeReservedDBInstancesOfferingsInput struct {
 	// Example: 438012d3-4052-4cc7-b2e3-8d3372e0e706
 	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string"`
 
-	metadataDescribeReservedDBInstancesOfferingsInput `json:"-", xml:"-"`
+	metadataDescribeReservedDBInstancesOfferingsInput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedDBInstancesOfferingsInput struct {
@@ -4537,7 +4761,7 @@ type DescribeReservedDBInstancesOfferingsOutput struct {
 	// A list of reserved DB instance offerings.
 	ReservedDBInstancesOfferings []*ReservedDBInstancesOffering `locationNameList:"ReservedDBInstancesOffering" type:"list"`
 
-	metadataDescribeReservedDBInstancesOfferingsOutput `json:"-", xml:"-"`
+	metadataDescribeReservedDBInstancesOfferingsOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedDBInstancesOfferingsOutput struct {
@@ -4555,7 +4779,7 @@ type DescribeReservedDBInstancesOutput struct {
 	// A list of reserved DB instances.
 	ReservedDBInstances []*ReservedDBInstance `locationNameList:"ReservedDBInstance" type:"list"`
 
-	metadataDescribeReservedDBInstancesOutput `json:"-", xml:"-"`
+	metadataDescribeReservedDBInstancesOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeReservedDBInstancesOutput struct {
@@ -4600,7 +4824,7 @@ type DownloadDBLogFilePortionInput struct {
 	// continuing until the AdditionalDataPending response element returns false.
 	NumberOfLines *int64 `type:"integer"`
 
-	metadataDownloadDBLogFilePortionInput `json:"-", xml:"-"`
+	metadataDownloadDBLogFilePortionInput `json:"-" xml:"-"`
 }
 
 type metadataDownloadDBLogFilePortionInput struct {
@@ -4619,7 +4843,7 @@ type DownloadDBLogFilePortionOutput struct {
 	// request.
 	Marker *string `type:"string"`
 
-	metadataDownloadDBLogFilePortionOutput `json:"-", xml:"-"`
+	metadataDownloadDBLogFilePortionOutput `json:"-" xml:"-"`
 }
 
 type metadataDownloadDBLogFilePortionOutput struct {
@@ -4644,7 +4868,7 @@ type EC2SecurityGroup struct {
 	// "authorized", "revoking", and "revoked".
 	Status *string `type:"string"`
 
-	metadataEC2SecurityGroup `json:"-", xml:"-"`
+	metadataEC2SecurityGroup `json:"-" xml:"-"`
 }
 
 type metadataEC2SecurityGroup struct {
@@ -4661,7 +4885,7 @@ type Endpoint struct {
 	// Specifies the port that the database engine is listening on.
 	Port *int64 `type:"integer"`
 
-	metadataEndpoint `json:"-", xml:"-"`
+	metadataEndpoint `json:"-" xml:"-"`
 }
 
 type metadataEndpoint struct {
@@ -4683,7 +4907,7 @@ type EngineDefaults struct {
 	// Contains a list of engine default parameters.
 	Parameters []*Parameter `locationNameList:"Parameter" type:"list"`
 
-	metadataEngineDefaults `json:"-", xml:"-"`
+	metadataEngineDefaults `json:"-" xml:"-"`
 }
 
 type metadataEngineDefaults struct {
@@ -4707,7 +4931,7 @@ type Event struct {
 	// Specifies the source type for this event.
 	SourceType *string `type:"string"`
 
-	metadataEvent `json:"-", xml:"-"`
+	metadataEvent `json:"-" xml:"-"`
 }
 
 type metadataEvent struct {
@@ -4723,7 +4947,7 @@ type EventCategoriesMap struct {
 	// The source type that the returned categories belong to
 	SourceType *string `type:"string"`
 
-	metadataEventCategoriesMap `json:"-", xml:"-"`
+	metadataEventCategoriesMap `json:"-" xml:"-"`
 }
 
 type metadataEventCategoriesMap struct {
@@ -4770,7 +4994,7 @@ type EventSubscription struct {
 	// The time the RDS event notification subscription was created.
 	SubscriptionCreationTime *string `type:"string"`
 
-	metadataEventSubscription `json:"-", xml:"-"`
+	metadataEventSubscription `json:"-" xml:"-"`
 }
 
 type metadataEventSubscription struct {
@@ -4784,7 +5008,7 @@ type Filter struct {
 	// This parameter is not currently supported.
 	Values []*string `locationNameList:"Value" type:"list" required:"true"`
 
-	metadataFilter `json:"-", xml:"-"`
+	metadataFilter `json:"-" xml:"-"`
 }
 
 type metadataFilter struct {
@@ -4801,7 +5025,7 @@ type IPRange struct {
 	// "revoking", and "revoked".
 	Status *string `type:"string"`
 
-	metadataIPRange `json:"-", xml:"-"`
+	metadataIPRange `json:"-" xml:"-"`
 }
 
 type metadataIPRange struct {
@@ -4817,7 +5041,7 @@ type ListTagsForResourceInput struct {
 	// Amazon Resource Name (ARN) (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Tagging.html#USER_Tagging.ARN).
 	ResourceName *string `type:"string" required:"true"`
 
-	metadataListTagsForResourceInput `json:"-", xml:"-"`
+	metadataListTagsForResourceInput `json:"-" xml:"-"`
 }
 
 type metadataListTagsForResourceInput struct {
@@ -4828,7 +5052,7 @@ type ListTagsForResourceOutput struct {
 	// List of tags returned by the ListTagsForResource operation.
 	TagList []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataListTagsForResourceOutput `json:"-", xml:"-"`
+	metadataListTagsForResourceOutput `json:"-" xml:"-"`
 }
 
 type metadataListTagsForResourceOutput struct {
@@ -5146,7 +5370,7 @@ type ModifyDBInstanceInput struct {
 	// Cannot end with a hyphen or contain two consecutive hyphens
 	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
 
-	metadataModifyDBInstanceInput `json:"-", xml:"-"`
+	metadataModifyDBInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataModifyDBInstanceInput struct {
@@ -5160,7 +5384,7 @@ type ModifyDBInstanceOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataModifyDBInstanceOutput `json:"-", xml:"-"`
+	metadataModifyDBInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyDBInstanceOutput struct {
@@ -5189,7 +5413,7 @@ type ModifyDBParameterGroupInput struct {
 	// are applied when you reboot the DB instance without failover.
 	Parameters []*Parameter `locationNameList:"Parameter" type:"list" required:"true"`
 
-	metadataModifyDBParameterGroupInput `json:"-", xml:"-"`
+	metadataModifyDBParameterGroupInput `json:"-" xml:"-"`
 }
 
 type metadataModifyDBParameterGroupInput struct {
@@ -5211,7 +5435,7 @@ type ModifyDBSubnetGroupInput struct {
 	// The EC2 subnet IDs for the DB subnet group.
 	SubnetIDs []*string `locationName:"SubnetIds" locationNameList:"SubnetIdentifier" type:"list" required:"true"`
 
-	metadataModifyDBSubnetGroupInput `json:"-", xml:"-"`
+	metadataModifyDBSubnetGroupInput `json:"-" xml:"-"`
 }
 
 type metadataModifyDBSubnetGroupInput struct {
@@ -5226,7 +5450,7 @@ type ModifyDBSubnetGroupOutput struct {
 	// action.
 	DBSubnetGroup *DBSubnetGroup `type:"structure"`
 
-	metadataModifyDBSubnetGroupOutput `json:"-", xml:"-"`
+	metadataModifyDBSubnetGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyDBSubnetGroupOutput struct {
@@ -5260,7 +5484,7 @@ type ModifyEventSubscriptionInput struct {
 	// The name of the RDS event notification subscription.
 	SubscriptionName *string `type:"string" required:"true"`
 
-	metadataModifyEventSubscriptionInput `json:"-", xml:"-"`
+	metadataModifyEventSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataModifyEventSubscriptionInput struct {
@@ -5272,7 +5496,7 @@ type ModifyEventSubscriptionOutput struct {
 	// action.
 	EventSubscription *EventSubscription `type:"structure"`
 
-	metadataModifyEventSubscriptionOutput `json:"-", xml:"-"`
+	metadataModifyEventSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyEventSubscriptionOutput struct {
@@ -5298,7 +5522,7 @@ type ModifyOptionGroupInput struct {
 	// Options in this list are removed from the option group.
 	OptionsToRemove []*string `type:"list"`
 
-	metadataModifyOptionGroupInput `json:"-", xml:"-"`
+	metadataModifyOptionGroupInput `json:"-" xml:"-"`
 }
 
 type metadataModifyOptionGroupInput struct {
@@ -5308,7 +5532,7 @@ type metadataModifyOptionGroupInput struct {
 type ModifyOptionGroupOutput struct {
 	OptionGroup *OptionGroup `type:"structure"`
 
-	metadataModifyOptionGroupOutput `json:"-", xml:"-"`
+	metadataModifyOptionGroupOutput `json:"-" xml:"-"`
 }
 
 type metadataModifyOptionGroupOutput struct {
@@ -5343,7 +5567,7 @@ type Option struct {
 	// access to the port.
 	VPCSecurityGroupMemberships []*VPCSecurityGroupMembership `locationName:"VpcSecurityGroupMemberships" locationNameList:"VpcSecurityGroupMembership" type:"list"`
 
-	metadataOption `json:"-", xml:"-"`
+	metadataOption `json:"-" xml:"-"`
 }
 
 type metadataOption struct {
@@ -5367,7 +5591,7 @@ type OptionConfiguration struct {
 	// A list of VpcSecurityGroupMemebrship name strings used for this option.
 	VPCSecurityGroupMemberships []*string `locationName:"VpcSecurityGroupMemberships" locationNameList:"VpcSecurityGroupId" type:"list"`
 
-	metadataOptionConfiguration `json:"-", xml:"-"`
+	metadataOptionConfiguration `json:"-" xml:"-"`
 }
 
 type metadataOptionConfiguration struct {
@@ -5402,7 +5626,7 @@ type OptionGroup struct {
 	// that are in the VPC indicated by this field.
 	VPCID *string `locationName:"VpcId" type:"string"`
 
-	metadataOptionGroup `json:"-", xml:"-"`
+	metadataOptionGroup `json:"-" xml:"-"`
 }
 
 type metadataOptionGroup struct {
@@ -5418,7 +5642,7 @@ type OptionGroupMembership struct {
 	// pending-maintenance, applying).
 	Status *string `type:"string"`
 
-	metadataOptionGroupMembership `json:"-", xml:"-"`
+	metadataOptionGroupMembership `json:"-" xml:"-"`
 }
 
 type metadataOptionGroupMembership struct {
@@ -5466,7 +5690,7 @@ type OptionGroupOption struct {
 	// Specifies whether the option requires a port.
 	PortRequired *bool `type:"boolean"`
 
-	metadataOptionGroupOption `json:"-", xml:"-"`
+	metadataOptionGroupOption `json:"-" xml:"-"`
 }
 
 type metadataOptionGroupOption struct {
@@ -5496,7 +5720,7 @@ type OptionGroupOptionSetting struct {
 	// The name of the option group option.
 	SettingName *string `type:"string"`
 
-	metadataOptionGroupOptionSetting `json:"-", xml:"-"`
+	metadataOptionGroupOptionSetting `json:"-" xml:"-"`
 }
 
 type metadataOptionGroupOptionSetting struct {
@@ -5536,7 +5760,7 @@ type OptionSetting struct {
 	// The current value of the option setting.
 	Value *string `type:"string"`
 
-	metadataOptionSetting `json:"-", xml:"-"`
+	metadataOptionSetting `json:"-" xml:"-"`
 }
 
 type metadataOptionSetting struct {
@@ -5581,7 +5805,7 @@ type OrderableDBInstanceOption struct {
 	// Indicates whether this is a VPC orderable DB instance.
 	VPC *bool `locationName:"Vpc" type:"boolean"`
 
-	metadataOrderableDBInstanceOption `json:"-", xml:"-"`
+	metadataOrderableDBInstanceOption `json:"-" xml:"-"`
 }
 
 type metadataOrderableDBInstanceOption struct {
@@ -5626,7 +5850,7 @@ type Parameter struct {
 	// Indicates the source of the parameter value.
 	Source *string `type:"string"`
 
-	metadataParameter `json:"-", xml:"-"`
+	metadataParameter `json:"-" xml:"-"`
 }
 
 type metadataParameter struct {
@@ -5660,7 +5884,7 @@ type PendingMaintenanceAction struct {
 	// Indicates the type of opt-in request that has been received for the resource.
 	OptInStatus *string `type:"string"`
 
-	metadataPendingMaintenanceAction `json:"-", xml:"-"`
+	metadataPendingMaintenanceAction `json:"-" xml:"-"`
 }
 
 type metadataPendingMaintenanceAction struct {
@@ -5704,7 +5928,7 @@ type PendingModifiedValues struct {
 	// Specifies the storage type to be associated with the DB instance.
 	StorageType *string `type:"string"`
 
-	metadataPendingModifiedValues `json:"-", xml:"-"`
+	metadataPendingModifiedValues `json:"-" xml:"-"`
 }
 
 type metadataPendingModifiedValues struct {
@@ -5745,7 +5969,7 @@ type PromoteReadReplicaInput struct {
 	// window. Must be at least 30 minutes.
 	PreferredBackupWindow *string `type:"string"`
 
-	metadataPromoteReadReplicaInput `json:"-", xml:"-"`
+	metadataPromoteReadReplicaInput `json:"-" xml:"-"`
 }
 
 type metadataPromoteReadReplicaInput struct {
@@ -5759,7 +5983,7 @@ type PromoteReadReplicaOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataPromoteReadReplicaOutput `json:"-", xml:"-"`
+	metadataPromoteReadReplicaOutput `json:"-" xml:"-"`
 }
 
 type metadataPromoteReadReplicaOutput struct {
@@ -5785,7 +6009,7 @@ type PurchaseReservedDBInstancesOfferingInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataPurchaseReservedDBInstancesOfferingInput `json:"-", xml:"-"`
+	metadataPurchaseReservedDBInstancesOfferingInput `json:"-" xml:"-"`
 }
 
 type metadataPurchaseReservedDBInstancesOfferingInput struct {
@@ -5797,7 +6021,7 @@ type PurchaseReservedDBInstancesOfferingOutput struct {
 	// and PurchaseReservedDBInstancesOffering actions.
 	ReservedDBInstance *ReservedDBInstance `type:"structure"`
 
-	metadataPurchaseReservedDBInstancesOfferingOutput `json:"-", xml:"-"`
+	metadataPurchaseReservedDBInstancesOfferingOutput `json:"-" xml:"-"`
 }
 
 type metadataPurchaseReservedDBInstancesOfferingOutput struct {
@@ -5819,7 +6043,7 @@ type RebootDBInstanceInput struct {
 	// MultiAZ.
 	ForceFailover *bool `type:"boolean"`
 
-	metadataRebootDBInstanceInput `json:"-", xml:"-"`
+	metadataRebootDBInstanceInput `json:"-" xml:"-"`
 }
 
 type metadataRebootDBInstanceInput struct {
@@ -5833,7 +6057,7 @@ type RebootDBInstanceOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataRebootDBInstanceOutput `json:"-", xml:"-"`
+	metadataRebootDBInstanceOutput `json:"-" xml:"-"`
 }
 
 type metadataRebootDBInstanceOutput struct {
@@ -5849,7 +6073,7 @@ type RecurringCharge struct {
 	// The frequency of the recurring charge.
 	RecurringChargeFrequency *string `type:"string"`
 
-	metadataRecurringCharge `json:"-", xml:"-"`
+	metadataRecurringCharge `json:"-" xml:"-"`
 }
 
 type metadataRecurringCharge struct {
@@ -5865,7 +6089,7 @@ type RemoveSourceIdentifierFromSubscriptionInput struct {
 	// source identifier from.
 	SubscriptionName *string `type:"string" required:"true"`
 
-	metadataRemoveSourceIdentifierFromSubscriptionInput `json:"-", xml:"-"`
+	metadataRemoveSourceIdentifierFromSubscriptionInput `json:"-" xml:"-"`
 }
 
 type metadataRemoveSourceIdentifierFromSubscriptionInput struct {
@@ -5877,7 +6101,7 @@ type RemoveSourceIdentifierFromSubscriptionOutput struct {
 	// action.
 	EventSubscription *EventSubscription `type:"structure"`
 
-	metadataRemoveSourceIdentifierFromSubscriptionOutput `json:"-", xml:"-"`
+	metadataRemoveSourceIdentifierFromSubscriptionOutput `json:"-" xml:"-"`
 }
 
 type metadataRemoveSourceIdentifierFromSubscriptionOutput struct {
@@ -5893,7 +6117,7 @@ type RemoveTagsFromResourceInput struct {
 	// The tag key (name) of the tag to be removed.
 	TagKeys []*string `type:"list" required:"true"`
 
-	metadataRemoveTagsFromResourceInput `json:"-", xml:"-"`
+	metadataRemoveTagsFromResourceInput `json:"-" xml:"-"`
 }
 
 type metadataRemoveTagsFromResourceInput struct {
@@ -5901,7 +6125,7 @@ type metadataRemoveTagsFromResourceInput struct {
 }
 
 type RemoveTagsFromResourceOutput struct {
-	metadataRemoveTagsFromResourceOutput `json:"-", xml:"-"`
+	metadataRemoveTagsFromResourceOutput `json:"-" xml:"-"`
 }
 
 type metadataRemoveTagsFromResourceOutput struct {
@@ -5953,7 +6177,7 @@ type ReservedDBInstance struct {
 	// The hourly price charged for this reserved DB instance.
 	UsagePrice *float64 `type:"double"`
 
-	metadataReservedDBInstance `json:"-", xml:"-"`
+	metadataReservedDBInstance `json:"-" xml:"-"`
 }
 
 type metadataReservedDBInstance struct {
@@ -5993,7 +6217,7 @@ type ReservedDBInstancesOffering struct {
 	// The hourly price charged for this offering.
 	UsagePrice *float64 `type:"double"`
 
-	metadataReservedDBInstancesOffering `json:"-", xml:"-"`
+	metadataReservedDBInstancesOffering `json:"-" xml:"-"`
 }
 
 type metadataReservedDBInstancesOffering struct {
@@ -6033,7 +6257,7 @@ type ResetDBParameterGroupInput struct {
 	// Default: true
 	ResetAllParameters *bool `type:"boolean"`
 
-	metadataResetDBParameterGroupInput `json:"-", xml:"-"`
+	metadataResetDBParameterGroupInput `json:"-" xml:"-"`
 }
 
 type metadataResetDBParameterGroupInput struct {
@@ -6048,7 +6272,7 @@ type ResourcePendingMaintenanceActions struct {
 	// The ARN of this resource that has pending maintenance actions.
 	ResourceIdentifier *string `type:"string"`
 
-	metadataResourcePendingMaintenanceActions `json:"-", xml:"-"`
+	metadataResourcePendingMaintenanceActions `json:"-" xml:"-"`
 }
 
 type metadataResourcePendingMaintenanceActions struct {
@@ -6189,7 +6413,7 @@ type RestoreDBInstanceFromDBSnapshotInput struct {
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
-	metadataRestoreDBInstanceFromDBSnapshotInput `json:"-", xml:"-"`
+	metadataRestoreDBInstanceFromDBSnapshotInput `json:"-" xml:"-"`
 }
 
 type metadataRestoreDBInstanceFromDBSnapshotInput struct {
@@ -6203,7 +6427,7 @@ type RestoreDBInstanceFromDBSnapshotOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataRestoreDBInstanceFromDBSnapshotOutput `json:"-", xml:"-"`
+	metadataRestoreDBInstanceFromDBSnapshotOutput `json:"-" xml:"-"`
 }
 
 type metadataRestoreDBInstanceFromDBSnapshotOutput struct {
@@ -6359,7 +6583,7 @@ type RestoreDBInstanceToPointInTimeInput struct {
 	// Constraints: Cannot be specified if RestoreTime parameter is provided.
 	UseLatestRestorableTime *bool `type:"boolean"`
 
-	metadataRestoreDBInstanceToPointInTimeInput `json:"-", xml:"-"`
+	metadataRestoreDBInstanceToPointInTimeInput `json:"-" xml:"-"`
 }
 
 type metadataRestoreDBInstanceToPointInTimeInput struct {
@@ -6373,7 +6597,7 @@ type RestoreDBInstanceToPointInTimeOutput struct {
 	// as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
-	metadataRestoreDBInstanceToPointInTimeOutput `json:"-", xml:"-"`
+	metadataRestoreDBInstanceToPointInTimeOutput `json:"-" xml:"-"`
 }
 
 type metadataRestoreDBInstanceToPointInTimeOutput struct {
@@ -6406,7 +6630,7 @@ type RevokeDBSecurityGroupIngressInput struct {
 	// must be provided.
 	EC2SecurityGroupOwnerID *string `locationName:"EC2SecurityGroupOwnerId" type:"string"`
 
-	metadataRevokeDBSecurityGroupIngressInput `json:"-", xml:"-"`
+	metadataRevokeDBSecurityGroupIngressInput `json:"-" xml:"-"`
 }
 
 type metadataRevokeDBSecurityGroupIngressInput struct {
@@ -6421,7 +6645,7 @@ type RevokeDBSecurityGroupIngressOutput struct {
 	// in the DescribeDBSecurityGroups action.
 	DBSecurityGroup *DBSecurityGroup `type:"structure"`
 
-	metadataRevokeDBSecurityGroupIngressOutput `json:"-", xml:"-"`
+	metadataRevokeDBSecurityGroupIngressOutput `json:"-" xml:"-"`
 }
 
 type metadataRevokeDBSecurityGroupIngressOutput struct {
@@ -6442,7 +6666,7 @@ type Subnet struct {
 	// Specifies the status of the subnet.
 	SubnetStatus *string `type:"string"`
 
-	metadataSubnet `json:"-", xml:"-"`
+	metadataSubnet `json:"-" xml:"-"`
 }
 
 type metadataSubnet struct {
@@ -6463,7 +6687,7 @@ type Tag struct {
 	// white-space, '_', '.', '/', '=', '+', '-' (Java regex: "^([\\p{L}\\p{Z}\\p{N}_.:/=+\\-]*)$").
 	Value *string `type:"string"`
 
-	metadataTag `json:"-", xml:"-"`
+	metadataTag `json:"-" xml:"-"`
 }
 
 type metadataTag struct {
@@ -6479,7 +6703,7 @@ type VPCSecurityGroupMembership struct {
 	// The name of the VPC security group.
 	VPCSecurityGroupID *string `locationName:"VpcSecurityGroupId" type:"string"`
 
-	metadataVPCSecurityGroupMembership `json:"-", xml:"-"`
+	metadataVPCSecurityGroupMembership `json:"-" xml:"-"`
 }
 
 type metadataVPCSecurityGroupMembership struct {
