@@ -14,12 +14,14 @@ type Client interface {
 }
 
 type BaseClient struct {
-	*net.TCPConn
+	net.Conn
 	Address   string
 	callbacks Client
 }
 
-func (c *BaseClient) SendEvent(event interface{}) error {
+func (c *BaseClient) SendEvent(event *Event) error {
+	event.Host = c.Address
+	event.Id = uint64(nextMessageId())
 	return SerializeMessage(c, event)
 }
 
@@ -32,7 +34,7 @@ func (c *BaseClient) SendRequest(command string, data MessageData) (err error) {
 }
 
 func (c *BaseClient) ReadReply() (reply *Reply, err error) {
-	bufReader := bufio.NewReader(c.TCPConn)
+	bufReader := bufio.NewReader(c)
 	jsonData, isPrefix, err := bufReader.ReadLine()
 	if err != nil || isPrefix {
 		return nil, err

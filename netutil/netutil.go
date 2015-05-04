@@ -17,10 +17,26 @@ func init() {
 	logging.SetFormatter(logFormat)
 }
 
+// An Event represents a single Riemann event
+type Event struct {
+	Id          uint64		`json:"id"`
+	Command     string      `json:"command"`
+	Ttl         float32		`json:"ttl"`
+	Time        int64		`json:"time"`
+	Tags        []string	`json:"tags"`
+	Host        string		`json:"host"` // Defaults to os.Hostname()
+	State       string		`json:"state"`
+	Service     string		`json:"service"`
+	Metric      interface{} `json:"metric"` // Could be Int, Float32, Float64
+	Description string		`json:"description"`
+	Attributes  map[string]string	`json:"attributes"`
+}
+
+
 func ConnectTCP(address string, c Client) (client *BaseClient, err error) {
 	if tcpAddr, err := net.ResolveTCPAddr("tcp", address); err == nil {
 		if tcpConn, err := net.DialTCP("tcp", nil, tcpAddr); err == nil {
-			client = &BaseClient{TCPConn: tcpConn, Address: address, callbacks: c}
+			client = &BaseClient{Conn: tcpConn, Address: address, callbacks: c}
 			return client, nil
 		} else {
 			return client, err
@@ -47,7 +63,6 @@ func GetHostname() (hostname string, err error) {
 			hostname = hostnames[0]
 		}
 	}
-	log.Info("hostname: %s", hostname)
 	return
 }
 

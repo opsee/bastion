@@ -112,7 +112,7 @@ func startStatic() {
 	}
 }
 
-func reportStaticEvents(events []interface{}) {
+func reportStaticEvents(events []*netutil.Event) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
@@ -120,7 +120,7 @@ func reportStaticEvents(events []interface{}) {
 	}
 }
 
-func loadEventsFromFile(dataFilePath string) (events []interface{}, err error) {
+func loadEventsFromFile(dataFilePath string) (events []*netutil.Event, err error) {
 	var file *os.File
 	var bytes []byte
 

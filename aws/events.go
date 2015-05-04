@@ -16,18 +16,6 @@ const (
 	defaultEventTtl = 120
 )
 
-// An Event represents a single Riemann event
-type Event struct {
-	Ttl         float32		`json:"ttl"`
-	Time        int64		`json:"time"`
-	Tags        []string	`json:"tags"`
-	Host        string		`json:"host"` // Defaults to os.Hostname()
-	State       string		`json:"state"`
-	Service     string		`json:"service"`
-	Metric      interface{} `json:"metric"` // Could be Int, Float32, Float64
-	Description string		`json:"description"`
-	Attributes  map[string]string	`json:"attributed"`
-}
 
 type client struct{}
 
@@ -171,22 +159,24 @@ func (a *AwsApiEventParser) RunForever() {
 	}
 }
 
-func (a *AwsApiEventParser) SendEvent(event interface{}) error {
-	log.Debug("%+v", event)
+func (a *AwsApiEventParser) SendEvent(event *netutil.Event) error {
+	if event.Command == "" {
+		event.Command = "discovery"
+	}
 	return a.opseeClient.SendEvent(event)
 }
 
-func (a *AwsApiEventParser) NewEvent(service string) *Event {
-	return &Event{Ttl: defaultEventTtl, Host: a.hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
+func (a *AwsApiEventParser) NewEvent(service string) *netutil.Event {
+	return &netutil.Event{Ttl: defaultEventTtl, Host: a.hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
 }
 
-func (a *AwsApiEventParser) NewEventWithState(service string, state string) *Event {
+func (a *AwsApiEventParser) NewEventWithState(service string, state string) *netutil.Event {
 	event := a.NewEvent(service)
 	event.State = state
 	return event
 }
 
-func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *Event) {
+func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.Event) {
 	switch obj.(type) {
 	case *ec2.SecurityGroup:
 		event = a.ec2SecurityGroupToEvent(obj.(*ec2.SecurityGroup))
@@ -205,9 +195,10 @@ func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *Event) {
 	return
 }
 
-func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *Event) {
-	event = &Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
+func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *netutil.Event) {
+	event = &netutil.Event{Ttl: defaultEventTtl, Host: e.hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
 	event.State = "sg"
+	event.Attributes["group_id"] = *group.GroupID
 	event.Attributes["group_id"] = *group.GroupID
 	if group.GroupName != nil {
 		event.Attributes["group_name"] = *group.GroupName
@@ -224,8 +215,8 @@ func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (e
 	return
 }
 
-func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *Event) {
-	event = &Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *netutil.Event) {
+	event = &netutil.Event{Ttl: defaultEventTtl, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	event.Attributes["group_name"] = *lb.LoadBalancerName
 	event.Attributes["group_id"] = *lb.DNSName
 	if lb.HealthCheck != nil {
@@ -238,8 +229,8 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 	return
 }
 
-func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *Event) {
-	event = &Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *netutil.Event) {
+	event = &netutil.Event{Ttl: defaultEventTtl, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	if db.DBName != nil {
 		event.Attributes["group_name"] = *db.DBName
 		if len(db.VPCSecurityGroups) > 0 {

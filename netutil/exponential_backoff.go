@@ -191,7 +191,6 @@ func (b *backoffRetrier) Run() (err error) {
 				time.Sleep(duration)
 			}
 		} else {
-			log.Debug("successful, returning %T", b.result)
 			return err
 		}
 	}
