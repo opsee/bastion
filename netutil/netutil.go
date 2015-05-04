@@ -13,7 +13,7 @@ var (
 )
 
 func init() {
-	logging.SetLevel(logging.DEBUG, "bastion.json-tcp")
+	logging.SetLevel(logging.DEBUG, "netutil")
 	logging.SetFormatter(logFormat)
 }
 

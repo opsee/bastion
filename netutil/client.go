@@ -19,6 +19,10 @@ type BaseClient struct {
 	callbacks Client
 }
 
+func (c *BaseClient) SendEvent(event interface{}) error {
+	return SerializeMessage(c, event)
+}
+
 func (c *BaseClient) SendRequest(command string, data MessageData) (err error) {
 	request := NewRequest(command)
 	request.Id = nextMessageId()

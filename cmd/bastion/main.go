@@ -83,26 +83,6 @@ func MustStartServer() (server netutil.TCPServer) {
 
 var awsScanner *aws.AwsApiEventParser
 
-type client struct{}
-
-func (c *client) SslOptions() netutil.SslOptions {
-	return nil
-}
-
-func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
-	log.Info("ConnectionMade(): ", baseclient)
-	return true
-}
-
-func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
-	log.Critical("ConnectionLost(): ", err)
-}
-
-func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
-	log.Critical("ReplyReceived(): ", reply.String())
-	return true
-}
-
 func main() {
 	flag.Parse()
 	awsScanner = aws.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
@@ -136,7 +116,7 @@ func reportStaticEvents(events []interface{}) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
-		awsScanner.SendEvent(&event)
+		awsScanner.SendEvent(event)
 	}
 }
 
