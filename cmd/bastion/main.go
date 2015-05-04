@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/netutil"
@@ -133,7 +132,7 @@ func startStatic() {
 	}
 }
 
-func reportStaticEvents(events []raidman.Event) {
+func reportStaticEvents(events []interface{}) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
@@ -141,7 +140,7 @@ func reportStaticEvents(events []raidman.Event) {
 	}
 }
 
-func loadEventsFromFile(dataFilePath string) (events []raidman.Event, err error) {
+func loadEventsFromFile(dataFilePath string) (events []interface{}, err error) {
 	var file *os.File
 	var bytes []byte
 
