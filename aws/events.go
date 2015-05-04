@@ -1,29 +1,49 @@
 package aws
 
 import (
-	"fmt"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
-	"github.com/opsee/bastion/netutil"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
+	"strings"
+	"strconv"
+	"fmt"
+	"github.com/opsee/bastion/netutil"
 )
 
 const (
 	defaultEventTtl = 120
 )
 
-func MustConnectToOpsee(address string) *raidman.Client {
-	connectToOpsee := func() (interface{}, error) { return raidman.Dial("tcp", address) }
+
+type client struct{}
+
+func (c *client) SslOptions() netutil.SslOptions {
+	return nil
+}
+
+func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
+	log.Info("ConnectionMade(): ", baseclient)
+	return true
+}
+
+func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
+	log.Critical("ConnectionLost(): ", err)
+}
+
+func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
+	log.Critical("ReplyReceived(): ", reply.String())
+	return true
+}
+
+func MustConnectToOpsee(address string) *netutil.BaseClient {
+	connectToOpsee := func() (interface{}, error) { return netutil.ConnectTCP(address, &client{}) }
 	connectToOpseeRetrier := netutil.NewBackoffRetrier(connectToOpsee)
 	if err := connectToOpseeRetrier.Run(); err != nil {
 		log.Fatalf("connectToOpsee: %v", err)
 	}
-	return connectToOpseeRetrier.Result().(*raidman.Client)
+	return connectToOpseeRetrier.Result().(*netutil.BaseClient)
 }
 
 type AwsApiEventParser struct {
@@ -35,7 +55,7 @@ type AwsApiEventParser struct {
 	CredProvider *CredentialsProvider
 	EC2Client    EC2Scanner
 	GroupMap     map[string]ec2.SecurityGroup
-	opseeClient  *raidman.Client
+	opseeClient  *netutil.BaseClient
 }
 
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string) *AwsApiEventParser {
@@ -113,7 +133,7 @@ func (a *AwsApiEventParser) ScanLoadBalancers() (err error) {
 	if lbs, err := a.EC2Client.ScanLoadBalancers(); err == nil {
 		for _, lb := range lbs {
 			if lb.LoadBalancerName != nil {
-				err = a.opseeClient.Send(a.ToEvent(lb))
+				err = a.SendEvent(a.ToEvent(lb))
 			}
 		}
 	} else {
@@ -139,31 +159,33 @@ func (a *AwsApiEventParser) RunForever() {
 	}
 }
 
-func (a *AwsApiEventParser) SendEvent(event *raidman.Event) error {
-	log.Debug("%+v", event)
-	return a.opseeClient.Send(event)
+func (a *AwsApiEventParser) SendEvent(event *netutil.Event) error {
+	if event.Command == "" {
+		event.Command = "discovery"
+	}
+	return a.opseeClient.SendEvent(event)
 }
 
-func (a *AwsApiEventParser) NewEvent(service string) *raidman.Event {
-	return &raidman.Event{Ttl: defaultEventTtl, Host: a.hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
+func (a *AwsApiEventParser) NewEvent(service string) *netutil.Event {
+	return &netutil.Event{Ttl: defaultEventTtl, Host: a.hostname, Service: service, Metric: 0, Attributes: make(map[string]string)}
 }
 
-func (a *AwsApiEventParser) NewEventWithState(service string, state string) *raidman.Event {
+func (a *AwsApiEventParser) NewEventWithState(service string, state string) *netutil.Event {
 	event := a.NewEvent(service)
 	event.State = state
 	return event
 }
 
-func (e *AwsApiEventParser) ToEvent(obj interface{}) (event *raidman.Event) {
+func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.Event) {
 	switch obj.(type) {
 	case *ec2.SecurityGroup:
-		event = e.ec2SecurityGroupToEvent(obj.(*ec2.SecurityGroup))
+		event = a.ec2SecurityGroupToEvent(obj.(*ec2.SecurityGroup))
 	case *elb.LoadBalancerDescription:
-		event = e.elbLoadBalancerDescriptionToEvent(obj.(*elb.LoadBalancerDescription))
+		event = a.elbLoadBalancerDescriptionToEvent(obj.(*elb.LoadBalancerDescription))
 	case *rds.DBInstance:
-		event = e.rdsDBInstanceToEvent(obj.(*rds.DBInstance))
+		event = a.rdsDBInstanceToEvent(obj.(*rds.DBInstance))
 	default:
-		event = e.NewEvent("discovery-failure")
+		event = a.NewEvent("discovery-failure")
 		event.State = "failed"
 		event.Tags = []string{"failure", "discovery"}
 		event.Attributes["api-object-description"] = fmt.Sprint(obj)
@@ -173,9 +195,10 @@ func (e *AwsApiEventParser) ToEvent(obj interface{}) (event *raidman.Event) {
 	return
 }
 
-func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
+func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *netutil.Event) {
+	event = &netutil.Event{Ttl: defaultEventTtl, Host: e.hostname, Service: "discovery", State: "sg", Metric: 0, Attributes: make(map[string]string)}
 	event.State = "sg"
+	event.Attributes["group_id"] = *group.GroupID
 	event.Attributes["group_id"] = *group.GroupID
 	if group.GroupName != nil {
 		event.Attributes["group_name"] = *group.GroupName
@@ -192,8 +215,8 @@ func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (e
 	return
 }
 
-func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *netutil.Event) {
+	event = &netutil.Event{Ttl: defaultEventTtl, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	event.Attributes["group_name"] = *lb.LoadBalancerName
 	event.Attributes["group_id"] = *lb.DNSName
 	if lb.HealthCheck != nil {
@@ -206,8 +229,8 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 	return
 }
 
-func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *raidman.Event) {
-	event = &raidman.Event{Ttl: 120, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
+func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *netutil.Event) {
+	event = &netutil.Event{Ttl: defaultEventTtl, Host: e.hostname, Service: "discovery", State: "rds", Metric: 0, Attributes: make(map[string]string)}
 	if db.DBName != nil {
 		event.Attributes["group_name"] = *db.DBName
 		if len(db.VPCSecurityGroups) > 0 {

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/amir/raidman"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/netutil"
@@ -84,26 +83,6 @@ func MustStartServer() (server netutil.TCPServer) {
 
 var awsScanner *aws.AwsApiEventParser
 
-type client struct{}
-
-func (c *client) SslOptions() netutil.SslOptions {
-	return nil
-}
-
-func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
-	log.Info("ConnectionMade(): ", baseclient)
-	return true
-}
-
-func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
-	log.Critical("ConnectionLost(): ", err)
-}
-
-func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
-	log.Critical("ReplyReceived(): ", reply.String())
-	return true
-}
-
 func main() {
 	flag.Parse()
 	awsScanner = aws.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
@@ -133,15 +112,15 @@ func startStatic() {
 	}
 }
 
-func reportStaticEvents(events []raidman.Event) {
+func reportStaticEvents(events []*netutil.Event) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
-		awsScanner.SendEvent(&event)
+		awsScanner.SendEvent(event)
 	}
 }
 
-func loadEventsFromFile(dataFilePath string) (events []raidman.Event, err error) {
+func loadEventsFromFile(dataFilePath string) (events []*netutil.Event, err error) {
 	var file *os.File
 	var bytes []byte
 

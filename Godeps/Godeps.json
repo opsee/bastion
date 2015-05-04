@@ -6,10 +6,6 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/amir/raidman",
-			"Rev": "57b78a08c96234a4cf19a7c33c8eb28ce4214cbc"
-		},
-		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/aws",
 			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
@@ -48,10 +44,6 @@
 		{
 			"ImportPath": "github.com/bjdean/gonetcheck",
 			"Rev": "5f64e03f55a69972c7f414afcb07f907f8f13f9a"
-		},
-		{
-			"ImportPath": "github.com/golang/protobuf/proto",
-			"Rev": "efd7476481382c195beb33acd8ec2f1527167fb4"
 		},
 		{
 			"ImportPath": "github.com/op/go-logging",
