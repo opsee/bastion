@@ -46,10 +46,6 @@
 			"Rev": "5f64e03f55a69972c7f414afcb07f907f8f13f9a"
 		},
 		{
-			"ImportPath": "github.com/golang/protobuf/proto",
-			"Rev": "efd7476481382c195beb33acd8ec2f1527167fb4"
-		},
-		{
 			"ImportPath": "github.com/op/go-logging",
 			"Rev": "e5fb9bb8a3a168cc269b38f092b65d2e18cebb9a"
 		},
