@@ -6,10 +6,6 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/amir/raidman",
-			"Rev": "57b78a08c96234a4cf19a7c33c8eb28ce4214cbc"
-		},
-		{
 			"ImportPath": "github.com/awslabs/aws-sdk-go/aws",
 			"Rev": "1a0d8fa041951788b7e95005bd765bfc214edfa4"
 		},
