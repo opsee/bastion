@@ -13,13 +13,3 @@ func init() {
 	logging.SetLevel(logging.DEBUG, "aws")
 	logging.SetFormatter(logFormat)
 }
-
-func GetInstanceId(credProvider *CredentialsProvider) (instanceId string) {
-	instanceId = ""
-	if credProvider != nil {
-		if instanceId = credProvider.GetInstanceId().InstanceId; instanceId == "" {
-			log.Fatal("couldn't determine hostname")
-		}
-	}
-	return
-}
