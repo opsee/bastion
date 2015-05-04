@@ -41,8 +41,12 @@ type AwsApiEventParser struct {
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string) *AwsApiEventParser {
 	httpClient := &http.Client{}
 	credProvider := NewProvider(httpClient, accessKeyId, secretKey, region)
+	instanceId := ""
+	if credProvider.GetInstanceId() != nil {
+		instanceId = credProvider.GetInstanceId().InstanceId
+	}
 	scanner := &AwsApiEventParser{
-		hostname:     netutil.MustGetHostname(),
+		hostname:     netutil.GetHostnameDefault(instanceId),
 		accessKeyId:  accessKeyId,
 		secretKey:    secretKey,
 		region:       region,
@@ -50,9 +54,6 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
 		CredProvider: credProvider,
 		EC2Client:    NewScanner(credProvider),
 		GroupMap:     make(map[string]ec2.SecurityGroup),
-	}
-	if scanner.hostname == "" {
-		scanner.hostname = GetInstanceId(credProvider)
 	}
 	return scanner
 }

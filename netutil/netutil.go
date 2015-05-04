@@ -1,8 +1,10 @@
 package netutil
 
 import (
+	"errors"
 	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
 	"net"
+	"os"
 )
 
 var (
@@ -36,29 +38,48 @@ func ListenTCP(address string, s ServerCallbacks) (server TCPServer, err error) 
 	return
 }
 
-func MustGetHostname() (hostname string) {
-	hostname = "localhost"
-	if ifaces, err := net.InterfaceAddrs(); err != nil {
-		log.Panicf("InterfaceAddrs(): %s", err)
-	} else {
-		for _, iface := range ifaces {
-			if ifaceip, _, err := net.ParseCIDR(iface.String()); err != nil {
-				log.Error("ParseCIDR: %s", err)
-				continue
-			} else {
-				log.Info("Iface: %s, IfaceIP: %s", iface.String(), ifaceip.String())
-				if ipaddrs, err := net.LookupAddr(ifaceip.String()); err != nil {
-					log.Error("LookupAddr(): %s", err)
-					continue
-				} else {
-					for _, name := range ipaddrs {
-						if !ifaceip.IsLoopback() {
-							hostname = name
-						}
-					}
-				}
-			}
+func GetHostname() (hostname string, err error) {
+	if oshostname, err := os.Hostname(); err == nil {
+		hostname = oshostname
+	}
+	if localIP, err := getLocalIP(); err == nil {
+		if hostnames, err := net.LookupAddr(localIP.String()); err == nil {
+			hostname = hostnames[0]
 		}
 	}
+	log.Info("hostname: %s", hostname)
 	return
+}
+
+func GetHostnameDefault(defaultHostname string) (hostname string) {
+	if hostname, err := GetHostname(); err != nil {
+		return defaultHostname
+	} else {
+		return hostname
+	}
+}
+
+func getLocalIP() (net.IP, error) {
+	tt, err := net.Interfaces()
+	if err != nil {
+		return nil, err
+	}
+	for _, t := range tt {
+		aa, err := t.Addrs()
+		if err != nil {
+			return nil, err
+		}
+		for _, a := range aa {
+			ipnet, ok := a.(*net.IPNet)
+			if !ok {
+				continue
+			}
+			v4 := ipnet.IP.To4()
+			if v4 == nil || v4[0] == 127 { // loopback address
+				continue
+			}
+			return v4, nil
+		}
+	}
+	return nil, errors.New("cannot find local IP address")
 }
