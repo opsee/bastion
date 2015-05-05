@@ -18,18 +18,18 @@ type (
 		Id      MessageId `json:"id"`
 	}
 
-	Message struct {
+	OldMessage struct {
 		*Header
 		Data MessageData `json:"message"`
 	}
 
 	Request struct {
-		*Message
+		*OldMessage
 		Command string `json:"command"`
 	}
 
 	Reply struct {
-		*Message
+		*OldMessage
 		InReplyTo MessageId `json:"in_reply_to"`
 	}
 
@@ -66,19 +66,19 @@ func DeserializeMessage(reader io.Reader, message interface{}) (err error) {
 	}
 }
 
-func NewMessage() *Message {
-	return &Message{Header: &Header{Version: 1}, Data: make(MessageData)}
+func NewMessage() *OldMessage {
+	return &OldMessage{Header: &Header{Version: 1}, Data: make(MessageData)}
 }
 
 func NewRequest(command string) *Request {
-	return &Request{Message: &Message{Header: &Header{Version: 1}, Data: make(MessageData)}, Command: command}
+	return &Request{OldMessage: &OldMessage{Header: &Header{Version: 1}, Data: make(MessageData)}, Command: command}
 }
 
 func NewReply(inReplyTo *ServerRequest) *Reply {
-	return &Reply{Message: NewMessage(), InReplyTo: inReplyTo.Id}
+	return &Reply{OldMessage: NewMessage(), InReplyTo: inReplyTo.Id}
 }
 
-func (m *Message) Deserialize(reader io.Reader) error {
+func (m *OldMessage) Deserialize(reader io.Reader) error {
 	return DeserializeMessage(reader, m)
 }
 

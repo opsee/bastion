@@ -19,9 +19,8 @@ type BaseClient struct {
 	callbacks Client
 }
 
-func (c *BaseClient) SendEvent(event *Event) error {
-	event.Host = c.Address
-	event.Id = uint64(nextMessageId())
+func (c *BaseClient) SendEvent(event *EventMessage) error {
+	log.Info("sendEvent: %+v", event)
 	return SerializeMessage(c, event)
 }
 

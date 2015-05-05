@@ -116,7 +116,9 @@ func reportStaticEvents(events []*netutil.Event) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
-		awsScanner.SendEvent(event)
+		eventMessage := awsScanner.MessageMaker.NewEventMessage()
+		eventMessage.Event = *event
+		awsScanner.SendEvent(eventMessage)
 	}
 }
 
