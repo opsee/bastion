@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"sync"
 	"time"
+	"sync"
 )
 
 type HttpClient interface {
@@ -61,15 +61,15 @@ func NewProvider(client HttpClient,
 }
 
 func (cp *CredentialsProvider) start(overrideAccessKeyId, overrideSecretAccessKey, overrideRegion string) {
-	wg := sync.WaitGroup{}
-	wg.Add(1)
+	var wg sync.WaitGroup
 	go func() {
-		iid := cp.retrieveInstanceId()
-		wg.Done()
 		if overrideAccessKeyId != "" && overrideSecretAccessKey != "" && overrideRegion != "" {
 			cp.creds <- &Credentials{overrideAccessKeyId, overrideSecretAccessKey, overrideRegion}
 			return
 		}
+		wg.Add(1)
+		iid := cp.retrieveInstanceId()
+		wg.Done()
 		for {
 			if !cp.loop(iid, overrideAccessKeyId, overrideSecretAccessKey, overrideRegion) {
 				return
