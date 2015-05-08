@@ -46,7 +46,6 @@ type (
 		wg              sync.WaitGroup
 		exit            int32
 	}
-
 )
 
 var (

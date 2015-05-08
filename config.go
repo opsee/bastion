@@ -12,7 +12,6 @@ func init() {
 	logging.SetFormatter(logFormat)
 }
 
-
 type Config struct {
 	accessKeyId string // AWS Access Key Id
 	secretKey   string // AWS Secret Key

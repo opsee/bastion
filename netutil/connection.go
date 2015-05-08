@@ -3,9 +3,9 @@ package netutil
 import (
 	"bufio"
 	"fmt"
+	"github.com/opsee/bastion/util"
 	"net"
 	"sync/atomic"
-	"github.com/opsee/bastion/util"
 )
 
 type Connection struct {
@@ -30,21 +30,19 @@ func NewConnection(conn net.Conn, server *BaseServer) *Connection {
 func (c *Connection) loop() (err error) {
 	for {
 		c.requestNum.Increment()
-//		select {
-//		case <- serverCtx.Done():
-//			break
-//		}
+		//		select {
+		//		case <- serverCtx.Done():
+		//			break
+		//		}
 	}
 	c.span.CollectMemStats()
 	log.Debug(c.span.JSON())
 	return nil
 }
 
-
 func (c *Connection) readRequest() (message *EventMessage, err error) {
 	return message, DeserializeMessage(c.Conn, message)
 }
-
 
 func (c *Connection) handleRequest(request *EventMessage) (err error) {
 	return nil

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"time"
 	"sync"
+	"time"
 )
 
 type HttpClient interface {
@@ -13,12 +13,12 @@ type HttpClient interface {
 }
 
 type CredentialsProvider struct {
-	creds      chan *Credentials
-	oldCreds   *Credentials
-	instanceId *InstanceId
-	ticks      <-chan time.Time
-	client     HttpClient
-	startupWaitGroup	*sync.WaitGroup
+	creds            chan *Credentials
+	oldCreds         *Credentials
+	instanceId       *InstanceId
+	ticks            <-chan time.Time
+	client           HttpClient
+	startupWaitGroup *sync.WaitGroup
 }
 
 type Credentials struct {

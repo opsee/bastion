@@ -1,16 +1,16 @@
 package netutil
 
 import (
-	"errors"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
-	"net"
-	"os"
-	"time"
-	"sync/atomic"
-	"sync"
-	"io"
 	"bufio"
 	"encoding/json"
+	"errors"
+	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+	"io"
+	"net"
+	"os"
+	"sync"
+	"sync/atomic"
+	"time"
 )
 
 var (
@@ -32,12 +32,12 @@ func init() {
 }
 
 type HostInfo struct {
-	CustomerId	string	`json:"customer_id"`
-	RegionId	string	`json:"region_id"`
-	ZoneId		string	`json:"zone_id"`
-	InstanceId  string	`json:"instance_id"`
-	Hostname    string  `json:"hostname"`
-	IpAddr 		string  `json:"ip_address"`
+	CustomerId string `json:"customer_id"`
+	RegionId   string `json:"region_id"`
+	ZoneId     string `json:"zone_id"`
+	InstanceId string `json:"instance_id"`
+	Hostname   string `json:"hostname"`
+	IpAddr     string `json:"ip_address"`
 }
 
 var _init_ctx sync.Once
@@ -50,15 +50,16 @@ func GetHostInfo() *HostInfo {
 	return _hostInfo
 }
 
-func InitHostInfo(cid string, rid string, zid string, iid string, hostname string, ipaddr string)  {
+func InitHostInfo(cid string, rid string, zid string, iid string, hostname string, ipaddr string) {
 	_init_ctx.Do(
 		func() {
 			_hostInfo = &HostInfo{CustomerId: cid,
-				RegionId: rid,
-				ZoneId: zid,
+				RegionId:   rid,
+				ZoneId:     zid,
 				InstanceId: iid,
-				Hostname: hostname,
-				IpAddr: ipaddr}})
+				Hostname:   hostname,
+				IpAddr:     ipaddr}
+		})
 }
 
 type MessageId uint64
@@ -74,10 +75,10 @@ type Message struct {
 }
 
 type Event struct {
-	Host      	string      `json:"host"`
+	Host        string      `json:"host"`
 	Service     string      `json:"service"`
 	State       string      `json:"state"`
-	Time		int64		`json:"time"`
+	Time        int64       `json:"time"`
 	Description string      `json:"description"`
 	Tags        []string    `json:"tags"`
 	Metric      interface{} `json:"metric"` // Could be Int, Float32, Float64
@@ -123,7 +124,7 @@ func (e *EventMessageMaker) NewEventMessage() *EventMessage {
 	m.Command = "default"
 	m.Sent = time.Now().UTC().Unix()
 	m.Attributes = make(map[string]interface{})
-		m.Host = string([]byte(e.Hostname))
+	m.Host = string([]byte(e.Hostname))
 	m.InstanceId = string([]byte(e.InstanceId))
 	m.Ttl = e.Ttl
 	m.Tags = []string{}
@@ -211,7 +212,7 @@ func nextMessageId() MessageId {
 }
 
 var (
-	crlfSlice = []byte{'\r', '\n'}
+	crlfSlice        = []byte{'\r', '\n'}
 	messageId uint64 = 0
 )
 
@@ -233,4 +234,3 @@ func DeserializeMessage(reader io.Reader, message interface{}) (err error) {
 		return json.Unmarshal(data, &message)
 	}
 }
-
