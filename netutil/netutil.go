@@ -6,6 +6,11 @@ import (
 	"net"
 	"os"
 	"time"
+	"sync/atomic"
+	"sync"
+	"io"
+	"bufio"
+	"encoding/json"
 )
 
 var (
@@ -26,24 +31,57 @@ func init() {
 	logging.SetFormatter(logFormat)
 }
 
+type HostInfo struct {
+	CustomerId	string	`json:"customer_id"`
+	RegionId	string	`json:"region_id"`
+	ZoneId		string	`json:"zone_id"`
+	InstanceId  string	`json:"instance_id"`
+	Hostname    string  `json:"hostname"`
+	IpAddr 		string  `json:"ip_address"`
+}
+
+var _init_ctx sync.Once
+var _hostInfo *HostInfo
+
+func GetHostInfo() *HostInfo {
+	if _hostInfo == nil {
+		panic("GetHostInfo() called before initialization.")
+	}
+	return _hostInfo
+}
+
+func InitHostInfo(cid string, rid string, zid string, iid string, hostname string, ipaddr string)  {
+	_init_ctx.Do(
+		func() {
+			_hostInfo = &HostInfo{CustomerId: cid,
+				RegionId: rid,
+				ZoneId: zid,
+				InstanceId: iid,
+				Hostname: hostname,
+				IpAddr: ipaddr}})
+}
+
+type MessageId uint64
+
 type Message struct {
-	Id         uint64                 `json:"id"`
+	Id         MessageId              `json:"id"`
 	Version    uint8                  `json:"version"`
 	Command    string                 `json:"command"`
-	Sent       time.Time              `json:"sent"`
+	Sent       int64                  `json:"sent"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Host       string                 `json:"host"` // Defaults to os.Hostname()
 	CustomerId string                 `json:"customer_id"`
 	InstanceId string                 `json:"instance_id"`
 }
 
 type Event struct {
-	Ttl         float32     `json:"ttl"`
-	Tags        []string    `json:"tags"`
-	State       string      `json:"state"`
+	Host      	string      `json:"host"`
 	Service     string      `json:"service"`
-	Metric      interface{} `json:"metric"` // Could be Int, Float32, Float64
+	State       string      `json:"state"`
+	Time		int64		`json:"time"`
 	Description string      `json:"description"`
+	Tags        []string    `json:"tags"`
+	Metric      interface{} `json:"metric"` // Could be Int, Float32, Float64
+	Ttl         float32     `json:"ttl"`
 }
 
 type EventMessage struct {
@@ -80,15 +118,17 @@ func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultH
 
 func (e *EventMessageMaker) NewEventMessage() *EventMessage {
 	m := &EventMessage{}
-	m.Id = uint64(nextMessageId())
+	m.Id = nextMessageId()
 	m.Version = protocolVersion
 	m.Command = "default"
-	m.Sent = time.Now()
+	m.Sent = time.Now().UTC().Unix()
 	m.Attributes = make(map[string]interface{})
-	m.Host = string([]byte(e.Hostname))
+		m.Host = string([]byte(e.Hostname))
 	m.InstanceId = string([]byte(e.InstanceId))
 	m.Ttl = e.Ttl
+	m.Tags = []string{}
 	m.Service = "default"
+	m.Metric = 0
 	m.CustomerId = unknownCustomerId
 	return m
 }
@@ -165,3 +205,32 @@ func getLocalIP() (net.IP, error) {
 	}
 	return nil, errors.New("cannot find local IP address")
 }
+
+func nextMessageId() MessageId {
+	return MessageId(atomic.AddUint64(&messageId, 1))
+}
+
+var (
+	crlfSlice = []byte{'\r', '\n'}
+	messageId uint64 = 0
+)
+
+func SerializeMessage(writer io.Writer, message interface{}) (err error) {
+	if jsonData, err := json.Marshal(message); err != nil {
+		log.Error("json.Marshal(): %s", err)
+	} else {
+		_, err = writer.Write(append(jsonData, crlfSlice...))
+	}
+	return
+}
+
+func DeserializeMessage(reader io.Reader, message interface{}) (err error) {
+	bufReader := bufio.NewReader(reader)
+	data, isPrefix, err := bufReader.ReadLine()
+	if err != nil || isPrefix {
+		return err
+	} else {
+		return json.Unmarshal(data, &message)
+	}
+}
+

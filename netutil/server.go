@@ -18,7 +18,7 @@ type (
 	SslOptions map[string]string
 
 	ServerCallbacks interface {
-		RequestReceived(*Connection, *ServerRequest) (reply *Reply, keepGoing bool)
+		RequestReceived(*Connection, interface{}) (reply interface{}, keepGoing bool)
 		ConnectionMade(*Connection) (keepGoing bool)
 		ConnectionLost(*Connection, error)
 		SslOptions() SslOptions
@@ -49,10 +49,10 @@ type (
 	}
 
 	ServerRequest struct {
-		*Request
+//		request interface{}
 		ctx    util.Context
 		server *BaseServer
-		reply  *Reply
+//		reply  interface{}
 		span   *util.Span
 	}
 )
@@ -151,6 +151,6 @@ func (server *BaseServer) handleConnection(conn net.Conn) {
 	go func() {
 		server.connectionCount.Increment()
 		defer server.connectionCount.Decrement()
-		server.ConnectionLost(newConn, newConn.Start())
+		server.ConnectionLost(newConn, newConn.loop())
 	}()
 }

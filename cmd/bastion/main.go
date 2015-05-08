@@ -69,8 +69,8 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 	log.Error("Connection lost: %v", err)
 }
 
-func (this *Server) RequestReceived(connection *netutil.Connection, request *netutil.ServerRequest) (reply *netutil.Reply, keepGoing bool) {
-	return netutil.NewReply(request), true
+func (this *Server) RequestReceived(connection *netutil.Connection, request interface{}) (reply interface{}, keepGoing bool) {
+	return nil, true
 }
 
 func MustStartServer() (server netutil.TCPServer) {

@@ -24,16 +24,13 @@ func (c *client) SslOptions() netutil.SslOptions {
 }
 
 func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
-	log.Info("ConnectionMade(): ", baseclient)
 	return true
 }
 
 func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
-	log.Critical("ConnectionLost(): ", err)
 }
 
-func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Reply) bool {
-	log.Critical("ReplyReceived(): ", reply.String())
+func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.EventMessage) bool {
 	return true
 }
 
@@ -160,7 +157,7 @@ func (a *AwsApiEventParser) sendDiscoveryStateEvent(state string) error {
 
 func (a *AwsApiEventParser) sendConnectedEvent() error {
 	connectedEvent := a.MessageMaker.NewEventMessage()
-	connectedEvent.Command = "bastion-status"
+	connectedEvent.Command = "connected"
 	connectedEvent.State = "connected"
 	connectedEvent.Ttl = 10
 	return a.SendEvent(connectedEvent)

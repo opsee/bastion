@@ -18,6 +18,7 @@ type CredentialsProvider struct {
 	instanceId *InstanceId
 	ticks      <-chan time.Time
 	client     HttpClient
+	startupWaitGroup	*sync.WaitGroup
 }
 
 type Credentials struct {
@@ -55,31 +56,38 @@ func NewProvider(client HttpClient,
 		&Credentials{overrideAccessKeyId, overrideSecretAccessKey, overrideRegion},
 		nil,
 		time.Tick(1 * time.Hour),
-		client}
+		client, new(sync.WaitGroup)}
 	cp.start(overrideAccessKeyId, overrideSecretAccessKey, overrideRegion)
+	cp.startupWaitGroup.Wait()
 	return cp
 }
 
 func (cp *CredentialsProvider) start(overrideAccessKeyId, overrideSecretAccessKey, overrideRegion string) {
-	var wg sync.WaitGroup
 	go func() {
 		if overrideAccessKeyId != "" && overrideSecretAccessKey != "" && overrideRegion != "" {
 			cp.creds <- &Credentials{overrideAccessKeyId, overrideSecretAccessKey, overrideRegion}
 			return
 		}
-		wg.Add(1)
+		cp.startupWaitGroup.Add(1)
 		iid := cp.retrieveInstanceId()
-		wg.Done()
-		for {
-			if !cp.loop(iid, overrideAccessKeyId, overrideSecretAccessKey, overrideRegion) {
-				return
-			}
+		cp.startupWaitGroup.Done()
+		if cp.loopOnce(iid, overrideAccessKeyId, overrideSecretAccessKey, overrideRegion) {
+			cp.loop(iid, overrideAccessKeyId, overrideSecretAccessKey, overrideRegion)
 		}
 	}()
-	wg.Wait()
 }
 
-func (cp *CredentialsProvider) loop(iid *InstanceId, overrideAccessKeyId string, overrideSecretAccessKey string, overrideRegion string) bool {
+func (cp *CredentialsProvider) loop(iid *InstanceId, overrideAccessKeyId string, overrideSecretAccessKey string, overrideRegion string) (res bool) {
+	for {
+		res = cp.loopOnce(iid, overrideAccessKeyId, overrideSecretAccessKey, overrideRegion)
+		if !res {
+			break
+		}
+	}
+	return
+}
+
+func (cp *CredentialsProvider) loopOnce(iid *InstanceId, overrideAccessKeyId string, overrideSecretAccessKey string, overrideRegion string) bool {
 	metaCreds := cp.retrieveMetadataCreds()
 	var accessKeyId, secretAccessKey string
 	if metaCreds != nil {
