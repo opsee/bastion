@@ -3,9 +3,9 @@ package netutil
 import (
 	"bufio"
 	"fmt"
-	"github.com/opsee/bastion/util"
 	"net"
 	"sync/atomic"
+	"github.com/opsee/bastion/util"
 )
 
 type Connection struct {
@@ -29,37 +29,21 @@ func NewConnection(conn net.Conn, server *BaseServer) *Connection {
 
 func (c *Connection) loop() (err error) {
 	for {
-
+		c.requestNum.Increment()
+//		select {
+//		case <- serverCtx.Done():
+//			break
+//		}
 	}
+	c.span.CollectMemStats()
+	log.Debug(c.span.JSON())
+	return nil
 }
 
-//func (c *Connection) Start() (err error) {
-//	for {
-//		c.requestNum.Increment()
-//		if request, err := c.readMessage(); err != nil {
-//			break
-//		} else if err = c.handleRequest(request); err != nil {
-//			break
-//		}
-//		select {
-//		case <-serverCtx.Done():
-//			err = serverCtx.Err()
-//			break
-//		default:
-//			continue
-//		}
-//	}
-//	c.span.CollectMemStats()
-//	log.Info(c.span.JSON())
-//	return err
-//}
-//
-//func (c *Connection) readRequest() (serverRequest *ServerRequest, err error) {
-//	serverRequest = &ServerRequest{server: c.server, span: util.NewSpan(fmt.Sprintf("request-%v", c.requestNum.Load()))}
-//	serverRequest.ctx = util.WithValue(serverCtx, reflect.TypeOf(serverRequest), serverRequest)
-//	err = DeserializeMessage(c, serverRequest)
-//	return
-//}
+
+func (c *Connection) readRequest() (message *EventMessage, err error) {
+	return message, DeserializeMessage(c.Conn, message)
+}
 
 
 func (c *Connection) handleRequest(request *EventMessage) (err error) {
