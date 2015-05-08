@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"errors"
-	"github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
 	"github.com/opsee/bastion/util"
 	"net"
 	"os"
@@ -18,7 +17,7 @@ type (
 	SslOptions map[string]string
 
 	ServerCallbacks interface {
-		RequestReceived(*Connection, *ServerRequest) (reply *Reply, keepGoing bool)
+		RequestReceived(*Connection, interface{}) (reply interface{}, keepGoing bool)
 		ConnectionMade(*Connection) (keepGoing bool)
 		ConnectionLost(*Connection, error)
 		SslOptions() SslOptions
@@ -48,28 +47,15 @@ type (
 		exit            int32
 	}
 
-	ServerRequest struct {
-		*Request
-		ctx    util.Context
-		server *BaseServer
-		reply  *Reply
-		span   *util.Span
-	}
 )
 
 var (
 	ErrUserCallbackClose     = errors.New("callback ordered connection closed.")
 	acceptorCount        int = 4
-	serverCtx            util.Context
-	serverCancel         context.CancelFunc
 )
 
 func init() {
 	acceptorCount = runtime.NumCPU()
-}
-
-func CancelAll() {
-	serverCancel()
 }
 
 func GetFileDir() (dir string, err error) {
@@ -81,7 +67,6 @@ func GetFileDir() (dir string, err error) {
 }
 
 func NewServer(address string, handler ServerCallbacks) *BaseServer {
-	serverCtx, serverCancel = util.WithCancel(util.Background())
 	return &BaseServer{ServerCallbacks: handler, Address: address}
 }
 
@@ -151,6 +136,6 @@ func (server *BaseServer) handleConnection(conn net.Conn) {
 	go func() {
 		server.connectionCount.Increment()
 		defer server.connectionCount.Decrement()
-		server.ConnectionLost(newConn, newConn.Start())
+		server.ConnectionLost(newConn, newConn.loop())
 	}()
 }
