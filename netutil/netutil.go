@@ -122,7 +122,7 @@ func (e *EventMessageMaker) NewEventMessage() *EventMessage {
 	m.Id = nextMessageId()
 	m.Version = protocolVersion
 	m.Command = "default"
-	m.Sent = time.Now().UTC().Unix()
+	m.Sent = time.Now().UTC().UnixNano()
 	m.Attributes = make(map[string]interface{})
 	m.Host = string([]byte(e.Hostname))
 	m.InstanceId = string([]byte(e.InstanceId))
@@ -156,7 +156,6 @@ func ListenTCP(address string, s ServerCallbacks) (server TCPServer, err error) 
 }
 
 func GetHostname() (hostname string, err error) {
-	log.Info("GetHostname()")
 	if oshostname, err := os.Hostname(); err == nil {
 		hostname = oshostname
 	} else {
