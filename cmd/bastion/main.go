@@ -40,6 +40,7 @@ var (
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	logging.SetLevel(logging.DEBUG, "bastion.main")
 	logging.SetFormatter(logFormat)
 
@@ -47,7 +48,7 @@ func init() {
 	flag.StringVar(&accessKeyId, "access_key_id", "", "AWS access key ID.")
 	flag.StringVar(&secretKey, "secret_key", "", "AWS secret key ID.")
 	flag.StringVar(&region, "region", "", "AWS Region.")
-	flag.StringVar(&opsee, "opsee", "localhost:5556", "Hostname and port to the Opsee server.")
+	flag.StringVar(&opsee, "opsee", "localhost:4080", "Hostname and port to the Opsee server.")
 	flag.StringVar(&caPath, "ca", "ca.pem", "Path to the CA certificate.")
 	flag.StringVar(&certPath, "cert", "cert.pem", "Path to the certificate.")
 	flag.StringVar(&keyPath, "key", "key.pem", "Path to the key file.")
