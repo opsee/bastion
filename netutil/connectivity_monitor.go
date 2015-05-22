@@ -4,8 +4,8 @@ import "github.com/opsee/bastion/Godeps/_workspace/src/github.com/bjdean/gonetch
 import "time"
 
 func CanHasInterweb() (hasInternet bool, err []error) {
-	timeoutDuration := time.Duration(10 * time.Second)
-	checkUrls := []string{"http://signup.opsee.co", "http://google.com", "http://a1.g.akamaitech.net/"}
-	checkAddrs := []string{}
-	return gonetcheck.CheckInternetAccess(timeoutDuration, checkUrls, checkAddrs)
+    timeoutDuration := time.Duration(10 * time.Second)
+    checkUrls := []string{"http://signup.opsee.co", "http://google.com", "http://a1.g.akamaitech.net/"}
+    checkAddrs := []string{}
+    return gonetcheck.CheckInternetAccess(timeoutDuration, checkUrls, checkAddrs)
 }
