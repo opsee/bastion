@@ -36,6 +36,7 @@ var (
     keyPath string // path to cert privkey
     dataPath string // path to event logfile for replay
     hostname string // this machine's hostname
+    customerId string // the customer ID we're connecting under
 )
 
 func init() {
@@ -53,6 +54,7 @@ func init() {
     flag.StringVar(&keyPath, "key", "key.pem", "Path to the key file.")
     flag.StringVar(&dataPath, "data", "", "Data path.")
     flag.StringVar(&hostname, "hostname", "", "Hostname override.")
+    flag.StringVar(&customerId, "customer_id", "unknown-customer", "Customer ID.")
 }
 
 type Server struct {}

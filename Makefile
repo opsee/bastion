@@ -1,10 +1,7 @@
 all: install
 
-pack-ami: test
-	@packer build -debug -machine-readable -parallel=true  build/packer.json | tee packer.log
-
-cloudformation: pack-ami
-	@godep go run build/packer_to_cloudformation.go -packer_log packer.log -cloudform build/cloudformation.json > bastion-cf.template
+docker: test
+	docker build -t opsee/bastion .
 
 deps:
 	@go get github.com/tools/godep
