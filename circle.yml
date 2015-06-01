@@ -1,13 +1,30 @@
 machine:
+  java:
+    version: oraclejdk8
   services:
     - docker
 notify:
   webhooks:
     - url: https://hooks.slack.com/services/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
+dependencies:
+  cache_directories:
+    - "mami"
+  pre:
+    - if [[ ! -e mami/mami.jar ]]; then mkdir mami && curl -k -L -o mami/mami.jar https://s3-us-west-2.amazonaws.com/opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar
+test:
+  override:
+    - make docker
+    - docker run -d opsee/bastion; sleep 20
+    - test "$(docker ps | grep bastion | awk '{print $2}')" = "opsee/bastion:latest"
 deployment:
   hub:
     branch: master
     owner: opsee
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - docker push opsee/bastion
+  mami:
+    branch: master
+    owner: opsee
+    commands:
+      - java -jar mami/mami.jar build build/mami.json
