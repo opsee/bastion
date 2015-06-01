@@ -11,6 +11,8 @@ RUN apk --update add build-base
 RUN mkdir -p /gopath/src/github.com/opsee/bastion
 
 COPY . /gopath/src/github.com/opsee/bastion
+
+RUN go get github.com/opsee/bastion
 RUN cd /gopath/src/github.com/opsee/bastion && \
     make
 

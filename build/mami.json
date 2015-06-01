@@ -1,0 +1,20 @@
+{
+	"region": "us-east-1",
+	"source-ami": "ami-c36583a8",
+	"ami-name": "Opsee-Bastion-{{clean-timestamp}}",
+	"ami-description": "Opsee's Bastion Software",
+	"instance-type":"t2.micro",
+	"ssh-username":"core",
+	"staging":"/tmp/staging",
+	"ami-tags":[["sha", "{{git-sha}}"], ["release", "build"]],
+	"prepare": [
+		{
+			"type":"systemd",
+			"unit-file":"build/bastion.service"
+		}
+	],
+	"reboot-before-build": false,
+	"public": false,
+	"copy-to": "all",
+	"cleanup": false
+}
