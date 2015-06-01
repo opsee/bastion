@@ -19,14 +19,10 @@ test:
     - docker run -d opsee/bastion; sleep 20
     - test "$(docker ps | grep bastion | awk '{print $2}')" = "opsee/bastion:latest"
 deployment:
-  hub:
+  ami:
     branch: master
     owner: opsee
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - docker push opsee/bastion
-  mami:
-    branch: master
-    owner: opsee
-    commands:
       - java -jar mami/mami.jar build build/mami.json
