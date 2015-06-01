@@ -11,6 +11,7 @@ dependencies:
     - "mami"
   pre:
     - docker info
+    - docker --version
     - if [[ ! -e mami/mami.jar ]]; then mkdir mami && curl -k -L -o mami/mami.jar https://s3-us-west-2.amazonaws.com/opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar; fi
 test:
   override:
