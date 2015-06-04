@@ -98,9 +98,10 @@ type EventMessageMaker struct {
     Ttl        float32
     InstanceId string
     Hostname   string
+    CustomerId string
 }
 
-func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultHostname string) *EventMessageMaker {
+func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultHostname string, customerId string) *EventMessageMaker {
     log.Info("ttl: %v iid: %s hostname: %s", defaultTtl, defaultInstanceId, defaultHostname)
     if defaultTtl < 1.0 {
         defaultTtl = minDefaultTtl
@@ -114,7 +115,7 @@ func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultH
             defaultHostname = unknownHostname
         }
     }
-    return &EventMessageMaker{Ttl: defaultTtl, InstanceId: defaultInstanceId, Hostname: defaultHostname}
+    return &EventMessageMaker{Ttl: defaultTtl, InstanceId: defaultInstanceId, Hostname: defaultHostname, CustomerId: customerId}
 }
 
 func (e *EventMessageMaker) NewEventMessage() *EventMessage {
@@ -130,7 +131,7 @@ func (e *EventMessageMaker) NewEventMessage() *EventMessage {
     m.Tags = []string{}
     m.Service = "default"
     m.Metric = 0
-    m.CustomerId = unknownCustomerId
+    m.CustomerId = e.CustomerId
     return m
 }
 
