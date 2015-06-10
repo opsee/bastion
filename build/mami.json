@@ -16,5 +16,5 @@
 	"reboot-before-build": false,
 	"public": false,
 	"copy-to": "all",
-	"cleanup": false
+	"cleanup": true
 }
