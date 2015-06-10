@@ -6,7 +6,7 @@
 	"instance-type":"t2.micro",
 	"ssh-username":"core",
 	"staging":"/tmp/staging",
-	"ami-tags":[["sha", "{{git-sha}}"], ["release", "build"]],
+	"ami-tags":[["sha", "{{git-rev}}"], ["release", "build"]],
 	"prepare": [
 		{
 			"type":"systemd",
