@@ -1,28 +1,28 @@
 package netutil
 
 import (
-    "errors"
-    "math/rand"
-    "time"
+	"errors"
+	"math/rand"
+	"time"
 )
 
 type BackOff interface {
-    // Gets the duration to wait before retrying the operation or
-    // backoff.Stop to indicate that no retries should be made.
-    //
-    // Example usage:
-    //
-    // 	duration := backoff.NextBackOff();
-    // 	if (duration == backoff.Stop) {
-    // 		// do not retry operation
-    // 	} else {
-    // 		// sleep for duration and retry operation
-    // 	}
-    //
-    NextBackOff() time.Duration
+	// Gets the duration to wait before retrying the operation or
+	// backoff.Stop to indicate that no retries should be made.
+	//
+	// Example usage:
+	//
+	// 	duration := backoff.NextBackOff();
+	// 	if (duration == backoff.Stop) {
+	// 		// do not retry operation
+	// 	} else {
+	// 		// sleep for duration and retry operation
+	// 	}
+	//
+	NextBackOff() time.Duration
 
-    // Reset to initial state.
-    Reset()
+	// Reset to initial state.
+	Reset()
 }
 
 var ErrBackOffTimeLimitExpired = errors.New("backoff time limit expired")
@@ -70,49 +70,49 @@ Implementation is not thread-safe.
 */
 
 type ExponentialBackOff struct {
-    InitialInterval     time.Duration
-    RandomizationFactor float64
-    Multiplier          float64
-    MaxInterval         time.Duration
-    // After MaxElapsedTime the ExponentialBackOff stops.
-    // It never stops if MaxElapsedTime == 0.
-    MaxElapsedTime time.Duration
-    Clock          Clock
+	InitialInterval     time.Duration
+	RandomizationFactor float64
+	Multiplier          float64
+	MaxInterval         time.Duration
+	// After MaxElapsedTime the ExponentialBackOff stops.
+	// It never stops if MaxElapsedTime == 0.
+	MaxElapsedTime time.Duration
+	Clock          Clock
 
-    currentInterval time.Duration
-    startTime       time.Time
+	currentInterval time.Duration
+	startTime       time.Time
 }
 
 // Clock is an interface that returns current time for BackOff.
 type Clock interface {
-    Now() time.Time
+	Now() time.Time
 }
 
 // Default values for ExponentialBackOff.
 const (
-    DefaultInitialInterval = 500 * time.Millisecond
-    DefaultRandomizationFactor = 0.5
-    DefaultMultiplier = 1.5
-    DefaultMaxInterval = 60 * time.Second
-    DefaultMaxElapsedTime = 15 * time.Minute
+	DefaultInitialInterval     = 500 * time.Millisecond
+	DefaultRandomizationFactor = 0.5
+	DefaultMultiplier          = 1.5
+	DefaultMaxInterval         = 60 * time.Second
+	DefaultMaxElapsedTime      = 15 * time.Minute
 )
 
 // NewExponentialBackOff creates an instance of ExponentialBackOff using default values.
 func NewExponentialBackOff() *ExponentialBackOff {
-    return &ExponentialBackOff{
-        InitialInterval:     DefaultInitialInterval,
-        RandomizationFactor: DefaultRandomizationFactor,
-        Multiplier:          DefaultMultiplier,
-        MaxInterval:         DefaultMaxInterval,
-        MaxElapsedTime:      DefaultMaxElapsedTime,
-        Clock:               SystemClock,
-    }
+	return &ExponentialBackOff{
+		InitialInterval:     DefaultInitialInterval,
+		RandomizationFactor: DefaultRandomizationFactor,
+		Multiplier:          DefaultMultiplier,
+		MaxInterval:         DefaultMaxInterval,
+		MaxElapsedTime:      DefaultMaxElapsedTime,
+		Clock:               SystemClock,
+	}
 }
 
-type systemClock struct {}
+type systemClock struct{}
 
 func (t systemClock) Now() time.Time {
-    return time.Now()
+	return time.Now()
 }
 
 // SystemClock implements Clock interface that uses time.Now().
@@ -120,19 +120,19 @@ var SystemClock = systemClock{}
 
 // Reset the interval back to the initial retry interval and restarts the timer.
 func (b *ExponentialBackOff) Reset() {
-    b.currentInterval = b.InitialInterval
-    b.startTime = b.Clock.Now()
+	b.currentInterval = b.InitialInterval
+	b.startTime = b.Clock.Now()
 }
 
 // NextBackOff calculates the next back off interval using the formula:
 // 	randomized_interval = retry_interval +/- (randomization_factor * retry_interval)
 func (b *ExponentialBackOff) NextBackOff() time.Duration {
-    // Make sure we have not gone over the maximum elapsed time.
-    if b.MaxElapsedTime != 0 && b.GetElapsedTime() > b.MaxElapsedTime {
-        return StopBackoff
-    }
-    defer b.incrementCurrentInterval()
-    return getRandomValueFromInterval(b.RandomizationFactor, rand.Float64(), b.currentInterval)
+	// Make sure we have not gone over the maximum elapsed time.
+	if b.MaxElapsedTime != 0 && b.GetElapsedTime() > b.MaxElapsedTime {
+		return StopBackoff
+	}
+	defer b.incrementCurrentInterval()
+	return getRandomValueFromInterval(b.RandomizationFactor, rand.Float64(), b.currentInterval)
 }
 
 // GetElapsedTime returns the elapsed time since an ExponentialBackOff instance
@@ -140,59 +140,59 @@ func (b *ExponentialBackOff) NextBackOff() time.Duration {
 //
 // The elapsed time is computed using time.Now().UnixNano().
 func (b *ExponentialBackOff) GetElapsedTime() time.Duration {
-    return b.Clock.Now().Sub(b.startTime)
+	return b.Clock.Now().Sub(b.startTime)
 }
 
 func (b *ExponentialBackOff) incrementCurrentInterval() {
-    // Check for overflow, if overflow is detected set the current interval to the max interval.
-    if float64(b.currentInterval) >= float64(b.MaxInterval)/b.Multiplier {
-        b.currentInterval = b.MaxInterval
-    } else {
-        b.currentInterval = time.Duration(float64(b.currentInterval) * b.Multiplier)
-    }
+	// Check for overflow, if overflow is detected set the current interval to the max interval.
+	if float64(b.currentInterval) >= float64(b.MaxInterval)/b.Multiplier {
+		b.currentInterval = b.MaxInterval
+	} else {
+		b.currentInterval = time.Duration(float64(b.currentInterval) * b.Multiplier)
+	}
 }
 
 // 	[randomizationFactor * currentInterval, randomizationFactor * currentInterval].
 func getRandomValueFromInterval(randomizationFactor, random float64, currentInterval time.Duration) time.Duration {
-    var delta = randomizationFactor * float64(currentInterval)
-    var minInterval = float64(currentInterval) - delta
-    var maxInterval = float64(currentInterval) + delta
-    // Get a random value from the range [minInterval, maxInterval].
-    // The formula used below has a +1 because if the minInterval is 1 and the maxInterval is 3 then
-    // we want a 33% chance for selecting either 1, 2 or 3.
-    return time.Duration(minInterval + (random * (maxInterval - minInterval + 1)))
+	var delta = randomizationFactor * float64(currentInterval)
+	var minInterval = float64(currentInterval) - delta
+	var maxInterval = float64(currentInterval) + delta
+	// Get a random value from the range [minInterval, maxInterval].
+	// The formula used below has a +1 because if the minInterval is 1 and the maxInterval is 3 then
+	// we want a 33% chance for selecting either 1, 2 or 3.
+	return time.Duration(minInterval + (random * (maxInterval - minInterval + 1)))
 }
 
 type BackoffFunction func() (interface{}, error)
 
 type backoffRetrier struct {
-    *ExponentialBackOff
-    fun    BackoffFunction
-    result interface{}
+	*ExponentialBackOff
+	fun    BackoffFunction
+	result interface{}
 }
 
 func NewBackoffRetrier(backoffFunction BackoffFunction) *backoffRetrier {
-    return &backoffRetrier{NewExponentialBackOff(), backoffFunction, nil}
+	return &backoffRetrier{NewExponentialBackOff(), backoffFunction, nil}
 }
 
 func (b *backoffRetrier) Result() interface{} {
-    return b.result
+	return b.result
 }
 
-func (b *backoffRetrier) Run() (err error) {
-    b.Reset()
-    for {
-        if b.result, err = b.fun(); err != nil {
-            if duration := b.NextBackOff(); duration == StopBackoff {
-                log.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
-                return ErrBackOffTimeLimitExpired
-            } else {
-                log.Debug("backoff: sleeping for %.1fms", duration.Seconds())
-                time.Sleep(duration)
-            }
-        } else {
-            return err
-        }
-    }
-    return err
+func (b *backoffRetrier) Run() (result interface{}, err error) {
+	b.Reset()
+	for {
+		if b.result, err = b.fun(); err != nil {
+			if duration := b.NextBackOff(); duration == StopBackoff {
+				log.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
+				return ErrBackOffTimeLimitExpired, nil
+			} else {
+				log.Debug("backoff: sleeping for %.1fms", duration.Seconds())
+				time.Sleep(duration)
+			}
+		} else {
+			return b.result, err
+		}
+	}
+	return b.result, err
 }
