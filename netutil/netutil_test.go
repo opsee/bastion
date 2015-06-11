@@ -8,11 +8,11 @@ import (
 )
 
 var (
-    inputFormat = "line1%sline2%sline3%s"
-    endings = []string{"\n", "\r\n", "\r"}
-    suffixes = []string{"\n", "\r\n", "\r", ""}
-    descriptions = []string{"LF", "CRLF", "CR", "EOF"}
-    expected = []string{"line1", "line2", "line3"}
+	inputFormat  = "line1%sline2%sline3%s"
+	endings      = []string{"\n", "\r\n", "\r"}
+	suffixes     = []string{"\n", "\r\n", "\r", ""}
+	descriptions = []string{"LF", "CRLF", "CR", "EOF"}
+	expected     = []string{"line1", "line2", "line3"}
 )
 
 //func TestNormaliser(t *testing.T) {
