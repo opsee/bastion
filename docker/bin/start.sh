@@ -2,7 +2,9 @@
 set -x
 export
 cat /etc/hosts
-source /etc/opsee/bastion-env.sh
+if [ -f /etc/opsee/bastion-env.sh ]; then
+	source /etc/opsee/bastion-env.sh
+fi
 
 exec /gopath/bin/bastion \
 	-opsee=$BARTNET_HOST:$BARTNET_PORT \
