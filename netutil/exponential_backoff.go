@@ -179,20 +179,20 @@ func (b *backoffRetrier) Result() interface{} {
     return b.result
 }
 
-func (b *backoffRetrier) Run() (err error) {
+func (b *backoffRetrier) Run() (result interface{}, err error) {
     b.Reset()
     for {
         if b.result, err = b.fun(); err != nil {
             if duration := b.NextBackOff(); duration == StopBackoff {
                 log.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
-                return ErrBackOffTimeLimitExpired
+                return ErrBackOffTimeLimitExpired, nil
             } else {
                 log.Debug("backoff: sleeping for %.1fms", duration.Seconds())
                 time.Sleep(duration)
             }
         } else {
-            return err
+            return b.result, err
         }
     }
-    return err
+    return b.result, err
 }

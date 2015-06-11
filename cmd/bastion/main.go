@@ -10,6 +10,7 @@ import (
     "os"
     "runtime"
     "time"
+	"sync"
 )
 
 var (
@@ -39,24 +40,7 @@ var (
 )
 
 func init() {
-<<<<<<< HEAD
-    runtime.GOMAXPROCS(runtime.NumCPU())
-    logging.SetLevel(logging.DEBUG, "bastion.main")
-    logging.SetFormatter(logFormat)
-
-    // cmdline args
-    flag.StringVar(&accessKeyId, "access_key_id", "", "AWS access key ID.")
-    flag.StringVar(&secretKey, "secret_key", "", "AWS secret key ID.")
-    flag.StringVar(&region, "region", "", "AWS Region.")
-    flag.StringVar(&opsee, "opsee", "localhost:4080", "Hostname and port to the Opsee server.")
-    flag.StringVar(&caPath, "ca", "ca.pem", "Path to the CA certificate.")
-    flag.StringVar(&certPath, "cert", "cert.pem", "Path to the certificate.")
-    flag.StringVar(&keyPath, "key", "key.pem", "Path to the key file.")
-    flag.StringVar(&dataPath, "data", "", "Data path.")
-    flag.StringVar(&hostname, "hostname", "", "Hostname override.")
-=======
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	logging.SetLevel(logging.DEBUG, "bastion.main")
 	logging.SetFormatter(logFormat)
 
@@ -70,7 +54,6 @@ func init() {
 	flag.StringVar(&keyPath, "key", "key.pem", "Path to the key file.")
 	flag.StringVar(&dataPath, "data", "", "Data path.")
 	flag.StringVar(&hostname, "hostname", "", "Hostname override.")
->>>>>>> master
 }
 
 type Server struct {}
@@ -91,15 +74,17 @@ func (this *Server) RequestReceived(connection *netutil.Connection, request inte
     return nil, true
 }
 
-func MustStartServer() (server netutil.TCPServer) {
-    var err error
-    if server, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
-        log.Fatalf("json-tcp server failed to start: ", err)
-    }
-    return
-}
+//func MustStartServer() (server netutil.TCPServer) {
+//    var err error
+//    if server, err = netutil.ListenTCP(":5666", &Server{}); err != nil {
+//        log.Fatalf("json-tcp server failed to start: ", err)
+//    }
+//    return
+//}
 
 var awsScanner *aws.AwsApiEventParser
+var doneMtx = new(sync.Mutex)
+var doneCv = sync.NewCond(doneMtx)
 
 func main() {
     flag.Parse()
@@ -110,11 +95,14 @@ func main() {
     } else {
         go start()
     }
-    jsonServer := MustStartServer()
-    jsonServer.Join()
+	doneCv.L.Lock()
+	doneCv.Wait()
+//    jsonServer := MustStartServer()
+//    jsonServer.Join()
 }
 
 func start() {
+	defer doneCv.Broadcast()
     if err := awsScanner.Scan(); err == nil {
         awsScanner.RunForever()
     } else {
@@ -123,6 +111,7 @@ func start() {
 }
 
 func startStatic() {
+	defer doneCv.Broadcast()
     if events, err := loadEventsFromFile(dataPath); err != nil {
         log.Fatal("loadEventsFromFile: %+v", events)
     } else {

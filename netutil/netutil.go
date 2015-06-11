@@ -134,10 +134,10 @@ func (e *EventMessageMaker) NewEventMessage() *EventMessage {
     return m
 }
 
-func ConnectTCP(address string, c Client) (client *BaseClient, err error) {
+func ConnectTCP(address string) (client *BaseClient, err error) {
     if tcpAddr, err := net.ResolveTCPAddr("tcp", address); err == nil {
         if tcpConn, err := net.DialTCP("tcp", nil, tcpAddr); err == nil {
-            client = &BaseClient{Conn: tcpConn, Address: address, callbacks: c}
+            client = &BaseClient{Conn: tcpConn, Address: address} //, callbacks: c}
             return client, nil
         } else {
             return client, err
@@ -145,15 +145,15 @@ func ConnectTCP(address string, c Client) (client *BaseClient, err error) {
     }
     return
 }
-
-func ListenTCP(address string, s ServerCallbacks) (server TCPServer, err error) {
-    server = struct {
-        *BaseServer
-        ServerCallbacks
-    }{NewServer(address, s), s}
-    err = server.Serve()
-    return
-}
+//
+//func ListenTCP(address string, s ServerCallbacks) (server TCPServer, err error) {
+//    server = struct {
+//        *BaseServer
+//        ServerCallbacks
+//    }{NewServer(address, s), s}
+//    err = server.Serve()
+//    return
+//}
 
 func GetHostname() (hostname string, err error) {
     log.Info("GetHostname()")

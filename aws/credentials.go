@@ -132,25 +132,18 @@ func (cp *CredentialsProvider) GetInstanceId() *InstanceId {
 }
 
 func (cp *CredentialsProvider) retrieveInstanceId() *InstanceId {
-    resp, err := cp.client.Get("http://169.254.169.254/latest/dynamic/instance-identity/document")
-    if err != nil {
-        log.Error("error getting ec2 instance id:", err)
-        return nil
-    }
-    defer resp.Body.Close()
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Error("error reading ec2 metadata:", err)
-        return nil
-    }
-    var iid InstanceId
-    err = json.Unmarshal(body, &iid)
-    if err != nil {
-        log.Error("error parsing instanceid:", err)
-        return nil
-    }
-    cp.instanceId = &iid
-    return &iid
+    if resp, err := cp.client.Get("http://169.254.169.254/latest/dynamic/instance-identity/document"); err == nil {
+		defer resp.Body.Close()
+		if body, err := ioutil.ReadAll(resp.Body); err == nil {
+			var iid InstanceId
+			if err = json.Unmarshal(body, &iid); err == nil {
+				cp.instanceId = &iid
+				return &iid
+			}
+		}
+	}
+	return nil
+
 }
 
 func (cp *CredentialsProvider) retrieveMetadataCreds() *metadataCredentials {

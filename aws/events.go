@@ -6,11 +6,10 @@ import (
     "github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/ec2"
     "github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
     "github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
-    "github.com/opsee/bastion/netutil"
     "net/http"
     "strconv"
-    "strings"
     "time"
+	"github.com/opsee/bastion/netutil"
 )
 
 const (
@@ -34,13 +33,15 @@ func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.EventM
     return true
 }
 
-func MustConnectToOpsee(address string) *netutil.BaseClient {
-    connectToOpsee := func() (interface{}, error) { return netutil.ConnectTCP(address, &client{}) }
-    connectToOpseeRetrier := netutil.NewBackoffRetrier(connectToOpsee)
-    if err := connectToOpseeRetrier.Run(); err != nil {
-        log.Fatalf("connectToOpsee: %v", err)
+func MustConnectToOpsee(address string) (client *netutil.BaseClient, err error) {
+	if c, err := netutil.NewBackoffRetrier(func() (interface{}, error) {
+		return netutil.ConnectTCP(address)
+	}).Run(); err != nil {
+		log.Error("connectToOpsee: %v", err)
+	} else {
+		client = c.(*netutil.BaseClient)
     }
-    return connectToOpseeRetrier.Result().(*netutil.BaseClient)
+    return
 }
 
 type AwsApiEventParser struct {
@@ -79,9 +80,12 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
     return scanner
 }
 
-func (a *AwsApiEventParser) ConnectToOpsee(address string) {
-    a.opseeClient = MustConnectToOpsee(address)
-    a.sendConnectedEvent()
+func (a *AwsApiEventParser) ConnectToOpsee(address string) (err error) {
+    if c, err := MustConnectToOpsee(address); err == nil {
+		a.opseeClient = c
+		a.sendConnectedEvent()
+	}
+	return
 }
 
 func (a *AwsApiEventParser) Scan() (err error) {
@@ -108,9 +112,11 @@ func (a *AwsApiEventParser) ScanSecurityGroups() (err error) {
         for _, group := range groups {
             if group.GroupID != nil {
                 a.GroupMap[*group.GroupID] = *group
-                instances, _ := a.EC2Client.ScanSecurityGroupInstances(*group.GroupID)
-                if len(instances) == 0 {
-                    continue
+                reservations, _ := a.EC2Client.ScanSecurityGroupInstances(*group.GroupID)
+                for _, reservation := range reservations {
+                    for _, instance := range reservation.Instances {
+                        a.SendEvent(a.ToEvent(instance))
+                    }
                 }
             } else {
                 continue
@@ -183,9 +189,11 @@ func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.EventMessag
         event = a.elbLoadBalancerDescriptionToEvent(obj.(*elb.LoadBalancerDescription))
         case *rds.DBInstance:
         event = a.rdsDBInstanceToEvent(obj.(*rds.DBInstance))
+        case *ec2.Instance:
+        event = a.ec2InstanceToEvent(obj.(*ec2.Instance))
         default:
         event = a.MessageMaker.NewEventMessage()
-        event.Command = "discovery-failure"
+        event.Command = "discovery"
         event.State = "failed"
         event.Tags = []string{"failure", "discovery"}
         event.Attributes["api-object-description"] = fmt.Sprint(obj)
@@ -217,6 +225,17 @@ func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (e
     return
 }
 
+func (a *AwsApiEventParser) ec2InstanceToEvent(instance *ec2.Instance) (event *netutil.EventMessage) {
+    event = a.MessageMaker.NewEventMessage()
+    event.Service = "discovery"
+    event.Command = "discovery"
+    event.State = "sg"
+    event.Metric = 0
+    event.Attributes["instance"] = instance
+    log.Info("security groups: %v", instance.SecurityGroups)
+    return
+}
+
 func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *netutil.EventMessage) {
     event = e.MessageMaker.NewEventMessage()
     event.Command = "discovery"
@@ -224,11 +243,12 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
     event.Attributes["group_name"] = *lb.LoadBalancerName
     event.Attributes["group_id"] = *lb.DNSName
     if lb.HealthCheck != nil {
-        split := strings.Split(*lb.HealthCheck.Target, ":")
-        split2 := strings.Split(split[1], "/")
-        event.Attributes["port"] = split2[0]
-        event.Attributes["protocol"] = split[0]
-        event.Attributes["request"] = strings.Join([]string{"/", split2[1]}, "")
+		event.Attributes["check"] = *lb.HealthCheck.Target
+//        split := strings.Split(*lb.HealthCheck.Target, ":")
+//        split2 := strings.Split(split[1], "/")
+//        event.Attributes["port"] = split2[0]
+//        event.Attributes["protocol"] = split[0]
+//        event.Attributes["request"] = strings.Join([]string{"/", split2[1]}, "")
     }
     return
 }
