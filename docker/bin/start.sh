@@ -2,6 +2,8 @@
 set -x
 export
 cat /etc/hosts
+source /etc/opsee/bastion-env.sh
+
 exec /gopath/bin/bastion \
 	-opsee=$BARTNET_HOST:$BARTNET_PORT \
 	-access_key_id="$AWS_ACCESS_KEY_ID" \
