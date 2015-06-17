@@ -11,7 +11,7 @@ import (
     "bytes"
     "encoding/json"
     "fmt"
-    "github.com/opsee/bastion/Godeps/_workspace/src/github.com/satori/go.uuid"
+    "github.com/satori/go.uuid"
     "runtime"
     "sync"
     "syscall"

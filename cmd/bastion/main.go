@@ -3,7 +3,7 @@ package main
 import (
     "encoding/json"
     "flag"
-    "github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+    "github.com/op/go-logging"
     "github.com/opsee/bastion/aws"
     "github.com/opsee/bastion/netutil"
     "io/ioutil"

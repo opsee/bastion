@@ -3,7 +3,7 @@ package checks
 import (
     "errors"
     "fmt"
-    "github.com/opsee/bastion/Godeps/_workspace/src/golang.org/x/net/context"
+    "golang.org/x/net/context"
     "net"
     "time"
 )

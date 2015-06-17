@@ -5,8 +5,8 @@ package query
 import (
 	"encoding/xml"
 
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/aws"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil"
+	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/awslabs/aws-sdk-go/internal/protocol/xml/xmlutil"
 )
 
 func Unmarshal(r *aws.Request) {

@@ -3,7 +3,7 @@ package aws
 import (
 	"testing"
 
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHandlerList(t *testing.T) {

@@ -4,7 +4,7 @@ import (
     "bufio"
     "encoding/json"
     "errors"
-    "github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+    "github.com/op/go-logging"
     "io"
     "net"
     "os"

@@ -1,6 +1,6 @@
 package netutil
 
-import "github.com/opsee/bastion/Godeps/_workspace/src/github.com/bjdean/gonetcheck"
+import "github.com/bjdean/gonetcheck"
 import "time"
 
 func CanHasInterweb() (hasInternet bool, err []error) {

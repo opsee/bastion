@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/internal/endpoints"
+	"github.com/awslabs/aws-sdk-go/internal/endpoints"
 )
 
 type Service struct {

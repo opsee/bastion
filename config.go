@@ -1,6 +1,6 @@
 package bastion
 
-import "github.com/opsee/bastion/Godeps/_workspace/src/github.com/op/go-logging"
+import "github.com/op/go-logging"
 
 var (
     log = logging.MustGetLogger("config")

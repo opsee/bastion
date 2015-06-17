@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateEndpointHandler(t *testing.T) {

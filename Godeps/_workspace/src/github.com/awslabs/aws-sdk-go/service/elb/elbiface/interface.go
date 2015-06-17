@@ -1,7 +1,7 @@
 package elbiface
 
 import (
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/elb"
+	"github.com/awslabs/aws-sdk-go/service/elb"
 )
 
 type ELBAPI interface {

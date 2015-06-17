@@ -1,7 +1,7 @@
 package rdsiface
 
 import (
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/awslabs/aws-sdk-go/service/rds"
+	"github.com/awslabs/aws-sdk-go/service/rds"
 )
 
 type RDSAPI interface {

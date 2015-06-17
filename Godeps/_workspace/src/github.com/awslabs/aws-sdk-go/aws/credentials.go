@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/vaughan0/go-ini"
+	"github.com/vaughan0/go-ini"
 )
 
 var currentTime = time.Now
