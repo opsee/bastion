@@ -57,7 +57,7 @@ type AwsApiEventParser struct {
     MessageMaker *netutil.EventMessageMaker
 }
 
-func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string) *AwsApiEventParser {
+func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string, customerId string) *AwsApiEventParser {
     httpClient := &http.Client{}
     credProvider := NewProvider(httpClient, accessKeyId, secretKey, region)
     instanceId := ""
@@ -74,7 +74,7 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
         httpClient:          httpClient,
         GroupMap:            make(map[string]ec2.SecurityGroup),
         EC2Client:           NewScanner(credProvider),
-        MessageMaker:        netutil.NewEventMessageMaker(defaultEventTtl, instanceId, hostname),
+        MessageMaker:        netutil.NewEventMessageMaker(defaultEventTtl, instanceId, hostname, customerId),
     }
     return scanner
 }

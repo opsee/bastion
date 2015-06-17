@@ -95,7 +95,7 @@ var awsScanner *aws.AwsApiEventParser
 
 func main() {
     flag.Parse()
-    awsScanner = aws.NewAwsApiEventParser(config.Hostname, config.AccessKeyId, config.SecretKey, config.Region)
+    awsScanner = aws.NewAwsApiEventParser(config.Hostname, config.AccessKeyId, config.SecretKey, config.Region, config.CustomerId)
     awsScanner.ConnectToOpsee(config.Opsee)
     if config.DataPath != "" {
         go startStatic()
