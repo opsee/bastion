@@ -8,8 +8,10 @@ import (
     "github.com/opsee/bastion/netutil"
     "io/ioutil"
     "os"
+    "net/http"
     "runtime"
     "time"
+    "fmt"
 )
 
 var (
@@ -26,17 +28,22 @@ const sendTickInterval = time.Second * 5
 // In parallel we try and open a TLS connection back to the opsee API. We'll have been supplied
 // a ca certificate, certificate and a secret key in pem format, either via the instance metadata
 // or on the command line.
+type BastionConfig struct {
+    AccessKeyId string // AWS Access Key Id
+    SecretKey string // AWS Secret Key
+    Region string // AWS Region Name
+    Opsee string // Opsee home IP address
+    CaPath string // path to CA
+    CertPath string // path to TLS cert
+    KeyPath string // path to cert privkey
+    DataPath string // path to event logfile for replay
+    Hostname string // this machine's hostname
+    CustomerId string // the customer ID we're connecting under
+    AdminPort uint // the admin port number to listen on
+}
+
 var (
-    accessKeyId string // AWS Access Key Id
-    secretKey string // AWS Secret Key
-    region string // AWS Region Name
-    opsee string // Opsee home IP address
-    caPath string // path to CA
-    certPath string // path to TLS cert
-    keyPath string // path to cert privkey
-    dataPath string // path to event logfile for replay
-    hostname string // this machine's hostname
-    customerId string // the customer ID we're connecting under
+    config BastionConfig
 )
 
 func init() {
@@ -45,16 +52,17 @@ func init() {
     logging.SetFormatter(logFormat)
 
     // cmdline args
-    flag.StringVar(&accessKeyId, "access_key_id", "", "AWS access key ID.")
-    flag.StringVar(&secretKey, "secret_key", "", "AWS secret key ID.")
-    flag.StringVar(&region, "region", "", "AWS Region.")
-    flag.StringVar(&opsee, "opsee", "localhost:4080", "Hostname and port to the Opsee server.")
-    flag.StringVar(&caPath, "ca", "ca.pem", "Path to the CA certificate.")
-    flag.StringVar(&certPath, "cert", "cert.pem", "Path to the certificate.")
-    flag.StringVar(&keyPath, "key", "key.pem", "Path to the key file.")
-    flag.StringVar(&dataPath, "data", "", "Data path.")
-    flag.StringVar(&hostname, "hostname", "", "Hostname override.")
-    flag.StringVar(&customerId, "customer_id", "unknown-customer", "Customer ID.")
+    flag.StringVar(&config.AccessKeyId, "access_key_id", "", "AWS access key ID.")
+    flag.StringVar(&config.SecretKey, "secret_key", "", "AWS secret key ID.")
+    flag.StringVar(&config.Region, "region", "", "AWS Region.")
+    flag.StringVar(&config.Opsee, "opsee", "localhost:4080", "Hostname and port to the Opsee server.")
+    flag.StringVar(&config.CaPath, "ca", "ca.pem", "Path to the CA certificate.")
+    flag.StringVar(&config.CertPath, "cert", "cert.pem", "Path to the certificate.")
+    flag.StringVar(&config.KeyPath, "key", "key.pem", "Path to the key file.")
+    flag.StringVar(&config.DataPath, "data", "", "Data path.")
+    flag.StringVar(&config.Hostname, "hostname", "", "Hostname override.")
+    flag.StringVar(&config.CustomerId, "customer_id", "unknown-customer", "Customer ID.")
+    flag.UintVar(&config.AdminPort, "admin_port", 4000, "Port for the admin server.")
 }
 
 type Server struct {}
@@ -87,13 +95,14 @@ var awsScanner *aws.AwsApiEventParser
 
 func main() {
     flag.Parse()
-    awsScanner = aws.NewAwsApiEventParser(hostname, accessKeyId, secretKey, region)
-    awsScanner.ConnectToOpsee(opsee)
-    if dataPath != "" {
+    awsScanner = aws.NewAwsApiEventParser(config.Hostname, config.AccessKeyId, config.SecretKey, config.Region)
+    awsScanner.ConnectToOpsee(config.Opsee)
+    if config.DataPath != "" {
         go startStatic()
     } else {
         go start()
     }
+    go startHealthStatusServer()
     jsonServer := MustStartServer()
     jsonServer.Join()
 }
@@ -107,7 +116,7 @@ func start() {
 }
 
 func startStatic() {
-    if events, err := loadEventsFromFile(dataPath); err != nil {
+    if events, err := loadEventsFromFile(config.DataPath); err != nil {
         log.Fatal("loadEventsFromFile: %+v", events)
     } else {
         reportStaticEvents(events)
@@ -124,6 +133,15 @@ func reportStaticEvents(events []*netutil.Event) {
     }
 }
 
+func startHealthStatusServer() {
+    http.HandleFunc("/health_status", func(w http.ResponseWriter, req *http.Request) {
+        encoder := json.NewEncoder(w)
+        encoder.Encode(config)
+        return
+    })
+    log.Fatal(http.ListenAndServe(fmt.Sprint(":", config.AdminPort), nil))
+}
+
 func loadEventsFromFile(dataFilePath string) (events []*netutil.Event, err error) {
     var file *os.File
     var bytes []byte
@@ -131,13 +149,13 @@ func loadEventsFromFile(dataFilePath string) (events []*netutil.Event, err error
     const sendTickInterval = time.Second * 5
 
     if file, err = os.Open(dataFilePath); err != nil {
-        log.Fatalf("opening data file %s: %v", dataPath, err)
+        log.Fatalf("opening data file %s: %v", config.DataPath, err)
     }
     if bytes, err = ioutil.ReadAll(file); err != nil {
-        log.Fatalf("reading from data file %s: %v", dataPath, err)
+        log.Fatalf("reading from data file %s: %v", config.DataPath, err)
     }
     if err = json.Unmarshal(bytes, &events); err != nil {
-        log.Fatalf("unmarshalling json from %s: %v", dataPath, err)
+        log.Fatalf("unmarshalling json from %s: %v", config.DataPath, err)
     }
     return
 }
