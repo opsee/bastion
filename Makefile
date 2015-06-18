@@ -33,6 +33,6 @@ clean-protocheck:
 clean-bastion:
 	@godep go clean -r -x -i -x ./cmd/protocheck
 
-
-
+fmt:
+	gofmt -w ./
 
