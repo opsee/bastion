@@ -160,6 +160,17 @@ func (c *BaseClient) SendEvent(event *EventMessage) error {
     return SerializeMessage(c, event)
 }
 
+func (c *BaseClient) Loop() {
+	for {
+		msg := &EventMessage{}
+		err := DeserializeMessage(c.Conn, msg)
+		if err != nil {
+			log.Error("error receiving message %v", err)
+		}
+		c.callbacks.ReplyReceived(c, msg)
+	}
+}
+
 type Connection struct {
     net.Conn
     *bufio.Reader

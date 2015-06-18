@@ -80,6 +80,7 @@ func (this *Server) ConnectionLost(connection *netutil.Connection, err error) {
 }
 
 func (this *Server) RequestReceived(connection *netutil.Connection, request interface{}) (reply interface{}, keepGoing bool) {
+    log.Info("Received a request for %+v", request)
     return nil, true
 }
 
