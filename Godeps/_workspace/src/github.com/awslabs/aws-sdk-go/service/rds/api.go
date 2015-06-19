@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws"
 )
 
 var oprw sync.Mutex
@@ -36,11 +36,10 @@ func (c *RDS) AddSourceIdentifierToSubscriptionRequest(input *AddSourceIdentifie
 }
 
 // Adds a source identifier to an existing RDS event notification subscription.
-func (c *RDS) AddSourceIdentifierToSubscription(input *AddSourceIdentifierToSubscriptionInput) (output *AddSourceIdentifierToSubscriptionOutput, err error) {
+func (c *RDS) AddSourceIdentifierToSubscription(input *AddSourceIdentifierToSubscriptionInput) (*AddSourceIdentifierToSubscriptionOutput, error) {
 	req, out := c.AddSourceIdentifierToSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAddSourceIdentifierToSubscription *aws.Operation
@@ -74,11 +73,10 @@ func (c *RDS) AddTagsToResourceRequest(input *AddTagsToResourceInput) (req *aws.
 //
 // For an overview on tagging Amazon RDS resources, see Tagging Amazon RDS
 // Resources (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Tagging.html).
-func (c *RDS) AddTagsToResource(input *AddTagsToResourceInput) (output *AddTagsToResourceOutput, err error) {
+func (c *RDS) AddTagsToResource(input *AddTagsToResourceInput) (*AddTagsToResourceOutput, error) {
 	req, out := c.AddTagsToResourceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAddTagsToResource *aws.Operation
@@ -106,12 +104,11 @@ func (c *RDS) ApplyPendingMaintenanceActionRequest(input *ApplyPendingMaintenanc
 	return
 }
 
-// Applies a pending maintenance action to a resource.
-func (c *RDS) ApplyPendingMaintenanceAction(input *ApplyPendingMaintenanceActionInput) (output *ApplyPendingMaintenanceActionOutput, err error) {
+// Applies a pending maintenance action to a resource (for example, a DB instance).
+func (c *RDS) ApplyPendingMaintenanceAction(input *ApplyPendingMaintenanceActionInput) (*ApplyPendingMaintenanceActionOutput, error) {
 	req, out := c.ApplyPendingMaintenanceActionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opApplyPendingMaintenanceAction *aws.Operation
@@ -151,11 +148,10 @@ func (c *RDS) AuthorizeDBSecurityGroupIngressRequest(input *AuthorizeDBSecurityG
 // an Amazon RDS DB instance in another. You cannot authorize ingress from a
 // VPC security group in one VPC to an Amazon RDS DB instance in another.  For
 // an overview of CIDR ranges, go to the Wikipedia Tutorial (http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).
-func (c *RDS) AuthorizeDBSecurityGroupIngress(input *AuthorizeDBSecurityGroupIngressInput) (output *AuthorizeDBSecurityGroupIngressOutput, err error) {
+func (c *RDS) AuthorizeDBSecurityGroupIngress(input *AuthorizeDBSecurityGroupIngressInput) (*AuthorizeDBSecurityGroupIngressOutput, error) {
 	req, out := c.AuthorizeDBSecurityGroupIngressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAuthorizeDBSecurityGroupIngress *aws.Operation
@@ -184,11 +180,10 @@ func (c *RDS) CopyDBParameterGroupRequest(input *CopyDBParameterGroupInput) (req
 }
 
 // Copies the specified DB parameter group.
-func (c *RDS) CopyDBParameterGroup(input *CopyDBParameterGroupInput) (output *CopyDBParameterGroupOutput, err error) {
+func (c *RDS) CopyDBParameterGroup(input *CopyDBParameterGroupInput) (*CopyDBParameterGroupOutput, error) {
 	req, out := c.CopyDBParameterGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCopyDBParameterGroup *aws.Operation
@@ -218,11 +213,10 @@ func (c *RDS) CopyDBSnapshotRequest(input *CopyDBSnapshotInput) (req *aws.Reques
 
 // Copies the specified DBSnapshot. The source DBSnapshot must be in the "available"
 // state.
-func (c *RDS) CopyDBSnapshot(input *CopyDBSnapshotInput) (output *CopyDBSnapshotOutput, err error) {
+func (c *RDS) CopyDBSnapshot(input *CopyDBSnapshotInput) (*CopyDBSnapshotOutput, error) {
 	req, out := c.CopyDBSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCopyDBSnapshot *aws.Operation
@@ -251,11 +245,10 @@ func (c *RDS) CopyOptionGroupRequest(input *CopyOptionGroupInput) (req *aws.Requ
 }
 
 // Copies the specified option group.
-func (c *RDS) CopyOptionGroup(input *CopyOptionGroupInput) (output *CopyOptionGroupOutput, err error) {
+func (c *RDS) CopyOptionGroup(input *CopyOptionGroupInput) (*CopyOptionGroupOutput, error) {
 	req, out := c.CopyOptionGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCopyOptionGroup *aws.Operation
@@ -284,11 +277,10 @@ func (c *RDS) CreateDBInstanceRequest(input *CreateDBInstanceInput) (req *aws.Re
 }
 
 // Creates a new DB instance.
-func (c *RDS) CreateDBInstance(input *CreateDBInstanceInput) (output *CreateDBInstanceOutput, err error) {
+func (c *RDS) CreateDBInstance(input *CreateDBInstanceInput) (*CreateDBInstanceOutput, error) {
 	req, out := c.CreateDBInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDBInstance *aws.Operation
@@ -324,11 +316,10 @@ func (c *RDS) CreateDBInstanceReadReplicaRequest(input *CreateDBInstanceReadRepl
 // except as specified below.
 //
 //   The source DB instance must have backup retention enabled.
-func (c *RDS) CreateDBInstanceReadReplica(input *CreateDBInstanceReadReplicaInput) (output *CreateDBInstanceReadReplicaOutput, err error) {
+func (c *RDS) CreateDBInstanceReadReplica(input *CreateDBInstanceReadReplicaInput) (*CreateDBInstanceReadReplicaOutput, error) {
 	req, out := c.CreateDBInstanceReadReplicaRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDBInstanceReadReplica *aws.Operation
@@ -377,11 +368,10 @@ func (c *RDS) CreateDBParameterGroupRequest(input *CreateDBParameterGroupInput) 
 // You can use the Parameter Groups option of the Amazon RDS console (https://console.aws.amazon.com/rds/)
 // or the DescribeDBParameters command to verify that your DB parameter group
 // has been created or modified.
-func (c *RDS) CreateDBParameterGroup(input *CreateDBParameterGroupInput) (output *CreateDBParameterGroupOutput, err error) {
+func (c *RDS) CreateDBParameterGroup(input *CreateDBParameterGroupInput) (*CreateDBParameterGroupOutput, error) {
 	req, out := c.CreateDBParameterGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDBParameterGroup *aws.Operation
@@ -411,11 +401,10 @@ func (c *RDS) CreateDBSecurityGroupRequest(input *CreateDBSecurityGroupInput) (r
 
 // Creates a new DB security group. DB security groups control access to a DB
 // instance.
-func (c *RDS) CreateDBSecurityGroup(input *CreateDBSecurityGroupInput) (output *CreateDBSecurityGroupOutput, err error) {
+func (c *RDS) CreateDBSecurityGroup(input *CreateDBSecurityGroupInput) (*CreateDBSecurityGroupOutput, error) {
 	req, out := c.CreateDBSecurityGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDBSecurityGroup *aws.Operation
@@ -444,11 +433,10 @@ func (c *RDS) CreateDBSnapshotRequest(input *CreateDBSnapshotInput) (req *aws.Re
 }
 
 // Creates a DBSnapshot. The source DBInstance must be in "available" state.
-func (c *RDS) CreateDBSnapshot(input *CreateDBSnapshotInput) (output *CreateDBSnapshotOutput, err error) {
+func (c *RDS) CreateDBSnapshot(input *CreateDBSnapshotInput) (*CreateDBSnapshotOutput, error) {
 	req, out := c.CreateDBSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDBSnapshot *aws.Operation
@@ -478,11 +466,10 @@ func (c *RDS) CreateDBSubnetGroupRequest(input *CreateDBSubnetGroupInput) (req *
 
 // Creates a new DB subnet group. DB subnet groups must contain at least one
 // subnet in at least two AZs in the region.
-func (c *RDS) CreateDBSubnetGroup(input *CreateDBSubnetGroupInput) (output *CreateDBSubnetGroupOutput, err error) {
+func (c *RDS) CreateDBSubnetGroup(input *CreateDBSubnetGroupInput) (*CreateDBSubnetGroupOutput, error) {
 	req, out := c.CreateDBSubnetGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDBSubnetGroup *aws.Operation
@@ -529,11 +516,10 @@ func (c *RDS) CreateEventSubscriptionRequest(input *CreateEventSubscriptionInput
 // type for all your RDS sources. If you do not specify either the SourceType
 // nor the SourceIdentifier, you will be notified of events generated from all
 // RDS sources belonging to your customer account.
-func (c *RDS) CreateEventSubscription(input *CreateEventSubscriptionInput) (output *CreateEventSubscriptionOutput, err error) {
+func (c *RDS) CreateEventSubscription(input *CreateEventSubscriptionInput) (*CreateEventSubscriptionOutput, error) {
 	req, out := c.CreateEventSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateEventSubscription *aws.Operation
@@ -562,11 +548,10 @@ func (c *RDS) CreateOptionGroupRequest(input *CreateOptionGroupInput) (req *aws.
 }
 
 // Creates a new option group. You can create up to 20 option groups.
-func (c *RDS) CreateOptionGroup(input *CreateOptionGroupInput) (output *CreateOptionGroupOutput, err error) {
+func (c *RDS) CreateOptionGroup(input *CreateOptionGroupInput) (*CreateOptionGroupOutput, error) {
 	req, out := c.CreateOptionGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateOptionGroup *aws.Operation
@@ -604,11 +589,10 @@ func (c *RDS) DeleteDBInstanceRequest(input *DeleteDBInstanceInput) (req *aws.Re
 // be "deleting" until the DB snapshot is created. The API action DescribeDBInstance
 // is used to monitor the status of this operation. The action cannot be canceled
 // or reverted once submitted.
-func (c *RDS) DeleteDBInstance(input *DeleteDBInstanceInput) (output *DeleteDBInstanceOutput, err error) {
+func (c *RDS) DeleteDBInstance(input *DeleteDBInstanceInput) (*DeleteDBInstanceOutput, error) {
 	req, out := c.DeleteDBInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteDBInstance *aws.Operation
@@ -638,13 +622,10 @@ func (c *RDS) DeleteDBParameterGroupRequest(input *DeleteDBParameterGroupInput) 
 
 // Deletes a specified DBParameterGroup. The DBParameterGroup to be deleted
 // cannot be associated with any DB instances.
-//
-//  The specified DB parameter group cannot be associated with any DB instances.
-func (c *RDS) DeleteDBParameterGroup(input *DeleteDBParameterGroupInput) (output *DeleteDBParameterGroupOutput, err error) {
+func (c *RDS) DeleteDBParameterGroup(input *DeleteDBParameterGroupInput) (*DeleteDBParameterGroupOutput, error) {
 	req, out := c.DeleteDBParameterGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteDBParameterGroup *aws.Operation
@@ -675,11 +656,10 @@ func (c *RDS) DeleteDBSecurityGroupRequest(input *DeleteDBSecurityGroupInput) (r
 // Deletes a DB security group.
 //
 // The specified DB security group must not be associated with any DB instances.
-func (c *RDS) DeleteDBSecurityGroup(input *DeleteDBSecurityGroupInput) (output *DeleteDBSecurityGroupOutput, err error) {
+func (c *RDS) DeleteDBSecurityGroup(input *DeleteDBSecurityGroupInput) (*DeleteDBSecurityGroupOutput, error) {
 	req, out := c.DeleteDBSecurityGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteDBSecurityGroup *aws.Operation
@@ -711,11 +691,10 @@ func (c *RDS) DeleteDBSnapshotRequest(input *DeleteDBSnapshotInput) (req *aws.Re
 // is terminated.
 //
 // The DBSnapshot must be in the available state to be deleted.
-func (c *RDS) DeleteDBSnapshot(input *DeleteDBSnapshotInput) (output *DeleteDBSnapshotOutput, err error) {
+func (c *RDS) DeleteDBSnapshot(input *DeleteDBSnapshotInput) (*DeleteDBSnapshotOutput, error) {
 	req, out := c.DeleteDBSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteDBSnapshot *aws.Operation
@@ -746,11 +725,10 @@ func (c *RDS) DeleteDBSubnetGroupRequest(input *DeleteDBSubnetGroupInput) (req *
 // Deletes a DB subnet group.
 //
 // The specified database subnet group must not be associated with any DB instances.
-func (c *RDS) DeleteDBSubnetGroup(input *DeleteDBSubnetGroupInput) (output *DeleteDBSubnetGroupOutput, err error) {
+func (c *RDS) DeleteDBSubnetGroup(input *DeleteDBSubnetGroupInput) (*DeleteDBSubnetGroupOutput, error) {
 	req, out := c.DeleteDBSubnetGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteDBSubnetGroup *aws.Operation
@@ -779,11 +757,10 @@ func (c *RDS) DeleteEventSubscriptionRequest(input *DeleteEventSubscriptionInput
 }
 
 // Deletes an RDS event notification subscription.
-func (c *RDS) DeleteEventSubscription(input *DeleteEventSubscriptionInput) (output *DeleteEventSubscriptionOutput, err error) {
+func (c *RDS) DeleteEventSubscription(input *DeleteEventSubscriptionInput) (*DeleteEventSubscriptionOutput, error) {
 	req, out := c.DeleteEventSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteEventSubscription *aws.Operation
@@ -812,14 +789,82 @@ func (c *RDS) DeleteOptionGroupRequest(input *DeleteOptionGroupInput) (req *aws.
 }
 
 // Deletes an existing option group.
-func (c *RDS) DeleteOptionGroup(input *DeleteOptionGroupInput) (output *DeleteOptionGroupOutput, err error) {
+func (c *RDS) DeleteOptionGroup(input *DeleteOptionGroupInput) (*DeleteOptionGroupOutput, error) {
 	req, out := c.DeleteOptionGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteOptionGroup *aws.Operation
+
+// DescribeAccountAttributesRequest generates a request for the DescribeAccountAttributes operation.
+func (c *RDS) DescribeAccountAttributesRequest(input *DescribeAccountAttributesInput) (req *aws.Request, output *DescribeAccountAttributesOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeAccountAttributes == nil {
+		opDescribeAccountAttributes = &aws.Operation{
+			Name:       "DescribeAccountAttributes",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeAccountAttributesInput{}
+	}
+
+	req = c.newRequest(opDescribeAccountAttributes, input, output)
+	output = &DescribeAccountAttributesOutput{}
+	req.Data = output
+	return
+}
+
+// Lists all of the attributes for a customer account. The attributes include
+// Amazon RDS quotas for the account, such as the number of DB instances allowed.
+// The description for a quota includes the quota name, current usage toward
+// that quota, and the quota's maximum value.
+//
+// This command does not take any parameters.
+func (c *RDS) DescribeAccountAttributes(input *DescribeAccountAttributesInput) (*DescribeAccountAttributesOutput, error) {
+	req, out := c.DescribeAccountAttributesRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeAccountAttributes *aws.Operation
+
+// DescribeCertificatesRequest generates a request for the DescribeCertificates operation.
+func (c *RDS) DescribeCertificatesRequest(input *DescribeCertificatesInput) (req *aws.Request, output *DescribeCertificatesOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeCertificates == nil {
+		opDescribeCertificates = &aws.Operation{
+			Name:       "DescribeCertificates",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeCertificatesInput{}
+	}
+
+	req = c.newRequest(opDescribeCertificates, input, output)
+	output = &DescribeCertificatesOutput{}
+	req.Data = output
+	return
+}
+
+// Lists the set of CA certificates provided by Amazon RDS for this AWS account.
+func (c *RDS) DescribeCertificates(input *DescribeCertificatesInput) (*DescribeCertificatesOutput, error) {
+	req, out := c.DescribeCertificatesRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeCertificates *aws.Operation
 
 // DescribeDBEngineVersionsRequest generates a request for the DescribeDBEngineVersions operation.
 func (c *RDS) DescribeDBEngineVersionsRequest(input *DescribeDBEngineVersionsInput) (req *aws.Request, output *DescribeDBEngineVersionsOutput) {
@@ -831,6 +876,12 @@ func (c *RDS) DescribeDBEngineVersionsRequest(input *DescribeDBEngineVersionsInp
 			Name:       "DescribeDBEngineVersions",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -845,11 +896,17 @@ func (c *RDS) DescribeDBEngineVersionsRequest(input *DescribeDBEngineVersionsInp
 }
 
 // Returns a list of the available DB engines.
-func (c *RDS) DescribeDBEngineVersions(input *DescribeDBEngineVersionsInput) (output *DescribeDBEngineVersionsOutput, err error) {
+func (c *RDS) DescribeDBEngineVersions(input *DescribeDBEngineVersionsInput) (*DescribeDBEngineVersionsOutput, error) {
 	req, out := c.DescribeDBEngineVersionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBEngineVersionsPages(input *DescribeDBEngineVersionsInput, fn func(p *DescribeDBEngineVersionsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBEngineVersionsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBEngineVersionsOutput), lastPage)
+	})
 }
 
 var opDescribeDBEngineVersions *aws.Operation
@@ -864,6 +921,12 @@ func (c *RDS) DescribeDBInstancesRequest(input *DescribeDBInstancesInput) (req *
 			Name:       "DescribeDBInstances",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -878,11 +941,17 @@ func (c *RDS) DescribeDBInstancesRequest(input *DescribeDBInstancesInput) (req *
 }
 
 // Returns information about provisioned RDS instances. This API supports pagination.
-func (c *RDS) DescribeDBInstances(input *DescribeDBInstancesInput) (output *DescribeDBInstancesOutput, err error) {
+func (c *RDS) DescribeDBInstances(input *DescribeDBInstancesInput) (*DescribeDBInstancesOutput, error) {
 	req, out := c.DescribeDBInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBInstancesPages(input *DescribeDBInstancesInput, fn func(p *DescribeDBInstancesOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBInstancesRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBInstancesOutput), lastPage)
+	})
 }
 
 var opDescribeDBInstances *aws.Operation
@@ -897,6 +966,12 @@ func (c *RDS) DescribeDBLogFilesRequest(input *DescribeDBLogFilesInput) (req *aw
 			Name:       "DescribeDBLogFiles",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -911,11 +986,17 @@ func (c *RDS) DescribeDBLogFilesRequest(input *DescribeDBLogFilesInput) (req *aw
 }
 
 // Returns a list of DB log files for the DB instance.
-func (c *RDS) DescribeDBLogFiles(input *DescribeDBLogFilesInput) (output *DescribeDBLogFilesOutput, err error) {
+func (c *RDS) DescribeDBLogFiles(input *DescribeDBLogFilesInput) (*DescribeDBLogFilesOutput, error) {
 	req, out := c.DescribeDBLogFilesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBLogFilesPages(input *DescribeDBLogFilesInput, fn func(p *DescribeDBLogFilesOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBLogFilesRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBLogFilesOutput), lastPage)
+	})
 }
 
 var opDescribeDBLogFiles *aws.Operation
@@ -930,6 +1011,12 @@ func (c *RDS) DescribeDBParameterGroupsRequest(input *DescribeDBParameterGroupsI
 			Name:       "DescribeDBParameterGroups",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -946,11 +1033,17 @@ func (c *RDS) DescribeDBParameterGroupsRequest(input *DescribeDBParameterGroupsI
 // Returns a list of DBParameterGroup descriptions. If a DBParameterGroupName
 // is specified, the list will contain only the description of the specified
 // DB parameter group.
-func (c *RDS) DescribeDBParameterGroups(input *DescribeDBParameterGroupsInput) (output *DescribeDBParameterGroupsOutput, err error) {
+func (c *RDS) DescribeDBParameterGroups(input *DescribeDBParameterGroupsInput) (*DescribeDBParameterGroupsOutput, error) {
 	req, out := c.DescribeDBParameterGroupsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBParameterGroupsPages(input *DescribeDBParameterGroupsInput, fn func(p *DescribeDBParameterGroupsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBParameterGroupsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBParameterGroupsOutput), lastPage)
+	})
 }
 
 var opDescribeDBParameterGroups *aws.Operation
@@ -965,6 +1058,12 @@ func (c *RDS) DescribeDBParametersRequest(input *DescribeDBParametersInput) (req
 			Name:       "DescribeDBParameters",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -979,11 +1078,17 @@ func (c *RDS) DescribeDBParametersRequest(input *DescribeDBParametersInput) (req
 }
 
 // Returns the detailed parameter list for a particular DB parameter group.
-func (c *RDS) DescribeDBParameters(input *DescribeDBParametersInput) (output *DescribeDBParametersOutput, err error) {
+func (c *RDS) DescribeDBParameters(input *DescribeDBParametersInput) (*DescribeDBParametersOutput, error) {
 	req, out := c.DescribeDBParametersRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBParametersPages(input *DescribeDBParametersInput, fn func(p *DescribeDBParametersOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBParametersRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBParametersOutput), lastPage)
+	})
 }
 
 var opDescribeDBParameters *aws.Operation
@@ -998,6 +1103,12 @@ func (c *RDS) DescribeDBSecurityGroupsRequest(input *DescribeDBSecurityGroupsInp
 			Name:       "DescribeDBSecurityGroups",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1014,11 +1125,17 @@ func (c *RDS) DescribeDBSecurityGroupsRequest(input *DescribeDBSecurityGroupsInp
 // Returns a list of DBSecurityGroup descriptions. If a DBSecurityGroupName
 // is specified, the list will contain only the descriptions of the specified
 // DB security group.
-func (c *RDS) DescribeDBSecurityGroups(input *DescribeDBSecurityGroupsInput) (output *DescribeDBSecurityGroupsOutput, err error) {
+func (c *RDS) DescribeDBSecurityGroups(input *DescribeDBSecurityGroupsInput) (*DescribeDBSecurityGroupsOutput, error) {
 	req, out := c.DescribeDBSecurityGroupsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBSecurityGroupsPages(input *DescribeDBSecurityGroupsInput, fn func(p *DescribeDBSecurityGroupsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBSecurityGroupsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBSecurityGroupsOutput), lastPage)
+	})
 }
 
 var opDescribeDBSecurityGroups *aws.Operation
@@ -1033,6 +1150,12 @@ func (c *RDS) DescribeDBSnapshotsRequest(input *DescribeDBSnapshotsInput) (req *
 			Name:       "DescribeDBSnapshots",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1047,11 +1170,17 @@ func (c *RDS) DescribeDBSnapshotsRequest(input *DescribeDBSnapshotsInput) (req *
 }
 
 // Returns information about DB snapshots. This API supports pagination.
-func (c *RDS) DescribeDBSnapshots(input *DescribeDBSnapshotsInput) (output *DescribeDBSnapshotsOutput, err error) {
+func (c *RDS) DescribeDBSnapshots(input *DescribeDBSnapshotsInput) (*DescribeDBSnapshotsOutput, error) {
 	req, out := c.DescribeDBSnapshotsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBSnapshotsPages(input *DescribeDBSnapshotsInput, fn func(p *DescribeDBSnapshotsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBSnapshotsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBSnapshotsOutput), lastPage)
+	})
 }
 
 var opDescribeDBSnapshots *aws.Operation
@@ -1066,6 +1195,12 @@ func (c *RDS) DescribeDBSubnetGroupsRequest(input *DescribeDBSubnetGroupsInput) 
 			Name:       "DescribeDBSubnetGroups",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1083,11 +1218,17 @@ func (c *RDS) DescribeDBSubnetGroupsRequest(input *DescribeDBSubnetGroupsInput) 
 // the list will contain only the descriptions of the specified DBSubnetGroup.
 //
 // For an overview of CIDR ranges, go to the Wikipedia Tutorial (http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).
-func (c *RDS) DescribeDBSubnetGroups(input *DescribeDBSubnetGroupsInput) (output *DescribeDBSubnetGroupsOutput, err error) {
+func (c *RDS) DescribeDBSubnetGroups(input *DescribeDBSubnetGroupsInput) (*DescribeDBSubnetGroupsOutput, error) {
 	req, out := c.DescribeDBSubnetGroupsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeDBSubnetGroupsPages(input *DescribeDBSubnetGroupsInput, fn func(p *DescribeDBSubnetGroupsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeDBSubnetGroupsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeDBSubnetGroupsOutput), lastPage)
+	})
 }
 
 var opDescribeDBSubnetGroups *aws.Operation
@@ -1102,6 +1243,12 @@ func (c *RDS) DescribeEngineDefaultParametersRequest(input *DescribeEngineDefaul
 			Name:       "DescribeEngineDefaultParameters",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"EngineDefaults.Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1117,11 +1264,17 @@ func (c *RDS) DescribeEngineDefaultParametersRequest(input *DescribeEngineDefaul
 
 // Returns the default engine and system parameter information for the specified
 // database engine.
-func (c *RDS) DescribeEngineDefaultParameters(input *DescribeEngineDefaultParametersInput) (output *DescribeEngineDefaultParametersOutput, err error) {
+func (c *RDS) DescribeEngineDefaultParameters(input *DescribeEngineDefaultParametersInput) (*DescribeEngineDefaultParametersOutput, error) {
 	req, out := c.DescribeEngineDefaultParametersRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeEngineDefaultParametersPages(input *DescribeEngineDefaultParametersInput, fn func(p *DescribeEngineDefaultParametersOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeEngineDefaultParametersRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeEngineDefaultParametersOutput), lastPage)
+	})
 }
 
 var opDescribeEngineDefaultParameters *aws.Operation
@@ -1153,11 +1306,10 @@ func (c *RDS) DescribeEventCategoriesRequest(input *DescribeEventCategoriesInput
 // for a specified source type. You can see a list of the event categories and
 // source types in the  Events (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html)
 // topic in the Amazon RDS User Guide.
-func (c *RDS) DescribeEventCategories(input *DescribeEventCategoriesInput) (output *DescribeEventCategoriesOutput, err error) {
+func (c *RDS) DescribeEventCategories(input *DescribeEventCategoriesInput) (*DescribeEventCategoriesOutput, error) {
 	req, out := c.DescribeEventCategoriesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeEventCategories *aws.Operation
@@ -1172,6 +1324,12 @@ func (c *RDS) DescribeEventSubscriptionsRequest(input *DescribeEventSubscription
 			Name:       "DescribeEventSubscriptions",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1190,11 +1348,17 @@ func (c *RDS) DescribeEventSubscriptionsRequest(input *DescribeEventSubscription
 // SourceID, CreationTime, and Status.
 //
 // If you specify a SubscriptionName, lists the description for that subscription.
-func (c *RDS) DescribeEventSubscriptions(input *DescribeEventSubscriptionsInput) (output *DescribeEventSubscriptionsOutput, err error) {
+func (c *RDS) DescribeEventSubscriptions(input *DescribeEventSubscriptionsInput) (*DescribeEventSubscriptionsOutput, error) {
 	req, out := c.DescribeEventSubscriptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeEventSubscriptionsPages(input *DescribeEventSubscriptionsInput, fn func(p *DescribeEventSubscriptionsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeEventSubscriptionsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeEventSubscriptionsOutput), lastPage)
+	})
 }
 
 var opDescribeEventSubscriptions *aws.Operation
@@ -1209,6 +1373,12 @@ func (c *RDS) DescribeEventsRequest(input *DescribeEventsInput) (req *aws.Reques
 			Name:       "DescribeEvents",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1227,11 +1397,17 @@ func (c *RDS) DescribeEventsRequest(input *DescribeEventsInput) (req *aws.Reques
 // DB instance, DB security group, database snapshot, or DB parameter group
 // can be obtained by providing the name as a parameter. By default, the past
 // hour of events are returned.
-func (c *RDS) DescribeEvents(input *DescribeEventsInput) (output *DescribeEventsOutput, err error) {
+func (c *RDS) DescribeEvents(input *DescribeEventsInput) (*DescribeEventsOutput, error) {
 	req, out := c.DescribeEventsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeEventsPages(input *DescribeEventsInput, fn func(p *DescribeEventsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeEventsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeEventsOutput), lastPage)
+	})
 }
 
 var opDescribeEvents *aws.Operation
@@ -1246,6 +1422,12 @@ func (c *RDS) DescribeOptionGroupOptionsRequest(input *DescribeOptionGroupOption
 			Name:       "DescribeOptionGroupOptions",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1260,11 +1442,17 @@ func (c *RDS) DescribeOptionGroupOptionsRequest(input *DescribeOptionGroupOption
 }
 
 // Describes all available options.
-func (c *RDS) DescribeOptionGroupOptions(input *DescribeOptionGroupOptionsInput) (output *DescribeOptionGroupOptionsOutput, err error) {
+func (c *RDS) DescribeOptionGroupOptions(input *DescribeOptionGroupOptionsInput) (*DescribeOptionGroupOptionsOutput, error) {
 	req, out := c.DescribeOptionGroupOptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeOptionGroupOptionsPages(input *DescribeOptionGroupOptionsInput, fn func(p *DescribeOptionGroupOptionsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeOptionGroupOptionsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeOptionGroupOptionsOutput), lastPage)
+	})
 }
 
 var opDescribeOptionGroupOptions *aws.Operation
@@ -1279,6 +1467,12 @@ func (c *RDS) DescribeOptionGroupsRequest(input *DescribeOptionGroupsInput) (req
 			Name:       "DescribeOptionGroups",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1293,11 +1487,17 @@ func (c *RDS) DescribeOptionGroupsRequest(input *DescribeOptionGroupsInput) (req
 }
 
 // Describes the available option groups.
-func (c *RDS) DescribeOptionGroups(input *DescribeOptionGroupsInput) (output *DescribeOptionGroupsOutput, err error) {
+func (c *RDS) DescribeOptionGroups(input *DescribeOptionGroupsInput) (*DescribeOptionGroupsOutput, error) {
 	req, out := c.DescribeOptionGroupsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeOptionGroupsPages(input *DescribeOptionGroupsInput, fn func(p *DescribeOptionGroupsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeOptionGroupsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeOptionGroupsOutput), lastPage)
+	})
 }
 
 var opDescribeOptionGroups *aws.Operation
@@ -1312,6 +1512,12 @@ func (c *RDS) DescribeOrderableDBInstanceOptionsRequest(input *DescribeOrderable
 			Name:       "DescribeOrderableDBInstanceOptions",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1326,11 +1532,17 @@ func (c *RDS) DescribeOrderableDBInstanceOptionsRequest(input *DescribeOrderable
 }
 
 // Returns a list of orderable DB instance options for the specified engine.
-func (c *RDS) DescribeOrderableDBInstanceOptions(input *DescribeOrderableDBInstanceOptionsInput) (output *DescribeOrderableDBInstanceOptionsOutput, err error) {
+func (c *RDS) DescribeOrderableDBInstanceOptions(input *DescribeOrderableDBInstanceOptionsInput) (*DescribeOrderableDBInstanceOptionsOutput, error) {
 	req, out := c.DescribeOrderableDBInstanceOptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeOrderableDBInstanceOptionsPages(input *DescribeOrderableDBInstanceOptionsInput, fn func(p *DescribeOrderableDBInstanceOptionsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeOrderableDBInstanceOptionsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeOrderableDBInstanceOptionsOutput), lastPage)
+	})
 }
 
 var opDescribeOrderableDBInstanceOptions *aws.Operation
@@ -1358,13 +1570,12 @@ func (c *RDS) DescribePendingMaintenanceActionsRequest(input *DescribePendingMai
 	return
 }
 
-// Returns a list of resources (for example, DB Instances) that have at least
+// Returns a list of resources (for example, DB instances) that have at least
 // one pending maintenance action.
-func (c *RDS) DescribePendingMaintenanceActions(input *DescribePendingMaintenanceActionsInput) (output *DescribePendingMaintenanceActionsOutput, err error) {
+func (c *RDS) DescribePendingMaintenanceActions(input *DescribePendingMaintenanceActionsInput) (*DescribePendingMaintenanceActionsOutput, error) {
 	req, out := c.DescribePendingMaintenanceActionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribePendingMaintenanceActions *aws.Operation
@@ -1379,6 +1590,12 @@ func (c *RDS) DescribeReservedDBInstancesRequest(input *DescribeReservedDBInstan
 			Name:       "DescribeReservedDBInstances",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1394,11 +1611,17 @@ func (c *RDS) DescribeReservedDBInstancesRequest(input *DescribeReservedDBInstan
 
 // Returns information about reserved DB instances for this account, or about
 // a specified reserved DB instance.
-func (c *RDS) DescribeReservedDBInstances(input *DescribeReservedDBInstancesInput) (output *DescribeReservedDBInstancesOutput, err error) {
+func (c *RDS) DescribeReservedDBInstances(input *DescribeReservedDBInstancesInput) (*DescribeReservedDBInstancesOutput, error) {
 	req, out := c.DescribeReservedDBInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeReservedDBInstancesPages(input *DescribeReservedDBInstancesInput, fn func(p *DescribeReservedDBInstancesOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeReservedDBInstancesRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeReservedDBInstancesOutput), lastPage)
+	})
 }
 
 var opDescribeReservedDBInstances *aws.Operation
@@ -1413,6 +1636,12 @@ func (c *RDS) DescribeReservedDBInstancesOfferingsRequest(input *DescribeReserve
 			Name:       "DescribeReservedDBInstancesOfferings",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "MaxRecords",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -1427,11 +1656,17 @@ func (c *RDS) DescribeReservedDBInstancesOfferingsRequest(input *DescribeReserve
 }
 
 // Lists available reserved DB instance offerings.
-func (c *RDS) DescribeReservedDBInstancesOfferings(input *DescribeReservedDBInstancesOfferingsInput) (output *DescribeReservedDBInstancesOfferingsOutput, err error) {
+func (c *RDS) DescribeReservedDBInstancesOfferings(input *DescribeReservedDBInstancesOfferingsInput) (*DescribeReservedDBInstancesOfferingsOutput, error) {
 	req, out := c.DescribeReservedDBInstancesOfferingsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DescribeReservedDBInstancesOfferingsPages(input *DescribeReservedDBInstancesOfferingsInput, fn func(p *DescribeReservedDBInstancesOfferingsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeReservedDBInstancesOfferingsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeReservedDBInstancesOfferingsOutput), lastPage)
+	})
 }
 
 var opDescribeReservedDBInstancesOfferings *aws.Operation
@@ -1446,6 +1681,12 @@ func (c *RDS) DownloadDBLogFilePortionRequest(input *DownloadDBLogFilePortionInp
 			Name:       "DownloadDBLogFilePortion",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"Marker"},
+				OutputTokens:    []string{"Marker"},
+				LimitToken:      "NumberOfLines",
+				TruncationToken: "AdditionalDataPending",
+			},
 		}
 	}
 
@@ -1460,11 +1701,17 @@ func (c *RDS) DownloadDBLogFilePortionRequest(input *DownloadDBLogFilePortionInp
 }
 
 // Downloads all or a portion of the specified log file.
-func (c *RDS) DownloadDBLogFilePortion(input *DownloadDBLogFilePortionInput) (output *DownloadDBLogFilePortionOutput, err error) {
+func (c *RDS) DownloadDBLogFilePortion(input *DownloadDBLogFilePortionInput) (*DownloadDBLogFilePortionOutput, error) {
 	req, out := c.DownloadDBLogFilePortionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *RDS) DownloadDBLogFilePortionPages(input *DownloadDBLogFilePortionInput, fn func(p *DownloadDBLogFilePortionOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DownloadDBLogFilePortionRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DownloadDBLogFilePortionOutput), lastPage)
+	})
 }
 
 var opDownloadDBLogFilePortion *aws.Operation
@@ -1496,11 +1743,10 @@ func (c *RDS) ListTagsForResourceRequest(input *ListTagsForResourceInput) (req *
 //
 // For an overview on tagging an Amazon RDS resource, see Tagging Amazon RDS
 // Resources (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Tagging.html).
-func (c *RDS) ListTagsForResource(input *ListTagsForResourceInput) (output *ListTagsForResourceOutput, err error) {
+func (c *RDS) ListTagsForResource(input *ListTagsForResourceInput) (*ListTagsForResourceOutput, error) {
 	req, out := c.ListTagsForResourceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opListTagsForResource *aws.Operation
@@ -1530,11 +1776,10 @@ func (c *RDS) ModifyDBInstanceRequest(input *ModifyDBInstanceInput) (req *aws.Re
 
 // Modify settings for a DB instance. You can change one or more database configuration
 // parameters by specifying these parameters and the new values in the request.
-func (c *RDS) ModifyDBInstance(input *ModifyDBInstanceInput) (output *ModifyDBInstanceOutput, err error) {
+func (c *RDS) ModifyDBInstance(input *ModifyDBInstanceInput) (*ModifyDBInstanceOutput, error) {
 	req, out := c.ModifyDBInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyDBInstance *aws.Operation
@@ -1580,11 +1825,10 @@ func (c *RDS) ModifyDBParameterGroupRequest(input *ModifyDBParameterGroupInput) 
 // You can use the Parameter Groups option of the Amazon RDS console (https://console.aws.amazon.com/rds/)
 // or the DescribeDBParameters command to verify that your DB parameter group
 // has been created or modified.
-func (c *RDS) ModifyDBParameterGroup(input *ModifyDBParameterGroupInput) (output *DBParameterGroupNameMessage, err error) {
+func (c *RDS) ModifyDBParameterGroup(input *ModifyDBParameterGroupInput) (*DBParameterGroupNameMessage, error) {
 	req, out := c.ModifyDBParameterGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyDBParameterGroup *aws.Operation
@@ -1614,11 +1858,10 @@ func (c *RDS) ModifyDBSubnetGroupRequest(input *ModifyDBSubnetGroupInput) (req *
 
 // Modifies an existing DB subnet group. DB subnet groups must contain at least
 // one subnet in at least two AZs in the region.
-func (c *RDS) ModifyDBSubnetGroup(input *ModifyDBSubnetGroupInput) (output *ModifyDBSubnetGroupOutput, err error) {
+func (c *RDS) ModifyDBSubnetGroup(input *ModifyDBSubnetGroupInput) (*ModifyDBSubnetGroupOutput, error) {
 	req, out := c.ModifyDBSubnetGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyDBSubnetGroup *aws.Operation
@@ -1655,11 +1898,10 @@ func (c *RDS) ModifyEventSubscriptionRequest(input *ModifyEventSubscriptionInput
 // Events (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html)
 // topic in the Amazon RDS User Guide or by using the DescribeEventCategories
 // action.
-func (c *RDS) ModifyEventSubscription(input *ModifyEventSubscriptionInput) (output *ModifyEventSubscriptionOutput, err error) {
+func (c *RDS) ModifyEventSubscription(input *ModifyEventSubscriptionInput) (*ModifyEventSubscriptionOutput, error) {
 	req, out := c.ModifyEventSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyEventSubscription *aws.Operation
@@ -1688,11 +1930,10 @@ func (c *RDS) ModifyOptionGroupRequest(input *ModifyOptionGroupInput) (req *aws.
 }
 
 // Modifies an existing option group.
-func (c *RDS) ModifyOptionGroup(input *ModifyOptionGroupInput) (output *ModifyOptionGroupOutput, err error) {
+func (c *RDS) ModifyOptionGroup(input *ModifyOptionGroupInput) (*ModifyOptionGroupOutput, error) {
 	req, out := c.ModifyOptionGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyOptionGroup *aws.Operation
@@ -1722,15 +1963,14 @@ func (c *RDS) PromoteReadReplicaRequest(input *PromoteReadReplicaInput) (req *aw
 
 // Promotes a Read Replica DB instance to a standalone DB instance.
 //
-// We recommend that you enable automated backups on your Read Replica before
+//  We recommend that you enable automated backups on your Read Replica before
 // promoting the Read Replica. This ensures that no backup is taken during the
 // promotion process. Once the instance is promoted to a primary instance, backups
 // are taken based on your backup settings.
-func (c *RDS) PromoteReadReplica(input *PromoteReadReplicaInput) (output *PromoteReadReplicaOutput, err error) {
+func (c *RDS) PromoteReadReplica(input *PromoteReadReplicaInput) (*PromoteReadReplicaOutput, error) {
 	req, out := c.PromoteReadReplicaRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opPromoteReadReplica *aws.Operation
@@ -1759,11 +1999,10 @@ func (c *RDS) PurchaseReservedDBInstancesOfferingRequest(input *PurchaseReserved
 }
 
 // Purchases a reserved DB instance offering.
-func (c *RDS) PurchaseReservedDBInstancesOffering(input *PurchaseReservedDBInstancesOfferingInput) (output *PurchaseReservedDBInstancesOfferingOutput, err error) {
+func (c *RDS) PurchaseReservedDBInstancesOffering(input *PurchaseReservedDBInstancesOfferingInput) (*PurchaseReservedDBInstancesOfferingOutput, error) {
 	req, out := c.PurchaseReservedDBInstancesOfferingRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opPurchaseReservedDBInstancesOffering *aws.Operation
@@ -1808,11 +2047,10 @@ func (c *RDS) RebootDBInstanceRequest(input *RebootDBInstanceInput) (req *aws.Re
 // crash recovery process. To improve the reboot time, we recommend that you
 // reduce database activities as much as possible during the reboot process
 // to reduce rollback activity for in-transit transactions.
-func (c *RDS) RebootDBInstance(input *RebootDBInstanceInput) (output *RebootDBInstanceOutput, err error) {
+func (c *RDS) RebootDBInstance(input *RebootDBInstanceInput) (*RebootDBInstanceOutput, error) {
 	req, out := c.RebootDBInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRebootDBInstance *aws.Operation
@@ -1841,11 +2079,10 @@ func (c *RDS) RemoveSourceIdentifierFromSubscriptionRequest(input *RemoveSourceI
 }
 
 // Removes a source identifier from an existing RDS event notification subscription.
-func (c *RDS) RemoveSourceIdentifierFromSubscription(input *RemoveSourceIdentifierFromSubscriptionInput) (output *RemoveSourceIdentifierFromSubscriptionOutput, err error) {
+func (c *RDS) RemoveSourceIdentifierFromSubscription(input *RemoveSourceIdentifierFromSubscriptionInput) (*RemoveSourceIdentifierFromSubscriptionOutput, error) {
 	req, out := c.RemoveSourceIdentifierFromSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRemoveSourceIdentifierFromSubscription *aws.Operation
@@ -1877,11 +2114,10 @@ func (c *RDS) RemoveTagsFromResourceRequest(input *RemoveTagsFromResourceInput) 
 //
 // For an overview on tagging an Amazon RDS resource, see Tagging Amazon RDS
 // Resources (http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Tagging.html).
-func (c *RDS) RemoveTagsFromResource(input *RemoveTagsFromResourceInput) (output *RemoveTagsFromResourceOutput, err error) {
+func (c *RDS) RemoveTagsFromResource(input *RemoveTagsFromResourceInput) (*RemoveTagsFromResourceOutput, error) {
 	req, out := c.RemoveTagsFromResourceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRemoveTagsFromResource *aws.Operation
@@ -1916,11 +2152,10 @@ func (c *RDS) ResetDBParameterGroupRequest(input *ResetDBParameterGroupInput) (r
 // dynamic parameters are updated immediately and static parameters are set
 // to pending-reboot to take effect on the next DB instance restart or RebootDBInstance
 // request.
-func (c *RDS) ResetDBParameterGroup(input *ResetDBParameterGroupInput) (output *DBParameterGroupNameMessage, err error) {
+func (c *RDS) ResetDBParameterGroup(input *ResetDBParameterGroupInput) (*DBParameterGroupNameMessage, error) {
 	req, out := c.ResetDBParameterGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opResetDBParameterGroup *aws.Operation
@@ -1961,11 +2196,10 @@ func (c *RDS) RestoreDBInstanceFromDBSnapshotRequest(input *RestoreDBInstanceFro
 // in the call to the RestoreDBInstanceFromDBSnapshot action. The result is
 // that you will replace the original DB instance with the DB instance created
 // from the snapshot.
-func (c *RDS) RestoreDBInstanceFromDBSnapshot(input *RestoreDBInstanceFromDBSnapshotInput) (output *RestoreDBInstanceFromDBSnapshotOutput, err error) {
+func (c *RDS) RestoreDBInstanceFromDBSnapshot(input *RestoreDBInstanceFromDBSnapshotInput) (*RestoreDBInstanceFromDBSnapshotOutput, error) {
 	req, out := c.RestoreDBInstanceFromDBSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRestoreDBInstanceFromDBSnapshot *aws.Operation
@@ -1998,11 +2232,10 @@ func (c *RDS) RestoreDBInstanceToPointInTimeRequest(input *RestoreDBInstanceToPo
 // days. The target database is created from the source database with the same
 // configuration as the original database except that the DB instance is created
 // with the default DB security group.
-func (c *RDS) RestoreDBInstanceToPointInTime(input *RestoreDBInstanceToPointInTimeInput) (output *RestoreDBInstanceToPointInTimeOutput, err error) {
+func (c *RDS) RestoreDBInstanceToPointInTime(input *RestoreDBInstanceToPointInTimeInput) (*RestoreDBInstanceToPointInTimeOutput, error) {
 	req, out := c.RestoreDBInstanceToPointInTimeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRestoreDBInstanceToPointInTime *aws.Operation
@@ -2034,14 +2267,32 @@ func (c *RDS) RevokeDBSecurityGroupIngressRequest(input *RevokeDBSecurityGroupIn
 // or EC2 or VPC Security Groups. Required parameters for this API are one of
 // CIDRIP, EC2SecurityGroupId for VPC, or (EC2SecurityGroupOwnerId and either
 // EC2SecurityGroupName or EC2SecurityGroupId).
-func (c *RDS) RevokeDBSecurityGroupIngress(input *RevokeDBSecurityGroupIngressInput) (output *RevokeDBSecurityGroupIngressOutput, err error) {
+func (c *RDS) RevokeDBSecurityGroupIngress(input *RevokeDBSecurityGroupIngressInput) (*RevokeDBSecurityGroupIngressOutput, error) {
 	req, out := c.RevokeDBSecurityGroupIngressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRevokeDBSecurityGroupIngress *aws.Operation
+
+// Describes a quota for an AWS account, for example, the number of DB instances
+// allowed.
+type AccountQuota struct {
+	// The name of the Amazon RDS quota for this AWS account.
+	AccountQuotaName *string `type:"string"`
+
+	// The maximum allowed value for the quota.
+	Max *int64 `type:"long"`
+
+	// The amount currently used toward the quota maximum.
+	Used *int64 `type:"long"`
+
+	metadataAccountQuota `json:"-" xml:"-"`
+}
+
+type metadataAccountQuota struct {
+	SDKShapeTraits bool `type:"structure"`
+}
 
 type AddSourceIdentifierToSubscriptionInput struct {
 	// The identifier of the event source to be added. An identifier must begin
@@ -2108,8 +2359,8 @@ type ApplyPendingMaintenanceActionInput struct {
 	// The pending maintenance action to apply to this resource.
 	ApplyAction *string `type:"string" required:"true"`
 
-	// Specify an opt-in request, or undo an opt-in request. An opt-in request of
-	// type immediate cannot be undone.
+	// A value that specifies the type of opt-in request, or undoes an opt-in request.
+	// An opt-in request of type immediate cannot be undone.
 	//
 	// Valid values:
 	//
@@ -2118,8 +2369,7 @@ type ApplyPendingMaintenanceActionInput struct {
 	// resource.  undo-opt-in - Cancel any existing next-maintenance opt-in requests.
 	OptInType *string `type:"string" required:"true"`
 
-	// The ARN of the resource (for example, a DB Instance) that the pending maintenance
-	// action applies to.
+	// The ARN of the resource that the pending maintenance action applies to.
 	ResourceIdentifier *string `type:"string" required:"true"`
 
 	metadataApplyPendingMaintenanceActionInput `json:"-" xml:"-"`
@@ -2174,8 +2424,8 @@ type metadataAuthorizeDBSecurityGroupIngressInput struct {
 type AuthorizeDBSecurityGroupIngressOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  DescribeDBSecurityGroups AuthorizeDBSecurityGroupIngress CreateDBSecurityGroup
-	// RevokeDBSecurityGroupIngress  This data type is used as a response element
+	//   DescribeDBSecurityGroups   AuthorizeDBSecurityGroupIngress   CreateDBSecurityGroup
+	//   RevokeDBSecurityGroupIngress   This data type is used as a response element
 	// in the DescribeDBSecurityGroups action.
 	DBSecurityGroup *DBSecurityGroup `type:"structure"`
 
@@ -2188,7 +2438,7 @@ type metadataAuthorizeDBSecurityGroupIngressOutput struct {
 
 // Contains Availability Zone information.
 //
-//  This data type is used as an element in the following data type:  OrderableDBInstanceOption
+//  This data type is used as an element in the following data type: OrderableDBInstanceOption
 type AvailabilityZone struct {
 	// The name of the availability zone.
 	Name *string `type:"string"`
@@ -2197,6 +2447,30 @@ type AvailabilityZone struct {
 }
 
 type metadataAvailabilityZone struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// A CA certificate for an AWS account.
+type Certificate struct {
+	// The unique key that identifies a certificate.
+	CertificateIdentifier *string `type:"string"`
+
+	// The type of the certificate.
+	CertificateType *string `type:"string"`
+
+	// The thumbprint of the certificate.
+	Thumbprint *string `type:"string"`
+
+	// The starting date from which the certificate is valid.
+	ValidFrom *time.Time `type:"timestamp" timestampFormat:"iso8601"`
+
+	// The final date that the certificate continues to be valid.
+	ValidTill *time.Time `type:"timestamp" timestampFormat:"iso8601"`
+
+	metadataCertificate `json:"-" xml:"-"`
+}
+
+type metadataCertificate struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -2301,7 +2575,7 @@ type metadataCopyDBSnapshotInput struct {
 type CopyDBSnapshotOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBSnapshot DeleteDBSnapshot  This data type is used as a response
+	//   CreateDBSnapshot   DeleteDBSnapshot   This data type is used as a response
 	// element in the DescribeDBSnapshots action.
 	DBSnapshot *DBSnapshot `type:"structure"`
 
@@ -2361,19 +2635,19 @@ type CreateDBInstanceInput struct {
 	//
 	//  Type: Integer
 	//
-	// MySQL
+	//  MySQL
 	//
 	//  Constraints: Must be an integer from 5 to 3072.
 	//
-	// PostgreSQL
+	//  PostgreSQL
 	//
 	//  Constraints: Must be an integer from 5 to 3072.
 	//
-	// Oracle
+	//  Oracle
 	//
 	//  Constraints: Must be an integer from 10 to 3072.
 	//
-	// SQL Server
+	//  SQL Server
 	//
 	//  Constraints: Must be an integer from 200 to 1024 (Standard Edition and
 	// Enterprise Edition) or from 20 to 1024 (Express Edition and Web Edition)
@@ -2437,7 +2711,7 @@ type CreateDBInstanceInput struct {
 	//
 	// Type: String
 	//
-	// MySQL
+	//  MySQL
 	//
 	// The name of the database to create when the DB instance is created. If this
 	// parameter is not specified, no database is created in the DB instance.
@@ -2445,7 +2719,7 @@ type CreateDBInstanceInput struct {
 	// Constraints:
 	//
 	//  Must contain 1 to 64 alphanumeric characters Cannot be a word reserved
-	// by the specified database engine  PostgreSQL
+	// by the specified database engine   PostgreSQL
 	//
 	// The name of the database to create when the DB instance is created. If this
 	// parameter is not specified, no database is created in the DB instance.
@@ -2454,7 +2728,7 @@ type CreateDBInstanceInput struct {
 	//
 	//  Must contain 1 to 63 alphanumeric characters Must begin with a letter or
 	// an underscore. Subsequent characters can be letters, underscores, or digits
-	// (0-9). Cannot be a word reserved by the specified database engine  Oracle
+	// (0-9). Cannot be a word reserved by the specified database engine   Oracle
 	//
 	//  The Oracle System ID (SID) of the created DB instance.
 	//
@@ -2462,7 +2736,7 @@ type CreateDBInstanceInput struct {
 	//
 	// Constraints:
 	//
-	//  Cannot be longer than 8 characters  SQL Server
+	//  Cannot be longer than 8 characters   SQL Server
 	//
 	// Not applicable. Must be null.
 	DBName *string `type:"string"`
@@ -2501,38 +2775,117 @@ type CreateDBInstanceInput struct {
 	// are available with Amazon RDS. Not every database engine is available for
 	// every AWS region.
 	//
-	// MySQL
+	//  MySQL
 	//
-	//   Version 5.1:  5.1.45 | 5.1.49 | 5.1.50 | 5.1.57 | 5.1.61 | 5.1.62 | 5.1.63
-	// | 5.1.69 | 5.1.71 | 5.1.73   Version 5.5:  5.5.12 | 5.5.20 | 5.5.23 | 5.5.25a
-	// | 5.5.27 | 5.5.31 | 5.5.33 | 5.5.37 | 5.5.38 | 5.5.8   Version 5.6:  5.6.12
-	// | 5.6.13 | 5.6.17 | 5.6.19 | 5.6.21   Oracle Database Enterprise Edition
-	// (oracle-ee)
+	//   Version 5.1 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  5.1.73a | 5.1.73b   Version 5.5 (Only available in the following regions:
+	// ap-northeast-1, ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1,
+	// us-west-2):  5.5.40 | 5.5.40a   Version 5.5 (Available in all regions):
+	// 5.5.40b | 5.5.41   Version 5.6 (Available in all regions):  5.6.19a | 5.6.19b
+	// | 5.6.21 | 5.6.21b | 5.6.22    MySQL
 	//
-	//   Version 11.2:  11.2.0.2.v3 | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 |
-	// 11.2.0.2.v7 | 11.2.0.3.v1 | 11.2.0.4.v1   Oracle Database Standard Edition
+	//   Version 5.1 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  5.1.73a | 5.1.73b   Version 5.5 (Only available in the following regions:
+	// ap-northeast-1, ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1,
+	// us-west-2):  5.5.40 | 5.5.40a   Version 5.5 (Available in all regions):
+	// 5.5.40b | 5.5.41   Version 5.6 (Available in all regions):  5.6.19a | 5.6.19b
+	// | 5.6.21 | 5.6.21b | 5.6.22    MySQL
+	//
+	//   Version 5.1 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  5.1.73a | 5.1.73b   Version 5.5 (Only available in the following regions:
+	// ap-northeast-1, ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1,
+	// us-west-2):  5.5.40 | 5.5.40a   Version 5.5 (Available in all regions):
+	// 5.5.40b | 5.5.41   Version 5.6 (Available in all regions):  5.6.19a | 5.6.19b
+	// | 5.6.21 | 5.6.21b | 5.6.22    MySQL
+	//
+	//   Version 5.1 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  5.1.73a | 5.1.73b   Version 5.5 (Only available in the following regions:
+	// ap-northeast-1, ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1,
+	// us-west-2):  5.5.40 | 5.5.40a   Version 5.5 (Available in all regions):
+	// 5.5.40b | 5.5.41   Version 5.6 (Available in all regions):  5.6.19a | 5.6.19b
+	// | 5.6.21 | 5.6.21b | 5.6.22    Oracle Database Enterprise Edition (oracle-ee)
+	//
+	//   Version 11.2 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  11.2.0.2.v3 | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 | 11.2.0.2.v7   Version
+	// 11.2 (Available in all regions):  11.2.0.3.v1 | 11.2.0.3.v2 | 11.2.0.4.v1
+	// | 11.2.0.4.v3    Oracle Database Enterprise Edition (oracle-ee)
+	//
+	//   Version 11.2 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  11.2.0.2.v3 | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 | 11.2.0.2.v7   Version
+	// 11.2 (Available in all regions):  11.2.0.3.v1 | 11.2.0.3.v2 | 11.2.0.4.v1
+	// | 11.2.0.4.v3    Oracle Database Standard Edition (oracle-se)
+	//
+	//   Version 11.2 (Only available in the following regions: us-west-1):  11.2.0.2.v3
+	// | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 | 11.2.0.2.v7   Version 11.2 (Only
+	// available in the following regions: eu-central-1, us-west-1):  11.2.0.3.v1
+	// | 11.2.0.3.v2 | 11.2.0.4.v1 | 11.2.0.4.v3    Oracle Database Standard Edition
 	// (oracle-se)
 	//
-	//   Version 11.2:  11.2.0.2.v3 | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 |
-	// 11.2.0.2.v7 | 11.2.0.3.v1 | 11.2.0.4.v1   Oracle Database Standard Edition
+	//   Version 11.2 (Only available in the following regions: us-west-1):  11.2.0.2.v3
+	// | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 | 11.2.0.2.v7   Version 11.2 (Only
+	// available in the following regions: eu-central-1, us-west-1):  11.2.0.3.v1
+	// | 11.2.0.3.v2 | 11.2.0.4.v1 | 11.2.0.4.v3    Oracle Database Standard Edition
 	// One (oracle-se1)
 	//
-	//   Version 11.2:  11.2.0.2.v3 | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 |
-	// 11.2.0.2.v7 | 11.2.0.3.v1 | 11.2.0.4.v1   PostgreSQL
+	//   Version 11.2 (Only available in the following regions: us-west-1):  11.2.0.2.v3
+	// | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 | 11.2.0.2.v7   Version 11.2 (Only
+	// available in the following regions: eu-central-1, us-west-1):  11.2.0.3.v1
+	// | 11.2.0.3.v2 | 11.2.0.4.v1 | 11.2.0.4.v3    Oracle Database Standard Edition
+	// One (oracle-se1)
 	//
-	//   Version 9.3:  9.3.1 | 9.3.2 | 9.3.3   Microsoft SQL Server Enterprise
-	// Edition (sqlserver-ee)
+	//   Version 11.2 (Only available in the following regions: us-west-1):  11.2.0.2.v3
+	// | 11.2.0.2.v4 | 11.2.0.2.v5 | 11.2.0.2.v6 | 11.2.0.2.v7   Version 11.2 (Only
+	// available in the following regions: eu-central-1, us-west-1):  11.2.0.3.v1
+	// | 11.2.0.3.v2 | 11.2.0.4.v1 | 11.2.0.4.v3    PostgreSQL
 	//
-	//   Version 10.5:  10.50.2789.0.v1   Version 11.0:  11.00.2100.60.v1   Microsoft
-	// SQL Server Express Edition (sqlserver-ex)
+	//   Version 9.3 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  9.3.1 | 9.3.2   Version 9.3 (Available in all regions):  9.3.3 | 9.3.5
+	//   PostgreSQL
 	//
-	//   Version 10.5:  10.50.2789.0.v1   Version 11.0:  11.00.2100.60.v1   Microsoft
-	// SQL Server Standard Edition (sqlserver-se)
+	//   Version 9.3 (Only available in the following regions: ap-northeast-1,
+	// ap-southeast-1, ap-southeast-2, eu-west-1, sa-east-1, us-west-1, us-west-2):
+	//  9.3.1 | 9.3.2   Version 9.3 (Available in all regions):  9.3.3 | 9.3.5
+	//   Microsoft SQL Server Enterprise Edition (sqlserver-ee)
 	//
-	//   Version 10.5:  10.50.2789.0.v1   Version 11.0:  11.00.2100.60.v1   Microsoft
-	// SQL Server Web Edition (sqlserver-web)
+	//   Version 10.50 (Only available in the following regions: eu-central-1,
+	// us-west-1):  10.50.2789.0.v1   Version 11.00 (Only available in the following
+	// regions: eu-central-1, us-west-1):  11.00.2100.60.v1    Microsoft SQL Server
+	// Enterprise Edition (sqlserver-ee)
 	//
-	//   Version 10.5:  10.50.2789.0.v1   Version 11.0:  11.00.2100.60.v1
+	//   Version 10.50 (Only available in the following regions: eu-central-1,
+	// us-west-1):  10.50.2789.0.v1   Version 11.00 (Only available in the following
+	// regions: eu-central-1, us-west-1):  11.00.2100.60.v1    Microsoft SQL Server
+	// Express Edition (sqlserver-ex)
+	//
+	//   Version 10.50 (Available in all regions):  10.50.2789.0.v1   Version 11.00
+	// (Available in all regions):  11.00.2100.60.v1    Microsoft SQL Server Express
+	// Edition (sqlserver-ex)
+	//
+	//   Version 10.50 (Available in all regions):  10.50.2789.0.v1   Version 11.00
+	// (Available in all regions):  11.00.2100.60.v1    Microsoft SQL Server Standard
+	// Edition (sqlserver-se)
+	//
+	//   Version 10.50 (Available in all regions):  10.50.2789.0.v1   Version 11.00
+	// (Available in all regions):  11.00.2100.60.v1    Microsoft SQL Server Standard
+	// Edition (sqlserver-se)
+	//
+	//   Version 10.50 (Available in all regions):  10.50.2789.0.v1   Version 11.00
+	// (Available in all regions):  11.00.2100.60.v1    Microsoft SQL Server Web
+	// Edition (sqlserver-web)
+	//
+	//   Version 10.50 (Available in all regions):  10.50.2789.0.v1   Version 11.00
+	// (Available in all regions):  11.00.2100.60.v1    Microsoft SQL Server Web
+	// Edition (sqlserver-web)
+	//
+	//   Version 10.50 (Available in all regions):  10.50.2789.0.v1   Version 11.00
+	// (Available in all regions):  11.00.2100.60.v1
 	EngineVersion *string `type:"string"`
 
 	// The amount of Provisioned IOPS (input/output operations per second) to be
@@ -2564,38 +2917,47 @@ type CreateDBInstanceInput struct {
 	//
 	// Type: String
 	//
-	// MySQL
+	//  MySQL
 	//
 	//  Constraints: Must contain from 8 to 41 characters.
 	//
-	// Oracle
+	//  Oracle
 	//
 	//  Constraints: Must contain from 8 to 30 characters.
 	//
-	// SQL Server
+	//  SQL Server
+	//
+	//  Constraints: Must contain from 8 to 128 characters.
+	//
+	//  PostgreSQL
 	//
 	//  Constraints: Must contain from 8 to 128 characters.
 	MasterUserPassword *string `type:"string" required:"true"`
 
 	// The name of master user for the client DB instance.
 	//
-	// MySQL
+	//  MySQL
 	//
 	// Constraints:
 	//
 	//  Must be 1 to 16 alphanumeric characters. First character must be a letter.
 	// Cannot be a reserved word for the chosen database engine.  Type: String
 	//
-	// Oracle
+	//  Oracle
 	//
 	// Constraints:
 	//
 	//  Must be 1 to 30 alphanumeric characters. First character must be a letter.
-	// Cannot be a reserved word for the chosen database engine.  SQL Server
+	// Cannot be a reserved word for the chosen database engine.   SQL Server
 	//
 	// Constraints:
 	//
 	//  Must be 1 to 128 alphanumeric characters. First character must be a letter.
+	// Cannot be a reserved word for the chosen database engine.   PostgreSQL
+	//
+	// Constraints:
+	//
+	//  Must be 1 to 63 alphanumeric characters. First character must be a letter.
 	// Cannot be a reserved word for the chosen database engine.
 	MasterUsername *string `type:"string" required:"true"`
 
@@ -2613,7 +2975,7 @@ type CreateDBInstanceInput struct {
 
 	// The port number on which the database accepts connections.
 	//
-	// MySQL
+	//  MySQL
 	//
 	//  Default: 3306
 	//
@@ -2621,7 +2983,7 @@ type CreateDBInstanceInput struct {
 	//
 	// Type: Integer
 	//
-	// PostgreSQL
+	//  PostgreSQL
 	//
 	//  Default: 5432
 	//
@@ -2629,13 +2991,13 @@ type CreateDBInstanceInput struct {
 	//
 	// Type: Integer
 	//
-	// Oracle
+	//  Oracle
 	//
 	//  Default: 1521
 	//
 	//  Valid Values: 1150-65535
 	//
-	// SQL Server
+	//  SQL Server
 	//
 	//  Default: 1433
 	//
@@ -2725,8 +3087,8 @@ type metadataCreateDBInstanceInput struct {
 type CreateDBInstanceOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataCreateDBInstanceOutput `json:"-" xml:"-"`
@@ -2847,8 +3209,8 @@ type metadataCreateDBInstanceReadReplicaInput struct {
 type CreateDBInstanceReadReplicaOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataCreateDBInstanceReadReplicaOutput `json:"-" xml:"-"`
@@ -2928,8 +3290,8 @@ type metadataCreateDBSecurityGroupInput struct {
 type CreateDBSecurityGroupOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  DescribeDBSecurityGroups AuthorizeDBSecurityGroupIngress CreateDBSecurityGroup
-	// RevokeDBSecurityGroupIngress  This data type is used as a response element
+	//   DescribeDBSecurityGroups   AuthorizeDBSecurityGroupIngress   CreateDBSecurityGroup
+	//   RevokeDBSecurityGroupIngress   This data type is used as a response element
 	// in the DescribeDBSecurityGroups action.
 	DBSecurityGroup *DBSecurityGroup `type:"structure"`
 
@@ -2971,7 +3333,7 @@ type metadataCreateDBSnapshotInput struct {
 type CreateDBSnapshotOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBSnapshot DeleteDBSnapshot  This data type is used as a response
+	//   CreateDBSnapshot   DeleteDBSnapshot   This data type is used as a response
 	// element in the DescribeDBSnapshots action.
 	DBSnapshot *DBSnapshot `type:"structure"`
 
@@ -3010,8 +3372,8 @@ type metadataCreateDBSubnetGroupInput struct {
 type CreateDBSubnetGroupOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBSubnetGroup ModifyDBSubnetGroup DescribeDBSubnetGroups DeleteDBSubnetGroup
-	//  This data type is used as a response element in the DescribeDBSubnetGroups
+	//   CreateDBSubnetGroup   ModifyDBSubnetGroup   DescribeDBSubnetGroups   DeleteDBSubnetGroup
+	//   This data type is used as a response element in the DescribeDBSubnetGroups
 	// action.
 	DBSubnetGroup *DBSubnetGroup `type:"structure"`
 
@@ -3164,8 +3526,8 @@ type metadataDBEngineVersion struct {
 
 // Contains the result of a successful invocation of the following actions:
 //
-//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-// as a response element in the DescribeDBInstances action.
+//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+// is used as a response element in the DescribeDBInstances action.
 type DBInstance struct {
 	// Specifies the allocated storage size specified in gigabytes.
 	AllocatedStorage *int64 `type:"integer"`
@@ -3178,6 +3540,9 @@ type DBInstance struct {
 
 	// Specifies the number of days for which automatic DB snapshots are retained.
 	BackupRetentionPeriod *int64 `type:"integer"`
+
+	// The identifier of the CA certificate for this DB instance.
+	CACertificateIdentifier *string `type:"string"`
 
 	// If present, specifies the name of the character set that this instance is
 	// associated with.
@@ -3203,7 +3568,7 @@ type DBInstance struct {
 	// when returning values from CreateDBInstanceReadReplica since Read Replicas
 	// are only supported for MySQL and PostgreSQL.
 	//
-	// MySQL, SQL Server, PostgreSQL
+	//  MySQL, SQL Server, PostgreSQL
 	//
 	//  Contains the name of the initial database of this instance that was provided
 	// at create time, if one was specified when the DB instance was created. This
@@ -3211,7 +3576,7 @@ type DBInstance struct {
 	//
 	// Type: String
 	//
-	// Oracle
+	//  Oracle
 	//
 	//  Contains the Oracle System ID (SID) of the created DB instance. Not shown
 	// when the returned parameters do not apply to an Oracle DB instance.
@@ -3391,8 +3756,8 @@ type metadataDBParameterGroupNameMessage struct {
 //
 // This data type is used as a response element in the following actions:
 //
-//  CreateDBInstance CreateDBInstanceReadReplica DeleteDBInstance ModifyDBInstance
-// RebootDBInstance RestoreDBInstanceFromDBSnapshot
+//   CreateDBInstance   CreateDBInstanceReadReplica   DeleteDBInstance   ModifyDBInstance
+//   RebootDBInstance   RestoreDBInstanceFromDBSnapshot
 type DBParameterGroupStatus struct {
 	// The name of the DP parameter group.
 	DBParameterGroupName *string `type:"string"`
@@ -3409,8 +3774,8 @@ type metadataDBParameterGroupStatus struct {
 
 // Contains the result of a successful invocation of the following actions:
 //
-//  DescribeDBSecurityGroups AuthorizeDBSecurityGroupIngress CreateDBSecurityGroup
-// RevokeDBSecurityGroupIngress  This data type is used as a response element
+//   DescribeDBSecurityGroups   AuthorizeDBSecurityGroupIngress   CreateDBSecurityGroup
+//   RevokeDBSecurityGroupIngress   This data type is used as a response element
 // in the DescribeDBSecurityGroups action.
 type DBSecurityGroup struct {
 	// Provides the description of the DB security group.
@@ -3440,7 +3805,8 @@ type metadataDBSecurityGroup struct {
 
 // This data type is used as a response element in the following actions:
 //
-//  ModifyDBInstance RebootDBInstance RestoreDBInstanceFromDBSnapshot RestoreDBInstanceToPointInTime
+//   ModifyDBInstance   RebootDBInstance   RestoreDBInstanceFromDBSnapshot
+//   RestoreDBInstanceToPointInTime
 type DBSecurityGroupMembership struct {
 	// The name of the DB security group.
 	DBSecurityGroupName *string `type:"string"`
@@ -3457,7 +3823,7 @@ type metadataDBSecurityGroupMembership struct {
 
 // Contains the result of a successful invocation of the following actions:
 //
-//  CreateDBSnapshot DeleteDBSnapshot  This data type is used as a response
+//   CreateDBSnapshot   DeleteDBSnapshot   This data type is used as a response
 // element in the DescribeDBSnapshots action.
 type DBSnapshot struct {
 	// Specifies the allocated storage size in gigabytes (GB).
@@ -3539,8 +3905,8 @@ type metadataDBSnapshot struct {
 
 // Contains the result of a successful invocation of the following actions:
 //
-//  CreateDBSubnetGroup ModifyDBSubnetGroup DescribeDBSubnetGroups DeleteDBSubnetGroup
-//  This data type is used as a response element in the DescribeDBSubnetGroups
+//   CreateDBSubnetGroup   ModifyDBSubnetGroup   DescribeDBSubnetGroups   DeleteDBSubnetGroup
+//   This data type is used as a response element in the DescribeDBSubnetGroups
 // action.
 type DBSubnetGroup struct {
 	// Provides the description of the DB subnet group.
@@ -3606,8 +3972,8 @@ type metadataDeleteDBInstanceInput struct {
 type DeleteDBInstanceOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataDeleteDBInstanceOutput `json:"-" xml:"-"`
@@ -3683,7 +4049,7 @@ type metadataDeleteDBSnapshotInput struct {
 type DeleteDBSnapshotOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBSnapshot DeleteDBSnapshot  This data type is used as a response
+	//   CreateDBSnapshot   DeleteDBSnapshot   This data type is used as a response
 	// element in the DescribeDBSnapshots action.
 	DBSnapshot *DBSnapshot `type:"structure"`
 
@@ -3759,6 +4125,79 @@ type DeleteOptionGroupOutput struct {
 }
 
 type metadataDeleteOptionGroupOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeAccountAttributesInput struct {
+	metadataDescribeAccountAttributesInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeAccountAttributesInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Data returned by the DescribeAccountAttributes action.
+type DescribeAccountAttributesOutput struct {
+	// A list of AccountQuota objects. Within this list, each quota has a name,
+	// a count of usage toward the quota maximum, and a maximum value for the quota.
+	AccountQuotas []*AccountQuota `locationNameList:"AccountQuota" type:"list"`
+
+	metadataDescribeAccountAttributesOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeAccountAttributesOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeCertificatesInput struct {
+	// The user-supplied certificate identifier. If this parameter is specified,
+	// information for only the identified certificate is returned. This parameter
+	// isn't case-sensitive.
+	//
+	// Constraints:
+	//
+	//  Must contain from 1 to 63 alphanumeric characters or hyphens First character
+	// must be a letter Cannot end with a hyphen or contain two consecutive hyphens
+	CertificateIdentifier *string `type:"string"`
+
+	// This parameter is not currently supported.
+	Filters []*Filter `locationNameList:"Filter" type:"list"`
+
+	// An optional pagination token provided by a previous DescribeCertificates
+	// request. If this parameter is specified, the response includes only records
+	// beyond the marker, up to the value specified by MaxRecords.
+	Marker *string `type:"string"`
+
+	// The maximum number of records to include in the response. If more records
+	// exist than the specified MaxRecords value, a pagination token called a marker
+	// is included in the response so that the remaining results can be retrieved.
+	//
+	// Default: 100
+	//
+	// Constraints: Minimum 20, maximum 100
+	MaxRecords *int64 `type:"integer"`
+
+	metadataDescribeCertificatesInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeCertificatesInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Data returned by the DescribeCertificates action.
+type DescribeCertificatesOutput struct {
+	// The list of Certificate objects for the AWS account.
+	Certificates []*Certificate `locationNameList:"Certificate" type:"list"`
+
+	// An optional pagination token provided by a previous DescribeCertificates
+	// request. If this parameter is specified, the response includes only records
+	// beyond the marker, up to the value specified by MaxRecords .
+	Marker *string `type:"string"`
+
+	metadataDescribeCertificatesOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeCertificatesOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -4590,16 +5029,19 @@ type metadataDescribeOrderableDBInstanceOptionsOutput struct {
 }
 
 type DescribePendingMaintenanceActionsInput struct {
+	// A filter that specifies one or more resources to return pending maintenance
+	// actions for.
+	//
 	// Supported filters:
 	//
-	//  db-instance-id - Accepts DB instance identifiers and DB instance ARNs.
-	// The result list will only include maintenance actions for the specified DB
-	// Instances.
+	//   db-instance-id - Accepts DB instance identifiers and DB instance Amazon
+	// Resource Names (ARNs). The results list will only include pending maintenance
+	// actions for the DB instances identified by these ARNs.
 	Filters []*Filter `locationNameList:"Filter" type:"list"`
 
 	// An optional pagination token provided by a previous DescribePendingMaintenanceActions
 	// request. If this parameter is specified, the response includes only records
-	// beyond the marker, up to a number of records specified by MaxRecords .
+	// beyond the marker, up to a number of records specified by MaxRecords.
 	Marker *string `type:"string"`
 
 	// The maximum number of records to include in the response. If more records
@@ -4611,7 +5053,7 @@ type DescribePendingMaintenanceActionsInput struct {
 	// Constraints: minimum 20, maximum 100
 	MaxRecords *int64 `type:"integer"`
 
-	// The ARN of the resource to return pending maintenance actions for.
+	// The ARN of a resource to return pending maintenance actions for.
 	ResourceIdentifier *string `type:"string"`
 
 	metadataDescribePendingMaintenanceActionsInput `json:"-" xml:"-"`
@@ -4625,10 +5067,10 @@ type metadataDescribePendingMaintenanceActionsInput struct {
 type DescribePendingMaintenanceActionsOutput struct {
 	// An optional pagination token provided by a previous DescribePendingMaintenanceActions
 	// request. If this parameter is specified, the response includes only records
-	// beyond the marker, up to a number of records specified by MaxRecords .
+	// beyond the marker, up to a number of records specified by MaxRecords.
 	Marker *string `type:"string"`
 
-	// Provides a list of the pending maintenance actions for the resource.
+	// A list of the pending maintenance actions for the resource.
 	PendingMaintenanceActions []*ResourcePendingMaintenanceActions `locationNameList:"ResourcePendingMaintenanceActions" type:"list"`
 
 	metadataDescribePendingMaintenanceActionsOutput `json:"-" xml:"-"`
@@ -4852,7 +5294,7 @@ type metadataDownloadDBLogFilePortionOutput struct {
 
 // This data type is used as a response element in the following actions:
 //
-//  AuthorizeDBSecurityGroupIngress DescribeDBSecurityGroups RevokeDBSecurityGroupIngress
+//   AuthorizeDBSecurityGroupIngress   DescribeDBSecurityGroups   RevokeDBSecurityGroupIngress
 type EC2SecurityGroup struct {
 	// Specifies the id of the EC2 security group.
 	EC2SecurityGroupID *string `locationName:"EC2SecurityGroupId" type:"string"`
@@ -4877,7 +5319,7 @@ type metadataEC2SecurityGroup struct {
 
 // This data type is used as a response element in the following actions:
 //
-//  CreateDBInstance DescribeDBInstances DeleteDBInstance
+//   CreateDBInstance   DescribeDBInstances   DeleteDBInstance
 type Endpoint struct {
 	// Specifies the DNS address of the DB instance.
 	Address *string `type:"string"`
@@ -5064,7 +5506,7 @@ type ModifyDBInstanceInput struct {
 	// not result in an outage and the change is applied during the next maintenance
 	// window unless ApplyImmediately is set to true for this request.
 	//
-	// MySQL
+	//  MySQL
 	//
 	// Default: Uses existing setting
 	//
@@ -5076,7 +5518,7 @@ type ModifyDBInstanceInput struct {
 	//
 	// Type: Integer
 	//
-	// PostgreSQL
+	//  PostgreSQL
 	//
 	// Default: Uses existing setting
 	//
@@ -5088,7 +5530,7 @@ type ModifyDBInstanceInput struct {
 	//
 	// Type: Integer
 	//
-	// Oracle
+	//  Oracle
 	//
 	// Default: Uses existing setting
 	//
@@ -5098,7 +5540,7 @@ type ModifyDBInstanceInput struct {
 	// value. Values that are not at least 10% greater than the existing value are
 	// rounded up so that they are 10% greater than the current value.
 	//
-	// SQL Server
+	//  SQL Server
 	//
 	// Cannot be modified.
 	//
@@ -5169,6 +5611,9 @@ type ModifyDBInstanceInput struct {
 	// Read Replica only if the source is running PostgreSQL 9.3.5 Cannot be set
 	// to 0 if the DB instance is a source to Read Replicas
 	BackupRetentionPeriod *int64 `type:"integer"`
+
+	// Indicates the certificate which needs to be associated with the instance.
+	CACertificateIdentifier *string `type:"string"`
 
 	// The new compute and memory capacity of the DB instance. To determine the
 	// instance classes that are available for a particular DB engine, use the DescribeOrderableDBInstanceOptions
@@ -5244,7 +5689,7 @@ type ModifyDBInstanceInput struct {
 	// The DB instance will require a reboot for the change in storage type to take
 	// effect.
 	//
-	// SQL Server
+	//  SQL Server
 	//
 	// Setting the IOPS value for the SQL Server database engine is not supported.
 	//
@@ -5279,7 +5724,7 @@ type ModifyDBInstanceInput struct {
 	// characters (Oracle), or 8 to 128 alphanumeric characters (SQL Server).
 	//
 	//  Amazon RDS API actions never return the password, so this action provides
-	// a way to regain access to a master instance user if the password is lost.
+	// a way to regain access to a primary instance user if the password is lost.
 	// This includes restoring privileges that may have been accidentally revoked.
 	MasterUserPassword *string `type:"string"`
 
@@ -5380,8 +5825,8 @@ type metadataModifyDBInstanceInput struct {
 type ModifyDBInstanceOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataModifyDBInstanceOutput `json:"-" xml:"-"`
@@ -5445,8 +5890,8 @@ type metadataModifyDBSubnetGroupInput struct {
 type ModifyDBSubnetGroupOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBSubnetGroup ModifyDBSubnetGroup DescribeDBSubnetGroups DeleteDBSubnetGroup
-	//  This data type is used as a response element in the DescribeDBSubnetGroups
+	//   CreateDBSubnetGroup   ModifyDBSubnetGroup   DescribeDBSubnetGroups   DeleteDBSubnetGroup
+	//   This data type is used as a response element in the DescribeDBSubnetGroups
 	// action.
 	DBSubnetGroup *DBSubnetGroup `type:"structure"`
 
@@ -5869,11 +6314,14 @@ type PendingMaintenanceAction struct {
 	AutoAppliedAfterDate *time.Time `type:"timestamp" timestampFormat:"iso8601"`
 
 	// The effective date when the pending maintenance action will be applied to
-	// the resource. This takes into account opt-in requests received from the ApplyPendingMaintenanceAction
-	// API, the AutoAppliedAfterDate, and the ForcedApplyDate. This value is blank
-	// if an opt-in request has not been received and no value has been specified
-	// for the AutoAppliedAfterDate or ForcedApplyDate.
+	// the resource. This date takes into account opt-in requests received from
+	// the ApplyPendingMaintenanceAction API, the AutoAppliedAfterDate, and the
+	// ForcedApplyDate. This value is blank if an opt-in request has not been received
+	// and nothing has been specified as AutoAppliedAfterDate or ForcedApplyDate.
 	CurrentApplyDate *time.Time `type:"timestamp" timestampFormat:"iso8601"`
+
+	// A description providing more detail about the maintenance action.
+	Description *string `type:"string"`
 
 	// The date when the maintenance action will be automatically applied. The maintenance
 	// action will be applied to the resource on this date regardless of the maintenance
@@ -5899,6 +6347,9 @@ type PendingModifiedValues struct {
 
 	// Specifies the pending number of days for which automated backups are retained.
 	BackupRetentionPeriod *int64 `type:"integer"`
+
+	// Specifies the identifier of the CA certificate for the DB instance.
+	CACertificateIdentifier *string `type:"string"`
 
 	// Contains the new DBInstanceClass for the DB instance that will be applied
 	// or is in progress.
@@ -5979,8 +6430,8 @@ type metadataPromoteReadReplicaInput struct {
 type PromoteReadReplicaOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataPromoteReadReplicaOutput `json:"-" xml:"-"`
@@ -6053,8 +6504,8 @@ type metadataRebootDBInstanceInput struct {
 type RebootDBInstanceOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataRebootDBInstanceOutput `json:"-" xml:"-"`
@@ -6238,7 +6689,7 @@ type ResetDBParameterGroupInput struct {
 	// subsequent arguments are optional. A maximum of 20 parameters may be modified
 	// in a single request.
 	//
-	// MySQL
+	//  MySQL
 	//
 	// Valid Values (for Apply method): immediate | pending-reboot
 	//
@@ -6246,7 +6697,7 @@ type ResetDBParameterGroupInput struct {
 	// the pending-reboot value for both dynamic and static parameters, and changes
 	// are applied when DB instance reboots.
 	//
-	// Oracle
+	//  Oracle
 	//
 	// Valid Values (for Apply method): pending-reboot
 	Parameters []*Parameter `locationNameList:"Parameter" type:"list"`
@@ -6266,10 +6717,11 @@ type metadataResetDBParameterGroupInput struct {
 
 // Describes the pending maintenance actions for a resource.
 type ResourcePendingMaintenanceActions struct {
-	// Provides details about the pending maintenance actions for the resource.
+	// A list that provides details about the pending maintenance actions for the
+	// resource.
 	PendingMaintenanceActionDetails []*PendingMaintenanceAction `locationNameList:"PendingMaintenanceAction" type:"list"`
 
-	// The ARN of this resource that has pending maintenance actions.
+	// The ARN of the resource that has pending maintenance actions.
 	ResourceIdentifier *string `type:"string"`
 
 	metadataResourcePendingMaintenanceActions `json:"-" xml:"-"`
@@ -6347,7 +6799,7 @@ type RestoreDBInstanceFromDBSnapshotInput struct {
 	//
 	//  Constraints: Must be an integer greater than 1000.
 	//
-	// SQL Server
+	//  SQL Server
 	//
 	// Setting the IOPS value for the SQL Server database engine is not supported.
 	IOPS *int64 `locationName:"Iops" type:"integer"`
@@ -6423,8 +6875,8 @@ type metadataRestoreDBInstanceFromDBSnapshotInput struct {
 type RestoreDBInstanceFromDBSnapshotOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataRestoreDBInstanceFromDBSnapshotOutput `json:"-" xml:"-"`
@@ -6482,7 +6934,7 @@ type RestoreDBInstanceToPointInTimeInput struct {
 	//
 	//  Constraints: Must be an integer greater than 1000.
 	//
-	// SQL Server
+	//  SQL Server
 	//
 	// Setting the IOPS value for the SQL Server database engine is not supported.
 	IOPS *int64 `locationName:"Iops" type:"integer"`
@@ -6593,8 +7045,8 @@ type metadataRestoreDBInstanceToPointInTimeInput struct {
 type RestoreDBInstanceToPointInTimeOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  CreateDBInstance DeleteDBInstance ModifyDBInstance  This data type is used
-	// as a response element in the DescribeDBInstances action.
+	//   CreateDBInstance   DeleteDBInstance   ModifyDBInstance   This data type
+	// is used as a response element in the DescribeDBInstances action.
 	DBInstance *DBInstance `type:"structure"`
 
 	metadataRestoreDBInstanceToPointInTimeOutput `json:"-" xml:"-"`
@@ -6640,8 +7092,8 @@ type metadataRevokeDBSecurityGroupIngressInput struct {
 type RevokeDBSecurityGroupIngressOutput struct {
 	// Contains the result of a successful invocation of the following actions:
 	//
-	//  DescribeDBSecurityGroups AuthorizeDBSecurityGroupIngress CreateDBSecurityGroup
-	// RevokeDBSecurityGroupIngress  This data type is used as a response element
+	//   DescribeDBSecurityGroups   AuthorizeDBSecurityGroupIngress   CreateDBSecurityGroup
+	//   RevokeDBSecurityGroupIngress   This data type is used as a response element
 	// in the DescribeDBSecurityGroups action.
 	DBSecurityGroup *DBSecurityGroup `type:"structure"`
 
@@ -6657,7 +7109,7 @@ type metadataRevokeDBSecurityGroupIngressOutput struct {
 type Subnet struct {
 	// Contains Availability Zone information.
 	//
-	//  This data type is used as an element in the following data type:  OrderableDBInstanceOption
+	//  This data type is used as an element in the following data type: OrderableDBInstanceOption
 	SubnetAvailabilityZone *AvailabilityZone `type:"structure"`
 
 	// Specifies the identifier of the subnet.

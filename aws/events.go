@@ -3,6 +3,8 @@ package aws
 import (
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/awslabs/aws-sdk-go/service/rds"
@@ -49,12 +51,8 @@ func MustConnectToOpsee(address string) *netutil.BaseClient {
 }
 
 type AwsApiEventParser struct {
-	*CredentialsProvider
-	hostname     string
-	instanceId   string
-	accessKeyId  string
-	secretKey    string
-	region       string
+	config		 *aws.Config
+	metadata     *InstanceMeta
 	httpClient   *http.Client
 	DynGroups    map[string]groups.DynGroup
 	GroupMap     map[string]ec2.SecurityGroup
@@ -65,22 +63,35 @@ type AwsApiEventParser struct {
 
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string, customerId string) *AwsApiEventParser {
 	httpClient := &http.Client{}
-	credProvider := NewProvider(httpClient, accessKeyId, secretKey, region)
-	instanceId := ""
-	if credProvider.GetInstanceId() != nil {
-		instanceId = credProvider.GetInstanceId().InstanceId
+	metap := &MetadataProvider{client:httpClient}
+	hostname = netutil.GetHostnameDefault(hostname)
+	var metadata *InstanceMeta = nil
+	if (region == "") {
+		metadata := metap.Get()
+		region = metadata.Region
+	} else {
+		//if we're passing region in on the cmd line it means we're running outside of aws
+		metadata = &InstanceMeta{InstanceId:hostname}
 	}
+	var creds = credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&credentials.StaticProvider{Value: credentials.Value{
+				AccessKeyID: accessKeyId,
+				SecretAccessKey: secretKey,
+				SessionToken: "",
+			}},
+			&credentials.EnvProvider{},
+			&credentials.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
+		})
+	config := &aws.Config{Credentials: creds, Region: region}
 	scanner := &AwsApiEventParser{
-		CredentialsProvider: credProvider,
-		hostname:            netutil.GetHostnameDefault(instanceId),
-		instanceId:          instanceId,
-		accessKeyId:         accessKeyId,
-		secretKey:           secretKey,
-		region:              region,
+		config: 			 config,
+		metadata: 		 	 metadata,
 		httpClient:          httpClient,
+		DynGroups:   		 make(map[string]groups.DynGroup),
 		GroupMap:            make(map[string]ec2.SecurityGroup),
-		EC2Client:           NewScanner(credProvider),
-		MessageMaker:        netutil.NewEventMessageMaker(defaultEventTtl, instanceId, hostname, customerId),
+		EC2Client:           NewScanner(config),
+		MessageMaker:        netutil.NewEventMessageMaker(defaultEventTtl, metadata.InstanceId, hostname, customerId),
 	}
 	return scanner
 }

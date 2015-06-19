@@ -1,7 +1,7 @@
 package aws
 
 import (
-	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/awslabs/aws-sdk-go/service/rds"
@@ -16,21 +16,16 @@ type EC2Scanner interface {
 }
 
 type eC2ScannerImpl struct {
-	credProvider *CredentialsProvider
+	config *aws.Config
 }
 
-func NewScanner(credProvider *CredentialsProvider) EC2Scanner {
-	scanner := &eC2ScannerImpl{credProvider}
+func NewScanner(config *aws.Config) EC2Scanner {
+	scanner := &eC2ScannerImpl{config}
 	return scanner
 }
 
 func (s *eC2ScannerImpl) getConfig() *aws.Config {
-	creds := s.credProvider.Credentials()
-	awsCreds := aws.Creds(creds.AccessKeyId, creds.SecretAccessKey, "")
-	config := aws.DefaultConfig
-	config.Credentials = awsCreds
-	config.Region = s.credProvider.Credentials().Region
-	return config
+	return s.config
 }
 
 func (s *eC2ScannerImpl) getEC2Client() *ec2.EC2 {

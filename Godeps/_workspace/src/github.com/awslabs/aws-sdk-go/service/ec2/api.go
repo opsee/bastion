@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws"
 )
 
 var oprw sync.Mutex
@@ -39,11 +39,10 @@ func (c *EC2) AcceptVPCPeeringConnectionRequest(input *AcceptVPCPeeringConnectio
 // connection must be in the pending-acceptance state, and you must be the owner
 // of the peer VPC. Use the DescribeVpcPeeringConnections request to view your
 // outstanding VPC peering connection requests.
-func (c *EC2) AcceptVPCPeeringConnection(input *AcceptVPCPeeringConnectionInput) (output *AcceptVPCPeeringConnectionOutput, err error) {
+func (c *EC2) AcceptVPCPeeringConnection(input *AcceptVPCPeeringConnectionInput) (*AcceptVPCPeeringConnectionOutput, error) {
 	req, out := c.AcceptVPCPeeringConnectionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAcceptVPCPeeringConnection *aws.Operation
@@ -76,11 +75,10 @@ func (c *EC2) AllocateAddressRequest(input *AllocateAddressInput) (req *aws.Requ
 // An Elastic IP address is for use either in the EC2-Classic platform or in
 // a VPC. For more information, see Elastic IP Addresses (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) AllocateAddress(input *AllocateAddressInput) (output *AllocateAddressOutput, err error) {
+func (c *EC2) AllocateAddress(input *AllocateAddressInput) (*AllocateAddressOutput, error) {
 	req, out := c.AllocateAddressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAllocateAddress *aws.Operation
@@ -119,11 +117,10 @@ func (c *EC2) AssignPrivateIPAddressesRequest(input *AssignPrivateIPAddressesInp
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // AssignPrivateIpAddresses is available only in EC2-VPC.
-func (c *EC2) AssignPrivateIPAddresses(input *AssignPrivateIPAddressesInput) (output *AssignPrivateIPAddressesOutput, err error) {
+func (c *EC2) AssignPrivateIPAddresses(input *AssignPrivateIPAddressesInput) (*AssignPrivateIPAddressesOutput, error) {
 	req, out := c.AssignPrivateIPAddressesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAssignPrivateIPAddresses *aws.Operation
@@ -168,11 +165,10 @@ func (c *EC2) AssociateAddressRequest(input *AssociateAddressInput) (req *aws.Re
 //
 // This is an idempotent operation. If you perform the operation more than
 // once, Amazon EC2 doesn't return an error.
-func (c *EC2) AssociateAddress(input *AssociateAddressInput) (output *AssociateAddressOutput, err error) {
+func (c *EC2) AssociateAddress(input *AssociateAddressInput) (*AssociateAddressOutput, error) {
 	req, out := c.AssociateAddressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAssociateAddress *aws.Operation
@@ -212,11 +208,10 @@ func (c *EC2) AssociateDHCPOptionsRequest(input *AssociateDHCPOptionsInput) (req
 //
 // For more information, see DHCP Options Sets (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) AssociateDHCPOptions(input *AssociateDHCPOptionsInput) (output *AssociateDHCPOptionsOutput, err error) {
+func (c *EC2) AssociateDHCPOptions(input *AssociateDHCPOptionsInput) (*AssociateDHCPOptionsOutput, error) {
 	req, out := c.AssociateDHCPOptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAssociateDHCPOptions *aws.Operation
@@ -252,11 +247,10 @@ func (c *EC2) AssociateRouteTableRequest(input *AssociateRouteTableInput) (req *
 //
 // For more information about route tables, see Route Tables (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) AssociateRouteTable(input *AssociateRouteTableInput) (output *AssociateRouteTableOutput, err error) {
+func (c *EC2) AssociateRouteTable(input *AssociateRouteTableInput) (*AssociateRouteTableOutput, error) {
 	req, out := c.AssociateRouteTableRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAssociateRouteTable *aws.Operation
@@ -296,11 +290,10 @@ func (c *EC2) AttachClassicLinkVPCRequest(input *AttachClassicLinkVPCInput) (req
 //
 // Linking your instance to a VPC is sometimes referred to as attaching your
 // instance.
-func (c *EC2) AttachClassicLinkVPC(input *AttachClassicLinkVPCInput) (output *AttachClassicLinkVPCOutput, err error) {
+func (c *EC2) AttachClassicLinkVPC(input *AttachClassicLinkVPCInput) (*AttachClassicLinkVPCOutput, error) {
 	req, out := c.AttachClassicLinkVPCRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAttachClassicLinkVPC *aws.Operation
@@ -331,11 +324,10 @@ func (c *EC2) AttachInternetGatewayRequest(input *AttachInternetGatewayInput) (r
 // Attaches an Internet gateway to a VPC, enabling connectivity between the
 // Internet and the VPC. For more information about your VPC and Internet gateway,
 // see the Amazon Virtual Private Cloud User Guide (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/).
-func (c *EC2) AttachInternetGateway(input *AttachInternetGatewayInput) (output *AttachInternetGatewayOutput, err error) {
+func (c *EC2) AttachInternetGateway(input *AttachInternetGatewayInput) (*AttachInternetGatewayOutput, error) {
 	req, out := c.AttachInternetGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAttachInternetGateway *aws.Operation
@@ -364,11 +356,10 @@ func (c *EC2) AttachNetworkInterfaceRequest(input *AttachNetworkInterfaceInput) 
 }
 
 // Attaches a network interface to an instance.
-func (c *EC2) AttachNetworkInterface(input *AttachNetworkInterfaceInput) (output *AttachNetworkInterfaceOutput, err error) {
+func (c *EC2) AttachNetworkInterface(input *AttachNetworkInterfaceInput) (*AttachNetworkInterfaceOutput, error) {
 	req, out := c.AttachNetworkInterfaceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAttachNetworkInterface *aws.Operation
@@ -399,11 +390,10 @@ func (c *EC2) AttachVPNGatewayRequest(input *AttachVPNGatewayInput) (req *aws.Re
 // Attaches a virtual private gateway to a VPC. For more information, see Adding
 // a Hardware Virtual Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) AttachVPNGateway(input *AttachVPNGatewayInput) (output *AttachVPNGatewayOutput, err error) {
+func (c *EC2) AttachVPNGateway(input *AttachVPNGatewayInput) (*AttachVPNGatewayOutput, error) {
 	req, out := c.AttachVPNGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAttachVPNGateway *aws.Operation
@@ -431,18 +421,17 @@ func (c *EC2) AttachVolumeRequest(input *AttachVolumeInput) (req *aws.Request, o
 	return
 }
 
-// Attaches an Amazon EBS volume to a running or stopped instance and exposes
-// it to the instance with the specified device name.
+// Attaches an EBS volume to a running or stopped instance and exposes it to
+// the instance with the specified device name.
 //
-// Encrypted Amazon EBS volumes may only be attached to instances that support
-// Amazon EBS encryption. For more information, see Amazon EBS Encryption (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html)
+// Encrypted EBS volumes may only be attached to instances that support Amazon
+// EBS encryption. For more information, see Amazon EBS Encryption (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
-// For a list of supported device names, see Attaching an Amazon EBS Volume
-// to an Instance (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html).
+// For a list of supported device names, see Attaching an EBS Volume to an
+// Instance (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html).
 // Any device names that aren't reserved for instance store volumes can be used
-// for Amazon EBS volumes. For more information, see Amazon EC2 Instance Store
-// (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html)
+// for EBS volumes. For more information, see Amazon EC2 Instance Store (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html)
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 // If a volume has an AWS Marketplace product code:
@@ -454,14 +443,13 @@ func (c *EC2) AttachVolumeRequest(input *AttachVolumeInput) (req *aws.Request, o
 // instance and attach it to a Linux instance.  For an overview of the AWS Marketplace,
 // see Introducing AWS Marketplace (https://aws.amazon.com/marketplace/help/200900000).
 //
-// For more information about Amazon EBS volumes, see Attaching Amazon EBS
-// Volumes (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html)
+// For more information about EBS volumes, see Attaching Amazon EBS Volumes
+// (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-attaching-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) AttachVolume(input *AttachVolumeInput) (output *VolumeAttachment, err error) {
+func (c *EC2) AttachVolume(input *AttachVolumeInput) (*VolumeAttachment, error) {
 	req, out := c.AttachVolumeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAttachVolume *aws.Operation
@@ -510,11 +498,10 @@ func (c *EC2) AuthorizeSecurityGroupEgressRequest(input *AuthorizeSecurityGroupE
 //
 // Rule changes are propagated to affected instances as quickly as possible.
 // However, a small delay might occur.
-func (c *EC2) AuthorizeSecurityGroupEgress(input *AuthorizeSecurityGroupEgressInput) (output *AuthorizeSecurityGroupEgressOutput, err error) {
+func (c *EC2) AuthorizeSecurityGroupEgress(input *AuthorizeSecurityGroupEgressInput) (*AuthorizeSecurityGroupEgressOutput, error) {
 	req, out := c.AuthorizeSecurityGroupEgressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAuthorizeSecurityGroupEgress *aws.Operation
@@ -561,11 +548,10 @@ func (c *EC2) AuthorizeSecurityGroupIngressRequest(input *AuthorizeSecurityGroup
 // to access a security group in your VPC, or gives one or more other security
 // groups (called the source groups) permission to access a security group for
 // your VPC. The security groups must all be for the same VPC.
-func (c *EC2) AuthorizeSecurityGroupIngress(input *AuthorizeSecurityGroupIngressInput) (output *AuthorizeSecurityGroupIngressOutput, err error) {
+func (c *EC2) AuthorizeSecurityGroupIngress(input *AuthorizeSecurityGroupIngressInput) (*AuthorizeSecurityGroupIngressOutput, error) {
 	req, out := c.AuthorizeSecurityGroupIngressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opAuthorizeSecurityGroupIngress *aws.Operation
@@ -603,11 +589,10 @@ func (c *EC2) BundleInstanceRequest(input *BundleInstanceInput) (req *aws.Reques
 //
 //  For more information, see Creating an Instance Store-Backed Windows AMI
 // (http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/Creating_InstanceStoreBacked_WinAMI.html).
-func (c *EC2) BundleInstance(input *BundleInstanceInput) (output *BundleInstanceOutput, err error) {
+func (c *EC2) BundleInstance(input *BundleInstanceInput) (*BundleInstanceOutput, error) {
 	req, out := c.BundleInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opBundleInstance *aws.Operation
@@ -636,11 +621,10 @@ func (c *EC2) CancelBundleTaskRequest(input *CancelBundleTaskInput) (req *aws.Re
 }
 
 // Cancels a bundling operation for an instance store-backed Windows instance.
-func (c *EC2) CancelBundleTask(input *CancelBundleTaskInput) (output *CancelBundleTaskOutput, err error) {
+func (c *EC2) CancelBundleTask(input *CancelBundleTaskInput) (*CancelBundleTaskOutput, error) {
 	req, out := c.CancelBundleTaskRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCancelBundleTask *aws.Operation
@@ -677,11 +661,10 @@ func (c *EC2) CancelConversionTaskRequest(input *CancelConversionTaskInput) (req
 // For more information, see Using the Command Line Tools to Import Your Virtual
 // Machine to Amazon EC2 (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UploadingYourInstancesandVolumes.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CancelConversionTask(input *CancelConversionTaskInput) (output *CancelConversionTaskOutput, err error) {
+func (c *EC2) CancelConversionTask(input *CancelConversionTaskInput) (*CancelConversionTaskOutput, error) {
 	req, out := c.CancelConversionTaskRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCancelConversionTask *aws.Operation
@@ -713,11 +696,10 @@ func (c *EC2) CancelExportTaskRequest(input *CancelExportTaskInput) (req *aws.Re
 // including any partially-created Amazon S3 objects. If the export task is
 // complete or is in the process of transferring the final disk image, the command
 // fails and returns an error.
-func (c *EC2) CancelExportTask(input *CancelExportTaskInput) (output *CancelExportTaskOutput, err error) {
+func (c *EC2) CancelExportTask(input *CancelExportTaskInput) (*CancelExportTaskOutput, error) {
 	req, out := c.CancelExportTaskRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCancelExportTask *aws.Operation
@@ -746,11 +728,10 @@ func (c *EC2) CancelImportTaskRequest(input *CancelImportTaskInput) (req *aws.Re
 }
 
 // Cancels an in-process import virtual machine or import snapshot task.
-func (c *EC2) CancelImportTask(input *CancelImportTaskInput) (output *CancelImportTaskOutput, err error) {
+func (c *EC2) CancelImportTask(input *CancelImportTaskInput) (*CancelImportTaskOutput, error) {
 	req, out := c.CancelImportTaskRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCancelImportTask *aws.Operation
@@ -783,14 +764,45 @@ func (c *EC2) CancelReservedInstancesListingRequest(input *CancelReservedInstanc
 //
 // For more information, see Reserved Instance Marketplace (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CancelReservedInstancesListing(input *CancelReservedInstancesListingInput) (output *CancelReservedInstancesListingOutput, err error) {
+func (c *EC2) CancelReservedInstancesListing(input *CancelReservedInstancesListingInput) (*CancelReservedInstancesListingOutput, error) {
 	req, out := c.CancelReservedInstancesListingRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCancelReservedInstancesListing *aws.Operation
+
+// CancelSpotFleetRequestsRequest generates a request for the CancelSpotFleetRequests operation.
+func (c *EC2) CancelSpotFleetRequestsRequest(input *CancelSpotFleetRequestsInput) (req *aws.Request, output *CancelSpotFleetRequestsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opCancelSpotFleetRequests == nil {
+		opCancelSpotFleetRequests = &aws.Operation{
+			Name:       "CancelSpotFleetRequests",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &CancelSpotFleetRequestsInput{}
+	}
+
+	req = c.newRequest(opCancelSpotFleetRequests, input, output)
+	output = &CancelSpotFleetRequestsOutput{}
+	req.Data = output
+	return
+}
+
+// Cancels the specified Spot fleet requests.
+func (c *EC2) CancelSpotFleetRequests(input *CancelSpotFleetRequestsInput) (*CancelSpotFleetRequestsOutput, error) {
+	req, out := c.CancelSpotFleetRequestsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opCancelSpotFleetRequests *aws.Operation
 
 // CancelSpotInstanceRequestsRequest generates a request for the CancelSpotInstanceRequests operation.
 func (c *EC2) CancelSpotInstanceRequestsRequest(input *CancelSpotInstanceRequestsInput) (req *aws.Request, output *CancelSpotInstanceRequestsOutput) {
@@ -824,11 +836,10 @@ func (c *EC2) CancelSpotInstanceRequestsRequest(input *CancelSpotInstanceRequest
 //
 //  Canceling a Spot Instance request does not terminate running Spot Instances
 // associated with the request.
-func (c *EC2) CancelSpotInstanceRequests(input *CancelSpotInstanceRequestsInput) (output *CancelSpotInstanceRequestsOutput, err error) {
+func (c *EC2) CancelSpotInstanceRequests(input *CancelSpotInstanceRequestsInput) (*CancelSpotInstanceRequestsOutput, error) {
 	req, out := c.CancelSpotInstanceRequestsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCancelSpotInstanceRequests *aws.Operation
@@ -860,11 +871,10 @@ func (c *EC2) ConfirmProductInstanceRequest(input *ConfirmProductInstanceInput) 
 // can only be used by the owner of the product code. It is useful when a product
 // code owner needs to verify whether another user's instance is eligible for
 // support.
-func (c *EC2) ConfirmProductInstance(input *ConfirmProductInstanceInput) (output *ConfirmProductInstanceOutput, err error) {
+func (c *EC2) ConfirmProductInstance(input *ConfirmProductInstanceInput) (*ConfirmProductInstanceOutput, error) {
 	req, out := c.ConfirmProductInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opConfirmProductInstance *aws.Operation
@@ -894,16 +904,15 @@ func (c *EC2) CopyImageRequest(input *CopyImageInput) (req *aws.Request, output 
 
 // Initiates the copy of an AMI from the specified source region to the current
 // region. You specify the destination region by using its endpoint when making
-// the request. AMIs that use encrypted Amazon EBS snapshots cannot be copied
-// with this method.
+// the request. AMIs that use encrypted EBS snapshots cannot be copied with
+// this method.
 //
 // For more information, see Copying AMIs (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CopyImage(input *CopyImageInput) (output *CopyImageOutput, err error) {
+func (c *EC2) CopyImage(input *CopyImageInput) (*CopyImageOutput, error) {
 	req, out := c.CopyImageRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCopyImage *aws.Operation
@@ -931,13 +940,13 @@ func (c *EC2) CopySnapshotRequest(input *CopySnapshotInput) (req *aws.Request, o
 	return
 }
 
-// Copies a point-in-time snapshot of an Amazon EBS volume and stores it in
-// Amazon S3. You can copy the snapshot within the same region or from one region
-// to another. You can use the snapshot to create Amazon EBS volumes or Amazon
-// Machine Images (AMIs). The snapshot is copied to the regional endpoint that
-// you send the HTTP request to.
+// Copies a point-in-time snapshot of an EBS volume and stores it in Amazon
+// S3. You can copy the snapshot within the same region or from one region to
+// another. You can use the snapshot to create EBS volumes or Amazon Machine
+// Images (AMIs). The snapshot is copied to the regional endpoint that you send
+// the HTTP request to.
 //
-// Copies of encrypted Amazon EBS snapshots remain encrypted. Copies of unencrypted
+// Copies of encrypted EBS snapshots remain encrypted. Copies of unencrypted
 // snapshots remain unencrypted.
 //
 //  Copying snapshots that were encrypted with non-default AWS Key Management
@@ -945,11 +954,10 @@ func (c *EC2) CopySnapshotRequest(input *CopySnapshotInput) (req *aws.Request, o
 //
 //  For more information, see Copying an Amazon EBS Snapshot (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-copy-snapshot.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CopySnapshot(input *CopySnapshotInput) (output *CopySnapshotOutput, err error) {
+func (c *EC2) CopySnapshot(input *CopySnapshotInput) (*CopySnapshotOutput, error) {
 	req, out := c.CopySnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCopySnapshot *aws.Operation
@@ -1002,11 +1010,10 @@ func (c *EC2) CreateCustomerGatewayRequest(input *CreateCustomerGatewayInput) (r
 // more than one time, the first request creates the customer gateway, and subsequent
 // requests return information about the existing customer gateway. The subsequent
 // requests do not create new customer gateway resources.
-func (c *EC2) CreateCustomerGateway(input *CreateCustomerGatewayInput) (output *CreateCustomerGatewayOutput, err error) {
+func (c *EC2) CreateCustomerGateway(input *CreateCustomerGatewayInput) (*CreateCustomerGatewayOutput, error) {
 	req, out := c.CreateCustomerGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateCustomerGateway *aws.Operation
@@ -1063,14 +1070,54 @@ func (c *EC2) CreateDHCPOptionsRequest(input *CreateDHCPOptionsInput) (req *aws.
 // either to AmazonProvidedDNS or to a domain name server of your choice. For
 // more information about DHCP options, see DHCP Options Sets (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateDHCPOptions(input *CreateDHCPOptionsInput) (output *CreateDHCPOptionsOutput, err error) {
+func (c *EC2) CreateDHCPOptions(input *CreateDHCPOptionsInput) (*CreateDHCPOptionsOutput, error) {
 	req, out := c.CreateDHCPOptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateDHCPOptions *aws.Operation
+
+// CreateFlowLogsRequest generates a request for the CreateFlowLogs operation.
+func (c *EC2) CreateFlowLogsRequest(input *CreateFlowLogsInput) (req *aws.Request, output *CreateFlowLogsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opCreateFlowLogs == nil {
+		opCreateFlowLogs = &aws.Operation{
+			Name:       "CreateFlowLogs",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &CreateFlowLogsInput{}
+	}
+
+	req = c.newRequest(opCreateFlowLogs, input, output)
+	output = &CreateFlowLogsOutput{}
+	req.Data = output
+	return
+}
+
+// Creates one or more flow logs to capture IP traffic for a specific network
+// interface, subnet, or VPC. Flow logs are delivered to a specified log group
+// in Amazon CloudWatch Logs. If you specify a VPC or subnet in the request,
+// a log stream is created in CloudWatch Logs for each network interface in
+// the subnet or VPC. Log streams can include information about accepted and
+// rejected traffic to a network interface. You can view the data in your log
+// streams using Amazon CloudWatch Logs.
+//
+// In your request, you must also specify an IAM role that has permission to
+// publish logs to CloudWatch Logs.
+func (c *EC2) CreateFlowLogs(input *CreateFlowLogsInput) (*CreateFlowLogsOutput, error) {
+	req, out := c.CreateFlowLogsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opCreateFlowLogs *aws.Operation
 
 // CreateImageRequest generates a request for the CreateImage operation.
 func (c *EC2) CreateImageRequest(input *CreateImageInput) (req *aws.Request, output *CreateImageOutput) {
@@ -1105,11 +1152,10 @@ func (c *EC2) CreateImageRequest(input *CreateImageInput) (req *aws.Request, out
 //
 // For more information, see Creating Amazon EBS-Backed Linux AMIs (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateImage(input *CreateImageInput) (output *CreateImageOutput, err error) {
+func (c *EC2) CreateImage(input *CreateImageInput) (*CreateImageOutput, error) {
 	req, out := c.CreateImageRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateImage *aws.Operation
@@ -1137,17 +1183,16 @@ func (c *EC2) CreateInstanceExportTaskRequest(input *CreateInstanceExportTaskInp
 	return
 }
 
-// Exports a running or stopped instance to an Amazon S3 bucket.
+// Exports a running or stopped instance to an S3 bucket.
 //
 // For information about the supported operating systems, image formats, and
 // known limitations for the types of instances you can export, see Exporting
 // EC2 Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ExportingEC2Instances.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateInstanceExportTask(input *CreateInstanceExportTaskInput) (output *CreateInstanceExportTaskOutput, err error) {
+func (c *EC2) CreateInstanceExportTask(input *CreateInstanceExportTaskInput) (*CreateInstanceExportTaskOutput, error) {
 	req, out := c.CreateInstanceExportTaskRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateInstanceExportTask *aws.Operation
@@ -1180,11 +1225,10 @@ func (c *EC2) CreateInternetGatewayRequest(input *CreateInternetGatewayInput) (r
 //
 // For more information about your VPC and Internet gateway, see the Amazon
 // Virtual Private Cloud User Guide (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/).
-func (c *EC2) CreateInternetGateway(input *CreateInternetGatewayInput) (output *CreateInternetGatewayOutput, err error) {
+func (c *EC2) CreateInternetGateway(input *CreateInternetGatewayInput) (*CreateInternetGatewayOutput, error) {
 	req, out := c.CreateInternetGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateInternetGateway *aws.Operation
@@ -1224,11 +1268,10 @@ func (c *EC2) CreateKeyPairRequest(input *CreateKeyPairInput) (req *aws.Request,
 //
 // For more information about key pairs, see Key Pairs (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateKeyPair(input *CreateKeyPairInput) (output *CreateKeyPairOutput, err error) {
+func (c *EC2) CreateKeyPair(input *CreateKeyPairInput) (*CreateKeyPairOutput, error) {
 	req, out := c.CreateKeyPairRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateKeyPair *aws.Operation
@@ -1261,11 +1304,10 @@ func (c *EC2) CreateNetworkACLRequest(input *CreateNetworkACLInput) (req *aws.Re
 //
 // For more information about network ACLs, see Network ACLs (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateNetworkACL(input *CreateNetworkACLInput) (output *CreateNetworkACLOutput, err error) {
+func (c *EC2) CreateNetworkACL(input *CreateNetworkACLInput) (*CreateNetworkACLOutput, error) {
 	req, out := c.CreateNetworkACLRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateNetworkACL *aws.Operation
@@ -1310,11 +1352,10 @@ func (c *EC2) CreateNetworkACLEntryRequest(input *CreateNetworkACLEntryInput) (r
 //
 // For more information about network ACLs, see Network ACLs (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateNetworkACLEntry(input *CreateNetworkACLEntryInput) (output *CreateNetworkACLEntryOutput, err error) {
+func (c *EC2) CreateNetworkACLEntry(input *CreateNetworkACLEntryInput) (*CreateNetworkACLEntryOutput, error) {
 	req, out := c.CreateNetworkACLEntryRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateNetworkACLEntry *aws.Operation
@@ -1347,11 +1388,10 @@ func (c *EC2) CreateNetworkInterfaceRequest(input *CreateNetworkInterfaceInput) 
 // For more information about network interfaces, see Elastic Network Interfaces
 // (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html) in the
 // Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateNetworkInterface(input *CreateNetworkInterfaceInput) (output *CreateNetworkInterfaceOutput, err error) {
+func (c *EC2) CreateNetworkInterface(input *CreateNetworkInterfaceInput) (*CreateNetworkInterfaceOutput, error) {
 	req, out := c.CreateNetworkInterfaceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateNetworkInterface *aws.Operation
@@ -1385,11 +1425,10 @@ func (c *EC2) CreatePlacementGroupRequest(input *CreatePlacementGroupInput) (req
 // For more information about placement groups and cluster instances, see Cluster
 // Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using_cluster_computing.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreatePlacementGroup(input *CreatePlacementGroupInput) (output *CreatePlacementGroupOutput, err error) {
+func (c *EC2) CreatePlacementGroup(input *CreatePlacementGroupInput) (*CreatePlacementGroupOutput, error) {
 	req, out := c.CreatePlacementGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreatePlacementGroup *aws.Operation
@@ -1427,7 +1466,7 @@ func (c *EC2) CreateReservedInstancesListingRequest(input *CreateReservedInstanc
 // additional capacity. Reserved Instances bought and sold through the Reserved
 // Instance Marketplace work like any other Reserved Instances.
 //
-// To sell your Reserved Instances, you must first register as a Seller in
+// To sell your Reserved Instances, you must first register as a seller in
 // the Reserved Instance Marketplace. After completing the registration process,
 // you can create a Reserved Instance Marketplace listing of some or all of
 // your Reserved Instances, and specify the upfront price to receive for them.
@@ -1437,11 +1476,10 @@ func (c *EC2) CreateReservedInstancesListingRequest(input *CreateReservedInstanc
 //
 // For more information, see Reserved Instance Marketplace (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateReservedInstancesListing(input *CreateReservedInstancesListingInput) (output *CreateReservedInstancesListingOutput, err error) {
+func (c *EC2) CreateReservedInstancesListing(input *CreateReservedInstancesListingInput) (*CreateReservedInstancesListingOutput, error) {
 	req, out := c.CreateReservedInstancesListingRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateReservedInstancesListing *aws.Operation
@@ -1488,11 +1526,10 @@ func (c *EC2) CreateRouteRequest(input *CreateRouteInput) (req *aws.Request, out
 //
 // For more information about route tables, see Route Tables (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateRoute(input *CreateRouteInput) (output *CreateRouteOutput, err error) {
+func (c *EC2) CreateRoute(input *CreateRouteInput) (*CreateRouteOutput, error) {
 	req, out := c.CreateRouteRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateRoute *aws.Operation
@@ -1525,11 +1562,10 @@ func (c *EC2) CreateRouteTableRequest(input *CreateRouteTableInput) (req *aws.Re
 //
 // For more information about route tables, see Route Tables (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateRouteTable(input *CreateRouteTableInput) (output *CreateRouteTableOutput, err error) {
+func (c *EC2) CreateRouteTable(input *CreateRouteTableInput) (*CreateRouteTableOutput, error) {
 	req, out := c.CreateRouteTableRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateRouteTable *aws.Operation
@@ -1584,11 +1620,10 @@ func (c *EC2) CreateSecurityGroupRequest(input *CreateSecurityGroupInput) (req *
 //
 // You can add or remove rules from your security groups using AuthorizeSecurityGroupIngress,
 // AuthorizeSecurityGroupEgress, RevokeSecurityGroupIngress, and RevokeSecurityGroupEgress.
-func (c *EC2) CreateSecurityGroup(input *CreateSecurityGroupInput) (output *CreateSecurityGroupOutput, err error) {
+func (c *EC2) CreateSecurityGroup(input *CreateSecurityGroupInput) (*CreateSecurityGroupOutput, error) {
 	req, out := c.CreateSecurityGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateSecurityGroup *aws.Operation
@@ -1616,26 +1651,25 @@ func (c *EC2) CreateSnapshotRequest(input *CreateSnapshotInput) (req *aws.Reques
 	return
 }
 
-// Creates a snapshot of an Amazon EBS volume and stores it in Amazon S3. You
-// can use snapshots for backups, to make copies of Amazon EBS volumes, and
-// to save data before shutting down an instance.
+// Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use
+// snapshots for backups, to make copies of EBS volumes, and to save data before
+// shutting down an instance.
 //
 // When a snapshot is created, any AWS Marketplace product codes that are associated
 // with the source volume are propagated to the snapshot.
 //
 // You can take a snapshot of an attached volume that is in use. However, snapshots
-// only capture data that has been written to your Amazon EBS volume at the
-// time the snapshot command is issued; this may exclude any data that has been
-// cached by any applications or the operating system. If you can pause any
-// file systems on the volume long enough to take a snapshot, your snapshot
-// should be complete. However, if you cannot pause all file writes to the volume,
-// you should unmount the volume from within the instance, issue the snapshot
-// command, and then remount the volume to ensure a consistent and complete
-// snapshot. You may remount and use your volume while the snapshot status is
-// pending.
+// only capture data that has been written to your EBS volume at the time the
+// snapshot command is issued; this may exclude any data that has been cached
+// by any applications or the operating system. If you can pause any file systems
+// on the volume long enough to take a snapshot, your snapshot should be complete.
+// However, if you cannot pause all file writes to the volume, you should unmount
+// the volume from within the instance, issue the snapshot command, and then
+// remount the volume to ensure a consistent and complete snapshot. You may
+// remount and use your volume while the snapshot status is pending.
 //
-// To create a snapshot for Amazon EBS volumes that serve as root devices,
-// you should stop the instance before taking the snapshot.
+// To create a snapshot for EBS volumes that serve as root devices, you should
+// stop the instance before taking the snapshot.
 //
 // Snapshots that are taken from encrypted volumes are automatically encrypted.
 // Volumes that are created from encrypted snapshots are also automatically
@@ -1645,11 +1679,10 @@ func (c *EC2) CreateSnapshotRequest(input *CreateSnapshotInput) (req *aws.Reques
 // For more information, see Amazon Elastic Block Store (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
 // and Amazon EBS Encryption (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateSnapshot(input *CreateSnapshotInput) (output *Snapshot, err error) {
+func (c *EC2) CreateSnapshot(input *CreateSnapshotInput) (*Snapshot, error) {
 	req, out := c.CreateSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateSnapshot *aws.Operation
@@ -1681,11 +1714,10 @@ func (c *EC2) CreateSpotDatafeedSubscriptionRequest(input *CreateSpotDatafeedSub
 // usage logs. You can create one data feed per AWS account. For more information,
 // see Spot Instance Data Feed (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-data-feeds.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateSpotDatafeedSubscription(input *CreateSpotDatafeedSubscriptionInput) (output *CreateSpotDatafeedSubscriptionOutput, err error) {
+func (c *EC2) CreateSpotDatafeedSubscription(input *CreateSpotDatafeedSubscriptionInput) (*CreateSpotDatafeedSubscriptionOutput, error) {
 	req, out := c.CreateSpotDatafeedSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateSpotDatafeedSubscription *aws.Operation
@@ -1738,11 +1770,10 @@ func (c *EC2) CreateSubnetRequest(input *CreateSubnetInput) (req *aws.Request, o
 //
 // For more information about subnets, see Your VPC and Subnets (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateSubnet(input *CreateSubnetInput) (output *CreateSubnetOutput, err error) {
+func (c *EC2) CreateSubnet(input *CreateSubnetInput) (*CreateSubnetOutput, error) {
 	req, out := c.CreateSubnetRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateSubnet *aws.Operation
@@ -1776,11 +1807,10 @@ func (c *EC2) CreateTagsRequest(input *CreateTagsInput) (req *aws.Request, outpu
 //
 // For more information about tags, see Tagging Your Resources (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateTags(input *CreateTagsInput) (output *CreateTagsOutput, err error) {
+func (c *EC2) CreateTags(input *CreateTagsInput) (*CreateTagsOutput, error) {
 	req, out := c.CreateTagsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateTags *aws.Operation
@@ -1819,14 +1849,51 @@ func (c *EC2) CreateVPCRequest(input *CreateVPCInput) (req *aws.Request, output 
 // which includes only a default DNS server that we provide (AmazonProvidedDNS).
 // For more information about DHCP options, see DHCP Options Sets (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateVPC(input *CreateVPCInput) (output *CreateVPCOutput, err error) {
+func (c *EC2) CreateVPC(input *CreateVPCInput) (*CreateVPCOutput, error) {
 	req, out := c.CreateVPCRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateVPC *aws.Operation
+
+// CreateVPCEndpointRequest generates a request for the CreateVPCEndpoint operation.
+func (c *EC2) CreateVPCEndpointRequest(input *CreateVPCEndpointInput) (req *aws.Request, output *CreateVPCEndpointOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opCreateVPCEndpoint == nil {
+		opCreateVPCEndpoint = &aws.Operation{
+			Name:       "CreateVpcEndpoint",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &CreateVPCEndpointInput{}
+	}
+
+	req = c.newRequest(opCreateVPCEndpoint, input, output)
+	output = &CreateVPCEndpointOutput{}
+	req.Data = output
+	return
+}
+
+// Creates a VPC endpoint for a specified AWS service. An endpoint enables you
+// to create a private connection between your VPC and another AWS service in
+// your account. You can specify an endpoint policy to attach to the endpoint
+// that will control access to the service from your VPC. You can also specify
+// the VPC route tables that use the endpoint.
+//
+// Currently, only endpoints to Amazon S3 are supported.
+func (c *EC2) CreateVPCEndpoint(input *CreateVPCEndpointInput) (*CreateVPCEndpointOutput, error) {
+	req, out := c.CreateVPCEndpointRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opCreateVPCEndpoint *aws.Operation
 
 // CreateVPCPeeringConnectionRequest generates a request for the CreateVPCPeeringConnection operation.
 func (c *EC2) CreateVPCPeeringConnectionRequest(input *CreateVPCPeeringConnectionInput) (req *aws.Request, output *CreateVPCPeeringConnectionOutput) {
@@ -1862,11 +1929,10 @@ func (c *EC2) CreateVPCPeeringConnectionRequest(input *CreateVPCPeeringConnectio
 //
 // A CreateVpcPeeringConnection request between VPCs with overlapping CIDR
 // blocks results in the VPC peering connection having a status of failed.
-func (c *EC2) CreateVPCPeeringConnection(input *CreateVPCPeeringConnectionInput) (output *CreateVPCPeeringConnectionOutput, err error) {
+func (c *EC2) CreateVPCPeeringConnection(input *CreateVPCPeeringConnectionInput) (*CreateVPCPeeringConnectionOutput, error) {
 	req, out := c.CreateVPCPeeringConnectionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateVPCPeeringConnection *aws.Operation
@@ -1911,11 +1977,10 @@ func (c *EC2) CreateVPNConnectionRequest(input *CreateVPNConnectionInput) (req *
 // For more information about VPN connections, see Adding a Hardware Virtual
 // Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateVPNConnection(input *CreateVPNConnectionInput) (output *CreateVPNConnectionOutput, err error) {
+func (c *EC2) CreateVPNConnection(input *CreateVPNConnectionInput) (*CreateVPNConnectionOutput, error) {
 	req, out := c.CreateVPNConnectionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateVPNConnection *aws.Operation
@@ -1951,11 +2016,10 @@ func (c *EC2) CreateVPNConnectionRouteRequest(input *CreateVPNConnectionRouteInp
 // For more information about VPN connections, see Adding a Hardware Virtual
 // Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateVPNConnectionRoute(input *CreateVPNConnectionRouteInput) (output *CreateVPNConnectionRouteOutput, err error) {
+func (c *EC2) CreateVPNConnectionRoute(input *CreateVPNConnectionRouteInput) (*CreateVPNConnectionRouteOutput, error) {
 	req, out := c.CreateVPNConnectionRouteRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateVPNConnectionRoute *aws.Operation
@@ -1990,11 +2054,10 @@ func (c *EC2) CreateVPNGatewayRequest(input *CreateVPNGatewayInput) (req *aws.Re
 // For more information about virtual private gateways, see Adding a Hardware
 // Virtual Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) CreateVPNGateway(input *CreateVPNGatewayInput) (output *CreateVPNGatewayOutput, err error) {
+func (c *EC2) CreateVPNGateway(input *CreateVPNGatewayInput) (*CreateVPNGatewayOutput, error) {
 	req, out := c.CreateVPNGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateVPNGateway *aws.Operation
@@ -2022,14 +2085,13 @@ func (c *EC2) CreateVolumeRequest(input *CreateVolumeInput) (req *aws.Request, o
 	return
 }
 
-// Creates an Amazon EBS volume that can be attached to an instance in the same
-// Availability Zone. The volume is created in the regional endpoint that you
-// send the HTTP request to. For more information see Regions and Endpoints
-// (http://docs.aws.amazon.com/general/latest/gr/rande.html).
+// Creates an EBS volume that can be attached to an instance in the same Availability
+// Zone. The volume is created in the regional endpoint that you send the HTTP
+// request to. For more information see Regions and Endpoints (http://docs.aws.amazon.com/general/latest/gr/rande.html).
 //
-// You can create a new empty volume or restore a volume from an Amazon EBS
-// snapshot. Any AWS Marketplace product codes from the snapshot are propagated
-// to the volume.
+// You can create a new empty volume or restore a volume from an EBS snapshot.
+// Any AWS Marketplace product codes from the snapshot are propagated to the
+// volume.
 //
 // You can create encrypted volumes with the Encrypted parameter. Encrypted
 // volumes may only be attached to instances that support Amazon EBS encryption.
@@ -2039,11 +2101,10 @@ func (c *EC2) CreateVolumeRequest(input *CreateVolumeInput) (req *aws.Request, o
 //
 // For more information, see Creating or Restoring an Amazon EBS Volume (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-creating-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) CreateVolume(input *CreateVolumeInput) (output *Volume, err error) {
+func (c *EC2) CreateVolume(input *CreateVolumeInput) (*Volume, error) {
 	req, out := c.CreateVolumeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opCreateVolume *aws.Operation
@@ -2073,11 +2134,10 @@ func (c *EC2) DeleteCustomerGatewayRequest(input *DeleteCustomerGatewayInput) (r
 
 // Deletes the specified customer gateway. You must delete the VPN connection
 // before you can delete the customer gateway.
-func (c *EC2) DeleteCustomerGateway(input *DeleteCustomerGatewayInput) (output *DeleteCustomerGatewayOutput, err error) {
+func (c *EC2) DeleteCustomerGateway(input *DeleteCustomerGatewayInput) (*DeleteCustomerGatewayOutput, error) {
 	req, out := c.DeleteCustomerGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteCustomerGateway *aws.Operation
@@ -2109,14 +2169,45 @@ func (c *EC2) DeleteDHCPOptionsRequest(input *DeleteDHCPOptionsInput) (req *aws.
 // of DHCP options before you can delete it. You can disassociate the set of
 // DHCP options by associating either a new set of options or the default set
 // of options with the VPC.
-func (c *EC2) DeleteDHCPOptions(input *DeleteDHCPOptionsInput) (output *DeleteDHCPOptionsOutput, err error) {
+func (c *EC2) DeleteDHCPOptions(input *DeleteDHCPOptionsInput) (*DeleteDHCPOptionsOutput, error) {
 	req, out := c.DeleteDHCPOptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteDHCPOptions *aws.Operation
+
+// DeleteFlowLogsRequest generates a request for the DeleteFlowLogs operation.
+func (c *EC2) DeleteFlowLogsRequest(input *DeleteFlowLogsInput) (req *aws.Request, output *DeleteFlowLogsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDeleteFlowLogs == nil {
+		opDeleteFlowLogs = &aws.Operation{
+			Name:       "DeleteFlowLogs",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DeleteFlowLogsInput{}
+	}
+
+	req = c.newRequest(opDeleteFlowLogs, input, output)
+	output = &DeleteFlowLogsOutput{}
+	req.Data = output
+	return
+}
+
+// Deletes one or more flow logs.
+func (c *EC2) DeleteFlowLogs(input *DeleteFlowLogsInput) (*DeleteFlowLogsOutput, error) {
+	req, out := c.DeleteFlowLogsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDeleteFlowLogs *aws.Operation
 
 // DeleteInternetGatewayRequest generates a request for the DeleteInternetGateway operation.
 func (c *EC2) DeleteInternetGatewayRequest(input *DeleteInternetGatewayInput) (req *aws.Request, output *DeleteInternetGatewayOutput) {
@@ -2143,11 +2234,10 @@ func (c *EC2) DeleteInternetGatewayRequest(input *DeleteInternetGatewayInput) (r
 
 // Deletes the specified Internet gateway. You must detach the Internet gateway
 // from the VPC before you can delete it.
-func (c *EC2) DeleteInternetGateway(input *DeleteInternetGatewayInput) (output *DeleteInternetGatewayOutput, err error) {
+func (c *EC2) DeleteInternetGateway(input *DeleteInternetGatewayInput) (*DeleteInternetGatewayOutput, error) {
 	req, out := c.DeleteInternetGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteInternetGateway *aws.Operation
@@ -2176,11 +2266,10 @@ func (c *EC2) DeleteKeyPairRequest(input *DeleteKeyPairInput) (req *aws.Request,
 }
 
 // Deletes the specified key pair, by removing the public key from Amazon EC2.
-func (c *EC2) DeleteKeyPair(input *DeleteKeyPairInput) (output *DeleteKeyPairOutput, err error) {
+func (c *EC2) DeleteKeyPair(input *DeleteKeyPairInput) (*DeleteKeyPairOutput, error) {
 	req, out := c.DeleteKeyPairRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteKeyPair *aws.Operation
@@ -2210,11 +2299,10 @@ func (c *EC2) DeleteNetworkACLRequest(input *DeleteNetworkACLInput) (req *aws.Re
 
 // Deletes the specified network ACL. You can't delete the ACL if it's associated
 // with any subnets. You can't delete the default network ACL.
-func (c *EC2) DeleteNetworkACL(input *DeleteNetworkACLInput) (output *DeleteNetworkACLOutput, err error) {
+func (c *EC2) DeleteNetworkACL(input *DeleteNetworkACLInput) (*DeleteNetworkACLOutput, error) {
 	req, out := c.DeleteNetworkACLRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteNetworkACL *aws.Operation
@@ -2244,11 +2332,10 @@ func (c *EC2) DeleteNetworkACLEntryRequest(input *DeleteNetworkACLEntryInput) (r
 
 // Deletes the specified ingress or egress entry (rule) from the specified network
 // ACL.
-func (c *EC2) DeleteNetworkACLEntry(input *DeleteNetworkACLEntryInput) (output *DeleteNetworkACLEntryOutput, err error) {
+func (c *EC2) DeleteNetworkACLEntry(input *DeleteNetworkACLEntryInput) (*DeleteNetworkACLEntryOutput, error) {
 	req, out := c.DeleteNetworkACLEntryRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteNetworkACLEntry *aws.Operation
@@ -2278,11 +2365,10 @@ func (c *EC2) DeleteNetworkInterfaceRequest(input *DeleteNetworkInterfaceInput) 
 
 // Deletes the specified network interface. You must detach the network interface
 // before you can delete it.
-func (c *EC2) DeleteNetworkInterface(input *DeleteNetworkInterfaceInput) (output *DeleteNetworkInterfaceOutput, err error) {
+func (c *EC2) DeleteNetworkInterface(input *DeleteNetworkInterfaceInput) (*DeleteNetworkInterfaceOutput, error) {
 	req, out := c.DeleteNetworkInterfaceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteNetworkInterface *aws.Operation
@@ -2314,11 +2400,10 @@ func (c *EC2) DeletePlacementGroupRequest(input *DeletePlacementGroupInput) (req
 // the placement group before you can delete the placement group. For more information
 // about placement groups and cluster instances, see Cluster Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using_cluster_computing.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DeletePlacementGroup(input *DeletePlacementGroupInput) (output *DeletePlacementGroupOutput, err error) {
+func (c *EC2) DeletePlacementGroup(input *DeletePlacementGroupInput) (*DeletePlacementGroupOutput, error) {
 	req, out := c.DeletePlacementGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeletePlacementGroup *aws.Operation
@@ -2347,11 +2432,10 @@ func (c *EC2) DeleteRouteRequest(input *DeleteRouteInput) (req *aws.Request, out
 }
 
 // Deletes the specified route from the specified route table.
-func (c *EC2) DeleteRoute(input *DeleteRouteInput) (output *DeleteRouteOutput, err error) {
+func (c *EC2) DeleteRoute(input *DeleteRouteInput) (*DeleteRouteOutput, error) {
 	req, out := c.DeleteRouteRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteRoute *aws.Operation
@@ -2382,11 +2466,10 @@ func (c *EC2) DeleteRouteTableRequest(input *DeleteRouteTableInput) (req *aws.Re
 // Deletes the specified route table. You must disassociate the route table
 // from any subnets before you can delete it. You can't delete the main route
 // table.
-func (c *EC2) DeleteRouteTable(input *DeleteRouteTableInput) (output *DeleteRouteTableOutput, err error) {
+func (c *EC2) DeleteRouteTable(input *DeleteRouteTableInput) (*DeleteRouteTableOutput, error) {
 	req, out := c.DeleteRouteTableRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteRouteTable *aws.Operation
@@ -2419,11 +2502,10 @@ func (c *EC2) DeleteSecurityGroupRequest(input *DeleteSecurityGroupInput) (req *
 // If you attempt to delete a security group that is associated with an instance,
 // or is referenced by another security group, the operation fails with InvalidGroup.InUse
 // in EC2-Classic or DependencyViolation in EC2-VPC.
-func (c *EC2) DeleteSecurityGroup(input *DeleteSecurityGroupInput) (output *DeleteSecurityGroupOutput, err error) {
+func (c *EC2) DeleteSecurityGroup(input *DeleteSecurityGroupInput) (*DeleteSecurityGroupOutput, error) {
 	req, out := c.DeleteSecurityGroupRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteSecurityGroup *aws.Operation
@@ -2460,17 +2542,16 @@ func (c *EC2) DeleteSnapshotRequest(input *DeleteSnapshotInput) (req *aws.Reques
 // snapshots have been deleted, all active snapshots will have access to all
 // the information needed to restore the volume.
 //
-// You cannot delete a snapshot of the root device of an Amazon EBS volume
-// used by a registered AMI. You must first de-register the AMI before you can
-// delete the snapshot.
+// You cannot delete a snapshot of the root device of an EBS volume used by
+// a registered AMI. You must first de-register the AMI before you can delete
+// the snapshot.
 //
 // For more information, see Deleting an Amazon EBS Snapshot (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-snapshot.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DeleteSnapshot(input *DeleteSnapshotInput) (output *DeleteSnapshotOutput, err error) {
+func (c *EC2) DeleteSnapshot(input *DeleteSnapshotInput) (*DeleteSnapshotOutput, error) {
 	req, out := c.DeleteSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteSnapshot *aws.Operation
@@ -2501,11 +2582,10 @@ func (c *EC2) DeleteSpotDatafeedSubscriptionRequest(input *DeleteSpotDatafeedSub
 // Deletes the data feed for Spot Instances. For more information, see Spot
 // Instance Data Feed (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-data-feeds.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DeleteSpotDatafeedSubscription(input *DeleteSpotDatafeedSubscriptionInput) (output *DeleteSpotDatafeedSubscriptionOutput, err error) {
+func (c *EC2) DeleteSpotDatafeedSubscription(input *DeleteSpotDatafeedSubscriptionInput) (*DeleteSpotDatafeedSubscriptionOutput, error) {
 	req, out := c.DeleteSpotDatafeedSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteSpotDatafeedSubscription *aws.Operation
@@ -2535,11 +2615,10 @@ func (c *EC2) DeleteSubnetRequest(input *DeleteSubnetInput) (req *aws.Request, o
 
 // Deletes the specified subnet. You must terminate all running instances in
 // the subnet before you can delete the subnet.
-func (c *EC2) DeleteSubnet(input *DeleteSubnetInput) (output *DeleteSubnetOutput, err error) {
+func (c *EC2) DeleteSubnet(input *DeleteSubnetInput) (*DeleteSubnetOutput, error) {
 	req, out := c.DeleteSubnetRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteSubnet *aws.Operation
@@ -2572,11 +2651,10 @@ func (c *EC2) DeleteTagsRequest(input *DeleteTagsInput) (req *aws.Request, outpu
 //
 // For more information about tags, see Tagging Your Resources (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DeleteTags(input *DeleteTagsInput) (output *DeleteTagsOutput, err error) {
+func (c *EC2) DeleteTags(input *DeleteTagsInput) (*DeleteTagsOutput, error) {
 	req, out := c.DeleteTagsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteTags *aws.Operation
@@ -2609,14 +2687,46 @@ func (c *EC2) DeleteVPCRequest(input *DeleteVPCInput) (req *aws.Request, output 
 // must terminate all instances running in the VPC, delete all security groups
 // associated with the VPC (except the default one), delete all route tables
 // associated with the VPC (except the default one), and so on.
-func (c *EC2) DeleteVPC(input *DeleteVPCInput) (output *DeleteVPCOutput, err error) {
+func (c *EC2) DeleteVPC(input *DeleteVPCInput) (*DeleteVPCOutput, error) {
 	req, out := c.DeleteVPCRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteVPC *aws.Operation
+
+// DeleteVPCEndpointsRequest generates a request for the DeleteVPCEndpoints operation.
+func (c *EC2) DeleteVPCEndpointsRequest(input *DeleteVPCEndpointsInput) (req *aws.Request, output *DeleteVPCEndpointsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDeleteVPCEndpoints == nil {
+		opDeleteVPCEndpoints = &aws.Operation{
+			Name:       "DeleteVpcEndpoints",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DeleteVPCEndpointsInput{}
+	}
+
+	req = c.newRequest(opDeleteVPCEndpoints, input, output)
+	output = &DeleteVPCEndpointsOutput{}
+	req.Data = output
+	return
+}
+
+// Deletes one or more specified VPC endpoints. Deleting the endpoint also deletes
+// the endpoint routes in the route tables that were associated with the endpoint.
+func (c *EC2) DeleteVPCEndpoints(input *DeleteVPCEndpointsInput) (*DeleteVPCEndpointsOutput, error) {
+	req, out := c.DeleteVPCEndpointsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDeleteVPCEndpoints *aws.Operation
 
 // DeleteVPCPeeringConnectionRequest generates a request for the DeleteVPCPeeringConnection operation.
 func (c *EC2) DeleteVPCPeeringConnectionRequest(input *DeleteVPCPeeringConnectionInput) (req *aws.Request, output *DeleteVPCPeeringConnectionOutput) {
@@ -2645,11 +2755,10 @@ func (c *EC2) DeleteVPCPeeringConnectionRequest(input *DeleteVPCPeeringConnectio
 // the owner of the peer VPC can delete the VPC peering connection if it's in
 // the active state. The owner of the requester VPC can delete a VPC peering
 // connection in the pending-acceptance state.
-func (c *EC2) DeleteVPCPeeringConnection(input *DeleteVPCPeeringConnectionInput) (output *DeleteVPCPeeringConnectionOutput, err error) {
+func (c *EC2) DeleteVPCPeeringConnection(input *DeleteVPCPeeringConnectionInput) (*DeleteVPCPeeringConnectionOutput, error) {
 	req, out := c.DeleteVPCPeeringConnectionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteVPCPeeringConnection *aws.Operation
@@ -2687,11 +2796,10 @@ func (c *EC2) DeleteVPNConnectionRequest(input *DeleteVPNConnectionInput) (req *
 // or virtual private gateway. If you create a new VPN connection, you must
 // reconfigure the customer gateway using the new configuration information
 // returned with the new VPN connection ID.
-func (c *EC2) DeleteVPNConnection(input *DeleteVPNConnectionInput) (output *DeleteVPNConnectionOutput, err error) {
+func (c *EC2) DeleteVPNConnection(input *DeleteVPNConnectionInput) (*DeleteVPNConnectionOutput, error) {
 	req, out := c.DeleteVPNConnectionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteVPNConnection *aws.Operation
@@ -2723,11 +2831,10 @@ func (c *EC2) DeleteVPNConnectionRouteRequest(input *DeleteVPNConnectionRouteInp
 // an existing virtual private gateway and a VPN customer gateway. The static
 // route allows traffic to be routed from the virtual private gateway to the
 // VPN customer gateway.
-func (c *EC2) DeleteVPNConnectionRoute(input *DeleteVPNConnectionRouteInput) (output *DeleteVPNConnectionRouteOutput, err error) {
+func (c *EC2) DeleteVPNConnectionRoute(input *DeleteVPNConnectionRouteInput) (*DeleteVPNConnectionRouteOutput, error) {
 	req, out := c.DeleteVPNConnectionRouteRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteVPNConnectionRoute *aws.Operation
@@ -2760,11 +2867,10 @@ func (c *EC2) DeleteVPNGatewayRequest(input *DeleteVPNGatewayInput) (req *aws.Re
 // VPN connection. Note that you don't need to delete the virtual private gateway
 // if you plan to delete and recreate the VPN connection between your VPC and
 // your network.
-func (c *EC2) DeleteVPNGateway(input *DeleteVPNGatewayInput) (output *DeleteVPNGatewayOutput, err error) {
+func (c *EC2) DeleteVPNGateway(input *DeleteVPNGatewayInput) (*DeleteVPNGatewayOutput, error) {
 	req, out := c.DeleteVPNGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteVPNGateway *aws.Operation
@@ -2792,18 +2898,17 @@ func (c *EC2) DeleteVolumeRequest(input *DeleteVolumeInput) (req *aws.Request, o
 	return
 }
 
-// Deletes the specified Amazon EBS volume. The volume must be in the available
-// state (not attached to an instance).
+// Deletes the specified EBS volume. The volume must be in the available state
+// (not attached to an instance).
 //
 //  The volume may remain in the deleting state for several minutes.
 //
 //  For more information, see Deleting an Amazon EBS Volume (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DeleteVolume(input *DeleteVolumeInput) (output *DeleteVolumeOutput, err error) {
+func (c *EC2) DeleteVolume(input *DeleteVolumeInput) (*DeleteVolumeOutput, error) {
 	req, out := c.DeleteVolumeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeleteVolume *aws.Operation
@@ -2835,11 +2940,10 @@ func (c *EC2) DeregisterImageRequest(input *DeregisterImageInput) (req *aws.Requ
 // to launch new instances.
 //
 // This command does not delete the AMI.
-func (c *EC2) DeregisterImage(input *DeregisterImageInput) (output *DeregisterImageOutput, err error) {
+func (c *EC2) DeregisterImage(input *DeregisterImageInput) (*DeregisterImageOutput, error) {
 	req, out := c.DeregisterImageRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDeregisterImage *aws.Operation
@@ -2886,11 +2990,10 @@ func (c *EC2) DescribeAccountAttributesRequest(input *DescribeAccountAttributesI
 //
 //   vpc-max-elastic-ips: The maximum number of Elastic IP addresses that you
 // can allocate for use with EC2-VPC.
-func (c *EC2) DescribeAccountAttributes(input *DescribeAccountAttributesInput) (output *DescribeAccountAttributesOutput, err error) {
+func (c *EC2) DescribeAccountAttributes(input *DescribeAccountAttributesInput) (*DescribeAccountAttributesOutput, error) {
 	req, out := c.DescribeAccountAttributesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeAccountAttributes *aws.Operation
@@ -2923,11 +3026,10 @@ func (c *EC2) DescribeAddressesRequest(input *DescribeAddressesInput) (req *aws.
 // An Elastic IP address is for use in either the EC2-Classic platform or in
 // a VPC. For more information, see Elastic IP Addresses (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeAddresses(input *DescribeAddressesInput) (output *DescribeAddressesOutput, err error) {
+func (c *EC2) DescribeAddresses(input *DescribeAddressesInput) (*DescribeAddressesOutput, error) {
 	req, out := c.DescribeAddressesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeAddresses *aws.Operation
@@ -2962,11 +3064,10 @@ func (c *EC2) DescribeAvailabilityZonesRequest(input *DescribeAvailabilityZonesI
 //
 // For more information, see Regions and Availability Zones (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeAvailabilityZones(input *DescribeAvailabilityZonesInput) (output *DescribeAvailabilityZonesOutput, err error) {
+func (c *EC2) DescribeAvailabilityZones(input *DescribeAvailabilityZonesInput) (*DescribeAvailabilityZonesOutput, error) {
 	req, out := c.DescribeAvailabilityZonesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeAvailabilityZones *aws.Operation
@@ -3000,11 +3101,10 @@ func (c *EC2) DescribeBundleTasksRequest(input *DescribeBundleTasksInput) (req *
 // task is no longer in the list, you can still register an AMI from it. Just
 // use RegisterImage with the Amazon S3 bucket name and image manifest name
 // you provided to the bundle task.
-func (c *EC2) DescribeBundleTasks(input *DescribeBundleTasksInput) (output *DescribeBundleTasksOutput, err error) {
+func (c *EC2) DescribeBundleTasks(input *DescribeBundleTasksInput) (*DescribeBundleTasksOutput, error) {
 	req, out := c.DescribeBundleTasksRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeBundleTasks *aws.Operation
@@ -3036,11 +3136,10 @@ func (c *EC2) DescribeClassicLinkInstancesRequest(input *DescribeClassicLinkInst
 // only returns information about EC2-Classic instances linked to a VPC through
 // ClassicLink; you cannot use this request to return information about other
 // instances.
-func (c *EC2) DescribeClassicLinkInstances(input *DescribeClassicLinkInstancesInput) (output *DescribeClassicLinkInstancesOutput, err error) {
+func (c *EC2) DescribeClassicLinkInstances(input *DescribeClassicLinkInstancesInput) (*DescribeClassicLinkInstancesOutput, error) {
 	req, out := c.DescribeClassicLinkInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeClassicLinkInstances *aws.Operation
@@ -3072,11 +3171,10 @@ func (c *EC2) DescribeConversionTasksRequest(input *DescribeConversionTasksInput
 // Using the Command Line Tools to Import Your Virtual Machine to Amazon EC2
 // (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UploadingYourInstancesandVolumes.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeConversionTasks(input *DescribeConversionTasksInput) (output *DescribeConversionTasksOutput, err error) {
+func (c *EC2) DescribeConversionTasks(input *DescribeConversionTasksInput) (*DescribeConversionTasksOutput, error) {
 	req, out := c.DescribeConversionTasksRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeConversionTasks *aws.Operation
@@ -3109,11 +3207,10 @@ func (c *EC2) DescribeCustomerGatewaysRequest(input *DescribeCustomerGatewaysInp
 // For more information about VPN customer gateways, see Adding a Hardware
 // Virtual Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeCustomerGateways(input *DescribeCustomerGatewaysInput) (output *DescribeCustomerGatewaysOutput, err error) {
+func (c *EC2) DescribeCustomerGateways(input *DescribeCustomerGatewaysInput) (*DescribeCustomerGatewaysOutput, error) {
 	req, out := c.DescribeCustomerGatewaysRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeCustomerGateways *aws.Operation
@@ -3145,11 +3242,10 @@ func (c *EC2) DescribeDHCPOptionsRequest(input *DescribeDHCPOptionsInput) (req *
 //
 // For more information about DHCP options sets, see DHCP Options Sets (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeDHCPOptions(input *DescribeDHCPOptionsInput) (output *DescribeDHCPOptionsOutput, err error) {
+func (c *EC2) DescribeDHCPOptions(input *DescribeDHCPOptionsInput) (*DescribeDHCPOptionsOutput, error) {
 	req, out := c.DescribeDHCPOptionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeDHCPOptions *aws.Operation
@@ -3178,14 +3274,47 @@ func (c *EC2) DescribeExportTasksRequest(input *DescribeExportTasksInput) (req *
 }
 
 // Describes one or more of your export tasks.
-func (c *EC2) DescribeExportTasks(input *DescribeExportTasksInput) (output *DescribeExportTasksOutput, err error) {
+func (c *EC2) DescribeExportTasks(input *DescribeExportTasksInput) (*DescribeExportTasksOutput, error) {
 	req, out := c.DescribeExportTasksRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeExportTasks *aws.Operation
+
+// DescribeFlowLogsRequest generates a request for the DescribeFlowLogs operation.
+func (c *EC2) DescribeFlowLogsRequest(input *DescribeFlowLogsInput) (req *aws.Request, output *DescribeFlowLogsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeFlowLogs == nil {
+		opDescribeFlowLogs = &aws.Operation{
+			Name:       "DescribeFlowLogs",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeFlowLogsInput{}
+	}
+
+	req = c.newRequest(opDescribeFlowLogs, input, output)
+	output = &DescribeFlowLogsOutput{}
+	req.Data = output
+	return
+}
+
+// Describes one or more flow logs. To view the information in your flow logs
+// (the log streams for the network interfaces), you must use the CloudWatch
+// Logs console or the CloudWatch Logs API.
+func (c *EC2) DescribeFlowLogs(input *DescribeFlowLogsInput) (*DescribeFlowLogsOutput, error) {
+	req, out := c.DescribeFlowLogsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeFlowLogs *aws.Operation
 
 // DescribeImageAttributeRequest generates a request for the DescribeImageAttribute operation.
 func (c *EC2) DescribeImageAttributeRequest(input *DescribeImageAttributeInput) (req *aws.Request, output *DescribeImageAttributeOutput) {
@@ -3212,11 +3341,10 @@ func (c *EC2) DescribeImageAttributeRequest(input *DescribeImageAttributeInput) 
 
 // Describes the specified attribute of the specified AMI. You can specify only
 // one attribute at a time.
-func (c *EC2) DescribeImageAttribute(input *DescribeImageAttributeInput) (output *DescribeImageAttributeOutput, err error) {
+func (c *EC2) DescribeImageAttribute(input *DescribeImageAttributeInput) (*DescribeImageAttributeOutput, error) {
 	req, out := c.DescribeImageAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeImageAttribute *aws.Operation
@@ -3251,11 +3379,10 @@ func (c *EC2) DescribeImagesRequest(input *DescribeImagesInput) (req *aws.Reques
 //
 // Deregistered images are included in the returned results for an unspecified
 // interval after deregistration.
-func (c *EC2) DescribeImages(input *DescribeImagesInput) (output *DescribeImagesOutput, err error) {
+func (c *EC2) DescribeImages(input *DescribeImagesInput) (*DescribeImagesOutput, error) {
 	req, out := c.DescribeImagesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeImages *aws.Operation
@@ -3285,11 +3412,10 @@ func (c *EC2) DescribeImportImageTasksRequest(input *DescribeImportImageTasksInp
 
 // Displays details about an import virtual machine or import snapshot tasks
 // that are already created.
-func (c *EC2) DescribeImportImageTasks(input *DescribeImportImageTasksInput) (output *DescribeImportImageTasksOutput, err error) {
+func (c *EC2) DescribeImportImageTasks(input *DescribeImportImageTasksInput) (*DescribeImportImageTasksOutput, error) {
 	req, out := c.DescribeImportImageTasksRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeImportImageTasks *aws.Operation
@@ -3317,12 +3443,11 @@ func (c *EC2) DescribeImportSnapshotTasksRequest(input *DescribeImportSnapshotTa
 	return
 }
 
-// Displays details about an import snapshot tasks that is already created.
-func (c *EC2) DescribeImportSnapshotTasks(input *DescribeImportSnapshotTasksInput) (output *DescribeImportSnapshotTasksOutput, err error) {
+// Describes your import snapshot tasks.
+func (c *EC2) DescribeImportSnapshotTasks(input *DescribeImportSnapshotTasksInput) (*DescribeImportSnapshotTasksOutput, error) {
 	req, out := c.DescribeImportSnapshotTasksRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeImportSnapshotTasks *aws.Operation
@@ -3355,11 +3480,10 @@ func (c *EC2) DescribeInstanceAttributeRequest(input *DescribeInstanceAttributeI
 // kernel | ramdisk | userData | disableApiTermination | instanceInitiatedShutdownBehavior
 // | rootDeviceName | blockDeviceMapping | productCodes | sourceDestCheck |
 // groupSet | ebsOptimized | sriovNetSupport
-func (c *EC2) DescribeInstanceAttribute(input *DescribeInstanceAttributeInput) (output *DescribeInstanceAttributeOutput, err error) {
+func (c *EC2) DescribeInstanceAttribute(input *DescribeInstanceAttributeInput) (*DescribeInstanceAttributeOutput, error) {
 	req, out := c.DescribeInstanceAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeInstanceAttribute *aws.Operation
@@ -3374,6 +3498,12 @@ func (c *EC2) DescribeInstanceStatusRequest(input *DescribeInstanceStatusInput) 
 			Name:       "DescribeInstanceStatus",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "MaxResults",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -3387,70 +3517,37 @@ func (c *EC2) DescribeInstanceStatusRequest(input *DescribeInstanceStatusInput) 
 	return
 }
 
-// Describes the status of one or more instances, including any scheduled events.
+// Describes the status of one or more instances.
 //
-// Instance status has two main components:
+// Instance status includes the following components:
 //
-//   System Status reports impaired functionality that stems from issues related
-// to the systems that support an instance, such as such as hardware failures
-// and network connectivity problems. This call reports such problems as impaired
-// reachability.
-//
-//   Instance Status reports impaired functionality that arises from problems
-// internal to the instance. This call reports such problems as impaired reachability.
-//
-//   Instance status provides information about four types of scheduled events
-// for an instance that may require your attention:
-//
-//   Scheduled Reboot: When Amazon EC2 determines that an instance must be
-// rebooted, the instances status returns one of two event codes: system-reboot
-// or instance-reboot. System reboot commonly occurs if certain maintenance
-// or upgrade operations require a reboot of the underlying host that supports
-// an instance. Instance reboot commonly occurs if the instance must be rebooted,
-// rather than the underlying host. Rebooting events include a scheduled start
-// and end time.
-//
-//   System Maintenance: When Amazon EC2 determines that an instance requires
-// maintenance that requires power or network impact, the instance status is
-// the event code system-maintenance. System maintenance is either power maintenance
-// or network maintenance. For power maintenance, your instance will be unavailable
-// for a brief period of time and then rebooted. For network maintenance, your
-// instance will experience a brief loss of network connectivity. System maintenance
-// events include a scheduled start and end time. You will also be notified
-// by email if one of your instances is set for system maintenance. The email
-// message indicates when your instance is scheduled for maintenance.
-//
-//   Scheduled Retirement: When Amazon EC2 determines that an instance must
-// be shut down, the instance status is the event code instance-retirement.
-// Retirement commonly occurs when the underlying host is degraded and must
-// be replaced. Retirement events include a scheduled start and end time. You
-// will also be notified by email if one of your instances is set to retiring.
-// The email message indicates when your instance will be permanently retired.
-//
-//   Scheduled Stop: When Amazon EC2 determines that an instance must be shut
-// down, the instances status returns an event code called instance-stop. Stop
-// events include a scheduled start and end time. You will also be notified
-// by email if one of your instances is set to stop. The email message indicates
-// when your instance will be stopped.
-//
-//   When your instance is retired, it will either be terminated (if its root
-// device type is the instance-store) or stopped (if its root device type is
-// an EBS volume). Instances stopped due to retirement will not be restarted,
-// but you can do so manually. You can also avoid retirement of EBS-backed instances
-// by manually restarting your instance when its event code is instance-retirement.
-// This ensures that your instance is started on a different underlying host.
-//
-// For more information about failed status checks, see Troubleshooting Instances
-// with Failed Status Checks (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstances.html)
-// in the Amazon Elastic Compute Cloud User Guide. For more information about
-// working with scheduled events, see Working with an Instance That Has a Scheduled
-// Event (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html#schedevents_actions)
+//   Status checks - Amazon EC2 performs status checks on running EC2 instances
+// to identify hardware and software issues. For more information, see Status
+// Checks for Your Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html)
+// and Troubleshooting Instances with Failed Status Checks (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstances.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeInstanceStatus(input *DescribeInstanceStatusInput) (output *DescribeInstanceStatusOutput, err error) {
+//
+//   Scheduled events - Amazon EC2 can schedule events (such as reboot, stop,
+// or terminate) for your instances related to hardware issues, software updates,
+// or system maintenance. For more information, see Scheduled Events for Your
+// Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html)
+// in the Amazon Elastic Compute Cloud User Guide.
+//
+//   Instance state - You can manage your instances from the moment you launch
+// them through their termination. For more information, see Instance Lifecycle
+// (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
+// in the Amazon Elastic Compute Cloud User Guide.
+func (c *EC2) DescribeInstanceStatus(input *DescribeInstanceStatusInput) (*DescribeInstanceStatusOutput, error) {
 	req, out := c.DescribeInstanceStatusRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeInstanceStatusPages(input *DescribeInstanceStatusInput, fn func(p *DescribeInstanceStatusOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeInstanceStatusRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeInstanceStatusOutput), lastPage)
+	})
 }
 
 var opDescribeInstanceStatus *aws.Operation
@@ -3465,6 +3562,12 @@ func (c *EC2) DescribeInstancesRequest(input *DescribeInstancesInput) (req *aws.
 			Name:       "DescribeInstances",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "MaxResults",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -3488,11 +3591,17 @@ func (c *EC2) DescribeInstancesRequest(input *DescribeInstancesInput) (req *aws.
 //
 // Recently terminated instances might appear in the returned results. This
 // interval is usually less than one hour.
-func (c *EC2) DescribeInstances(input *DescribeInstancesInput) (output *DescribeInstancesOutput, err error) {
+func (c *EC2) DescribeInstances(input *DescribeInstancesInput) (*DescribeInstancesOutput, error) {
 	req, out := c.DescribeInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeInstancesPages(input *DescribeInstancesInput, fn func(p *DescribeInstancesOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeInstancesRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeInstancesOutput), lastPage)
+	})
 }
 
 var opDescribeInstances *aws.Operation
@@ -3521,11 +3630,10 @@ func (c *EC2) DescribeInternetGatewaysRequest(input *DescribeInternetGatewaysInp
 }
 
 // Describes one or more of your Internet gateways.
-func (c *EC2) DescribeInternetGateways(input *DescribeInternetGatewaysInput) (output *DescribeInternetGatewaysOutput, err error) {
+func (c *EC2) DescribeInternetGateways(input *DescribeInternetGatewaysInput) (*DescribeInternetGatewaysOutput, error) {
 	req, out := c.DescribeInternetGatewaysRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeInternetGateways *aws.Operation
@@ -3557,14 +3665,47 @@ func (c *EC2) DescribeKeyPairsRequest(input *DescribeKeyPairsInput) (req *aws.Re
 //
 // For more information about key pairs, see Key Pairs (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeKeyPairs(input *DescribeKeyPairsInput) (output *DescribeKeyPairsOutput, err error) {
+func (c *EC2) DescribeKeyPairs(input *DescribeKeyPairsInput) (*DescribeKeyPairsOutput, error) {
 	req, out := c.DescribeKeyPairsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeKeyPairs *aws.Operation
+
+// DescribeMovingAddressesRequest generates a request for the DescribeMovingAddresses operation.
+func (c *EC2) DescribeMovingAddressesRequest(input *DescribeMovingAddressesInput) (req *aws.Request, output *DescribeMovingAddressesOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeMovingAddresses == nil {
+		opDescribeMovingAddresses = &aws.Operation{
+			Name:       "DescribeMovingAddresses",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeMovingAddressesInput{}
+	}
+
+	req = c.newRequest(opDescribeMovingAddresses, input, output)
+	output = &DescribeMovingAddressesOutput{}
+	req.Data = output
+	return
+}
+
+// Describes your Elastic IP addresses that are being moved to the EC2-VPC platform,
+// or that are being restored to the EC2-Classic platform. This request does
+// not return information about any other Elastic IP addresses in your account.
+func (c *EC2) DescribeMovingAddresses(input *DescribeMovingAddressesInput) (*DescribeMovingAddressesOutput, error) {
+	req, out := c.DescribeMovingAddressesRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeMovingAddresses *aws.Operation
 
 // DescribeNetworkACLsRequest generates a request for the DescribeNetworkACLs operation.
 func (c *EC2) DescribeNetworkACLsRequest(input *DescribeNetworkACLsInput) (req *aws.Request, output *DescribeNetworkACLsOutput) {
@@ -3593,11 +3734,10 @@ func (c *EC2) DescribeNetworkACLsRequest(input *DescribeNetworkACLsInput) (req *
 //
 // For more information about network ACLs, see Network ACLs (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeNetworkACLs(input *DescribeNetworkACLsInput) (output *DescribeNetworkACLsOutput, err error) {
+func (c *EC2) DescribeNetworkACLs(input *DescribeNetworkACLsInput) (*DescribeNetworkACLsOutput, error) {
 	req, out := c.DescribeNetworkACLsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeNetworkACLs *aws.Operation
@@ -3627,11 +3767,10 @@ func (c *EC2) DescribeNetworkInterfaceAttributeRequest(input *DescribeNetworkInt
 
 // Describes a network interface attribute. You can specify only one attribute
 // at a time.
-func (c *EC2) DescribeNetworkInterfaceAttribute(input *DescribeNetworkInterfaceAttributeInput) (output *DescribeNetworkInterfaceAttributeOutput, err error) {
+func (c *EC2) DescribeNetworkInterfaceAttribute(input *DescribeNetworkInterfaceAttributeInput) (*DescribeNetworkInterfaceAttributeOutput, error) {
 	req, out := c.DescribeNetworkInterfaceAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeNetworkInterfaceAttribute *aws.Operation
@@ -3660,11 +3799,10 @@ func (c *EC2) DescribeNetworkInterfacesRequest(input *DescribeNetworkInterfacesI
 }
 
 // Describes one or more of your network interfaces.
-func (c *EC2) DescribeNetworkInterfaces(input *DescribeNetworkInterfacesInput) (output *DescribeNetworkInterfacesOutput, err error) {
+func (c *EC2) DescribeNetworkInterfaces(input *DescribeNetworkInterfacesInput) (*DescribeNetworkInterfacesOutput, error) {
 	req, out := c.DescribeNetworkInterfacesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeNetworkInterfaces *aws.Operation
@@ -3695,14 +3833,49 @@ func (c *EC2) DescribePlacementGroupsRequest(input *DescribePlacementGroupsInput
 // Describes one or more of your placement groups. For more information about
 // placement groups and cluster instances, see Cluster Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using_cluster_computing.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribePlacementGroups(input *DescribePlacementGroupsInput) (output *DescribePlacementGroupsOutput, err error) {
+func (c *EC2) DescribePlacementGroups(input *DescribePlacementGroupsInput) (*DescribePlacementGroupsOutput, error) {
 	req, out := c.DescribePlacementGroupsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribePlacementGroups *aws.Operation
+
+// DescribePrefixListsRequest generates a request for the DescribePrefixLists operation.
+func (c *EC2) DescribePrefixListsRequest(input *DescribePrefixListsInput) (req *aws.Request, output *DescribePrefixListsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribePrefixLists == nil {
+		opDescribePrefixLists = &aws.Operation{
+			Name:       "DescribePrefixLists",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribePrefixListsInput{}
+	}
+
+	req = c.newRequest(opDescribePrefixLists, input, output)
+	output = &DescribePrefixListsOutput{}
+	req.Data = output
+	return
+}
+
+// Describes available AWS services in a prefix list format, which includes
+// the prefix list name and prefix list ID of the service and the IP address
+// range for the service. A prefix list ID is required for creating an outbound
+// security group rule that allows traffic from a VPC to access an AWS service
+// through a VPC endpoint.
+func (c *EC2) DescribePrefixLists(input *DescribePrefixListsInput) (*DescribePrefixListsOutput, error) {
+	req, out := c.DescribePrefixListsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribePrefixLists *aws.Operation
 
 // DescribeRegionsRequest generates a request for the DescribeRegions operation.
 func (c *EC2) DescribeRegionsRequest(input *DescribeRegionsInput) (req *aws.Request, output *DescribeRegionsOutput) {
@@ -3731,11 +3904,10 @@ func (c *EC2) DescribeRegionsRequest(input *DescribeRegionsInput) (req *aws.Requ
 //
 // For a list of the regions supported by Amazon EC2, see Regions and Endpoints
 // (http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region).
-func (c *EC2) DescribeRegions(input *DescribeRegionsInput) (output *DescribeRegionsOutput, err error) {
+func (c *EC2) DescribeRegions(input *DescribeRegionsInput) (*DescribeRegionsOutput, error) {
 	req, out := c.DescribeRegionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeRegions *aws.Operation
@@ -3767,11 +3939,10 @@ func (c *EC2) DescribeReservedInstancesRequest(input *DescribeReservedInstancesI
 //
 // For more information about Reserved Instances, see Reserved Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts-on-demand-reserved-instances.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeReservedInstances(input *DescribeReservedInstancesInput) (output *DescribeReservedInstancesOutput, err error) {
+func (c *EC2) DescribeReservedInstances(input *DescribeReservedInstancesInput) (*DescribeReservedInstancesOutput, error) {
 	req, out := c.DescribeReservedInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeReservedInstances *aws.Operation
@@ -3821,11 +3992,10 @@ func (c *EC2) DescribeReservedInstancesListingsRequest(input *DescribeReservedIn
 //
 // For more information, see Reserved Instance Marketplace (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeReservedInstancesListings(input *DescribeReservedInstancesListingsInput) (output *DescribeReservedInstancesListingsOutput, err error) {
+func (c *EC2) DescribeReservedInstancesListings(input *DescribeReservedInstancesListingsInput) (*DescribeReservedInstancesListingsOutput, error) {
 	req, out := c.DescribeReservedInstancesListingsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeReservedInstancesListings *aws.Operation
@@ -3840,6 +4010,12 @@ func (c *EC2) DescribeReservedInstancesModificationsRequest(input *DescribeReser
 			Name:       "DescribeReservedInstancesModifications",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -3860,11 +4036,17 @@ func (c *EC2) DescribeReservedInstancesModificationsRequest(input *DescribeReser
 //
 // For more information, see Modifying Reserved Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeReservedInstancesModifications(input *DescribeReservedInstancesModificationsInput) (output *DescribeReservedInstancesModificationsOutput, err error) {
+func (c *EC2) DescribeReservedInstancesModifications(input *DescribeReservedInstancesModificationsInput) (*DescribeReservedInstancesModificationsOutput, error) {
 	req, out := c.DescribeReservedInstancesModificationsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeReservedInstancesModificationsPages(input *DescribeReservedInstancesModificationsInput, fn func(p *DescribeReservedInstancesModificationsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeReservedInstancesModificationsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeReservedInstancesModificationsOutput), lastPage)
+	})
 }
 
 var opDescribeReservedInstancesModifications *aws.Operation
@@ -3879,6 +4061,12 @@ func (c *EC2) DescribeReservedInstancesOfferingsRequest(input *DescribeReservedI
 			Name:       "DescribeReservedInstancesOfferings",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "MaxResults",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -3900,11 +4088,17 @@ func (c *EC2) DescribeReservedInstancesOfferingsRequest(input *DescribeReservedI
 //
 // For more information, see Reserved Instance Marketplace (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeReservedInstancesOfferings(input *DescribeReservedInstancesOfferingsInput) (output *DescribeReservedInstancesOfferingsOutput, err error) {
+func (c *EC2) DescribeReservedInstancesOfferings(input *DescribeReservedInstancesOfferingsInput) (*DescribeReservedInstancesOfferingsOutput, error) {
 	req, out := c.DescribeReservedInstancesOfferingsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeReservedInstancesOfferingsPages(input *DescribeReservedInstancesOfferingsInput, fn func(p *DescribeReservedInstancesOfferingsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeReservedInstancesOfferingsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeReservedInstancesOfferingsOutput), lastPage)
+	})
 }
 
 var opDescribeReservedInstancesOfferings *aws.Operation
@@ -3936,11 +4130,10 @@ func (c *EC2) DescribeRouteTablesRequest(input *DescribeRouteTablesInput) (req *
 //
 // For more information about route tables, see Route Tables (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeRouteTables(input *DescribeRouteTablesInput) (output *DescribeRouteTablesOutput, err error) {
+func (c *EC2) DescribeRouteTables(input *DescribeRouteTablesInput) (*DescribeRouteTablesOutput, error) {
 	req, out := c.DescribeRouteTablesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeRouteTables *aws.Operation
@@ -3976,11 +4169,10 @@ func (c *EC2) DescribeSecurityGroupsRequest(input *DescribeSecurityGroupsInput) 
 // in the Amazon Elastic Compute Cloud User Guide and Security Groups for Your
 // VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeSecurityGroups(input *DescribeSecurityGroupsInput) (output *DescribeSecurityGroupsOutput, err error) {
+func (c *EC2) DescribeSecurityGroups(input *DescribeSecurityGroupsInput) (*DescribeSecurityGroupsOutput, error) {
 	req, out := c.DescribeSecurityGroupsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeSecurityGroups *aws.Operation
@@ -4011,13 +4203,12 @@ func (c *EC2) DescribeSnapshotAttributeRequest(input *DescribeSnapshotAttributeI
 // Describes the specified attribute of the specified snapshot. You can specify
 // only one attribute at a time.
 //
-// For more information about Amazon EBS snapshots, see Amazon EBS Snapshots
-// in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeSnapshotAttribute(input *DescribeSnapshotAttributeInput) (output *DescribeSnapshotAttributeOutput, err error) {
+// For more information about EBS snapshots, see Amazon EBS Snapshots in the
+// Amazon Elastic Compute Cloud User Guide.
+func (c *EC2) DescribeSnapshotAttribute(input *DescribeSnapshotAttributeInput) (*DescribeSnapshotAttributeOutput, error) {
 	req, out := c.DescribeSnapshotAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeSnapshotAttribute *aws.Operation
@@ -4032,6 +4223,12 @@ func (c *EC2) DescribeSnapshotsRequest(input *DescribeSnapshotsInput) (req *aws.
 			Name:       "DescribeSnapshots",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -4045,10 +4242,10 @@ func (c *EC2) DescribeSnapshotsRequest(input *DescribeSnapshotsInput) (req *aws.
 	return
 }
 
-// Describes one or more of the Amazon EBS snapshots available to you. Available
-// snapshots include public snapshots available for any AWS account to launch,
-// private snapshots that you own, and private snapshots owned by another AWS
-// account but for which you've been given explicit create volume permissions.
+// Describes one or more of the EBS snapshots available to you. Available snapshots
+// include public snapshots available for any AWS account to launch, private
+// snapshots that you own, and private snapshots owned by another AWS account
+// but for which you've been given explicit create volume permissions.
 //
 // The create volume permissions fall into the following categories:
 //
@@ -4083,13 +4280,19 @@ func (c *EC2) DescribeSnapshotsRequest(input *DescribeSnapshotsInput) (req *aws.
 // a NextToken value that can be passed to a subsequent DescribeSnapshots request
 // to retrieve the remaining results.
 //
-// For more information about Amazon EBS snapshots, see Amazon EBS Snapshots
-// in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeSnapshots(input *DescribeSnapshotsInput) (output *DescribeSnapshotsOutput, err error) {
+// For more information about EBS snapshots, see Amazon EBS Snapshots in the
+// Amazon Elastic Compute Cloud User Guide.
+func (c *EC2) DescribeSnapshots(input *DescribeSnapshotsInput) (*DescribeSnapshotsOutput, error) {
 	req, out := c.DescribeSnapshotsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeSnapshotsPages(input *DescribeSnapshotsInput, fn func(p *DescribeSnapshotsOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeSnapshotsRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeSnapshotsOutput), lastPage)
+	})
 }
 
 var opDescribeSnapshots *aws.Operation
@@ -4120,14 +4323,114 @@ func (c *EC2) DescribeSpotDatafeedSubscriptionRequest(input *DescribeSpotDatafee
 // Describes the data feed for Spot Instances. For more information, see Spot
 // Instance Data Feed (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-data-feeds.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeSpotDatafeedSubscription(input *DescribeSpotDatafeedSubscriptionInput) (output *DescribeSpotDatafeedSubscriptionOutput, err error) {
+func (c *EC2) DescribeSpotDatafeedSubscription(input *DescribeSpotDatafeedSubscriptionInput) (*DescribeSpotDatafeedSubscriptionOutput, error) {
 	req, out := c.DescribeSpotDatafeedSubscriptionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeSpotDatafeedSubscription *aws.Operation
+
+// DescribeSpotFleetInstancesRequest generates a request for the DescribeSpotFleetInstances operation.
+func (c *EC2) DescribeSpotFleetInstancesRequest(input *DescribeSpotFleetInstancesInput) (req *aws.Request, output *DescribeSpotFleetInstancesOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeSpotFleetInstances == nil {
+		opDescribeSpotFleetInstances = &aws.Operation{
+			Name:       "DescribeSpotFleetInstances",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeSpotFleetInstancesInput{}
+	}
+
+	req = c.newRequest(opDescribeSpotFleetInstances, input, output)
+	output = &DescribeSpotFleetInstancesOutput{}
+	req.Data = output
+	return
+}
+
+// Describes the running instances for the specified Spot fleet.
+func (c *EC2) DescribeSpotFleetInstances(input *DescribeSpotFleetInstancesInput) (*DescribeSpotFleetInstancesOutput, error) {
+	req, out := c.DescribeSpotFleetInstancesRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeSpotFleetInstances *aws.Operation
+
+// DescribeSpotFleetRequestHistoryRequest generates a request for the DescribeSpotFleetRequestHistory operation.
+func (c *EC2) DescribeSpotFleetRequestHistoryRequest(input *DescribeSpotFleetRequestHistoryInput) (req *aws.Request, output *DescribeSpotFleetRequestHistoryOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeSpotFleetRequestHistory == nil {
+		opDescribeSpotFleetRequestHistory = &aws.Operation{
+			Name:       "DescribeSpotFleetRequestHistory",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeSpotFleetRequestHistoryInput{}
+	}
+
+	req = c.newRequest(opDescribeSpotFleetRequestHistory, input, output)
+	output = &DescribeSpotFleetRequestHistoryOutput{}
+	req.Data = output
+	return
+}
+
+// Describes the events for the specified Spot fleet request during the specified
+// time.
+//
+// Spot fleet events are delayed by up to 30 seconds before they can be described.
+// This ensures that you can query by the last evaluated time and not miss a
+// recorded event.
+func (c *EC2) DescribeSpotFleetRequestHistory(input *DescribeSpotFleetRequestHistoryInput) (*DescribeSpotFleetRequestHistoryOutput, error) {
+	req, out := c.DescribeSpotFleetRequestHistoryRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeSpotFleetRequestHistory *aws.Operation
+
+// DescribeSpotFleetRequestsRequest generates a request for the DescribeSpotFleetRequests operation.
+func (c *EC2) DescribeSpotFleetRequestsRequest(input *DescribeSpotFleetRequestsInput) (req *aws.Request, output *DescribeSpotFleetRequestsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeSpotFleetRequests == nil {
+		opDescribeSpotFleetRequests = &aws.Operation{
+			Name:       "DescribeSpotFleetRequests",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeSpotFleetRequestsInput{}
+	}
+
+	req = c.newRequest(opDescribeSpotFleetRequests, input, output)
+	output = &DescribeSpotFleetRequestsOutput{}
+	req.Data = output
+	return
+}
+
+// Describes your Spot fleet requests.
+func (c *EC2) DescribeSpotFleetRequests(input *DescribeSpotFleetRequestsInput) (*DescribeSpotFleetRequestsOutput, error) {
+	req, out := c.DescribeSpotFleetRequestsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeSpotFleetRequests *aws.Operation
 
 // DescribeSpotInstanceRequestsRequest generates a request for the DescribeSpotInstanceRequests operation.
 func (c *EC2) DescribeSpotInstanceRequestsRequest(input *DescribeSpotInstanceRequestsInput) (req *aws.Request, output *DescribeSpotInstanceRequestsOutput) {
@@ -4164,11 +4467,10 @@ func (c *EC2) DescribeSpotInstanceRequestsRequest(input *DescribeSpotInstanceReq
 // the instance ID appears in the response and contains the identifier of the
 // instance. Alternatively, you can use DescribeInstances with a filter to look
 // for instances where the instance lifecycle is spot.
-func (c *EC2) DescribeSpotInstanceRequests(input *DescribeSpotInstanceRequestsInput) (output *DescribeSpotInstanceRequestsOutput, err error) {
+func (c *EC2) DescribeSpotInstanceRequests(input *DescribeSpotInstanceRequestsInput) (*DescribeSpotInstanceRequestsOutput, error) {
 	req, out := c.DescribeSpotInstanceRequestsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeSpotInstanceRequests *aws.Operation
@@ -4183,6 +4485,12 @@ func (c *EC2) DescribeSpotPriceHistoryRequest(input *DescribeSpotPriceHistoryInp
 			Name:       "DescribeSpotPriceHistory",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "MaxResults",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -4205,11 +4513,17 @@ func (c *EC2) DescribeSpotPriceHistoryRequest(input *DescribeSpotPriceHistoryInp
 // of the instance types within the time range that you specified and the time
 // when the price changed. The price is valid within the time period that you
 // specified; the response merely indicates the last time that the price changed.
-func (c *EC2) DescribeSpotPriceHistory(input *DescribeSpotPriceHistoryInput) (output *DescribeSpotPriceHistoryOutput, err error) {
+func (c *EC2) DescribeSpotPriceHistory(input *DescribeSpotPriceHistoryInput) (*DescribeSpotPriceHistoryOutput, error) {
 	req, out := c.DescribeSpotPriceHistoryRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeSpotPriceHistoryPages(input *DescribeSpotPriceHistoryInput, fn func(p *DescribeSpotPriceHistoryOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeSpotPriceHistoryRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeSpotPriceHistoryOutput), lastPage)
+	})
 }
 
 var opDescribeSpotPriceHistory *aws.Operation
@@ -4241,11 +4555,10 @@ func (c *EC2) DescribeSubnetsRequest(input *DescribeSubnetsInput) (req *aws.Requ
 //
 // For more information about subnets, see Your VPC and Subnets (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeSubnets(input *DescribeSubnetsInput) (output *DescribeSubnetsOutput, err error) {
+func (c *EC2) DescribeSubnets(input *DescribeSubnetsInput) (*DescribeSubnetsOutput, error) {
 	req, out := c.DescribeSubnetsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeSubnets *aws.Operation
@@ -4277,11 +4590,10 @@ func (c *EC2) DescribeTagsRequest(input *DescribeTagsInput) (req *aws.Request, o
 //
 // For more information about tags, see Tagging Your Resources (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeTags(input *DescribeTagsInput) (output *DescribeTagsOutput, err error) {
+func (c *EC2) DescribeTags(input *DescribeTagsInput) (*DescribeTagsOutput, error) {
 	req, out := c.DescribeTagsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeTags *aws.Operation
@@ -4311,11 +4623,10 @@ func (c *EC2) DescribeVPCAttributeRequest(input *DescribeVPCAttributeInput) (req
 
 // Describes the specified attribute of the specified VPC. You can specify only
 // one attribute at a time.
-func (c *EC2) DescribeVPCAttribute(input *DescribeVPCAttributeInput) (output *DescribeVPCAttributeOutput, err error) {
+func (c *EC2) DescribeVPCAttribute(input *DescribeVPCAttributeInput) (*DescribeVPCAttributeOutput, error) {
 	req, out := c.DescribeVPCAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVPCAttribute *aws.Operation
@@ -4344,14 +4655,78 @@ func (c *EC2) DescribeVPCClassicLinkRequest(input *DescribeVPCClassicLinkInput) 
 }
 
 // Describes the ClassicLink status of one or more VPCs.
-func (c *EC2) DescribeVPCClassicLink(input *DescribeVPCClassicLinkInput) (output *DescribeVPCClassicLinkOutput, err error) {
+func (c *EC2) DescribeVPCClassicLink(input *DescribeVPCClassicLinkInput) (*DescribeVPCClassicLinkOutput, error) {
 	req, out := c.DescribeVPCClassicLinkRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVPCClassicLink *aws.Operation
+
+// DescribeVPCEndpointServicesRequest generates a request for the DescribeVPCEndpointServices operation.
+func (c *EC2) DescribeVPCEndpointServicesRequest(input *DescribeVPCEndpointServicesInput) (req *aws.Request, output *DescribeVPCEndpointServicesOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeVPCEndpointServices == nil {
+		opDescribeVPCEndpointServices = &aws.Operation{
+			Name:       "DescribeVpcEndpointServices",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeVPCEndpointServicesInput{}
+	}
+
+	req = c.newRequest(opDescribeVPCEndpointServices, input, output)
+	output = &DescribeVPCEndpointServicesOutput{}
+	req.Data = output
+	return
+}
+
+// Describes all supported AWS services that can be specified when creating
+// a VPC endpoint.
+func (c *EC2) DescribeVPCEndpointServices(input *DescribeVPCEndpointServicesInput) (*DescribeVPCEndpointServicesOutput, error) {
+	req, out := c.DescribeVPCEndpointServicesRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeVPCEndpointServices *aws.Operation
+
+// DescribeVPCEndpointsRequest generates a request for the DescribeVPCEndpoints operation.
+func (c *EC2) DescribeVPCEndpointsRequest(input *DescribeVPCEndpointsInput) (req *aws.Request, output *DescribeVPCEndpointsOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opDescribeVPCEndpoints == nil {
+		opDescribeVPCEndpoints = &aws.Operation{
+			Name:       "DescribeVpcEndpoints",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &DescribeVPCEndpointsInput{}
+	}
+
+	req = c.newRequest(opDescribeVPCEndpoints, input, output)
+	output = &DescribeVPCEndpointsOutput{}
+	req.Data = output
+	return
+}
+
+// Describes one or more of your VPC endpoints.
+func (c *EC2) DescribeVPCEndpoints(input *DescribeVPCEndpointsInput) (*DescribeVPCEndpointsOutput, error) {
+	req, out := c.DescribeVPCEndpointsRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opDescribeVPCEndpoints *aws.Operation
 
 // DescribeVPCPeeringConnectionsRequest generates a request for the DescribeVPCPeeringConnections operation.
 func (c *EC2) DescribeVPCPeeringConnectionsRequest(input *DescribeVPCPeeringConnectionsInput) (req *aws.Request, output *DescribeVPCPeeringConnectionsOutput) {
@@ -4377,11 +4752,10 @@ func (c *EC2) DescribeVPCPeeringConnectionsRequest(input *DescribeVPCPeeringConn
 }
 
 // Describes one or more of your VPC peering connections.
-func (c *EC2) DescribeVPCPeeringConnections(input *DescribeVPCPeeringConnectionsInput) (output *DescribeVPCPeeringConnectionsOutput, err error) {
+func (c *EC2) DescribeVPCPeeringConnections(input *DescribeVPCPeeringConnectionsInput) (*DescribeVPCPeeringConnectionsOutput, error) {
 	req, out := c.DescribeVPCPeeringConnectionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVPCPeeringConnections *aws.Operation
@@ -4410,11 +4784,10 @@ func (c *EC2) DescribeVPCsRequest(input *DescribeVPCsInput) (req *aws.Request, o
 }
 
 // Describes one or more of your VPCs.
-func (c *EC2) DescribeVPCs(input *DescribeVPCsInput) (output *DescribeVPCsOutput, err error) {
+func (c *EC2) DescribeVPCs(input *DescribeVPCsInput) (*DescribeVPCsOutput, error) {
 	req, out := c.DescribeVPCsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVPCs *aws.Operation
@@ -4447,11 +4820,10 @@ func (c *EC2) DescribeVPNConnectionsRequest(input *DescribeVPNConnectionsInput) 
 // For more information about VPN connections, see Adding a Hardware Virtual
 // Private Gateway to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeVPNConnections(input *DescribeVPNConnectionsInput) (output *DescribeVPNConnectionsOutput, err error) {
+func (c *EC2) DescribeVPNConnections(input *DescribeVPNConnectionsInput) (*DescribeVPNConnectionsOutput, error) {
 	req, out := c.DescribeVPNConnectionsRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVPNConnections *aws.Operation
@@ -4484,11 +4856,10 @@ func (c *EC2) DescribeVPNGatewaysRequest(input *DescribeVPNGatewaysInput) (req *
 // For more information about virtual private gateways, see Adding an IPsec
 // Hardware VPN to Your VPC (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_VPN.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DescribeVPNGateways(input *DescribeVPNGatewaysInput) (output *DescribeVPNGatewaysOutput, err error) {
+func (c *EC2) DescribeVPNGateways(input *DescribeVPNGatewaysInput) (*DescribeVPNGatewaysOutput, error) {
 	req, out := c.DescribeVPNGatewaysRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVPNGateways *aws.Operation
@@ -4519,13 +4890,12 @@ func (c *EC2) DescribeVolumeAttributeRequest(input *DescribeVolumeAttributeInput
 // Describes the specified attribute of the specified volume. You can specify
 // only one attribute at a time.
 //
-// For more information about Amazon EBS volumes, see Amazon EBS Volumes in
-// the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeVolumeAttribute(input *DescribeVolumeAttributeInput) (output *DescribeVolumeAttributeOutput, err error) {
+// For more information about EBS volumes, see Amazon EBS Volumes in the Amazon
+// Elastic Compute Cloud User Guide.
+func (c *EC2) DescribeVolumeAttribute(input *DescribeVolumeAttributeInput) (*DescribeVolumeAttributeOutput, error) {
 	req, out := c.DescribeVolumeAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDescribeVolumeAttribute *aws.Operation
@@ -4540,6 +4910,12 @@ func (c *EC2) DescribeVolumeStatusRequest(input *DescribeVolumeStatusInput) (req
 			Name:       "DescribeVolumeStatus",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "MaxResults",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -4588,11 +4964,17 @@ func (c *EC2) DescribeVolumeStatusRequest(input *DescribeVolumeStatusInput) (req
 //  Volume status is based on the volume status checks, and does not reflect
 // the volume state. Therefore, volume status does not indicate volumes in the
 // error state (for example, when a volume is incapable of accepting I/O.)
-func (c *EC2) DescribeVolumeStatus(input *DescribeVolumeStatusInput) (output *DescribeVolumeStatusOutput, err error) {
+func (c *EC2) DescribeVolumeStatus(input *DescribeVolumeStatusInput) (*DescribeVolumeStatusOutput, error) {
 	req, out := c.DescribeVolumeStatusRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeVolumeStatusPages(input *DescribeVolumeStatusInput, fn func(p *DescribeVolumeStatusOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeVolumeStatusRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeVolumeStatusOutput), lastPage)
+	})
 }
 
 var opDescribeVolumeStatus *aws.Operation
@@ -4607,6 +4989,12 @@ func (c *EC2) DescribeVolumesRequest(input *DescribeVolumesInput) (req *aws.Requ
 			Name:       "DescribeVolumes",
 			HTTPMethod: "POST",
 			HTTPPath:   "/",
+			Paginator: &aws.Paginator{
+				InputTokens:     []string{"NextToken"},
+				OutputTokens:    []string{"NextToken"},
+				LimitToken:      "MaxResults",
+				TruncationToken: "",
+			},
 		}
 	}
 
@@ -4620,7 +5008,7 @@ func (c *EC2) DescribeVolumesRequest(input *DescribeVolumesInput) (req *aws.Requ
 	return
 }
 
-// Describes the specified Amazon EBS volumes.
+// Describes the specified EBS volumes.
 //
 // If you are describing a long list of volumes, you can paginate the output
 // to make the list more manageable. The MaxResults parameter sets the maximum
@@ -4629,13 +5017,19 @@ func (c *EC2) DescribeVolumesRequest(input *DescribeVolumesInput) (req *aws.Requ
 // a NextToken value that can be passed to a subsequent DescribeVolumes request
 // to retrieve the remaining results.
 //
-// For more information about Amazon EBS volumes, see Amazon EBS Volumes in
-// the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DescribeVolumes(input *DescribeVolumesInput) (output *DescribeVolumesOutput, err error) {
+// For more information about EBS volumes, see Amazon EBS Volumes in the Amazon
+// Elastic Compute Cloud User Guide.
+func (c *EC2) DescribeVolumes(input *DescribeVolumesInput) (*DescribeVolumesOutput, error) {
 	req, out := c.DescribeVolumesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
+}
+
+func (c *EC2) DescribeVolumesPages(input *DescribeVolumesInput, fn func(p *DescribeVolumesOutput, lastPage bool) (shouldContinue bool)) error {
+	page, _ := c.DescribeVolumesRequest(input)
+	return page.EachPage(func(p interface{}, lastPage bool) bool {
+		return fn(p.(*DescribeVolumesOutput), lastPage)
+	})
 }
 
 var opDescribeVolumes *aws.Operation
@@ -4666,11 +5060,10 @@ func (c *EC2) DetachClassicLinkVPCRequest(input *DetachClassicLinkVPCInput) (req
 // Unlinks (detaches) a linked EC2-Classic instance from a VPC. After the instance
 // has been unlinked, the VPC security groups are no longer associated with
 // it. An instance is automatically unlinked from a VPC when it's stopped.
-func (c *EC2) DetachClassicLinkVPC(input *DetachClassicLinkVPCInput) (output *DetachClassicLinkVPCOutput, err error) {
+func (c *EC2) DetachClassicLinkVPC(input *DetachClassicLinkVPCInput) (*DetachClassicLinkVPCOutput, error) {
 	req, out := c.DetachClassicLinkVPCRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDetachClassicLinkVPC *aws.Operation
@@ -4701,11 +5094,10 @@ func (c *EC2) DetachInternetGatewayRequest(input *DetachInternetGatewayInput) (r
 // Detaches an Internet gateway from a VPC, disabling connectivity between the
 // Internet and the VPC. The VPC must not contain any running instances with
 // Elastic IP addresses.
-func (c *EC2) DetachInternetGateway(input *DetachInternetGatewayInput) (output *DetachInternetGatewayOutput, err error) {
+func (c *EC2) DetachInternetGateway(input *DetachInternetGatewayInput) (*DetachInternetGatewayOutput, error) {
 	req, out := c.DetachInternetGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDetachInternetGateway *aws.Operation
@@ -4734,11 +5126,10 @@ func (c *EC2) DetachNetworkInterfaceRequest(input *DetachNetworkInterfaceInput) 
 }
 
 // Detaches a network interface from an instance.
-func (c *EC2) DetachNetworkInterface(input *DetachNetworkInterfaceInput) (output *DetachNetworkInterfaceOutput, err error) {
+func (c *EC2) DetachNetworkInterface(input *DetachNetworkInterfaceInput) (*DetachNetworkInterfaceOutput, error) {
 	req, out := c.DetachNetworkInterfaceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDetachNetworkInterface *aws.Operation
@@ -4774,11 +5165,10 @@ func (c *EC2) DetachVPNGatewayRequest(input *DetachVPNGatewayInput) (req *aws.Re
 //
 // You must wait for the attachment's state to switch to detached before you
 // can delete the VPC or attach a different VPC to the virtual private gateway.
-func (c *EC2) DetachVPNGateway(input *DetachVPNGatewayInput) (output *DetachVPNGatewayOutput, err error) {
+func (c *EC2) DetachVPNGateway(input *DetachVPNGatewayInput) (*DetachVPNGatewayOutput, error) {
 	req, out := c.DetachVPNGatewayRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDetachVPNGateway *aws.Operation
@@ -4806,10 +5196,9 @@ func (c *EC2) DetachVolumeRequest(input *DetachVolumeInput) (req *aws.Request, o
 	return
 }
 
-// Detaches an Amazon EBS volume from an instance. Make sure to unmount any
-// file systems on the device within your operating system before detaching
-// the volume. Failure to do so results in the volume being stuck in a busy
-// state while detaching.
+// Detaches an EBS volume from an instance. Make sure to unmount any file systems
+// on the device within your operating system before detaching the volume. Failure
+// to do so results in the volume being stuck in a busy state while detaching.
 //
 // If an Amazon EBS volume is the root device of an instance, it can't be detached
 // while the instance is running. To detach the root volume, stop the instance
@@ -4820,11 +5209,10 @@ func (c *EC2) DetachVolumeRequest(input *DetachVolumeInput) (req *aws.Request, o
 //
 // For more information, see Detaching an Amazon EBS Volume (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-detaching-volume.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) DetachVolume(input *DetachVolumeInput) (output *VolumeAttachment, err error) {
+func (c *EC2) DetachVolume(input *DetachVolumeInput) (*VolumeAttachment, error) {
 	req, out := c.DetachVolumeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDetachVolume *aws.Operation
@@ -4854,11 +5242,10 @@ func (c *EC2) DisableVGWRoutePropagationRequest(input *DisableVGWRoutePropagatio
 
 // Disables a virtual private gateway (VGW) from propagating routes to a specified
 // route table of a VPC.
-func (c *EC2) DisableVGWRoutePropagation(input *DisableVGWRoutePropagationInput) (output *DisableVGWRoutePropagationOutput, err error) {
+func (c *EC2) DisableVGWRoutePropagation(input *DisableVGWRoutePropagationInput) (*DisableVGWRoutePropagationOutput, error) {
 	req, out := c.DisableVGWRoutePropagationRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDisableVGWRoutePropagation *aws.Operation
@@ -4888,11 +5275,10 @@ func (c *EC2) DisableVPCClassicLinkRequest(input *DisableVPCClassicLinkInput) (r
 
 // Disables ClassicLink for a VPC. You cannot disable ClassicLink for a VPC
 // that has EC2-Classic instances linked to it.
-func (c *EC2) DisableVPCClassicLink(input *DisableVPCClassicLinkInput) (output *DisableVPCClassicLinkOutput, err error) {
+func (c *EC2) DisableVPCClassicLink(input *DisableVPCClassicLinkInput) (*DisableVPCClassicLinkOutput, error) {
 	req, out := c.DisableVPCClassicLinkRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDisableVPCClassicLink *aws.Operation
@@ -4929,11 +5315,10 @@ func (c *EC2) DisassociateAddressRequest(input *DisassociateAddressInput) (req *
 //
 // This is an idempotent operation. If you perform the operation more than
 // once, Amazon EC2 doesn't return an error.
-func (c *EC2) DisassociateAddress(input *DisassociateAddressInput) (output *DisassociateAddressOutput, err error) {
+func (c *EC2) DisassociateAddress(input *DisassociateAddressInput) (*DisassociateAddressOutput, error) {
 	req, out := c.DisassociateAddressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDisassociateAddress *aws.Operation
@@ -4967,11 +5352,10 @@ func (c *EC2) DisassociateRouteTableRequest(input *DisassociateRouteTableInput) 
 // route table. Instead, it uses the routes in the VPC's main route table. For
 // more information about route tables, see Route Tables (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) DisassociateRouteTable(input *DisassociateRouteTableInput) (output *DisassociateRouteTableOutput, err error) {
+func (c *EC2) DisassociateRouteTable(input *DisassociateRouteTableInput) (*DisassociateRouteTableOutput, error) {
 	req, out := c.DisassociateRouteTableRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opDisassociateRouteTable *aws.Operation
@@ -5001,11 +5385,10 @@ func (c *EC2) EnableVGWRoutePropagationRequest(input *EnableVGWRoutePropagationI
 
 // Enables a virtual private gateway (VGW) to propagate routes to the specified
 // route table of a VPC.
-func (c *EC2) EnableVGWRoutePropagation(input *EnableVGWRoutePropagationInput) (output *EnableVGWRoutePropagationOutput, err error) {
+func (c *EC2) EnableVGWRoutePropagation(input *EnableVGWRoutePropagationInput) (*EnableVGWRoutePropagationOutput, error) {
 	req, out := c.EnableVGWRoutePropagationRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opEnableVGWRoutePropagation *aws.Operation
@@ -5040,11 +5423,10 @@ func (c *EC2) EnableVPCClassicLinkRequest(input *EnableVPCClassicLinkInput) (req
 // range, excluding local routes for VPCs in the 10.0.0.0/16 and 10.1.0.0/16
 // IP address ranges. For more information, see ClassicLink (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) EnableVPCClassicLink(input *EnableVPCClassicLinkInput) (output *EnableVPCClassicLinkOutput, err error) {
+func (c *EC2) EnableVPCClassicLink(input *EnableVPCClassicLinkInput) (*EnableVPCClassicLinkOutput, error) {
 	req, out := c.EnableVPCClassicLinkRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opEnableVPCClassicLink *aws.Operation
@@ -5074,11 +5456,10 @@ func (c *EC2) EnableVolumeIORequest(input *EnableVolumeIOInput) (req *aws.Reques
 
 // Enables I/O operations for a volume that had I/O operations disabled because
 // the data on the volume was potentially inconsistent.
-func (c *EC2) EnableVolumeIO(input *EnableVolumeIOInput) (output *EnableVolumeIOOutput, err error) {
+func (c *EC2) EnableVolumeIO(input *EnableVolumeIOInput) (*EnableVolumeIOOutput, error) {
 	req, out := c.EnableVolumeIORequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opEnableVolumeIO *aws.Operation
@@ -5124,11 +5505,10 @@ func (c *EC2) GetConsoleOutputRequest(input *GetConsoleOutputInput) (req *aws.Re
 //
 // For Windows instances, the instance console output includes output from
 // the EC2Config service.
-func (c *EC2) GetConsoleOutput(input *GetConsoleOutputInput) (output *GetConsoleOutputOutput, err error) {
+func (c *EC2) GetConsoleOutput(input *GetConsoleOutputInput) (*GetConsoleOutputOutput, error) {
 	req, out := c.GetConsoleOutputRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opGetConsoleOutput *aws.Operation
@@ -5170,11 +5550,10 @@ func (c *EC2) GetPasswordDataRequest(input *GetPasswordDataInput) (req *aws.Requ
 // Password generation and encryption takes a few moments. We recommend that
 // you wait up to 15 minutes after launching an instance before trying to retrieve
 // the generated password.
-func (c *EC2) GetPasswordData(input *GetPasswordDataInput) (output *GetPasswordDataOutput, err error) {
+func (c *EC2) GetPasswordData(input *GetPasswordDataInput) (*GetPasswordDataOutput, error) {
 	req, out := c.GetPasswordDataRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opGetPasswordData *aws.Operation
@@ -5202,13 +5581,12 @@ func (c *EC2) ImportImageRequest(input *ImportImageInput) (req *aws.Request, out
 	return
 }
 
-// Import single or multi-volume disk images or Amazon EBS snapshots into an
-// Amazon Machine Image (AMI).
-func (c *EC2) ImportImage(input *ImportImageInput) (output *ImportImageOutput, err error) {
+// Import single or multi-volume disk images or EBS snapshots into an Amazon
+// Machine Image (AMI).
+func (c *EC2) ImportImage(input *ImportImageInput) (*ImportImageOutput, error) {
 	req, out := c.ImportImageRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opImportImage *aws.Operation
@@ -5243,11 +5621,10 @@ func (c *EC2) ImportInstanceRequest(input *ImportInstanceInput) (req *aws.Reques
 // see Using the Command Line Tools to Import Your Virtual Machine to Amazon
 // EC2 (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UploadingYourInstancesandVolumes.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) ImportInstance(input *ImportInstanceInput) (output *ImportInstanceOutput, err error) {
+func (c *EC2) ImportInstance(input *ImportInstanceInput) (*ImportInstanceOutput, error) {
 	req, out := c.ImportInstanceRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opImportInstance *aws.Operation
@@ -5283,11 +5660,10 @@ func (c *EC2) ImportKeyPairRequest(input *ImportKeyPairInput) (req *aws.Request,
 //
 // For more information about key pairs, see Key Pairs (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) ImportKeyPair(input *ImportKeyPairInput) (output *ImportKeyPairOutput, err error) {
+func (c *EC2) ImportKeyPair(input *ImportKeyPairInput) (*ImportKeyPairOutput, error) {
 	req, out := c.ImportKeyPairRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opImportKeyPair *aws.Operation
@@ -5315,12 +5691,11 @@ func (c *EC2) ImportSnapshotRequest(input *ImportSnapshotInput) (req *aws.Reques
 	return
 }
 
-// Import a disk into an Amazon Elastic Block Store (Amazon EBS) snapshot.
-func (c *EC2) ImportSnapshot(input *ImportSnapshotInput) (output *ImportSnapshotOutput, err error) {
+// Imports a disk into an EBS snapshot.
+func (c *EC2) ImportSnapshot(input *ImportSnapshotInput) (*ImportSnapshotOutput, error) {
 	req, out := c.ImportSnapshotRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opImportSnapshot *aws.Operation
@@ -5354,11 +5729,10 @@ func (c *EC2) ImportVolumeRequest(input *ImportVolumeInput) (req *aws.Request, o
 // see Using the Command Line Tools to Import Your Virtual Machine to Amazon
 // EC2 (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UploadingYourInstancesandVolumes.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) ImportVolume(input *ImportVolumeInput) (output *ImportVolumeOutput, err error) {
+func (c *EC2) ImportVolume(input *ImportVolumeInput) (*ImportVolumeOutput, error) {
 	req, out := c.ImportVolumeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opImportVolume *aws.Operation
@@ -5391,11 +5765,10 @@ func (c *EC2) ModifyImageAttributeRequest(input *ModifyImageAttributeInput) (req
 //
 // AWS Marketplace product codes cannot be modified. Images with an AWS Marketplace
 // product code cannot be made public.
-func (c *EC2) ModifyImageAttribute(input *ModifyImageAttributeInput) (output *ModifyImageAttributeOutput, err error) {
+func (c *EC2) ModifyImageAttribute(input *ModifyImageAttributeInput) (*ModifyImageAttributeOutput, error) {
 	req, out := c.ModifyImageAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyImageAttribute *aws.Operation
@@ -5429,11 +5802,10 @@ func (c *EC2) ModifyInstanceAttributeRequest(input *ModifyInstanceAttributeInput
 // To modify some attributes, the instance must be stopped. For more information,
 // see Modifying Attributes of a Stopped Instance (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingAttributesWhileInstanceStopped.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) ModifyInstanceAttribute(input *ModifyInstanceAttributeInput) (output *ModifyInstanceAttributeOutput, err error) {
+func (c *EC2) ModifyInstanceAttribute(input *ModifyInstanceAttributeInput) (*ModifyInstanceAttributeOutput, error) {
 	req, out := c.ModifyInstanceAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyInstanceAttribute *aws.Operation
@@ -5463,11 +5835,10 @@ func (c *EC2) ModifyNetworkInterfaceAttributeRequest(input *ModifyNetworkInterfa
 
 // Modifies the specified network interface attribute. You can specify only
 // one attribute at a time.
-func (c *EC2) ModifyNetworkInterfaceAttribute(input *ModifyNetworkInterfaceAttributeInput) (output *ModifyNetworkInterfaceAttributeOutput, err error) {
+func (c *EC2) ModifyNetworkInterfaceAttribute(input *ModifyNetworkInterfaceAttributeInput) (*ModifyNetworkInterfaceAttributeOutput, error) {
 	req, out := c.ModifyNetworkInterfaceAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyNetworkInterfaceAttribute *aws.Operation
@@ -5502,11 +5873,10 @@ func (c *EC2) ModifyReservedInstancesRequest(input *ModifyReservedInstancesInput
 //
 // For more information, see Modifying Reserved Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) ModifyReservedInstances(input *ModifyReservedInstancesInput) (output *ModifyReservedInstancesOutput, err error) {
+func (c *EC2) ModifyReservedInstances(input *ModifyReservedInstancesInput) (*ModifyReservedInstancesOutput, error) {
 	req, out := c.ModifyReservedInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyReservedInstances *aws.Operation
@@ -5545,11 +5915,10 @@ func (c *EC2) ModifySnapshotAttributeRequest(input *ModifySnapshotAttributeInput
 // in the Amazon Elastic Compute Cloud User Guide.
 //
 //  Snapshots with AWS Marketplace product codes cannot be made public.
-func (c *EC2) ModifySnapshotAttribute(input *ModifySnapshotAttributeInput) (output *ModifySnapshotAttributeOutput, err error) {
+func (c *EC2) ModifySnapshotAttribute(input *ModifySnapshotAttributeInput) (*ModifySnapshotAttributeOutput, error) {
 	req, out := c.ModifySnapshotAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifySnapshotAttribute *aws.Operation
@@ -5578,11 +5947,10 @@ func (c *EC2) ModifySubnetAttributeRequest(input *ModifySubnetAttributeInput) (r
 }
 
 // Modifies a subnet attribute.
-func (c *EC2) ModifySubnetAttribute(input *ModifySubnetAttributeInput) (output *ModifySubnetAttributeOutput, err error) {
+func (c *EC2) ModifySubnetAttribute(input *ModifySubnetAttributeInput) (*ModifySubnetAttributeOutput, error) {
 	req, out := c.ModifySubnetAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifySubnetAttribute *aws.Operation
@@ -5611,14 +5979,47 @@ func (c *EC2) ModifyVPCAttributeRequest(input *ModifyVPCAttributeInput) (req *aw
 }
 
 // Modifies the specified attribute of the specified VPC.
-func (c *EC2) ModifyVPCAttribute(input *ModifyVPCAttributeInput) (output *ModifyVPCAttributeOutput, err error) {
+func (c *EC2) ModifyVPCAttribute(input *ModifyVPCAttributeInput) (*ModifyVPCAttributeOutput, error) {
 	req, out := c.ModifyVPCAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyVPCAttribute *aws.Operation
+
+// ModifyVPCEndpointRequest generates a request for the ModifyVPCEndpoint operation.
+func (c *EC2) ModifyVPCEndpointRequest(input *ModifyVPCEndpointInput) (req *aws.Request, output *ModifyVPCEndpointOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opModifyVPCEndpoint == nil {
+		opModifyVPCEndpoint = &aws.Operation{
+			Name:       "ModifyVpcEndpoint",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &ModifyVPCEndpointInput{}
+	}
+
+	req = c.newRequest(opModifyVPCEndpoint, input, output)
+	output = &ModifyVPCEndpointOutput{}
+	req.Data = output
+	return
+}
+
+// Modifies attributes of a specified VPC endpoint. You can modify the policy
+// associated with the endpoint, and you can add and remove route tables associated
+// with the endpoint.
+func (c *EC2) ModifyVPCEndpoint(input *ModifyVPCEndpointInput) (*ModifyVPCEndpointOutput, error) {
+	req, out := c.ModifyVPCEndpointRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opModifyVPCEndpoint *aws.Operation
 
 // ModifyVolumeAttributeRequest generates a request for the ModifyVolumeAttribute operation.
 func (c *EC2) ModifyVolumeAttributeRequest(input *ModifyVolumeAttributeInput) (req *aws.Request, output *ModifyVolumeAttributeOutput) {
@@ -5653,11 +6054,10 @@ func (c *EC2) ModifyVolumeAttributeRequest(input *ModifyVolumeAttributeInput) (r
 // You can change the default behavior to resume I/O operations. We recommend
 // that you change this only for boot volumes or for volumes that are stateless
 // or disposable.
-func (c *EC2) ModifyVolumeAttribute(input *ModifyVolumeAttributeInput) (output *ModifyVolumeAttributeOutput, err error) {
+func (c *EC2) ModifyVolumeAttribute(input *ModifyVolumeAttributeInput) (*ModifyVolumeAttributeOutput, error) {
 	req, out := c.ModifyVolumeAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opModifyVolumeAttribute *aws.Operation
@@ -5688,14 +6088,51 @@ func (c *EC2) MonitorInstancesRequest(input *MonitorInstancesInput) (req *aws.Re
 // Enables monitoring for a running instance. For more information about monitoring
 // instances, see Monitoring Your Instances and Volumes (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) MonitorInstances(input *MonitorInstancesInput) (output *MonitorInstancesOutput, err error) {
+func (c *EC2) MonitorInstances(input *MonitorInstancesInput) (*MonitorInstancesOutput, error) {
 	req, out := c.MonitorInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opMonitorInstances *aws.Operation
+
+// MoveAddressToVPCRequest generates a request for the MoveAddressToVPC operation.
+func (c *EC2) MoveAddressToVPCRequest(input *MoveAddressToVPCInput) (req *aws.Request, output *MoveAddressToVPCOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opMoveAddressToVPC == nil {
+		opMoveAddressToVPC = &aws.Operation{
+			Name:       "MoveAddressToVpc",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &MoveAddressToVPCInput{}
+	}
+
+	req = c.newRequest(opMoveAddressToVPC, input, output)
+	output = &MoveAddressToVPCOutput{}
+	req.Data = output
+	return
+}
+
+// Moves an Elastic IP address from the EC2-Classic platform to the EC2-VPC
+// platform. The Elastic IP address must be allocated to your account, and it
+// must not be associated with an instance. After the Elastic IP address is
+// moved, it is no longer available for use in the EC2-Classic platform, unless
+// you move it back using the RestoreAddressToClassic request. You cannot move
+// an Elastic IP address that's allocated for use in the EC2-VPC platform to
+// the EC2-Classic platform.
+func (c *EC2) MoveAddressToVPC(input *MoveAddressToVPCInput) (*MoveAddressToVPCOutput, error) {
+	req, out := c.MoveAddressToVPCRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opMoveAddressToVPC *aws.Operation
 
 // PurchaseReservedInstancesOfferingRequest generates a request for the PurchaseReservedInstancesOffering operation.
 func (c *EC2) PurchaseReservedInstancesOfferingRequest(input *PurchaseReservedInstancesOfferingInput) (req *aws.Request, output *PurchaseReservedInstancesOfferingOutput) {
@@ -5722,9 +6159,8 @@ func (c *EC2) PurchaseReservedInstancesOfferingRequest(input *PurchaseReservedIn
 
 // Purchases a Reserved Instance for use with your account. With Amazon EC2
 // Reserved Instances, you obtain a capacity reservation for a certain instance
-// configuration over a specified period of time. You pay a lower usage rate
-// than with On-Demand instances for the time that you actually use the capacity
-// reservation.
+// configuration over a specified period of time and pay a lower hourly rate
+// compared to on-Demand Instance pricing.
 //
 // Use DescribeReservedInstancesOfferings to get a list of Reserved Instance
 // offerings that match your specifications. After you've purchased a Reserved
@@ -5733,11 +6169,10 @@ func (c *EC2) PurchaseReservedInstancesOfferingRequest(input *PurchaseReservedIn
 // For more information, see Reserved Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts-on-demand-reserved-instances.html)
 // and Reserved Instance Marketplace (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) PurchaseReservedInstancesOffering(input *PurchaseReservedInstancesOfferingInput) (output *PurchaseReservedInstancesOfferingOutput, err error) {
+func (c *EC2) PurchaseReservedInstancesOffering(input *PurchaseReservedInstancesOfferingInput) (*PurchaseReservedInstancesOfferingOutput, error) {
 	req, out := c.PurchaseReservedInstancesOfferingRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opPurchaseReservedInstancesOffering *aws.Operation
@@ -5776,11 +6211,10 @@ func (c *EC2) RebootInstancesRequest(input *RebootInstancesInput) (req *aws.Requ
 // For more information about troubleshooting, see Getting Console Output and
 // Rebooting Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-console.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) RebootInstances(input *RebootInstancesInput) (output *RebootInstancesOutput, err error) {
+func (c *EC2) RebootInstances(input *RebootInstancesInput) (*RebootInstancesOutput, error) {
 	req, out := c.RebootInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRebootInstances *aws.Operation
@@ -5828,11 +6262,10 @@ func (c *EC2) RegisterImageRequest(input *RegisterImageInput) (req *aws.Request,
 //
 // You can't register an image where a secondary (non-root) snapshot has AWS
 // Marketplace product codes.
-func (c *EC2) RegisterImage(input *RegisterImageInput) (output *RegisterImageOutput, err error) {
+func (c *EC2) RegisterImage(input *RegisterImageInput) (*RegisterImageOutput, error) {
 	req, out := c.RegisterImageRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRegisterImage *aws.Operation
@@ -5865,11 +6298,10 @@ func (c *EC2) RejectVPCPeeringConnectionRequest(input *RejectVPCPeeringConnectio
 // request to view your outstanding VPC peering connection requests. To delete
 // an active VPC peering connection, or to delete a VPC peering connection request
 // that you initiated, use DeleteVpcPeeringConnection.
-func (c *EC2) RejectVPCPeeringConnection(input *RejectVPCPeeringConnectionInput) (output *RejectVPCPeeringConnectionOutput, err error) {
+func (c *EC2) RejectVPCPeeringConnection(input *RejectVPCPeeringConnectionInput) (*RejectVPCPeeringConnectionOutput, error) {
 	req, out := c.RejectVPCPeeringConnectionRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRejectVPCPeeringConnection *aws.Operation
@@ -5912,11 +6344,10 @@ func (c *EC2) ReleaseAddressRequest(input *ReleaseAddressInput) (req *aws.Reques
 // [Nondefault VPC] You must use DisassociateAddress to disassociate the Elastic
 // IP address before you try to release it. Otherwise, Amazon EC2 returns an
 // error (InvalidIPAddress.InUse).
-func (c *EC2) ReleaseAddress(input *ReleaseAddressInput) (output *ReleaseAddressOutput, err error) {
+func (c *EC2) ReleaseAddress(input *ReleaseAddressInput) (*ReleaseAddressOutput, error) {
 	req, out := c.ReleaseAddressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opReleaseAddress *aws.Operation
@@ -5948,11 +6379,10 @@ func (c *EC2) ReplaceNetworkACLAssociationRequest(input *ReplaceNetworkACLAssoci
 // create a subnet, it's automatically associated with the default network ACL.
 // For more information about network ACLs, see Network ACLs (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) ReplaceNetworkACLAssociation(input *ReplaceNetworkACLAssociationInput) (output *ReplaceNetworkACLAssociationOutput, err error) {
+func (c *EC2) ReplaceNetworkACLAssociation(input *ReplaceNetworkACLAssociationInput) (*ReplaceNetworkACLAssociationOutput, error) {
 	req, out := c.ReplaceNetworkACLAssociationRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opReplaceNetworkACLAssociation *aws.Operation
@@ -5983,11 +6413,10 @@ func (c *EC2) ReplaceNetworkACLEntryRequest(input *ReplaceNetworkACLEntryInput) 
 // Replaces an entry (rule) in a network ACL. For more information about network
 // ACLs, see Network ACLs (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) ReplaceNetworkACLEntry(input *ReplaceNetworkACLEntryInput) (output *ReplaceNetworkACLEntryOutput, err error) {
+func (c *EC2) ReplaceNetworkACLEntry(input *ReplaceNetworkACLEntryInput) (*ReplaceNetworkACLEntryOutput, error) {
 	req, out := c.ReplaceNetworkACLEntryRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opReplaceNetworkACLEntry *aws.Operation
@@ -6021,11 +6450,10 @@ func (c *EC2) ReplaceRouteRequest(input *ReplaceRouteInput) (req *aws.Request, o
 //
 // For more information about route tables, see Route Tables (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Route_Tables.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) ReplaceRoute(input *ReplaceRouteInput) (output *ReplaceRouteOutput, err error) {
+func (c *EC2) ReplaceRoute(input *ReplaceRouteInput) (*ReplaceRouteOutput, error) {
 	req, out := c.ReplaceRouteRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opReplaceRoute *aws.Operation
@@ -6062,11 +6490,10 @@ func (c *EC2) ReplaceRouteTableAssociationRequest(input *ReplaceRouteTableAssoci
 // You can also use ReplaceRouteTableAssociation to change which table is the
 // main route table in the VPC. You just specify the main route table's association
 // ID and the route table to be the new main route table.
-func (c *EC2) ReplaceRouteTableAssociation(input *ReplaceRouteTableAssociationInput) (output *ReplaceRouteTableAssociationOutput, err error) {
+func (c *EC2) ReplaceRouteTableAssociation(input *ReplaceRouteTableAssociationInput) (*ReplaceRouteTableAssociationOutput, error) {
 	req, out := c.ReplaceRouteTableAssociationRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opReplaceRouteTableAssociation *aws.Operation
@@ -6101,14 +6528,48 @@ func (c *EC2) ReportInstanceStatusRequest(input *ReportInstanceStatusInput) (req
 // to improve the accuracy of status checks.
 //
 // Use of this action does not change the value returned by DescribeInstanceStatus.
-func (c *EC2) ReportInstanceStatus(input *ReportInstanceStatusInput) (output *ReportInstanceStatusOutput, err error) {
+func (c *EC2) ReportInstanceStatus(input *ReportInstanceStatusInput) (*ReportInstanceStatusOutput, error) {
 	req, out := c.ReportInstanceStatusRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opReportInstanceStatus *aws.Operation
+
+// RequestSpotFleetRequest generates a request for the RequestSpotFleet operation.
+func (c *EC2) RequestSpotFleetRequest(input *RequestSpotFleetInput) (req *aws.Request, output *RequestSpotFleetOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opRequestSpotFleet == nil {
+		opRequestSpotFleet = &aws.Operation{
+			Name:       "RequestSpotFleet",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &RequestSpotFleetInput{}
+	}
+
+	req = c.newRequest(opRequestSpotFleet, input, output)
+	output = &RequestSpotFleetOutput{}
+	req.Data = output
+	return
+}
+
+// Creates a Spot fleet request.
+//
+// For more information, see Spot Fleets (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html)
+// in the Amazon Elastic Compute Cloud User Guide.
+func (c *EC2) RequestSpotFleet(input *RequestSpotFleetInput) (*RequestSpotFleetOutput, error) {
+	req, out := c.RequestSpotFleetRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opRequestSpotFleet *aws.Operation
 
 // RequestSpotInstancesRequest generates a request for the RequestSpotInstances operation.
 func (c *EC2) RequestSpotInstancesRequest(input *RequestSpotInstancesInput) (req *aws.Request, output *RequestSpotInstancesOutput) {
@@ -6139,11 +6600,10 @@ func (c *EC2) RequestSpotInstancesRequest(input *RequestSpotInstancesInput) (req
 // Instance capacity and current Spot Instance requests. For more information,
 // see Spot Instance Requests (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) RequestSpotInstances(input *RequestSpotInstancesInput) (output *RequestSpotInstancesOutput, err error) {
+func (c *EC2) RequestSpotInstances(input *RequestSpotInstancesInput) (*RequestSpotInstancesOutput, error) {
 	req, out := c.RequestSpotInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRequestSpotInstances *aws.Operation
@@ -6174,11 +6634,10 @@ func (c *EC2) ResetImageAttributeRequest(input *ResetImageAttributeInput) (req *
 // Resets an attribute of an AMI to its default value.
 //
 //  The productCodes attribute can't be reset.
-func (c *EC2) ResetImageAttribute(input *ResetImageAttributeInput) (output *ResetImageAttributeOutput, err error) {
+func (c *EC2) ResetImageAttribute(input *ResetImageAttributeInput) (*ResetImageAttributeOutput, error) {
 	req, out := c.ResetImageAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opResetImageAttribute *aws.Operation
@@ -6215,11 +6674,10 @@ func (c *EC2) ResetInstanceAttributeRequest(input *ResetInstanceAttributeInput) 
 // value must be false for a NAT instance to perform NAT. For more information,
 // see NAT Instances (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_NAT_Instance.html)
 // in the Amazon Virtual Private Cloud User Guide.
-func (c *EC2) ResetInstanceAttribute(input *ResetInstanceAttributeInput) (output *ResetInstanceAttributeOutput, err error) {
+func (c *EC2) ResetInstanceAttribute(input *ResetInstanceAttributeInput) (*ResetInstanceAttributeOutput, error) {
 	req, out := c.ResetInstanceAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opResetInstanceAttribute *aws.Operation
@@ -6249,11 +6707,10 @@ func (c *EC2) ResetNetworkInterfaceAttributeRequest(input *ResetNetworkInterface
 
 // Resets a network interface attribute. You can specify only one attribute
 // at a time.
-func (c *EC2) ResetNetworkInterfaceAttribute(input *ResetNetworkInterfaceAttributeInput) (output *ResetNetworkInterfaceAttributeOutput, err error) {
+func (c *EC2) ResetNetworkInterfaceAttribute(input *ResetNetworkInterfaceAttributeInput) (*ResetNetworkInterfaceAttributeOutput, error) {
 	req, out := c.ResetNetworkInterfaceAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opResetNetworkInterfaceAttribute *aws.Operation
@@ -6286,14 +6743,48 @@ func (c *EC2) ResetSnapshotAttributeRequest(input *ResetSnapshotAttributeInput) 
 // For more information on modifying snapshot permissions, see Sharing Snapshots
 // (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-modifying-snapshot-permissions.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) ResetSnapshotAttribute(input *ResetSnapshotAttributeInput) (output *ResetSnapshotAttributeOutput, err error) {
+func (c *EC2) ResetSnapshotAttribute(input *ResetSnapshotAttributeInput) (*ResetSnapshotAttributeOutput, error) {
 	req, out := c.ResetSnapshotAttributeRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opResetSnapshotAttribute *aws.Operation
+
+// RestoreAddressToClassicRequest generates a request for the RestoreAddressToClassic operation.
+func (c *EC2) RestoreAddressToClassicRequest(input *RestoreAddressToClassicInput) (req *aws.Request, output *RestoreAddressToClassicOutput) {
+	oprw.Lock()
+	defer oprw.Unlock()
+
+	if opRestoreAddressToClassic == nil {
+		opRestoreAddressToClassic = &aws.Operation{
+			Name:       "RestoreAddressToClassic",
+			HTTPMethod: "POST",
+			HTTPPath:   "/",
+		}
+	}
+
+	if input == nil {
+		input = &RestoreAddressToClassicInput{}
+	}
+
+	req = c.newRequest(opRestoreAddressToClassic, input, output)
+	output = &RestoreAddressToClassicOutput{}
+	req.Data = output
+	return
+}
+
+// Restores an Elastic IP address that was previously moved to the EC2-VPC platform
+// back to the EC2-Classic platform. You cannot move an Elastic IP address that
+// was originally allocated for use in EC2-VPC. The Elastic IP address must
+// not be associated with an instance or network interface.
+func (c *EC2) RestoreAddressToClassic(input *RestoreAddressToClassicInput) (*RestoreAddressToClassicOutput, error) {
+	req, out := c.RestoreAddressToClassicRequest(input)
+	err := req.Send()
+	return out, err
+}
+
+var opRestoreAddressToClassic *aws.Operation
 
 // RevokeSecurityGroupEgressRequest generates a request for the RevokeSecurityGroupEgress operation.
 func (c *EC2) RevokeSecurityGroupEgressRequest(input *RevokeSecurityGroupEgressInput) (req *aws.Request, output *RevokeSecurityGroupEgressOutput) {
@@ -6329,11 +6820,10 @@ func (c *EC2) RevokeSecurityGroupEgressRequest(input *RevokeSecurityGroupEgressI
 //
 // Rule changes are propagated to instances within the security group as quickly
 // as possible. However, a small delay might occur.
-func (c *EC2) RevokeSecurityGroupEgress(input *RevokeSecurityGroupEgressInput) (output *RevokeSecurityGroupEgressOutput, err error) {
+func (c *EC2) RevokeSecurityGroupEgress(input *RevokeSecurityGroupEgressInput) (*RevokeSecurityGroupEgressOutput, error) {
 	req, out := c.RevokeSecurityGroupEgressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRevokeSecurityGroupEgress *aws.Operation
@@ -6372,11 +6862,10 @@ func (c *EC2) RevokeSecurityGroupIngressRequest(input *RevokeSecurityGroupIngres
 //
 // Rule changes are propagated to instances within the security group as quickly
 // as possible. However, a small delay might occur.
-func (c *EC2) RevokeSecurityGroupIngress(input *RevokeSecurityGroupIngressInput) (output *RevokeSecurityGroupIngressOutput, err error) {
+func (c *EC2) RevokeSecurityGroupIngress(input *RevokeSecurityGroupIngressInput) (*RevokeSecurityGroupIngressOutput, error) {
 	req, out := c.RevokeSecurityGroupIngressRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRevokeSecurityGroupIngress *aws.Operation
@@ -6437,11 +6926,10 @@ func (c *EC2) RunInstancesRequest(input *RunInstancesInput) (req *aws.Request, o
 // Immediately Terminates (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_InstanceStraightToTerminated.html),
 // and Troubleshooting Connecting to Your Instance (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) RunInstances(input *RunInstancesInput) (output *Reservation, err error) {
+func (c *EC2) RunInstances(input *RunInstancesInput) (*Reservation, error) {
 	req, out := c.RunInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opRunInstances *aws.Operation
@@ -6488,11 +6976,10 @@ func (c *EC2) StartInstancesRequest(input *StartInstancesInput) (req *aws.Reques
 //
 // For more information, see Stopping Instances (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) StartInstances(input *StartInstancesInput) (output *StartInstancesOutput, err error) {
+func (c *EC2) StartInstances(input *StartInstancesInput) (*StartInstancesOutput, error) {
 	req, out := c.StartInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opStartInstances *aws.Operation
@@ -6551,11 +7038,10 @@ func (c *EC2) StopInstancesRequest(input *StopInstancesInput) (req *aws.Request,
 // For more information about troubleshooting, see Troubleshooting Stopping
 // Your Instance (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesStopping.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) StopInstances(input *StopInstancesInput) (output *StopInstancesOutput, err error) {
+func (c *EC2) StopInstances(input *StopInstancesInput) (*StopInstancesOutput, error) {
 	req, out := c.StopInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opStopInstances *aws.Operation
@@ -6589,9 +7075,8 @@ func (c *EC2) TerminateInstancesRequest(input *TerminateInstancesInput) (req *aw
 // Terminated instances remain visible after termination (for approximately
 // one hour).
 //
-// By default, Amazon EC2 deletes all Amazon EBS volumes that were attached
-// when the instance launched. Volumes attached after instance launch continue
-// running.
+// By default, Amazon EC2 deletes all EBS volumes that were attached when the
+// instance launched. Volumes attached after instance launch continue running.
 //
 // You can stop, start, and terminate EBS-backed instances. You can only terminate
 // instance store-backed instances. What happens to an instance differs if you
@@ -6605,11 +7090,10 @@ func (c *EC2) TerminateInstancesRequest(input *TerminateInstancesInput) (req *aw
 // For more information about troubleshooting, see Troubleshooting Terminating
 // Your Instance (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesShuttingDown.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) TerminateInstances(input *TerminateInstancesInput) (output *TerminateInstancesOutput, err error) {
+func (c *EC2) TerminateInstances(input *TerminateInstancesInput) (*TerminateInstancesOutput, error) {
 	req, out := c.TerminateInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opTerminateInstances *aws.Operation
@@ -6638,11 +7122,10 @@ func (c *EC2) UnassignPrivateIPAddressesRequest(input *UnassignPrivateIPAddresse
 }
 
 // Unassigns one or more secondary private IP addresses from a network interface.
-func (c *EC2) UnassignPrivateIPAddresses(input *UnassignPrivateIPAddressesInput) (output *UnassignPrivateIPAddressesOutput, err error) {
+func (c *EC2) UnassignPrivateIPAddresses(input *UnassignPrivateIPAddressesInput) (*UnassignPrivateIPAddressesOutput, error) {
 	req, out := c.UnassignPrivateIPAddressesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opUnassignPrivateIPAddresses *aws.Operation
@@ -6673,16 +7156,19 @@ func (c *EC2) UnmonitorInstancesRequest(input *UnmonitorInstancesInput) (req *aw
 // Disables monitoring for a running instance. For more information about monitoring
 // instances, see Monitoring Your Instances and Volumes (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch.html)
 // in the Amazon Elastic Compute Cloud User Guide.
-func (c *EC2) UnmonitorInstances(input *UnmonitorInstancesInput) (output *UnmonitorInstancesOutput, err error) {
+func (c *EC2) UnmonitorInstances(input *UnmonitorInstancesInput) (*UnmonitorInstancesOutput, error) {
 	req, out := c.UnmonitorInstancesRequest(input)
-	output = out
-	err = req.Send()
-	return
+	err := req.Send()
+	return out, err
 }
 
 var opUnmonitorInstances *aws.Operation
 
 type AcceptVPCPeeringConnectionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC peering connection.
@@ -6733,6 +7219,24 @@ type metadataAccountAttributeValue struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a running instance in a Spot fleet.
+type ActiveInstance struct {
+	// The ID of the instance.
+	InstanceID *string `locationName:"instanceId" type:"string"`
+
+	// The instance type.
+	InstanceType *string `locationName:"instanceType" type:"string"`
+
+	// The ID of the Spot Instance request.
+	SpotInstanceRequestID *string `locationName:"spotInstanceRequestId" type:"string"`
+
+	metadataActiveInstance `json:"-" xml:"-"`
+}
+
+type metadataActiveInstance struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 // Describes an Elastic IP address.
 type Address struct {
 	// The ID representing the allocation of the address for use with EC2-VPC.
@@ -6746,7 +7250,7 @@ type Address struct {
 	// (standard) or instances in a VPC (vpc).
 	Domain *string `locationName:"domain" type:"string"`
 
-	// The ID of the instance the address is associated with (if any).
+	// The ID of the instance that the address is associated with (if any).
 	InstanceID *string `locationName:"instanceId" type:"string"`
 
 	// The ID of the network interface.
@@ -6774,6 +7278,10 @@ type AllocateAddressInput struct {
 	// Default: The address is for use with instances in EC2-Classic.
 	Domain *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataAllocateAddressInput `json:"-" xml:"-"`
@@ -6848,6 +7356,10 @@ type AssociateAddressInput struct {
 	// Default: false
 	AllowReassociation *bool `locationName:"allowReassociation" type:"boolean"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance. This is required for EC2-Classic. For EC2-VPC, you
@@ -6892,6 +7404,10 @@ type AssociateDHCPOptionsInput struct {
 	// the VPC.
 	DHCPOptionsID *string `locationName:"DhcpOptionsId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -6913,6 +7429,10 @@ type metadataAssociateDHCPOptionsOutput struct {
 }
 
 type AssociateRouteTableInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the route table.
@@ -6940,6 +7460,10 @@ type metadataAssociateRouteTableOutput struct {
 }
 
 type AttachClassicLinkVPCInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of one or more of the VPC's security groups. You cannot specify security
@@ -6971,6 +7495,10 @@ type metadataAttachClassicLinkVPCOutput struct {
 }
 
 type AttachInternetGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the Internet gateway.
@@ -6998,6 +7526,10 @@ type AttachNetworkInterfaceInput struct {
 	// The index of the device for the network interface attachment.
 	DeviceIndex *int64 `locationName:"deviceIndex" type:"integer" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
@@ -7025,6 +7557,10 @@ type metadataAttachNetworkInterfaceOutput struct {
 }
 
 type AttachVPNGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -7055,13 +7591,17 @@ type AttachVolumeInput struct {
 	// The device name to expose to the instance (for example, /dev/sdh or xvdh).
 	Device *string `type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
 	InstanceID *string `locationName:"InstanceId" type:"string" required:"true"`
 
-	// The ID of the Amazon EBS volume. The volume and instance must be within the
-	// same Availability Zone.
+	// The ID of the EBS volume. The volume and instance must be within the same
+	// Availability Zone.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
 	metadataAttachVolumeInput `json:"-" xml:"-"`
@@ -7100,6 +7640,10 @@ type AuthorizeSecurityGroupEgressInput struct {
 	// a source security group.
 	CIDRIP *string `locationName:"cidrIp" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The start of port range for the TCP and UDP protocols, or an ICMP type number.
@@ -7149,6 +7693,10 @@ type AuthorizeSecurityGroupIngressInput struct {
 	// a source security group.
 	CIDRIP *string `locationName:"CidrIp" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The start of port range for the TCP and UDP protocols, or an ICMP type number.
@@ -7170,11 +7718,14 @@ type AuthorizeSecurityGroupIngressInput struct {
 	IPProtocol *string `locationName:"IpProtocol" type:"string"`
 
 	// [EC2-Classic, default VPC] The name of the source security group. You can't
-	// specify a source security group and a CIDR IP address range.
+	// specify this parameter in combination with the following parameters: the
+	// CIDR IP address range, the start of the port range, and the end of the port
+	// range.
 	SourceSecurityGroupName *string `type:"string"`
 
-	// The ID of the source security group. You can't specify a source security
-	// group and a CIDR IP address range.
+	// The ID of the source security group. You can't specify this parameter in
+	// combination with the following parameters: the CIDR IP address range, the
+	// start of the port range, and the end of the port range.
 	SourceSecurityGroupOwnerID *string `locationName:"SourceSecurityGroupOwnerId" type:"string"`
 
 	// The end of port range for the TCP and UDP protocols, or an ICMP code number.
@@ -7244,8 +7795,8 @@ type BlockDeviceMapping struct {
 	// The device name exposed to the instance (for example, /dev/sdh or xvdh).
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
-	// Parameters used to automatically set up Amazon EBS volumes when the instance
-	// is launched.
+	// Parameters used to automatically set up EBS volumes when the instance is
+	// launched.
 	EBS *EBSBlockDevice `locationName:"ebs" type:"structure"`
 
 	// Suppresses the specified device included in the block device mapping of the
@@ -7272,6 +7823,10 @@ type metadataBlockDeviceMapping struct {
 }
 
 type BundleInstanceInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance to bundle.
@@ -7358,6 +7913,10 @@ type CancelBundleTaskInput struct {
 	// The ID of the bundle task.
 	BundleID *string `locationName:"BundleId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataCancelBundleTaskInput `json:"-" xml:"-"`
@@ -7368,7 +7927,7 @@ type metadataCancelBundleTaskInput struct {
 }
 
 type CancelBundleTaskOutput struct {
-	// The bundle task.
+	// Information about the bundle task.
 	BundleTask *BundleTask `locationName:"bundleInstanceTask" type:"structure"`
 
 	metadataCancelBundleTaskOutput `json:"-" xml:"-"`
@@ -7382,8 +7941,13 @@ type CancelConversionTaskInput struct {
 	// The ID of the conversion task.
 	ConversionTaskID *string `locationName:"conversionTaskId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
+	// The reason for canceling the conversion task.
 	ReasonMessage *string `locationName:"reasonMessage" type:"string"`
 
 	metadataCancelConversionTaskInput `json:"-" xml:"-"`
@@ -7424,9 +7988,13 @@ type CancelImportTaskInput struct {
 	// The reason for canceling the task.
 	CancelReason *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `type:"boolean"`
 
-	// The ID of the ImportImage or ImportSnapshot task to be cancelled.
+	// The ID of the import image or import snapshot task to be canceled.
 	ImportTaskID *string `locationName:"ImportTaskId" type:"string"`
 
 	metadataCancelImportTaskInput `json:"-" xml:"-"`
@@ -7437,13 +8005,13 @@ type metadataCancelImportTaskInput struct {
 }
 
 type CancelImportTaskOutput struct {
-	// The task ID of the ImportImage or ImportSnapshot task being canceled.
+	// The ID of the task being canceled.
 	ImportTaskID *string `locationName:"importTaskId" type:"string"`
 
-	// The current state of the ImportImage or ImportSnapshot task being canceled.
+	// The current state of the task being canceled.
 	PreviousState *string `locationName:"previousState" type:"string"`
 
-	// The current state of the ImportImage or ImportSnapshot task being canceled.
+	// The current state of the task being canceled.
 	State *string `locationName:"state" type:"string"`
 
 	metadataCancelImportTaskOutput `json:"-" xml:"-"`
@@ -7475,7 +8043,97 @@ type metadataCancelReservedInstancesListingOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a Spot fleet error.
+type CancelSpotFleetRequestsError struct {
+	// The error code.
+	Code *string `locationName:"code" type:"string" required:"true"`
+
+	// The description for the error code.
+	Message *string `locationName:"message" type:"string" required:"true"`
+
+	metadataCancelSpotFleetRequestsError `json:"-" xml:"-"`
+}
+
+type metadataCancelSpotFleetRequestsError struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes a Spot fleet request that was not successfully canceled.
+type CancelSpotFleetRequestsErrorItem struct {
+	// The error.
+	Error *CancelSpotFleetRequestsError `locationName:"error" type:"structure" required:"true"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	metadataCancelSpotFleetRequestsErrorItem `json:"-" xml:"-"`
+}
+
+type metadataCancelSpotFleetRequestsErrorItem struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the parameters for CancelSpotFleetRequests.
+type CancelSpotFleetRequestsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The IDs of the Spot fleet requests.
+	SpotFleetRequestIDs []*string `locationName:"spotFleetRequestId" locationNameList:"item" type:"list" required:"true"`
+
+	// Indicates whether to terminate instances for a Spot fleet request if it is
+	// canceled successfully.
+	TerminateInstances *bool `locationName:"terminateInstances" type:"boolean" required:"true"`
+
+	metadataCancelSpotFleetRequestsInput `json:"-" xml:"-"`
+}
+
+type metadataCancelSpotFleetRequestsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the output of CancelSpotFleetRequests.
+type CancelSpotFleetRequestsOutput struct {
+	// Information about the Spot fleet requests that are successfully canceled.
+	SuccessfulFleetRequests []*CancelSpotFleetRequestsSuccessItem `locationName:"successfulFleetRequestSet" locationNameList:"item" type:"list"`
+
+	// Information about the Spot fleet requests that are not successfully canceled.
+	UnsuccessfulFleetRequests []*CancelSpotFleetRequestsErrorItem `locationName:"unsuccessfulFleetRequestSet" locationNameList:"item" type:"list"`
+
+	metadataCancelSpotFleetRequestsOutput `json:"-" xml:"-"`
+}
+
+type metadataCancelSpotFleetRequestsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes a Spot fleet request that was successfully canceled.
+type CancelSpotFleetRequestsSuccessItem struct {
+	// The current state of the Spot fleet request.
+	CurrentSpotFleetRequestState *string `locationName:"currentSpotFleetRequestState" type:"string" required:"true"`
+
+	// The previous state of the Spot fleet request.
+	PreviousSpotFleetRequestState *string `locationName:"previousSpotFleetRequestState" type:"string" required:"true"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	metadataCancelSpotFleetRequestsSuccessItem `json:"-" xml:"-"`
+}
+
+type metadataCancelSpotFleetRequestsSuccessItem struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the parameters for CancelSpotInstanceRequests.
 type CancelSpotInstanceRequestsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more Spot Instance request IDs.
@@ -7488,6 +8146,7 @@ type metadataCancelSpotInstanceRequestsInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the output of CancelSpotInstanceRequests.
 type CancelSpotInstanceRequestsOutput struct {
 	// One or more Spot Instance requests.
 	CancelledSpotInstanceRequests []*CancelledSpotInstanceRequest `locationName:"spotInstanceRequestSet" locationNameList:"item" type:"list"`
@@ -7535,15 +8194,15 @@ type metadataClassicLinkInstance struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Client-specific data.
+// Describes the client-specific data.
 type ClientData struct {
-	// User-defined comment about the upload.
+	// A user-defined comment about the disk upload.
 	Comment *string `type:"string"`
 
 	// The time that the disk upload ends.
 	UploadEnd *time.Time `type:"timestamp" timestampFormat:"iso8601"`
 
-	// The size of the uploaded disk image.
+	// The size of the uploaded disk image, in GiB.
 	UploadSize *float64 `type:"double"`
 
 	// The time that the disk upload starts.
@@ -7557,6 +8216,10 @@ type metadataClientData struct {
 }
 
 type ConfirmProductInstanceInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
@@ -7607,6 +8270,7 @@ type ConversionTask struct {
 	// The status message related to the conversion task.
 	StatusMessage *string `locationName:"statusMessage" type:"string"`
 
+	// Any tags assigned to the task.
 	Tags []*Tag `locationName:"tagSet" locationNameList:"item" type:"list"`
 
 	metadataConversionTask `json:"-" xml:"-"`
@@ -7625,6 +8289,10 @@ type CopyImageInput struct {
 	// A description for the new AMI in the destination region.
 	Description *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The name of the new AMI in the destination region.
@@ -7655,7 +8323,7 @@ type metadataCopyImageOutput struct {
 }
 
 type CopySnapshotInput struct {
-	// A description for the new Amazon EBS snapshot.
+	// A description for the EBS snapshot.
 	Description *string `type:"string"`
 
 	// The destination region to use in the PresignedUrl parameter of a snapshot
@@ -7668,6 +8336,10 @@ type CopySnapshotInput struct {
 	// in your AWS configuration file).
 	DestinationRegion *string `locationName:"destinationRegion" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The pre-signed URL that facilitates copying an encrypted snapshot. This parameter
@@ -7675,10 +8347,10 @@ type CopySnapshotInput struct {
 	// API; it is available as an optional parameter in all other cases. The PresignedUrl
 	// should use the snapshot source endpoint, the CopySnapshot action, and include
 	// the SourceRegion, SourceSnapshotId, and DestinationRegion parameters. The
-	// PresignedUrl must be signed using AWS Signature Version 4. Because Amazon
-	// EBS snapshots are stored in Amazon S3, the signing algorithm for this parameter
-	// uses the same logic that is described in Authenticating Requests by Using
-	// Query Parameters (AWS Signature Version 4) (http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html)
+	// PresignedUrl must be signed using AWS Signature Version 4. Because EBS snapshots
+	// are stored in Amazon S3, the signing algorithm for this parameter uses the
+	// same logic that is described in Authenticating Requests by Using Query Parameters
+	// (AWS Signature Version 4) (http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html)
 	// in the Amazon Simple Storage Service API Reference. An invalid or improperly
 	// signed PresignedUrl will cause the copy operation to fail asynchronously,
 	// and the snapshot will move to an error state.
@@ -7687,7 +8359,7 @@ type CopySnapshotInput struct {
 	// The ID of the region that contains the snapshot to be copied.
 	SourceRegion *string `type:"string" required:"true"`
 
-	// The ID of the Amazon EBS snapshot to copy.
+	// The ID of the EBS snapshot to copy.
 	SourceSnapshotID *string `locationName:"SourceSnapshotId" type:"string" required:"true"`
 
 	metadataCopySnapshotInput `json:"-" xml:"-"`
@@ -7714,6 +8386,10 @@ type CreateCustomerGatewayInput struct {
 	// Default: 65000
 	BGPASN *int64 `locationName:"BgpAsn" type:"integer" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The Internet-routable IP address for the customer gateway's outside interface.
@@ -7745,6 +8421,10 @@ type CreateDHCPOptionsInput struct {
 	// A DHCP configuration option.
 	DHCPConfigurations []*NewDHCPConfiguration `locationName:"dhcpConfiguration" locationNameList:"item" type:"list" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataCreateDHCPOptionsInput `json:"-" xml:"-"`
@@ -7765,6 +8445,52 @@ type metadataCreateDHCPOptionsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type CreateFlowLogsInput struct {
+	// Unique, case-sensitive identifier you provide to ensure the idempotency of
+	// the request. For more information, see How to Ensure Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Run_Instance_Idempotency.html).
+	ClientToken *string `type:"string"`
+
+	// The ARN for the IAM role that's used to post flow logs to a CloudWatch Logs
+	// log group.
+	DeliverLogsPermissionARN *string `locationName:"DeliverLogsPermissionArn" type:"string" required:"true"`
+
+	// The name of the CloudWatch log group.
+	LogGroupName *string `type:"string" required:"true"`
+
+	// One or more subnet, network interface, or VPC IDs.
+	ResourceIDs []*string `locationName:"ResourceId" locationNameList:"item" type:"list" required:"true"`
+
+	// The type of resource on which to create the flow log.
+	ResourceType *string `type:"string" required:"true"`
+
+	// The type of traffic to log.
+	TrafficType *string `type:"string" required:"true"`
+
+	metadataCreateFlowLogsInput `json:"-" xml:"-"`
+}
+
+type metadataCreateFlowLogsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type CreateFlowLogsOutput struct {
+	// Unique, case-sensitive identifier you provide to ensure the idempotency of
+	// the request.
+	ClientToken *string `locationName:"clientToken" type:"string"`
+
+	// The IDs of the flow logs.
+	FlowLogIDs []*string `locationName:"flowLogIdSet" locationNameList:"item" type:"list"`
+
+	// Information about the flow logs that could not be created successfully.
+	Unsuccessful []*UnsuccessfulItem `locationName:"unsuccessful" locationNameList:"item" type:"list"`
+
+	metadataCreateFlowLogsOutput `json:"-" xml:"-"`
+}
+
+type metadataCreateFlowLogsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type CreateImageInput struct {
 	// Information about one or more block device mappings.
 	BlockDeviceMappings []*BlockDeviceMapping `locationName:"blockDeviceMapping" locationNameList:"BlockDeviceMapping" type:"list"`
@@ -7772,6 +8498,10 @@ type CreateImageInput struct {
 	// A description for the new image.
 	Description *string `locationName:"description" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
@@ -7814,6 +8544,7 @@ type CreateInstanceExportTaskInput struct {
 	// maximum length is 255 bytes.
 	Description *string `locationName:"description" type:"string"`
 
+	// The format and location for an instance export task.
 	ExportToS3Task *ExportToS3TaskSpecification `locationName:"exportToS3" type:"structure"`
 
 	// The ID of the instance.
@@ -7830,7 +8561,7 @@ type metadataCreateInstanceExportTaskInput struct {
 }
 
 type CreateInstanceExportTaskOutput struct {
-	// Describes an export task.
+	// Information about the instance export task.
 	ExportTask *ExportTask `locationName:"exportTask" type:"structure"`
 
 	metadataCreateInstanceExportTaskOutput `json:"-" xml:"-"`
@@ -7841,6 +8572,10 @@ type metadataCreateInstanceExportTaskOutput struct {
 }
 
 type CreateInternetGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataCreateInternetGatewayInput `json:"-" xml:"-"`
@@ -7862,6 +8597,10 @@ type metadataCreateInternetGatewayOutput struct {
 }
 
 type CreateKeyPairInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// A unique name for the key pair.
@@ -7898,6 +8637,10 @@ type CreateNetworkACLEntryInput struct {
 	// The network range to allow or deny, in CIDR notation (for example 172.16.0.0/24).
 	CIDRBlock *string `locationName:"cidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Indicates whether this is an egress rule (rule is applied to traffic leaving
@@ -7942,6 +8685,10 @@ type metadataCreateNetworkACLEntryOutput struct {
 }
 
 type CreateNetworkACLInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -7969,6 +8716,10 @@ type CreateNetworkInterfaceInput struct {
 	// A description for the network interface.
 	Description *string `locationName:"description" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The IDs of one or more security groups.
@@ -8016,6 +8767,10 @@ type metadataCreateNetworkInterfaceOutput struct {
 }
 
 type CreatePlacementGroupInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// A name for the placement group.
@@ -8079,10 +8834,18 @@ type metadataCreateReservedInstancesListingOutput struct {
 }
 
 type CreateRouteInput struct {
+	// Unique, case-sensitive identifier you provide to ensure the idempotency of
+	// the request. For more information, see How to Ensure Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
+	ClientToken *string `locationName:"clientToken" type:"string"`
+
 	// The CIDR address block used for the destination match. Routing decisions
 	// are based on the most specific match.
 	DestinationCIDRBlock *string `locationName:"destinationCidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of an Internet gateway or virtual private gateway attached to your
@@ -8110,6 +8873,13 @@ type metadataCreateRouteInput struct {
 }
 
 type CreateRouteOutput struct {
+	// Unique, case-sensitive identifier you provide to ensure the idempotency of
+	// the request.
+	ClientToken *string `locationName:"clientToken" type:"string"`
+
+	// Returns true if the request succeeds; otherwise, it returns an error.
+	Return *bool `locationName:"return" type:"boolean"`
+
 	metadataCreateRouteOutput `json:"-" xml:"-"`
 }
 
@@ -8118,6 +8888,10 @@ type metadataCreateRouteOutput struct {
 }
 
 type CreateRouteTableInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -8151,6 +8925,10 @@ type CreateSecurityGroupInput struct {
 	// Constraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*
 	Description *string `locationName:"GroupDescription" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The name of the security group.
@@ -8187,9 +8965,13 @@ type CreateSnapshotInput struct {
 	// A description for the snapshot.
 	Description *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	// The ID of the Amazon EBS volume.
+	// The ID of the EBS volume.
 	VolumeID *string `locationName:"VolumeId" type:"string" required:"true"`
 
 	metadataCreateSnapshotInput `json:"-" xml:"-"`
@@ -8199,10 +8981,15 @@ type metadataCreateSnapshotInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the parameters for CreateSpotDatafeedSubscription.
 type CreateSpotDatafeedSubscriptionInput struct {
 	// The Amazon S3 bucket in which to store the Spot Instance data feed.
 	Bucket *string `locationName:"bucket" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// A prefix for the data feed file names.
@@ -8215,6 +9002,7 @@ type metadataCreateSpotDatafeedSubscriptionInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the output of CreateSpotDatafeedSubscription.
 type CreateSpotDatafeedSubscriptionOutput struct {
 	// The Spot Instance data feed subscription.
 	SpotDatafeedSubscription *SpotDatafeedSubscription `locationName:"spotDatafeedSubscription" type:"structure"`
@@ -8235,6 +9023,10 @@ type CreateSubnetInput struct {
 	// The network range for the subnet, in CIDR notation. For example, 10.0.0.0/24.
 	CIDRBlock *string `locationName:"CidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -8259,6 +9051,10 @@ type metadataCreateSubnetOutput struct {
 }
 
 type CreateTagsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The IDs of one or more resources to tag. For example, ami-1a2b3c4d.
@@ -8284,10 +9080,62 @@ type metadataCreateTagsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type CreateVPCEndpointInput struct {
+	// Unique, case-sensitive identifier you provide to ensure the idempotency of
+	// the request. For more information, see How to Ensure Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
+	ClientToken *string `type:"string"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// A policy to attach to the endpoint that controls access to the service. The
+	// policy must be in valid JSON format. If this parameter is not specified,
+	// we attach a default policy that allows full access to the service.
+	PolicyDocument *string `type:"string"`
+
+	// One or more route table IDs.
+	RouteTableIDs []*string `locationName:"RouteTableId" locationNameList:"item" type:"list"`
+
+	// The AWS service name, in the form com.amazonaws.<region>.<service>. To get
+	// a list of available services, use the DescribeVpcEndpointServices request.
+	ServiceName *string `type:"string" required:"true"`
+
+	// The ID of the VPC in which the endpoint will be used.
+	VPCID *string `locationName:"VpcId" type:"string" required:"true"`
+
+	metadataCreateVPCEndpointInput `json:"-" xml:"-"`
+}
+
+type metadataCreateVPCEndpointInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type CreateVPCEndpointOutput struct {
+	// Unique, case-sensitive identifier you provide to ensure the idempotency of
+	// the request.
+	ClientToken *string `locationName:"clientToken" type:"string"`
+
+	// Information about the endpoint.
+	VPCEndpoint *VPCEndpoint `locationName:"vpcEndpoint" type:"structure"`
+
+	metadataCreateVPCEndpointOutput `json:"-" xml:"-"`
+}
+
+type metadataCreateVPCEndpointOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type CreateVPCInput struct {
 	// The network range for the VPC, in CIDR notation. For example, 10.0.0.0/16.
 	CIDRBlock *string `locationName:"CidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The supported tenancy options for instances launched into the VPC. A value
@@ -8318,6 +9166,10 @@ type metadataCreateVPCOutput struct {
 }
 
 type CreateVPCPeeringConnectionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The AWS account ID of the owner of the peer VPC.
@@ -8353,6 +9205,10 @@ type CreateVPNConnectionInput struct {
 	// The ID of the customer gateway.
 	CustomerGatewayID *string `locationName:"CustomerGatewayId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Indicates whether the VPN connection requires static routes. If you are creating
@@ -8412,6 +9268,10 @@ type CreateVPNGatewayInput struct {
 	// The Availability Zone for the virtual private gateway.
 	AvailabilityZone *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The type of VPN connection this virtual private gateway supports.
@@ -8440,6 +9300,10 @@ type CreateVolumeInput struct {
 	// to list the Availability Zones that are currently available to you.
 	AvailabilityZone *string `type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Specifies whether the volume should be encrypted. Encrypted Amazon EBS volumes
@@ -8492,6 +9356,8 @@ type metadataCreateVolumeInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes the user or group to be added or removed from the permissions for
+// a volume.
 type CreateVolumePermission struct {
 	// The specific group that is to be added or removed from a volume's list of
 	// create volume permissions.
@@ -8508,6 +9374,7 @@ type metadataCreateVolumePermission struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes modifications to the permissions for a volume.
 type CreateVolumePermissionModifications struct {
 	// Adds a specific AWS account ID or group to a volume's list of create volume
 	// permissions.
@@ -8590,6 +9457,10 @@ type DeleteCustomerGatewayInput struct {
 	// The ID of the customer gateway.
 	CustomerGatewayID *string `locationName:"CustomerGatewayId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataDeleteCustomerGatewayInput `json:"-" xml:"-"`
@@ -8611,6 +9482,10 @@ type DeleteDHCPOptionsInput struct {
 	// The ID of the DHCP options set.
 	DHCPOptionsID *string `locationName:"DhcpOptionsId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataDeleteDHCPOptionsInput `json:"-" xml:"-"`
@@ -8628,7 +9503,33 @@ type metadataDeleteDHCPOptionsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type DeleteFlowLogsInput struct {
+	// One or more flow log IDs.
+	FlowLogIDs []*string `locationName:"FlowLogId" locationNameList:"item" type:"list" required:"true"`
+
+	metadataDeleteFlowLogsInput `json:"-" xml:"-"`
+}
+
+type metadataDeleteFlowLogsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DeleteFlowLogsOutput struct {
+	// Information about the flow logs that could not be deleted successfully.
+	Unsuccessful []*UnsuccessfulItem `locationName:"unsuccessful" locationNameList:"item" type:"list"`
+
+	metadataDeleteFlowLogsOutput `json:"-" xml:"-"`
+}
+
+type metadataDeleteFlowLogsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type DeleteInternetGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the Internet gateway.
@@ -8650,6 +9551,10 @@ type metadataDeleteInternetGatewayOutput struct {
 }
 
 type DeleteKeyPairInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The name of the key pair.
@@ -8671,6 +9576,10 @@ type metadataDeleteKeyPairOutput struct {
 }
 
 type DeleteNetworkACLEntryInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Indicates whether the rule is an egress rule.
@@ -8698,6 +9607,10 @@ type metadataDeleteNetworkACLEntryOutput struct {
 }
 
 type DeleteNetworkACLInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the network ACL.
@@ -8719,6 +9632,10 @@ type metadataDeleteNetworkACLOutput struct {
 }
 
 type DeleteNetworkInterfaceInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the network interface.
@@ -8740,6 +9657,10 @@ type metadataDeleteNetworkInterfaceOutput struct {
 }
 
 type DeletePlacementGroupInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The name of the placement group.
@@ -8765,6 +9686,10 @@ type DeleteRouteInput struct {
 	// the route exactly.
 	DestinationCIDRBlock *string `locationName:"destinationCidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the route table.
@@ -8786,6 +9711,10 @@ type metadataDeleteRouteOutput struct {
 }
 
 type DeleteRouteTableInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the route table.
@@ -8807,6 +9736,10 @@ type metadataDeleteRouteTableOutput struct {
 }
 
 type DeleteSecurityGroupInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the security group. Required for a nondefault VPC.
@@ -8832,9 +9765,13 @@ type metadataDeleteSecurityGroupOutput struct {
 }
 
 type DeleteSnapshotInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	// The ID of the Amazon EBS snapshot.
+	// The ID of the EBS snapshot.
 	SnapshotID *string `locationName:"SnapshotId" type:"string" required:"true"`
 
 	metadataDeleteSnapshotInput `json:"-" xml:"-"`
@@ -8852,7 +9789,12 @@ type metadataDeleteSnapshotOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the parameters for DeleteSpotDatafeedSubscription.
 type DeleteSpotDatafeedSubscriptionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataDeleteSpotDatafeedSubscriptionInput `json:"-" xml:"-"`
@@ -8871,6 +9813,10 @@ type metadataDeleteSpotDatafeedSubscriptionOutput struct {
 }
 
 type DeleteSubnetInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the subnet.
@@ -8892,6 +9838,10 @@ type metadataDeleteSubnetOutput struct {
 }
 
 type DeleteTagsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the resource. For example, ami-1a2b3c4d. You can specify more than
@@ -8918,7 +9868,39 @@ type metadataDeleteTagsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type DeleteVPCEndpointsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// One or more endpoint IDs.
+	VPCEndpointIDs []*string `locationName:"VpcEndpointId" locationNameList:"item" type:"list" required:"true"`
+
+	metadataDeleteVPCEndpointsInput `json:"-" xml:"-"`
+}
+
+type metadataDeleteVPCEndpointsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DeleteVPCEndpointsOutput struct {
+	// Information about the endpoints that were not successfully deleted.
+	Unsuccessful []*UnsuccessfulItem `locationName:"unsuccessful" locationNameList:"item" type:"list"`
+
+	metadataDeleteVPCEndpointsOutput `json:"-" xml:"-"`
+}
+
+type metadataDeleteVPCEndpointsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type DeleteVPCInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -8940,6 +9922,10 @@ type metadataDeleteVPCOutput struct {
 }
 
 type DeleteVPCPeeringConnectionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC peering connection.
@@ -8964,6 +9950,10 @@ type metadataDeleteVPCPeeringConnectionOutput struct {
 }
 
 type DeleteVPNConnectionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPN connection.
@@ -9007,6 +9997,10 @@ type metadataDeleteVPNConnectionRouteOutput struct {
 }
 
 type DeleteVPNGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the virtual private gateway.
@@ -9028,6 +10022,10 @@ type metadataDeleteVPNGatewayOutput struct {
 }
 
 type DeleteVolumeInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the volume.
@@ -9049,6 +10047,10 @@ type metadataDeleteVolumeOutput struct {
 }
 
 type DeregisterImageInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the AMI.
@@ -9073,6 +10075,10 @@ type DescribeAccountAttributesInput struct {
 	// One or more account attribute names.
 	AttributeNames []*string `locationName:"attributeName" locationNameList:"attributeName" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataDescribeAccountAttributesInput `json:"-" xml:"-"`
@@ -9099,6 +10105,10 @@ type DescribeAddressesInput struct {
 	// Default: Describes all your Elastic IP addresses.
 	AllocationIDs []*string `locationName:"AllocationId" locationNameList:"AllocationId" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters. Filter names and values are case-sensitive.
@@ -9148,6 +10158,10 @@ type metadataDescribeAddressesOutput struct {
 }
 
 type DescribeAvailabilityZonesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -9189,6 +10203,10 @@ type DescribeBundleTasksInput struct {
 	// Default: Describes all your bundle tasks.
 	BundleIDs []*string `locationName:"BundleId" locationNameList:"BundleId" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -9235,6 +10253,10 @@ type metadataDescribeBundleTasksOutput struct {
 }
 
 type DescribeClassicLinkInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -9300,8 +10322,13 @@ type DescribeConversionTasksInput struct {
 	// One or more conversion task IDs.
 	ConversionTaskIDs []*string `locationName:"conversionTaskId" locationNameList:"item" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
+	// One or more filters.
 	Filters []*Filter `locationName:"filter" locationNameList:"Filter" type:"list"`
 
 	metadataDescribeConversionTasksInput `json:"-" xml:"-"`
@@ -9312,6 +10339,7 @@ type metadataDescribeConversionTasksInput struct {
 }
 
 type DescribeConversionTasksOutput struct {
+	// Information about the conversion tasks.
 	ConversionTasks []*ConversionTask `locationName:"conversionTasks" locationNameList:"item" type:"list"`
 
 	metadataDescribeConversionTasksOutput `json:"-" xml:"-"`
@@ -9327,6 +10355,10 @@ type DescribeCustomerGatewaysInput struct {
 	// Default: Describes all your customer gateways.
 	CustomerGatewayIDs []*string `locationName:"CustomerGatewayId" locationNameList:"CustomerGatewayId" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -9382,6 +10414,10 @@ type DescribeDHCPOptionsInput struct {
 	// Default: Describes all your DHCP options sets.
 	DHCPOptionsIDs []*string `locationName:"DhcpOptionsId" locationNameList:"DhcpOptionsId" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -9435,12 +10471,62 @@ type metadataDescribeExportTasksInput struct {
 }
 
 type DescribeExportTasksOutput struct {
+	// Information about the export tasks.
 	ExportTasks []*ExportTask `locationName:"exportTaskSet" locationNameList:"item" type:"list"`
 
 	metadataDescribeExportTasksOutput `json:"-" xml:"-"`
 }
 
 type metadataDescribeExportTasksOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeFlowLogsInput struct {
+	// One or more filters.
+	//
+	//  deliver-log-status - The status of the logs delivery (SUCCESS | FAILED).
+	//
+	// flow-log-id - The ID of the flow log.
+	//
+	// log-group-name - The name of the log group.
+	//
+	// resource-id - The ID of the VPC, subnet, or network interface.
+	//
+	// traffic-type - The type of traffic (ACCEPT | REJECT | ALL)
+	Filter []*Filter `locationNameList:"Filter" type:"list"`
+
+	// One or more flow log IDs.
+	FlowLogIDs []*string `locationName:"FlowLogId" locationNameList:"item" type:"list"`
+
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results can be seen by sending another request with the returned
+	// NextToken value. This value can be between 5 and 1000; if MaxResults is given
+	// a value larger than 1000, only 1000 results are returned. You cannot specify
+	// this parameter and the flow log IDs parameter in the same request.
+	MaxResults *int64 `type:"integer"`
+
+	// The token to retrieve the next page of results.
+	NextToken *string `type:"string"`
+
+	metadataDescribeFlowLogsInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeFlowLogsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeFlowLogsOutput struct {
+	// Information about the flow logs.
+	FlowLogs []*FlowLog `locationName:"flowLogSet" locationNameList:"item" type:"list"`
+
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	metadataDescribeFlowLogsOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeFlowLogsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -9452,6 +10538,10 @@ type DescribeImageAttributeInput struct {
 	// to get information about the block device mapping for the AMI.
 	Attribute *string `type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the AMI.
@@ -9498,6 +10588,10 @@ type metadataDescribeImageAttributeOutput struct {
 }
 
 type DescribeImagesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Scopes the images by users with explicit launch permissions. Specify an AWS
@@ -9511,17 +10605,17 @@ type DescribeImagesInput struct {
 	//   block-device-mapping.delete-on-termination - A Boolean value that indicates
 	// whether the Amazon EBS volume is deleted on instance termination.
 	//
-	//   block-device-mapping.device-name - The device name for the Amazon EBS
-	// volume (for example, /dev/sdh).
+	//   block-device-mapping.device-name - The device name for the EBS volume
+	// (for example, /dev/sdh).
 	//
 	//   block-device-mapping.snapshot-id - The ID of the snapshot used for the
-	// Amazon EBS volume.
+	// EBS volume.
 	//
-	//   block-device-mapping.volume-size - The volume size of the Amazon EBS volume,
+	//   block-device-mapping.volume-size - The volume size of the EBS volume,
 	// in GiB.
 	//
-	//   block-device-mapping.volume-type - The volume type of the Amazon EBS volume
-	// (gp2 | standard | io1).
+	//   block-device-mapping.volume-type - The volume type of the EBS volume (gp2
+	// | standard | io1).
 	//
 	//   description - The description of the image (provided during image creation).
 	//
@@ -9606,18 +10700,22 @@ type metadataDescribeImagesOutput struct {
 }
 
 type DescribeImportImageTasksInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `type:"boolean"`
 
-	// Filters to be applied on a describe request.
+	// One or more filters.
 	Filters []*Filter `locationNameList:"Filter" type:"list"`
 
-	// A list of ImportImage task IDs to describe.
+	// A list of import image task IDs.
 	ImportTaskIDs []*string `locationName:"ImportTaskId" locationNameList:"ImportTaskId" type:"list"`
 
-	// The maximum number of results in a page.
+	// The maximum number of results to return in a single request.
 	MaxResults *int64 `type:"integer"`
 
-	// The token to get the next page of paginated describe requests.
+	// A token that indicates the next page of results.
 	NextToken *string `type:"string"`
 
 	metadataDescribeImportImageTasksInput `json:"-" xml:"-"`
@@ -9628,11 +10726,12 @@ type metadataDescribeImportImageTasksInput struct {
 }
 
 type DescribeImportImageTasksOutput struct {
-	// A list of zero or more ImportImage tasks that are currently active or completed/cancelled
-	// in the previous 7 days.
+	// A list of zero or more import image tasks that are currently active or were
+	// completed or canceled in the previous 7 days.
 	ImportImageTasks []*ImportImageTask `locationName:"importImageTaskSet" locationNameList:"item" type:"list"`
 
-	// The token to get the next page of paginated describe requests.
+	// The token to use to get the next page of results. This value is null when
+	// there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	metadataDescribeImportImageTasksOutput `json:"-" xml:"-"`
@@ -9643,18 +10742,22 @@ type metadataDescribeImportImageTasksOutput struct {
 }
 
 type DescribeImportSnapshotTasksInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `type:"boolean"`
 
-	// The filters to be applied on a describe request.
+	// One or more filters.
 	Filters []*Filter `locationNameList:"Filter" type:"list"`
 
-	// A list of IDs of the ImportSnapshot tasks to describe.
+	// A list of import snapshot task IDs.
 	ImportTaskIDs []*string `locationName:"ImportTaskId" locationNameList:"ImportTaskId" type:"list"`
 
-	// The maximum number of results in a page.
+	// The maximum number of results to return in a single request.
 	MaxResults *int64 `type:"integer"`
 
-	// The token to get to the next page of paginated describe requests.
+	// A token that indicates the next page of results.
 	NextToken *string `type:"string"`
 
 	metadataDescribeImportSnapshotTasksInput `json:"-" xml:"-"`
@@ -9665,11 +10768,12 @@ type metadataDescribeImportSnapshotTasksInput struct {
 }
 
 type DescribeImportSnapshotTasksOutput struct {
-	// A list of zero or more ImportSnapshot tasks that are currently active or
-	// completed/cancelled in the previous 7 days.
+	// A list of zero or more import snapshot tasks that are currently active or
+	// were completed or canceled in the previous 7 days.
 	ImportSnapshotTasks []*ImportSnapshotTask `locationName:"importSnapshotTaskSet" locationNameList:"item" type:"list"`
 
-	// The token to get to the next page of paginated describe requests.
+	// The token to use to get the next page of results. This value is null when
+	// there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	metadataDescribeImportSnapshotTasksOutput `json:"-" xml:"-"`
@@ -9683,6 +10787,10 @@ type DescribeInstanceAttributeInput struct {
 	// The instance attribute.
 	Attribute *string `locationName:"attribute" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
@@ -9751,28 +10859,32 @@ type metadataDescribeInstanceAttributeOutput struct {
 }
 
 type DescribeInstanceStatusInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
 	//
 	//   availability-zone - The Availability Zone of the instance.
 	//
-	//   event.code - The code identifying the type of event (instance-reboot |
-	// system-reboot | system-maintenance | instance-retirement | instance-stop).
+	//   event.code - The code for the scheduled event (instance-reboot | system-reboot
+	// | system-maintenance | instance-retirement | instance-stop).
 	//
 	//   event.description - A description of the event.
 	//
-	//   event.not-after - The latest end time for the scheduled event, for example:
-	// 2010-09-15T17:15:20.000Z.
+	//   event.not-after - The latest end time for the scheduled event (for example,
+	// 2014-09-15T17:15:20.000Z).
 	//
-	//   event.not-before - The earliest start time for the scheduled event, for
-	// example: 2010-09-15T17:15:20.000Z.
+	//   event.not-before - The earliest start time for the scheduled event (for
+	// example, 2014-09-15T17:15:20.000Z).
 	//
-	//   instance-state-code - A code representing the state of the instance, as
-	// a 16-bit unsigned integer. The high byte is an opaque internal value and
-	// should be ignored. The low byte is set based on the state represented. The
-	// valid values are 0 (pending), 16 (running), 32 (shutting-down), 48 (terminated),
-	// 64 (stopping), and 80 (stopped).
+	//   instance-state-code - The code for the instance state, as a 16-bit unsigned
+	// integer. The high byte is an opaque internal value and should be ignored.
+	// The low byte is set based on the state represented. The valid values are
+	// 0 (pending), 16 (running), 32 (shutting-down), 48 (terminated), 64 (stopping),
+	// and 80 (stopped).
 	//
 	//   instance-state-name - The state of the instance (pending | running | shutting-down
 	// | terminated | stopping | stopped).
@@ -9837,6 +10949,10 @@ type metadataDescribeInstanceStatusOutput struct {
 }
 
 type DescribeInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -9845,19 +10961,19 @@ type DescribeInstancesInput struct {
 	//
 	//   availability-zone - The Availability Zone of the instance.
 	//
-	//   block-device-mapping.attach-time - The attach time for an Amazon EBS volume
-	// mapped to the instance, for example, 2010-09-15T17:15:20.000Z.
+	//   block-device-mapping.attach-time - The attach time for an EBS volume mapped
+	// to the instance, for example, 2010-09-15T17:15:20.000Z.
 	//
 	//   block-device-mapping.delete-on-termination - A Boolean that indicates
-	// whether the Amazon EBS volume is deleted on instance termination.
+	// whether the EBS volume is deleted on instance termination.
 	//
-	//   block-device-mapping.device-name - The device name for the Amazon EBS
-	// volume (for example, /dev/sdh or xvdh).
+	//   block-device-mapping.device-name - The device name for the EBS volume
+	// (for example, /dev/sdh or xvdh).
 	//
-	//   block-device-mapping.status - The status for the Amazon EBS volume (attaching
+	//   block-device-mapping.status - The status for the EBS volume (attaching
 	// | attached | detaching | detached).
 	//
-	//   block-device-mapping.volume-id - The volume ID of the Amazon EBS volume.
+	//   block-device-mapping.volume-id - The volume ID of the EBS volume.
 	//
 	//   client-token - The idempotency token you provided when you launched the
 	// instance.
@@ -10103,6 +11219,10 @@ type metadataDescribeInstancesOutput struct {
 }
 
 type DescribeInternetGatewaysInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10151,6 +11271,10 @@ type metadataDescribeInternetGatewaysOutput struct {
 }
 
 type DescribeKeyPairsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10183,7 +11307,59 @@ type metadataDescribeKeyPairsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type DescribeMovingAddressesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// One or more filters.
+	//
+	//   moving-status - The status of the Elastic IP address (MovingToVpc | RestoringToClassic).
+	Filters []*Filter `locationName:"filter" locationNameList:"Filter" type:"list"`
+
+	// The maximum number of results to return for the request in a single page.
+	// The remaining results of the initial request can be seen by sending another
+	// request with the returned NextToken value. This value can be between 5 and
+	// 1000; if MaxResults is given a value outside of this range, an error is returned.
+	//
+	// Default: If no value is provided, the default is 1000.
+	MaxResults *int64 `locationName:"maxResults" type:"integer"`
+
+	// The token to use to retrieve the next page of results.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// One or more Elastic IP addresses.
+	PublicIPs []*string `locationName:"publicIp" locationNameList:"item" type:"list"`
+
+	metadataDescribeMovingAddressesInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeMovingAddressesInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeMovingAddressesOutput struct {
+	// The status for each Elastic IP address.
+	MovingAddressStatuses []*MovingAddressStatus `locationName:"movingAddressStatusSet" locationNameList:"item" type:"list"`
+
+	// The token to use to retrieve the next page of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	metadataDescribeMovingAddressesOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeMovingAddressesOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type DescribeNetworkACLsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10262,6 +11438,10 @@ type DescribeNetworkInterfaceAttributeInput struct {
 	// The attribute of the network interface.
 	Attribute *string `locationName:"attribute" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the network interface.
@@ -10298,6 +11478,10 @@ type metadataDescribeNetworkInterfaceAttributeOutput struct {
 }
 
 type DescribeNetworkInterfacesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10425,6 +11609,10 @@ type metadataDescribeNetworkInterfacesOutput struct {
 }
 
 type DescribePlacementGroupsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10460,7 +11648,62 @@ type metadataDescribePlacementGroupsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type DescribePrefixListsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// One or more filters.
+	//
+	//   prefix-list-id: The ID of a prefix list.
+	//
+	//   prefix-list-name: The name of a prefix list.
+	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
+
+	// The maximum number of items to return for this request. The request returns
+	// a token that you can specify in a subsequent call to get the next set of
+	// results.
+	//
+	// Constraint: If the value specified is greater than 1000, we return only
+	// 1000 items.
+	MaxResults *int64 `type:"integer"`
+
+	// The token for the next set of items to return. (You received this token from
+	// a prior call.)
+	NextToken *string `type:"string"`
+
+	// One or more prefix list IDs.
+	PrefixListIDs []*string `locationName:"PrefixListId" locationNameList:"item" type:"list"`
+
+	metadataDescribePrefixListsInput `json:"-" xml:"-"`
+}
+
+type metadataDescribePrefixListsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribePrefixListsOutput struct {
+	// The token to use when requesting the next set of items. If there are no additional
+	// items to return, the string is empty.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// All available prefix lists.
+	PrefixLists []*PrefixList `locationName:"prefixListSet" locationNameList:"item" type:"list"`
+
+	metadataDescribePrefixListsOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribePrefixListsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type DescribeRegionsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10492,6 +11735,10 @@ type metadataDescribeRegionsOutput struct {
 }
 
 type DescribeReservedInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10502,7 +11749,7 @@ type DescribeReservedInstancesInput struct {
 	//   duration - The duration of the Reserved Instance (one year or three years),
 	// in seconds (31536000 | 94608000).
 	//
-	//   end - The time when the Reserved Instance expires (for example, 2014-08-07T11:54:42.000Z).
+	//   end - The time when the Reserved Instance expires (for example, 2015-08-07T11:54:42.000Z).
 	//
 	//   fixed-price - The purchase price of the Reserved Instance (for example,
 	// 9800.0).
@@ -10510,15 +11757,21 @@ type DescribeReservedInstancesInput struct {
 	//   instance-type - The instance type on which the Reserved Instance can be
 	// used.
 	//
-	//   product-description - The product description of the Reserved Instance
-	// (Linux/UNIX | Linux/UNIX (Amazon VPC) | Windows | Windows (Amazon VPC)).
+	//   product-description - The Reserved Instance product platform description.
+	// Instances that include (Amazon VPC) in the product platform description will
+	// only be displayed to EC2-Classic account holders and are for use with Amazon
+	// VPC. (Linux/UNIX | Linux/UNIX (Amazon VPC) | SUSE Linux | SUSE Linux (Amazon
+	// VPC) | Red Hat Enterprise Linux | Red Hat Enterprise Linux (Amazon VPC) |
+	// Windows | Windows (Amazon VPC) | Windows with SQL Server Standard | Windows
+	// with SQL Server Standard (Amazon VPC) | Windows with SQL Server Web | Windows
+	// with SQL Server Web (Amazon VPC)).
 	//
 	//   reserved-instances-id - The ID of the Reserved Instance.
 	//
 	//   start - The time at which the Reserved Instance purchase request was placed
 	// (for example, 2014-08-07T11:54:42.000Z).
 	//
-	//   state - The state of the Reserved Instance (pending-payment | active |
+	//   state - The state of the Reserved Instance (payment-pending | active |
 	// payment-failed | retired).
 	//
 	//   tag:key=value - The key/value combination of a tag assigned to the resource.
@@ -10661,6 +11914,10 @@ type DescribeReservedInstancesOfferingsInput struct {
 	// The Availability Zone in which the Reserved Instance can be used.
 	AvailabilityZone *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10681,8 +11938,14 @@ type DescribeReservedInstancesOfferingsInput struct {
 	// When this filter is not used, which is the default behavior, all offerings
 	// from AWS and Reserved Instance Marketplace are listed.
 	//
-	//   product-description - The description of the Reserved Instance (Linux/UNIX
-	// | Linux/UNIX (Amazon VPC) | Windows | Windows (Amazon VPC)).
+	//   product-description - The Reserved Instance product platform description.
+	// Instances that include (Amazon VPC) in the product platform description will
+	// only be displayed to EC2-Classic account holders and are for use with Amazon
+	// VPC. (Linux/UNIX | Linux/UNIX (Amazon VPC) | SUSE Linux | SUSE Linux (Amazon
+	// VPC) | Red Hat Enterprise Linux | Red Hat Enterprise Linux (Amazon VPC) |
+	// Windows | Windows (Amazon VPC)) | Windows with SQL Server Standard | Windows
+	// with SQL Server Standard (Amazon VPC) | Windows with SQL Server Web |  Windows
+	// with SQL Server Web (Amazon VPC))
 	//
 	//   reserved-instances-offering-id - The Reserved Instances offering ID.
 	//
@@ -10735,8 +11998,8 @@ type DescribeReservedInstancesOfferingsInput struct {
 	// Reserved Instance offering type.
 	OfferingType *string `locationName:"offeringType" type:"string"`
 
-	// The Reserved Instance description. Instances that include (Amazon VPC) in
-	// the description are for use with Amazon VPC.
+	// The Reserved Instance product platform description. Instances that include
+	// (Amazon VPC) in the description are for use with Amazon VPC.
 	ProductDescription *string `type:"string"`
 
 	// One or more Reserved Instances offering IDs.
@@ -10776,6 +12039,10 @@ type metadataDescribeReservedInstancesOutput struct {
 }
 
 type DescribeRouteTablesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -10795,6 +12062,9 @@ type DescribeRouteTablesInput struct {
 	//
 	//   route.destination-cidr-block - The CIDR range specified in a route in
 	// the table.
+	//
+	//   route.destination-prefix-list-id - The ID (prefix) of the AWS service
+	// specified in a route in the table.
 	//
 	//   route.gateway-id - The ID of a gateway specified in a route in the table.
 	//
@@ -10854,11 +12124,18 @@ type metadataDescribeRouteTablesOutput struct {
 }
 
 type DescribeSecurityGroupsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
 	//
 	//   description - The description of the security group.
+	//
+	//   egress.ip-permission.prefix-list-id - The ID (prefix) of the AWS service
+	// to which the security group allows access.
 	//
 	//   group-id - The ID of the security group.
 	//
@@ -10929,9 +12206,13 @@ type DescribeSnapshotAttributeInput struct {
 	// The snapshot attribute you would like to view.
 	Attribute *string `type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
-	// The ID of the Amazon EBS snapshot.
+	// The ID of the EBS snapshot.
 	SnapshotID *string `locationName:"SnapshotId" type:"string" required:"true"`
 
 	metadataDescribeSnapshotAttributeInput `json:"-" xml:"-"`
@@ -10948,7 +12229,7 @@ type DescribeSnapshotAttributeOutput struct {
 	// A list of product codes.
 	ProductCodes []*ProductCode `locationName:"productCodes" locationNameList:"item" type:"list"`
 
-	// The ID of the Amazon EBS snapshot.
+	// The ID of the EBS snapshot.
 	SnapshotID *string `locationName:"snapshotId" type:"string"`
 
 	metadataDescribeSnapshotAttributeOutput `json:"-" xml:"-"`
@@ -10959,6 +12240,10 @@ type metadataDescribeSnapshotAttributeOutput struct {
 }
 
 type DescribeSnapshotsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11040,6 +12325,7 @@ type DescribeSnapshotsOutput struct {
 	// there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
+	// Information about the snapshots.
 	Snapshots []*Snapshot `locationName:"snapshotSet" locationNameList:"item" type:"list"`
 
 	metadataDescribeSnapshotsOutput `json:"-" xml:"-"`
@@ -11049,7 +12335,12 @@ type metadataDescribeSnapshotsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the parameters for DescribeSpotDatafeedSubscription.
 type DescribeSpotDatafeedSubscriptionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataDescribeSpotDatafeedSubscriptionInput `json:"-" xml:"-"`
@@ -11059,6 +12350,7 @@ type metadataDescribeSpotDatafeedSubscriptionInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the output of DescribeSpotDatafeedSubscription.
 type DescribeSpotDatafeedSubscriptionOutput struct {
 	// The Spot Instance data feed subscription.
 	SpotDatafeedSubscription *SpotDatafeedSubscription `locationName:"spotDatafeedSubscription" type:"structure"`
@@ -11070,7 +12362,160 @@ type metadataDescribeSpotDatafeedSubscriptionOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the parameters for DescribeSpotFleetInstances.
+type DescribeSpotFleetInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The maximum number of results to return in a single call. Specify a value
+	// between 1 and 1000. The default value is 1000. To retrieve the remaining
+	// results, make another call with the returned NextToken value.
+	MaxResults *int64 `locationName:"maxResults" type:"integer"`
+
+	// The token for the next set of results.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	metadataDescribeSpotFleetInstancesInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeSpotFleetInstancesInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the output of DescribeSpotFleetInstances.
+type DescribeSpotFleetInstancesOutput struct {
+	// The running instances. Note that this list is refreshed periodically and
+	// might be out of date.
+	ActiveInstances []*ActiveInstance `locationName:"activeInstanceSet" locationNameList:"item" type:"list" required:"true"`
+
+	// The token required to retrieve the next set of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	metadataDescribeSpotFleetInstancesOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeSpotFleetInstancesOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the parameters for DescribeSpotFleetRequestHistory.
+type DescribeSpotFleetRequestHistoryInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The type of events to describe. By default, all events are described.
+	EventType *string `locationName:"eventType" type:"string"`
+
+	// The maximum number of results to return in a single call. Specify a value
+	// between 1 and 1000. The default value is 1000. To retrieve the remaining
+	// results, make another call with the returned NextToken value.
+	MaxResults *int64 `locationName:"maxResults" type:"integer"`
+
+	// The token for the next set of results.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	// The starting date and time for the events, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	StartTime *time.Time `locationName:"startTime" type:"timestamp" timestampFormat:"iso8601" required:"true"`
+
+	metadataDescribeSpotFleetRequestHistoryInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeSpotFleetRequestHistoryInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the output of DescribeSpotFleetRequestHistory.
+type DescribeSpotFleetRequestHistoryOutput struct {
+	// Information about the events in the history of the Spot fleet request.
+	HistoryRecords []*HistoryRecord `locationName:"historyRecordSet" locationNameList:"item" type:"list" required:"true"`
+
+	// The last date and time for the events, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	// All records up to this time were retrieved.
+	//
+	// If nextToken indicates that there are more results, this value is not present.
+	LastEvaluatedTime *time.Time `locationName:"lastEvaluatedTime" type:"timestamp" timestampFormat:"iso8601" required:"true"`
+
+	// The token required to retrieve the next set of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	// The starting date and time for the events, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	StartTime *time.Time `locationName:"startTime" type:"timestamp" timestampFormat:"iso8601" required:"true"`
+
+	metadataDescribeSpotFleetRequestHistoryOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeSpotFleetRequestHistoryOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the parameters for DescribeSpotFleetRequests.
+type DescribeSpotFleetRequestsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The maximum number of results to return in a single call. Specify a value
+	// between 1 and 1000. The default value is 1000. To retrieve the remaining
+	// results, make another call with the returned NextToken value.
+	MaxResults *int64 `locationName:"maxResults" type:"integer"`
+
+	// The token for the next set of results.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// The IDs of the Spot fleet requests.
+	SpotFleetRequestIDs []*string `locationName:"spotFleetRequestId" locationNameList:"item" type:"list"`
+
+	metadataDescribeSpotFleetRequestsInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeSpotFleetRequestsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the output of DescribeSpotFleetRequests.
+type DescribeSpotFleetRequestsOutput struct {
+	// The token required to retrieve the next set of results. This value is null
+	// when there are no more results to return.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// Information about the configuration of your Spot fleet.
+	SpotFleetRequestConfigs []*SpotFleetRequestConfig `locationName:"spotFleetRequestConfigSet" locationNameList:"item" type:"list" required:"true"`
+
+	metadataDescribeSpotFleetRequestsOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeSpotFleetRequestsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the parameters for DescribeSpotInstanceRequests.
 type DescribeSpotInstanceRequestsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11193,6 +12638,7 @@ type metadataDescribeSpotInstanceRequestsInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the output of DescribeSpotInstanceRequests.
 type DescribeSpotInstanceRequestsOutput struct {
 	// One or more Spot Instance requests.
 	SpotInstanceRequests []*SpotInstanceRequest `locationName:"spotInstanceRequestSet" locationNameList:"item" type:"list"`
@@ -11204,14 +12650,19 @@ type metadataDescribeSpotInstanceRequestsOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the parameters for DescribeSpotPriceHistory.
 type DescribeSpotPriceHistoryInput struct {
 	// Filters the results by the specified Availability Zone.
 	AvailabilityZone *string `locationName:"availabilityZone" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The date and time, up to the current date, from which to stop retrieving
-	// the price history data.
+	// the price history data, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
 	EndTime *time.Time `locationName:"endTime" type:"timestamp" timestampFormat:"iso8601"`
 
 	// One or more filters.
@@ -11227,29 +12678,27 @@ type DescribeSpotPriceHistoryInput struct {
 	//   spot-price - The Spot Price. The value must match exactly (or use wildcards;
 	// greater than or less than comparison is not supported).
 	//
-	//   timestamp - The timestamp of the Spot Price history (for example, 2010-08-16T05:06:11.000Z).
-	// You can use wildcards (* and ?). Greater than or less than comparison is
-	// not supported.
+	//   timestamp - The timestamp of the Spot Price history, in UTC format (for
+	// example, YYYY-MM-DDTHH:MM:SSZ). You can use wildcards (* and ?). Greater
+	// than or less than comparison is not supported.
 	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
 
 	// Filters the results by the specified instance types.
 	InstanceTypes []*string `locationName:"InstanceType" type:"list"`
 
-	// The maximum number of results to return for the request in a single page.
-	// The remaining results of the initial request can be seen by sending another
-	// request with the returned NextToken value. This value can be between 5 and
-	// 1000; if MaxResults is given a value larger than 1000, only 1000 results
-	// are returned.
+	// The maximum number of results to return in a single call. Specify a value
+	// between 1 and 1000. The default value is 1000. To retrieve the remaining
+	// results, make another call with the returned NextToken value.
 	MaxResults *int64 `locationName:"maxResults" type:"integer"`
 
-	// The token to retrieve the next page of results.
+	// The token for the next set of results.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
 	// Filters the results by the specified basic product descriptions.
 	ProductDescriptions []*string `locationName:"ProductDescription" type:"list"`
 
 	// The date and time, up to the past 90 days, from which to start retrieving
-	// the price history data.
+	// the price history data, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
 	StartTime *time.Time `locationName:"startTime" type:"timestamp" timestampFormat:"iso8601"`
 
 	metadataDescribeSpotPriceHistoryInput `json:"-" xml:"-"`
@@ -11259,8 +12708,9 @@ type metadataDescribeSpotPriceHistoryInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the output of DescribeSpotPriceHistory.
 type DescribeSpotPriceHistoryOutput struct {
-	// The token to use to retrieve the next page of results. This value is null
+	// The token required to retrieve the next set of results. This value is null
 	// when there are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
@@ -11275,6 +12725,10 @@ type metadataDescribeSpotPriceHistoryOutput struct {
 }
 
 type DescribeSubnetsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11335,6 +12789,10 @@ type metadataDescribeSubnetsOutput struct {
 }
 
 type DescribeTagsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11387,6 +12845,10 @@ type DescribeVPCAttributeInput struct {
 	// The VPC attribute.
 	Attribute *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -11421,6 +12883,10 @@ type metadataDescribeVPCAttributeOutput struct {
 }
 
 type DescribeVPCClassicLinkInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11462,7 +12928,106 @@ type metadataDescribeVPCClassicLinkOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type DescribeVPCEndpointServicesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// The maximum number of items to return for this request. The request returns
+	// a token that you can specify in a subsequent call to get the next set of
+	// results.
+	//
+	// Constraint: If the value is greater than 1000, we return only 1000 items.
+	MaxResults *int64 `type:"integer"`
+
+	// The token for the next set of items to return. (You received this token from
+	// a prior call.)
+	NextToken *string `type:"string"`
+
+	metadataDescribeVPCEndpointServicesInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeVPCEndpointServicesInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeVPCEndpointServicesOutput struct {
+	// The token to use when requesting the next set of items. If there are no additional
+	// items to return, the string is empty.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// A list of supported AWS services.
+	ServiceNames []*string `locationName:"serviceNameSet" locationNameList:"item" type:"list"`
+
+	metadataDescribeVPCEndpointServicesOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeVPCEndpointServicesOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeVPCEndpointsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// One or more filters.
+	//
+	//   service-name: The name of the AWS service.
+	//
+	//   vpc-id: The ID of the VPC in which the endpoint resides.
+	//
+	//   vpc-endpoint-id: The ID of the endpoint.
+	//
+	//   vpc-endpoint-state: The state of the endpoint. (pending | available |
+	// deleting | deleted)
+	Filters []*Filter `locationName:"Filter" locationNameList:"Filter" type:"list"`
+
+	// The maximum number of items to return for this request. The request returns
+	// a token that you can specify in a subsequent call to get the next set of
+	// results.
+	//
+	// Constraint: If the value is greater than 1000, we return only 1000 items.
+	MaxResults *int64 `type:"integer"`
+
+	// The token for the next set of items to return. (You received this token from
+	// a prior call.)
+	NextToken *string `type:"string"`
+
+	// One or more endpoint IDs.
+	VPCEndpointIDs []*string `locationName:"VpcEndpointId" locationNameList:"item" type:"list"`
+
+	metadataDescribeVPCEndpointsInput `json:"-" xml:"-"`
+}
+
+type metadataDescribeVPCEndpointsInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type DescribeVPCEndpointsOutput struct {
+	// The token to use when requesting the next set of items. If there are no additional
+	// items to return, the string is empty.
+	NextToken *string `locationName:"nextToken" type:"string"`
+
+	// Information about the endpoints.
+	VPCEndpoints []*VPCEndpoint `locationName:"vpcEndpointSet" locationNameList:"item" type:"list"`
+
+	metadataDescribeVPCEndpointsOutput `json:"-" xml:"-"`
+}
+
+type metadataDescribeVPCEndpointsOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type DescribeVPCPeeringConnectionsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11528,6 +13093,10 @@ type metadataDescribeVPCPeeringConnectionsOutput struct {
 }
 
 type DescribeVPCsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11581,6 +13150,10 @@ type metadataDescribeVPCsOutput struct {
 }
 
 type DescribeVPNConnectionsInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11649,6 +13222,10 @@ type metadataDescribeVPNConnectionsOutput struct {
 }
 
 type DescribeVPNGatewaysInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11708,6 +13285,10 @@ type DescribeVolumeAttributeInput struct {
 	// The instance attribute.
 	Attribute *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the volume.
@@ -11738,6 +13319,10 @@ type metadataDescribeVolumeAttributeOutput struct {
 }
 
 type DescribeVolumeStatusInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11817,6 +13402,10 @@ type metadataDescribeVolumeStatusOutput struct {
 }
 
 type DescribeVolumesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more filters.
@@ -11901,6 +13490,7 @@ type DescribeVolumesOutput struct {
 	// are no more results to return.
 	NextToken *string `locationName:"nextToken" type:"string"`
 
+	// Information about the volumes.
 	Volumes []*Volume `locationName:"volumeSet" locationNameList:"item" type:"list"`
 
 	metadataDescribeVolumesOutput `json:"-" xml:"-"`
@@ -11911,6 +13501,10 @@ type metadataDescribeVolumesOutput struct {
 }
 
 type DetachClassicLinkVPCInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance to unlink from the VPC.
@@ -11938,6 +13532,10 @@ type metadataDetachClassicLinkVPCOutput struct {
 }
 
 type DetachInternetGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the Internet gateway.
@@ -11965,6 +13563,10 @@ type DetachNetworkInterfaceInput struct {
 	// The ID of the attachment.
 	AttachmentID *string `locationName:"attachmentId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Specifies whether to force a detachment.
@@ -11986,6 +13588,10 @@ type metadataDetachNetworkInterfaceOutput struct {
 }
 
 type DetachVPNGatewayInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -12013,6 +13619,10 @@ type DetachVolumeInput struct {
 	// The device name.
 	Device *string `type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Forces detachment if the previous detachment attempt did not occur cleanly
@@ -12060,6 +13670,10 @@ type metadataDisableVGWRoutePropagationOutput struct {
 }
 
 type DisableVPCClassicLinkInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -12087,6 +13701,10 @@ type DisassociateAddressInput struct {
 	// [EC2-VPC] The association ID. Required for EC2-VPC.
 	AssociationID *string `locationName:"AssociationId" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// [EC2-Classic] The Elastic IP address. Required for EC2-Classic.
@@ -12112,6 +13730,10 @@ type DisassociateRouteTableInput struct {
 	// table and subnet.
 	AssociationID *string `locationName:"associationId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	metadataDisassociateRouteTableInput `json:"-" xml:"-"`
@@ -12131,11 +13753,13 @@ type metadataDisassociateRouteTableOutput struct {
 
 // Describes a disk image.
 type DiskImage struct {
+	// A description of the disk image.
 	Description *string `type:"string"`
 
+	// Information about the disk image.
 	Image *DiskImageDetail `type:"structure"`
 
-	// Describes an Amazon EBS volume.
+	// Information about the volume.
 	Volume *VolumeDetail `type:"structure"`
 
 	metadataDiskImage `json:"-" xml:"-"`
@@ -12145,6 +13769,7 @@ type metadataDiskImage struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a disk image.
 type DiskImageDescription struct {
 	// The checksum computed for the disk image.
 	Checksum *string `locationName:"checksum" type:"string"`
@@ -12159,7 +13784,7 @@ type DiskImageDescription struct {
 	// topic in the Amazon Simple Storage Service Developer Guide.
 	ImportManifestURL *string `locationName:"importManifestUrl" type:"string" required:"true"`
 
-	// The size of the disk image.
+	// The size of the disk image, in GiB.
 	Size *int64 `locationName:"size" type:"long" required:"true"`
 
 	metadataDiskImageDescription `json:"-" xml:"-"`
@@ -12169,7 +13794,9 @@ type metadataDiskImageDescription struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a disk image.
 type DiskImageDetail struct {
+	// The size of the disk image, in GiB.
 	Bytes *int64 `locationName:"bytes" type:"long" required:"true"`
 
 	// The disk image format.
@@ -12189,11 +13816,12 @@ type metadataDiskImageDetail struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a disk image volume.
 type DiskImageVolumeDescription struct {
 	// The volume identifier.
 	ID *string `locationName:"id" type:"string" required:"true"`
 
-	// The size of the volume.
+	// The size of the volume, in GiB.
 	Size *int64 `locationName:"size" type:"long"`
 
 	metadataDiskImageVolumeDescription `json:"-" xml:"-"`
@@ -12203,13 +13831,13 @@ type metadataDiskImageVolumeDescription struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Describes an Amazon EBS block device.
+// Describes a block device for an EBS volume.
 type EBSBlockDevice struct {
-	// Indicates whether the Amazon EBS volume is deleted on instance termination.
+	// Indicates whether the EBS volume is deleted on instance termination.
 	DeleteOnTermination *bool `locationName:"deleteOnTermination" type:"boolean"`
 
-	// Indicates whether the Amazon EBS volume is encrypted. Encrypted Amazon EBS
-	// volumes may only be attached to instances that support Amazon EBS encryption.
+	// Indicates whether the EBS volume is encrypted. Encrypted Amazon EBS volumes
+	// may only be attached to instances that support Amazon EBS encryption.
 	Encrypted *bool `locationName:"encrypted" type:"boolean"`
 
 	// The number of I/O operations per second (IOPS) that the volume supports.
@@ -12253,8 +13881,7 @@ type metadataEBSBlockDevice struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Describes a parameter used to set up an Amazon EBS volume in a block device
-// mapping.
+// Describes a parameter used to set up an EBS volume in a block device mapping.
 type EBSInstanceBlockDevice struct {
 	// The time stamp when the attachment initiated.
 	AttachTime *time.Time `locationName:"attachTime" type:"timestamp" timestampFormat:"iso8601"`
@@ -12265,7 +13892,7 @@ type EBSInstanceBlockDevice struct {
 	// The attachment state.
 	Status *string `locationName:"status" type:"string"`
 
-	// The ID of the Amazon EBS volume.
+	// The ID of the EBS volume.
 	VolumeID *string `locationName:"volumeId" type:"string"`
 
 	metadataEBSInstanceBlockDevice `json:"-" xml:"-"`
@@ -12279,7 +13906,7 @@ type EBSInstanceBlockDeviceSpecification struct {
 	// Indicates whether the volume is deleted on instance termination.
 	DeleteOnTermination *bool `locationName:"deleteOnTermination" type:"boolean"`
 
-	// The ID of the Amazon EBS volume.
+	// The ID of the EBS volume.
 	VolumeID *string `locationName:"volumeId" type:"string"`
 
 	metadataEBSInstanceBlockDeviceSpecification `json:"-" xml:"-"`
@@ -12312,6 +13939,10 @@ type metadataEnableVGWRoutePropagationOutput struct {
 }
 
 type EnableVPCClassicLinkInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC.
@@ -12336,6 +13967,10 @@ type metadataEnableVPCClassicLinkOutput struct {
 }
 
 type EnableVolumeIOInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the volume.
@@ -12356,7 +13991,66 @@ type metadataEnableVolumeIOOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Describes an export task.
+// Describes a Spot fleet event.
+type EventInformation struct {
+	// The description of the event.
+	EventDescription *string `locationName:"eventDescription" type:"string"`
+
+	// The event.
+	//
+	// The following are the error events.
+	//
+	//   iamFleetRoleInvalid - Spot fleet did not have the required permissions
+	// either to launch or terminate an instance.
+	//
+	//   spotFleetRequestConfigurationInvalid - The configuration is not valid.
+	// For more information, see the description.   spotInstanceCountLimitExceeded
+	// - You've reached the limit on the number of Spot Instances that you can launch.
+	//
+	//   The following are the fleetRequestChange events.
+	//
+	//   active - The Spot fleet has been validated and Amazon EC2 is attempting
+	// to maintain the target number of running Spot Instances.
+	//
+	//   cancelled - The Spot fleet is canceled and has no running Spot Instances.
+	// The Spot fleet will be deleted two days after its instances were terminated.
+	//
+	//   cancelled_running - The Spot fleet is canceled and will not launch additional
+	// Spot Instances, but its existing Spot Instances will continue to run until
+	// they are interrupted or terminated.
+	//
+	//   cancelled_terminating - The Spot fleet is canceled and its Spot Instances
+	// are terminating.
+	//
+	//   expired - The Spot fleet request has expired. A subsequent event indicates
+	// that the instances were terminated, if the request was created with terminateInstancesWithExpiration
+	// set.
+	//
+	//   price_update - The bid price for a launch configuration was adjusted because
+	// it was too high. This change is permanent.
+	//
+	//   submitted - The Spot fleet request is being evaluated and Amazon EC2 is
+	// preparing to launch the target number of Spot Instances.
+	//
+	//   The following are the instanceChange events.
+	//
+	//   launched - A bid was fulfilled and a new instance was launched.
+	//
+	//   terminated - An instance was terminated by the user.
+	EventSubType *string `locationName:"eventSubType" type:"string"`
+
+	// The ID of the instance. This information is available only for instanceChange
+	// events.
+	InstanceID *string `locationName:"instanceId" type:"string"`
+
+	metadataEventInformation `json:"-" xml:"-"`
+}
+
+type metadataEventInformation struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes an instance export task.
 type ExportTask struct {
 	// A description of the resource being exported.
 	Description *string `locationName:"description" type:"string"`
@@ -12364,12 +14058,13 @@ type ExportTask struct {
 	// The ID of the export task.
 	ExportTaskID *string `locationName:"exportTaskId" type:"string"`
 
+	// Information about the export task.
 	ExportToS3Task *ExportToS3Task `locationName:"exportToS3" type:"structure"`
 
-	// The instance being exported.
+	// Information about the instance to export.
 	InstanceExportDetails *InstanceExportDetails `locationName:"instanceExport" type:"structure"`
 
-	// The state of the conversion task.
+	// The state of the export task.
 	State *string `locationName:"state" type:"string"`
 
 	// The status message related to the export task.
@@ -12382,6 +14077,7 @@ type metadataExportTask struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes the format and location for an instance export task.
 type ExportToS3Task struct {
 	// The container format used to combine disk images with metadata (such as OVF).
 	// If absent, only the disk image is exported.
@@ -12390,10 +14086,11 @@ type ExportToS3Task struct {
 	// The format for the exported image.
 	DiskImageFormat *string `locationName:"diskImageFormat" type:"string"`
 
-	// The Amazon S3 bucket for the destination image. The destination bucket must
-	// exist and grant WRITE and READ_ACP permissions to the AWS account vm-import-export@amazon.com.
+	// The S3 bucket for the destination image. The destination bucket must exist
+	// and grant WRITE and READ_ACP permissions to the AWS account vm-import-export@amazon.com.
 	S3Bucket *string `locationName:"s3Bucket" type:"string"`
 
+	// The encryption key for your S3 bucket.
 	S3Key *string `locationName:"s3Key" type:"string"`
 
 	metadataExportToS3Task `json:"-" xml:"-"`
@@ -12403,15 +14100,21 @@ type metadataExportToS3Task struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes an instance export task.
 type ExportToS3TaskSpecification struct {
+	// The container format used to combine disk images with metadata (such as OVF).
+	// If absent, only the disk image is exported.
 	ContainerFormat *string `locationName:"containerFormat" type:"string"`
 
+	// The format for the exported image.
 	DiskImageFormat *string `locationName:"diskImageFormat" type:"string"`
 
+	// The S3 bucket for the destination image. The destination bucket must exist
+	// and grant WRITE and READ_ACP permissions to the AWS account vm-import-export@amazon.com.
 	S3Bucket *string `locationName:"s3Bucket" type:"string"`
 
-	// The image is written to a single object in the Amazon S3 bucket at the S3
-	// key s3prefix + exportTaskId + '.' + diskImageFormat.
+	// The image is written to a single object in the S3 bucket at the S3 key s3prefix
+	// + exportTaskId + '.' + diskImageFormat.
 	S3Prefix *string `locationName:"s3Prefix" type:"string"`
 
 	metadataExportToS3TaskSpecification `json:"-" xml:"-"`
@@ -12438,7 +14141,51 @@ type metadataFilter struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a flow log.
+type FlowLog struct {
+	// The date and time the flow log was created.
+	CreationTime *time.Time `locationName:"creationTime" type:"timestamp" timestampFormat:"iso8601"`
+
+	// Information about the error that occurred. Rate limited indicates that CloudWatch
+	// logs throttling has been applied for one or more network interfaces. Access
+	// error indicates that the IAM role associated with the flow log does not have
+	// sufficient permissions to publish to CloudWatch Logs. Unknown error indicates
+	// an internal error.
+	DeliverLogsErrorMessage *string `locationName:"deliverLogsErrorMessage" type:"string"`
+
+	// The ARN of the IAM role that posts logs to CloudWatch Logs.
+	DeliverLogsPermissionARN *string `locationName:"deliverLogsPermissionArn" type:"string"`
+
+	// The status of the logs delivery (SUCCESS | FAILED).
+	DeliverLogsStatus *string `locationName:"deliverLogsStatus" type:"string"`
+
+	// The flow log ID.
+	FlowLogID *string `locationName:"flowLogId" type:"string"`
+
+	// The status of the flow log (ACTIVE).
+	FlowLogStatus *string `locationName:"flowLogStatus" type:"string"`
+
+	// The name of the flow log group.
+	LogGroupName *string `locationName:"logGroupName" type:"string"`
+
+	// The ID of the resource on which the flow log was created.
+	ResourceID *string `locationName:"resourceId" type:"string"`
+
+	// The type of traffic captured for the flow log.
+	TrafficType *string `locationName:"trafficType" type:"string"`
+
+	metadataFlowLog `json:"-" xml:"-"`
+}
+
+type metadataFlowLog struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type GetConsoleOutputInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
@@ -12469,6 +14216,10 @@ type metadataGetConsoleOutputOutput struct {
 }
 
 type GetPasswordDataInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the Windows instance.
@@ -12510,6 +14261,31 @@ type GroupIdentifier struct {
 }
 
 type metadataGroupIdentifier struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes an event in the history of the Spot fleet request.
+type HistoryRecord struct {
+	// Information about the event.
+	EventInformation *EventInformation `locationName:"eventInformation" type:"structure" required:"true"`
+
+	// The event type.
+	//
+	//   error - Indicates an error with the Spot fleet request.
+	//
+	//   fleetRequestChange - Indicates a change in the status or configuration
+	// of the Spot fleet request.
+	//
+	//   instanceChange - Indicates that an instance was launched or terminated.
+	EventType *string `locationName:"eventType" type:"string" required:"true"`
+
+	// The date and time of the event, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	Timestamp *time.Time `locationName:"timestamp" type:"timestamp" timestampFormat:"iso8601" required:"true"`
+
+	metadataHistoryRecord `json:"-" xml:"-"`
+}
+
+type metadataHistoryRecord struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -12576,6 +14352,12 @@ type IPPermission struct {
 
 	// One or more IP ranges.
 	IPRanges []*IPRange `locationName:"ipRanges" locationNameList:"item" type:"list"`
+
+	// (Valid for AuthorizeSecurityGroupEgress, RevokeSecurityGroupEgress and DescribeSecurityGroups
+	// only) One or more prefix list IDs for an AWS service. In an AuthorizeSecurityGroupEgress
+	// request, this is the AWS service that you want to access through a VPC endpoint
+	// from instances associated with the security group.
+	PrefixListIDs []*PrefixListID `locationName:"prefixListIds" locationNameList:"item" type:"list"`
 
 	// The end of port range for the TCP and UDP protocols, or an ICMP code. A value
 	// of -1 indicates all ICMP codes for the specified ICMP type.
@@ -12662,8 +14444,8 @@ type Image struct {
 	// The device name of the root device (for example, /dev/sda1 or /dev/xvda).
 	RootDeviceName *string `locationName:"rootDeviceName" type:"string"`
 
-	// The type of root device used by the AMI. The AMI can use an Amazon EBS volume
-	// or an instance store volume.
+	// The type of root device used by the AMI. The AMI can use an EBS volume or
+	// an instance store volume.
 	RootDeviceType *string `locationName:"rootDeviceType" type:"string"`
 
 	// Specifies whether enhanced networking is enabled.
@@ -12689,25 +14471,27 @@ type metadataImage struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// The disk container object for an ImportImage task.
+// Describes the disk container object for an import image task.
 type ImageDiskContainer struct {
-	// The description of the disk image (optional).
+	// The description of the disk image.
 	Description *string `type:"string"`
 
-	// The Amazon EBS block device mapping for the disk (optional).
+	// The block device mapping for the disk.
 	DeviceName *string `type:"string"`
 
-	// The format of the disk image being imported (optional).
+	// The format of the disk image being imported.
+	//
+	// Valid values: RAW | VHD | VMDK | OVA
 	Format *string `type:"string"`
 
-	// The Amazon EBS snapshot ID to be used for importing the snapshot.
+	// The ID of the EBS snapshot to be used for importing the snapshot.
 	SnapshotID *string `locationName:"SnapshotId" type:"string"`
 
 	// The URL to the Amazon S3-based disk image being imported. The URL can either
 	// be a https URL (https://..) or an Amazon S3 URL (s3://..)
 	URL *string `locationName:"Url" type:"string"`
 
-	// User's Amazon S3 bucket details used to access the image.
+	// The S3 bucket for the disk image.
 	UserBucket *UserBucket `type:"structure"`
 
 	metadataImageDiskContainer `json:"-" xml:"-"`
@@ -12718,41 +14502,50 @@ type metadataImageDiskContainer struct {
 }
 
 type ImportImageInput struct {
-	// The architecture of the virtual machine being imported (optional).
+	// The architecture of the virtual machine.
+	//
+	// Valid values: i386 | x86_64
 	Architecture *string `type:"string"`
 
-	// Client-specific data.
+	// The client-specific data.
 	ClientData *ClientData `type:"structure"`
 
-	// The token to enable idempotency for VM import requests (optional).
+	// The token to enable idempotency for VM import requests.
 	ClientToken *string `type:"string"`
 
-	// A description string for the import image task (optional).
+	// A description string for the import image task.
 	Description *string `type:"string"`
 
+	// Information about the disk containers.
 	DiskContainers []*ImageDiskContainer `locationName:"DiskContainer" locationNameList:"item" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `type:"boolean"`
 
-	// The target hypervisor platform to use (optional).
+	// The target hypervisor platform.
+	//
+	// Valid values: xen
 	Hypervisor *string `type:"string"`
 
-	// The license type to be used for the Amazon Machine Image (AMI) after importing
-	// (optional).
+	// The license type to be used for the Amazon Machine Image (AMI) after importing.
 	//
 	// Note: You may only use BYOL if you have existing licenses with rights to
 	// use these licenses in a third party cloud like AWS. For more information,
 	// see VM Import/Export Prerequisites (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/VMImportPrerequisites.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	//
-	// Valid Values: AWS | BYOL
+	// Valid values: AWS | BYOL
 	LicenseType *string `type:"string"`
 
-	// The operating system of the virtual machine being imported (optional).
+	// The operating system of the virtual machine.
+	//
+	// Valid values: Windows | Linux
 	Platform *string `type:"string"`
 
-	// The name of the role to use when not using the default role name 'vmimport'
-	// (optional).
+	// The name of the role to use when not using the default role, 'vmimport'.
 	RoleName *string `type:"string"`
 
 	metadataImportImageInput `json:"-" xml:"-"`
@@ -12763,30 +14556,31 @@ type metadataImportImageInput struct {
 }
 
 type ImportImageOutput struct {
-	// Architecture of the virtual machine being imported.
+	// The architecture of the virtual machine.
 	Architecture *string `locationName:"architecture" type:"string"`
 
 	// A description of the import task.
 	Description *string `locationName:"description" type:"string"`
 
-	// Target hypervisor of the import task.
+	// The target hypervisor of the import task.
 	Hypervisor *string `locationName:"hypervisor" type:"string"`
 
-	// The Amazon Machine Image (AMI) ID created by the import task.
+	// The ID of the Amazon Machine Image (AMI) created by the import task.
 	ImageID *string `locationName:"imageId" type:"string"`
 
-	// The task id of the ImportImage task.
+	// The task ID of the import image task.
 	ImportTaskID *string `locationName:"importTaskId" type:"string"`
 
-	// License type of the virtual machine being imported.
+	// The license type of the virtual machine.
 	LicenseType *string `locationName:"licenseType" type:"string"`
 
-	// Operating system of the VM being imported.
+	// The operating system of the virtual machine.
 	Platform *string `locationName:"platform" type:"string"`
 
-	// The task's progress.
+	// The progress of the task.
 	Progress *string `locationName:"progress" type:"string"`
 
+	// Information about the snapshots.
 	SnapshotDetails []*SnapshotDetail `locationName:"snapshotDetailSet" locationNameList:"item" type:"list"`
 
 	// A brief status of the task.
@@ -12802,37 +14596,43 @@ type metadataImportImageOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes an import image task.
 type ImportImageTask struct {
-	// Architecture of the VM being imported.
+	// The architecture of the virtual machine.
+	//
+	// Valid values: i386 | x86_64
 	Architecture *string `locationName:"architecture" type:"string"`
 
-	// Description of the import task.
+	// A description of the import task.
 	Description *string `locationName:"description" type:"string"`
 
-	// Target hypervisor for the import task.
+	// The target hypervisor for the import task.
+	//
+	// Valid values: xen
 	Hypervisor *string `locationName:"hypervisor" type:"string"`
 
-	// The Amazon Machine Image (AMI) ID of the imported virtual machine.
+	// The ID of the Amazon Machine Image (AMI) of the imported virtual machine.
 	ImageID *string `locationName:"imageId" type:"string"`
 
-	// The ID of the import task.
+	// The ID of the import image task.
 	ImportTaskID *string `locationName:"importTaskId" type:"string"`
 
-	// License type of the VM being imported.
+	// The license type of the virtual machine.
 	LicenseType *string `locationName:"licenseType" type:"string"`
 
 	// The description string for the import image task.
 	Platform *string `locationName:"platform" type:"string"`
 
-	// The percentage of progress of the ImportImage task.
+	// The percentage of progress of the import image task.
 	Progress *string `locationName:"progress" type:"string"`
 
+	// Information about the snapshots.
 	SnapshotDetails []*SnapshotDetail `locationName:"snapshotDetailSet" locationNameList:"item" type:"list"`
 
-	// A brief status for the ImportImage task.
+	// A brief status for the import image task.
 	Status *string `locationName:"status" type:"string"`
 
-	// A descriptive status message for the ImportImage task.
+	// A descriptive status message for the import image task.
 	StatusMessage *string `locationName:"statusMessage" type:"string"`
 
 	metadataImportImageTask `json:"-" xml:"-"`
@@ -12846,10 +14646,16 @@ type ImportInstanceInput struct {
 	// A description for the instance being imported.
 	Description *string `locationName:"description" type:"string"`
 
+	// The disk image.
 	DiskImages []*DiskImage `locationName:"diskImage" type:"list"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
+	// The launch specification.
 	LaunchSpecification *ImportInstanceLaunchSpecification `locationName:"launchSpecification" type:"structure"`
 
 	// The instance operating system.
@@ -12862,7 +14668,9 @@ type metadataImportInstanceInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes the launch specification for VM import.
 type ImportInstanceLaunchSpecification struct {
+	// Reserved.
 	AdditionalInfo *string `locationName:"additionalInfo" type:"string"`
 
 	// The architecture of the instance.
@@ -12878,28 +14686,24 @@ type ImportInstanceLaunchSpecification struct {
 	// from the instance (using the operating system command for system shutdown).
 	InstanceInitiatedShutdownBehavior *string `locationName:"instanceInitiatedShutdownBehavior" type:"string"`
 
-	// The instance type. This is not supported for VMs imported into a VPC, which
-	// are assigned the default security group. After a VM is imported into a VPC,
-	// you can specify another security group using the AWS Management Console.
-	// For more information, see Instance Types (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html)
-	// in the Amazon Elastic Compute Cloud User Guide. For more information about
-	// the Linux instance types you can import, see Before You Get Started (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/VMImportPrerequisites.html)
+	// The instance type. For more information about the instance types that you
+	// can import, see Before You Get Started (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/VMImportPrerequisites.html)
 	// in the Amazon Elastic Compute Cloud User Guide.
 	InstanceType *string `locationName:"instanceType" type:"string"`
 
+	// Indicates whether monitoring is enabled.
 	Monitoring *bool `locationName:"monitoring" type:"boolean"`
 
-	// Describes the placement for the instance.
+	// The placement information for the instance.
 	Placement *Placement `locationName:"placement" type:"structure"`
 
-	// [EC2-VPC] Optionally, you can use this parameter to assign the instance a
-	// specific available IP address from the IP address range of the subnet.
+	// [EC2-VPC] An available IP address from the IP address range of the subnet.
 	PrivateIPAddress *string `locationName:"privateIpAddress" type:"string"`
 
-	// [EC2-VPC] The ID of the subnet to launch the instance into.
+	// [EC2-VPC] The ID of the subnet in which to launch the instance.
 	SubnetID *string `locationName:"subnetId" type:"string"`
 
-	// User data to be made available to the instance.
+	// The Base64-encoded MIME user data to be made available to the instance.
 	UserData *UserData `locationName:"userData" type:"structure"`
 
 	metadataImportInstanceLaunchSpecification `json:"-" xml:"-"`
@@ -12910,7 +14714,7 @@ type metadataImportInstanceLaunchSpecification struct {
 }
 
 type ImportInstanceOutput struct {
-	// Describes a conversion task.
+	// Information about the conversion task.
 	ConversionTask *ConversionTask `locationName:"conversionTask" type:"structure"`
 
 	metadataImportInstanceOutput `json:"-" xml:"-"`
@@ -12920,14 +14724,18 @@ type metadataImportInstanceOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes an import instance task.
 type ImportInstanceTaskDetails struct {
+	// A description of the task.
 	Description *string `locationName:"description" type:"string"`
 
+	// The ID of the instance.
 	InstanceID *string `locationName:"instanceId" type:"string"`
 
 	// The instance operating system.
 	Platform *string `locationName:"platform" type:"string"`
 
+	// One or more volumes.
 	Volumes []*ImportInstanceVolumeDetailItem `locationName:"volumes" locationNameList:"item" type:"list" required:"true"`
 
 	metadataImportInstanceTaskDetails `json:"-" xml:"-"`
@@ -12945,6 +14753,7 @@ type ImportInstanceVolumeDetailItem struct {
 	// The number of bytes converted so far.
 	BytesConverted *int64 `locationName:"bytesConverted" type:"long" required:"true"`
 
+	// A description of the task.
 	Description *string `locationName:"description" type:"string"`
 
 	// The image.
@@ -12967,6 +14776,10 @@ type metadataImportInstanceVolumeDetailItem struct {
 }
 
 type ImportKeyPairInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// A unique name for the key pair.
@@ -12998,22 +14811,25 @@ type metadataImportKeyPairOutput struct {
 }
 
 type ImportSnapshotInput struct {
-	// Client-specific data.
+	// The client-specific data.
 	ClientData *ClientData `type:"structure"`
 
-	// Token to enable idempotency for VM import requests (optional).
+	// Token to enable idempotency for VM import requests.
 	ClientToken *string `type:"string"`
 
-	// The description string for the ImportSnapshot task.
+	// The description string for the import snapshot task.
 	Description *string `type:"string"`
 
-	// The disk container object for the ImportSnapshot request.
+	// Information about the disk container.
 	DiskContainer *SnapshotDiskContainer `type:"structure"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `type:"boolean"`
 
-	// The name of the role to use when not using the default role name 'vmimport'
-	// (optional).
+	// The name of the role to use when not using the default role, 'vmimport'.
 	RoleName *string `type:"string"`
 
 	metadataImportSnapshotInput `json:"-" xml:"-"`
@@ -13024,13 +14840,13 @@ type metadataImportSnapshotInput struct {
 }
 
 type ImportSnapshotOutput struct {
-	// Description of the import snapshot task.
+	// A description of the import snapshot task.
 	Description *string `locationName:"description" type:"string"`
 
-	// Task ID of the ImportSnapshot task.
+	// The ID of the import snapshot task.
 	ImportTaskID *string `locationName:"importTaskId" type:"string"`
 
-	// Details about the import snapshot task.
+	// Information about the import snapshot task.
 	SnapshotTaskDetail *SnapshotTaskDetail `locationName:"snapshotTaskDetail" type:"structure"`
 
 	metadataImportSnapshotOutput `json:"-" xml:"-"`
@@ -13040,14 +14856,15 @@ type metadataImportSnapshotOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes an import snapshot task.
 type ImportSnapshotTask struct {
-	// Description for the import snapshot task.
+	// A description of the import snapshot task.
 	Description *string `locationName:"description" type:"string"`
 
-	// The task ID of the ImportSnapshot task.
+	// The ID of the import snapshot task.
 	ImportTaskID *string `locationName:"importTaskId" type:"string"`
 
-	// Details about the import snapshot task.
+	// Describes an import snapshot task.
 	SnapshotTaskDetail *SnapshotTaskDetail `locationName:"snapshotTaskDetail" type:"structure"`
 
 	metadataImportSnapshotTask `json:"-" xml:"-"`
@@ -13058,17 +14875,22 @@ type metadataImportSnapshotTask struct {
 }
 
 type ImportVolumeInput struct {
-	// The Availability Zone for the resulting Amazon EBS volume.
+	// The Availability Zone for the resulting EBS volume.
 	AvailabilityZone *string `locationName:"availabilityZone" type:"string" required:"true"`
 
-	// An optional description for the volume being imported.
+	// A description of the volume.
 	Description *string `locationName:"description" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
+	// The disk image.
 	Image *DiskImageDetail `locationName:"image" type:"structure" required:"true"`
 
-	// Describes an Amazon EBS volume.
+	// The volume size.
 	Volume *VolumeDetail `locationName:"volume" type:"structure" required:"true"`
 
 	metadataImportVolumeInput `json:"-" xml:"-"`
@@ -13079,7 +14901,7 @@ type metadataImportVolumeInput struct {
 }
 
 type ImportVolumeOutput struct {
-	// Describes a conversion task.
+	// Information about the conversion task.
 	ConversionTask *ConversionTask `locationName:"conversionTask" type:"structure"`
 
 	metadataImportVolumeOutput `json:"-" xml:"-"`
@@ -13199,8 +15021,8 @@ type Instance struct {
 	// The root device name (for example, /dev/sda1 or /dev/xvda).
 	RootDeviceName *string `locationName:"rootDeviceName" type:"string"`
 
-	// The root device type used by the AMI. The AMI can use an Amazon EBS volume
-	// or an instance store volume.
+	// The root device type used by the AMI. The AMI can use an EBS volume or an
+	// instance store volume.
 	RootDeviceType *string `locationName:"rootDeviceType" type:"string"`
 
 	// Specifies whether enhanced networking is enabled.
@@ -13253,8 +15075,8 @@ type InstanceBlockDeviceMapping struct {
 	// The device name exposed to the instance (for example, /dev/sdh or xvdh).
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
-	// Parameters used to automatically set up Amazon EBS volumes when the instance
-	// is launched.
+	// Parameters used to automatically set up EBS volumes when the instance is
+	// launched.
 	EBS *EBSInstanceBlockDevice `locationName:"ebs" type:"structure"`
 
 	metadataInstanceBlockDeviceMapping `json:"-" xml:"-"`
@@ -13269,8 +15091,8 @@ type InstanceBlockDeviceMappingSpecification struct {
 	// The device name exposed to the instance (for example, /dev/sdh or xvdh).
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
-	// Parameters used to automatically set up Amazon EBS volumes when the instance
-	// is launched.
+	// Parameters used to automatically set up EBS volumes when the instance is
+	// launched.
 	EBS *EBSInstanceBlockDeviceSpecification `locationName:"ebs" type:"structure"`
 
 	// suppress the specified device included in the block device mapping.
@@ -13288,7 +15110,7 @@ type metadataInstanceBlockDeviceMappingSpecification struct {
 
 // Describes a Reserved Instance listing state.
 type InstanceCount struct {
-	// he number of listed Reserved Instances in the state specified by the state.
+	// The number of listed Reserved Instances in the state specified by the state.
 	InstanceCount *int64 `locationName:"instanceCount" type:"integer"`
 
 	// The states of the listed Reserved Instances.
@@ -13301,7 +15123,7 @@ type metadataInstanceCount struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Describes an instance export task.
+// Describes an instance to export.
 type InstanceExportDetails struct {
 	// The ID of the resource being exported.
 	InstanceID *string `locationName:"instanceId" type:"string"`
@@ -13552,7 +15374,7 @@ type InstanceStatus struct {
 	// The Availability Zone of the instance.
 	AvailabilityZone *string `locationName:"availabilityZone" type:"string"`
 
-	// Extra information regarding events associated with the instance.
+	// Any scheduled events associated with the instance.
 	Events []*InstanceStatusEvent `locationName:"eventsSet" locationNameList:"item" type:"list"`
 
 	// The ID of the instance.
@@ -13597,12 +15419,16 @@ type metadataInstanceStatusDetails struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Describes an instance event.
+// Describes a scheduled event for an instance.
 type InstanceStatusEvent struct {
-	// The associated code of the event.
+	// The event code.
 	Code *string `locationName:"code" type:"string"`
 
 	// A description of the event.
+	//
+	// After a scheduled event is completed, it can still be described for up to
+	// a week. If the event has been completed, this description starts with the
+	// following text: [Completed].
 	Description *string `locationName:"description" type:"string"`
 
 	// The latest scheduled end time for the event.
@@ -13785,6 +15611,10 @@ type ModifyImageAttributeInput struct {
 	// A description for the AMI.
 	Description *AttributeValue `type:"structure"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the AMI.
@@ -13846,6 +15676,10 @@ type ModifyInstanceAttributeInput struct {
 	// console, CLI, or API; otherwise, you can.
 	DisableAPITermination *AttributeBooleanValue `locationName:"disableApiTermination" type:"structure"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Specifies whether the instance is optimized for EBS I/O. This optimization
@@ -13925,6 +15759,10 @@ type ModifyNetworkInterfaceAttributeInput struct {
 	// A description for the network interface.
 	Description *AttributeValue `locationName:"description" type:"structure"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Changes the security groups for the network interface. The new set of groups
@@ -13994,6 +15832,10 @@ type ModifySnapshotAttributeInput struct {
 	// A JSON representation of the snapshot attribute modification.
 	CreateVolumePermission *CreateVolumePermissionModifications `type:"structure"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The group to modify for the snapshot.
@@ -14078,10 +15920,56 @@ type metadataModifyVPCAttributeOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type ModifyVPCEndpointInput struct {
+	// One or more route tables IDs to associate with the endpoint.
+	AddRouteTableIDs []*string `locationName:"AddRouteTableId" locationNameList:"item" type:"list"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `type:"boolean"`
+
+	// A policy document to attach to the endpoint. The policy must be in valid
+	// JSON format.
+	PolicyDocument *string `type:"string"`
+
+	// One or more route table IDs to disassociate from the endpoint.
+	RemoveRouteTableIDs []*string `locationName:"RemoveRouteTableId" locationNameList:"item" type:"list"`
+
+	// Specify true to reset the policy document to the default policy. The default
+	// policy allows access to the service.
+	ResetPolicy *bool `type:"boolean"`
+
+	// The ID of the endpoint.
+	VPCEndpointID *string `locationName:"VpcEndpointId" type:"string" required:"true"`
+
+	metadataModifyVPCEndpointInput `json:"-" xml:"-"`
+}
+
+type metadataModifyVPCEndpointInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type ModifyVPCEndpointOutput struct {
+	// Returns true if the request succeeds; otherwise, it returns an error.
+	Return *bool `locationName:"return" type:"boolean"`
+
+	metadataModifyVPCEndpointOutput `json:"-" xml:"-"`
+}
+
+type metadataModifyVPCEndpointOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type ModifyVolumeAttributeInput struct {
 	// Indicates whether the volume should be auto-enabled for I/O operations.
 	AutoEnableIO *AttributeBooleanValue `type:"structure"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the volume.
@@ -14103,6 +15991,10 @@ type metadataModifyVolumeAttributeOutput struct {
 }
 
 type MonitorInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more instance IDs.
@@ -14135,6 +16027,53 @@ type Monitoring struct {
 }
 
 type metadataMonitoring struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type MoveAddressToVPCInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The Elastic IP address.
+	PublicIP *string `locationName:"publicIp" type:"string" required:"true"`
+
+	metadataMoveAddressToVPCInput `json:"-" xml:"-"`
+}
+
+type metadataMoveAddressToVPCInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type MoveAddressToVPCOutput struct {
+	// The allocation ID for the Elastic IP address.
+	AllocationID *string `locationName:"allocationId" type:"string"`
+
+	// The status of the move of the IP address.
+	Status *string `locationName:"status" type:"string"`
+
+	metadataMoveAddressToVPCOutput `json:"-" xml:"-"`
+}
+
+type metadataMoveAddressToVPCOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes the status of a moving Elastic IP address.
+type MovingAddressStatus struct {
+	// The status of the Elastic IP address that's being moved to the EC2-VPC platform,
+	// or restored to the EC2-Classic platform.
+	MoveStatus *string `locationName:"moveStatus" type:"string"`
+
+	// The Elastic IP address.
+	PublicIP *string `locationName:"publicIp" type:"string"`
+
+	metadataMovingAddressStatus `json:"-" xml:"-"`
+}
+
+type metadataMovingAddressStatus struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -14436,6 +16375,36 @@ type metadataPortRange struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes prefixes for AWS services.
+type PrefixList struct {
+	// The IP address range of the AWS service.
+	CIDRs []*string `locationName:"cidrSet" locationNameList:"item" type:"list"`
+
+	// The ID of the prefix.
+	PrefixListID *string `locationName:"prefixListId" type:"string"`
+
+	// The name of the prefix.
+	PrefixListName *string `locationName:"prefixListName" type:"string"`
+
+	metadataPrefixList `json:"-" xml:"-"`
+}
+
+type metadataPrefixList struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// The ID of the prefix.
+type PrefixListID struct {
+	// The ID of the prefix.
+	PrefixListID *string `locationName:"prefixListId" type:"string"`
+
+	metadataPrefixListID `json:"-" xml:"-"`
+}
+
+type metadataPrefixListID struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 // Describes the price for a Reserved Instance.
 type PriceSchedule struct {
 	// The current price schedule, as determined by the term remaining for the Reserved
@@ -14547,6 +16516,10 @@ type metadataPropagatingVGW struct {
 }
 
 type PurchaseReservedInstancesOfferingInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The number of Reserved Instances to purchase.
@@ -14579,6 +16552,10 @@ type metadataPurchaseReservedInstancesOfferingOutput struct {
 }
 
 type RebootInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more instance IDs.
@@ -14642,6 +16619,10 @@ type RegisterImageInput struct {
 	// A description for your AMI.
 	Description *string `locationName:"description" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The full path to your AMI manifest in Amazon S3 storage.
@@ -14696,6 +16677,10 @@ type metadataRegisterImageOutput struct {
 }
 
 type RejectVPCPeeringConnectionInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the VPC peering connection.
@@ -14723,6 +16708,10 @@ type ReleaseAddressInput struct {
 	// [EC2-VPC] The allocation ID. Required for EC2-VPC.
 	AllocationID *string `locationName:"AllocationId" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// [EC2-Classic] The Elastic IP address. Required for EC2-Classic.
@@ -14748,6 +16737,10 @@ type ReplaceNetworkACLAssociationInput struct {
 	// subnet.
 	AssociationID *string `locationName:"associationId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the new network ACL to associate with the subnet.
@@ -14775,6 +16768,10 @@ type ReplaceNetworkACLEntryInput struct {
 	// The network range to allow or deny, in CIDR notation.
 	CIDRBlock *string `locationName:"cidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Indicates whether to replace the egress rule.
@@ -14822,6 +16819,10 @@ type ReplaceRouteInput struct {
 	// must match the CIDR of an existing route in the table.
 	DestinationCIDRBlock *string `locationName:"destinationCidrBlock" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of an Internet gateway or virtual private gateway.
@@ -14858,6 +16859,10 @@ type ReplaceRouteTableAssociationInput struct {
 	// The association ID.
 	AssociationID *string `locationName:"associationId" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the new route table to associate with the subnet.
@@ -14885,6 +16890,10 @@ type ReportInstanceStatusInput struct {
 	// Descriptive text about the health state of your instance.
 	Description *string `locationName:"description" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The time at which the reported instance health state ended.
@@ -14938,6 +16947,37 @@ type metadataReportInstanceStatusOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the parameters for RequestSpotFleet.
+type RequestSpotFleetInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The configuration for the Spot fleet request.
+	SpotFleetRequestConfig *SpotFleetRequestConfigData `locationName:"spotFleetRequestConfig" type:"structure" required:"true"`
+
+	metadataRequestSpotFleetInput `json:"-" xml:"-"`
+}
+
+type metadataRequestSpotFleetInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the output of RequestSpotFleet.
+type RequestSpotFleetOutput struct {
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	metadataRequestSpotFleetOutput `json:"-" xml:"-"`
+}
+
+type metadataRequestSpotFleetOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Contains the parameters for RequestSpotInstances.
 type RequestSpotInstancesInput struct {
 	// The user-specified name for a logical grouping of bids.
 	//
@@ -14960,6 +17000,15 @@ type RequestSpotInstancesInput struct {
 	// Default: Instances are launched in any available Availability Zone.
 	AvailabilityZoneGroup *string `locationName:"availabilityZoneGroup" type:"string"`
 
+	// Unique, case-sensitive identifier that you provide to ensure the idempotency
+	// of the request. For more information, see How to Ensure Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Run_Instance_Idempotency.html)
+	// in the Amazon Elastic Compute Cloud User Guide.
+	ClientToken *string `locationName:"clientToken" type:"string"`
+
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The maximum number of Spot Instances to launch.
@@ -15009,6 +17058,7 @@ type metadataRequestSpotInstancesInput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Contains the output of RequestSpotInstances.
 type RequestSpotInstancesOutput struct {
 	// One or more Spot Instance requests.
 	SpotInstanceRequests []*SpotInstanceRequest `locationName:"spotInstanceRequestSet" locationNameList:"item" type:"list"`
@@ -15153,7 +17203,7 @@ type ReservedInstances struct {
 	// The Reserved Instance offering type.
 	OfferingType *string `locationName:"offeringType" type:"string"`
 
-	// The Reserved Instance description.
+	// The Reserved Instance product platform description.
 	ProductDescription *string `locationName:"productDescription" type:"string"`
 
 	// The recurring charge tag assigned to the resource.
@@ -15343,7 +17393,7 @@ type ReservedInstancesOffering struct {
 	// The pricing details of the Reserved Instance offering.
 	PricingDetails []*PricingDetail `locationName:"pricingDetailsSet" locationNameList:"item" type:"list"`
 
-	// The Reserved Instance description.
+	// The Reserved Instance product platform description.
 	ProductDescription *string `locationName:"productDescription" type:"string"`
 
 	// The recurring charge tag assigned to the resource.
@@ -15367,6 +17417,10 @@ type ResetImageAttributeInput struct {
 	// attribute).
 	Attribute *string `type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the AMI.
@@ -15391,6 +17445,10 @@ type ResetInstanceAttributeInput struct {
 	// The attribute to reset.
 	Attribute *string `locationName:"attribute" type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the instance.
@@ -15412,6 +17470,10 @@ type metadataResetInstanceAttributeOutput struct {
 }
 
 type ResetNetworkInterfaceAttributeInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the network interface.
@@ -15440,6 +17502,10 @@ type ResetSnapshotAttributeInput struct {
 	// volumes can be reset).
 	Attribute *string `type:"string" required:"true"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The ID of the snapshot.
@@ -15460,11 +17526,46 @@ type metadataResetSnapshotAttributeOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+type RestoreAddressToClassicInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
+	DryRun *bool `locationName:"dryRun" type:"boolean"`
+
+	// The Elastic IP address.
+	PublicIP *string `locationName:"publicIp" type:"string" required:"true"`
+
+	metadataRestoreAddressToClassicInput `json:"-" xml:"-"`
+}
+
+type metadataRestoreAddressToClassicInput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+type RestoreAddressToClassicOutput struct {
+	// The Elastic IP address.
+	PublicIP *string `locationName:"publicIp" type:"string"`
+
+	// The move status for the IP address.
+	Status *string `locationName:"status" type:"string"`
+
+	metadataRestoreAddressToClassicOutput `json:"-" xml:"-"`
+}
+
+type metadataRestoreAddressToClassicOutput struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 type RevokeSecurityGroupEgressInput struct {
 	// The CIDR IP address range. You can't specify this parameter when specifying
 	// a source security group.
 	CIDRIP *string `locationName:"cidrIp" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The start of port range for the TCP and UDP protocols, or an ICMP type number.
@@ -15514,6 +17615,10 @@ type RevokeSecurityGroupIngressInput struct {
 	// a source security group.
 	CIDRIP *string `locationName:"CidrIp" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// The start of port range for the TCP and UDP protocols, or an ICMP type number.
@@ -15535,11 +17640,14 @@ type RevokeSecurityGroupIngressInput struct {
 	IPProtocol *string `locationName:"IpProtocol" type:"string"`
 
 	// [EC2-Classic, default VPC] The name of the source security group. You can't
-	// specify a source security group and a CIDR IP address range.
+	// specify this parameter in combination with the following parameters: the
+	// CIDR IP address range, the start of the port range, and the end of the port
+	// range.
 	SourceSecurityGroupName *string `type:"string"`
 
-	// The ID of the source security group. You can't specify a source security
-	// group and a CIDR IP address range.
+	// The ID of the source security group. You can't specify this parameter in
+	// combination with the following parameters: the CIDR IP address range, the
+	// start of the port range, and the end of the port range.
 	SourceSecurityGroupOwnerID *string `locationName:"SourceSecurityGroupOwnerId" type:"string"`
 
 	// The end of port range for the TCP and UDP protocols, or an ICMP code number.
@@ -15565,6 +17673,9 @@ type metadataRevokeSecurityGroupIngressOutput struct {
 type Route struct {
 	// The CIDR block used for the destination match.
 	DestinationCIDRBlock *string `locationName:"destinationCidrBlock" type:"string"`
+
+	// The prefix of the AWS service.
+	DestinationPrefixListID *string `locationName:"destinationPrefixListId" type:"string"`
 
 	// The ID of a gateway attached to your VPC.
 	GatewayID *string `locationName:"gatewayId" type:"string"`
@@ -15673,13 +17784,17 @@ type RunInstancesInput struct {
 	// Default: false
 	DisableAPITermination *bool `locationName:"disableApiTermination" type:"boolean"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Indicates whether the instance is optimized for EBS I/O. This optimization
 	// provides dedicated throughput to Amazon EBS and an optimized configuration
-	// stack to provide optimal Amazon EBS I/O performance. This optimization isn't
-	// available with all instance types. Additional usage charges apply when using
-	// an EBS-optimized instance.
+	// stack to provide optimal EBS I/O performance. This optimization isn't available
+	// with all instance types. Additional usage charges apply when using an EBS-optimized
+	// instance.
 	//
 	// Default: false
 	EBSOptimized *bool `locationName:"ebsOptimized" type:"boolean"`
@@ -15712,8 +17827,8 @@ type RunInstancesInput struct {
 	// The name of the key pair. You can create a key pair using CreateKeyPair or
 	// ImportKeyPair.
 	//
-	//  If you launch an instance without specifying a key pair, you can't connect
-	// to the instance.
+	//  If you do not specify a key pair, you can't connect to the instance unless
+	// you choose an AMI that is configured to allow users another way to log in.
 	KeyName *string `type:"string"`
 
 	// The maximum number of instances to launch. If you specify more instances
@@ -15877,7 +17992,7 @@ type Snapshot struct {
 	// owns the snapshot.
 	OwnerAlias *string `locationName:"ownerAlias" type:"string"`
 
-	// The AWS account ID of the Amazon EBS snapshot owner.
+	// The AWS account ID of the EBS snapshot owner.
 	OwnerID *string `locationName:"ownerId" type:"string"`
 
 	// The progress of the snapshot, as a percentage.
@@ -15908,15 +18023,15 @@ type metadataSnapshot struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// The details of the snapshot created from the imported disk.
+// Describes the snapshot created from the imported disk.
 type SnapshotDetail struct {
-	// Description for the snapshot.
+	// A description for the snapshot.
 	Description *string `locationName:"description" type:"string"`
 
-	// The Amazon EBS block device mapping for the snapshot.
+	// The block device mapping for the snapshot.
 	DeviceName *string `locationName:"deviceName" type:"string"`
 
-	// The size of the disk in the snapshot.
+	// The size of the disk in the snapshot, in GiB.
 	DiskImageSize *float64 `locationName:"diskImageSize" type:"double"`
 
 	// The format of the disk image from which the snapshot is created.
@@ -15937,7 +18052,7 @@ type SnapshotDetail struct {
 	// The URL used to access the disk image.
 	URL *string `locationName:"url" type:"string"`
 
-	// User's Amazon S3 bucket details used to access the image.
+	// Describes the S3 bucket for the disk image.
 	UserBucket *UserBucketDetails `locationName:"userBucket" type:"structure"`
 
 	metadataSnapshotDetail `json:"-" xml:"-"`
@@ -15947,19 +18062,21 @@ type metadataSnapshotDetail struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// The disk container object for the ImportSnapshot request.
+// The disk container object for the import snapshot request.
 type SnapshotDiskContainer struct {
 	// The description of the disk image being imported.
 	Description *string `type:"string"`
 
 	// The format of the disk image being imported.
+	//
+	// Valid values: RAW | VHD | VMDK | OVA
 	Format *string `type:"string"`
 
 	// The URL to the Amazon S3-based disk image being imported. It can either be
 	// a https URL (https://..) or an Amazon S3 URL (s3://..).
 	URL *string `locationName:"Url" type:"string"`
 
-	// User's Amazon S3 bucket details used to access the image.
+	// Describes the S3 bucket for the disk image.
 	UserBucket *UserBucket `type:"structure"`
 
 	metadataSnapshotDiskContainer `json:"-" xml:"-"`
@@ -15974,28 +18091,28 @@ type SnapshotTaskDetail struct {
 	// The description of the snapshot.
 	Description *string `locationName:"description" type:"string"`
 
-	// The size of the disk in the snapshot.
+	// The size of the disk in the snapshot, in GiB.
 	DiskImageSize *float64 `locationName:"diskImageSize" type:"double"`
 
 	// The format of the disk image from which the snapshot is created.
 	Format *string `locationName:"format" type:"string"`
 
-	// The percentage of completion for the ImportSnapshot task.
+	// The percentage of completion for the import snapshot task.
 	Progress *string `locationName:"progress" type:"string"`
 
 	// The snapshot ID of the disk being imported.
 	SnapshotID *string `locationName:"snapshotId" type:"string"`
 
-	// A brief status for the ImportSnapshot task.
+	// A brief status for the import snapshot task.
 	Status *string `locationName:"status" type:"string"`
 
-	// A detailed status message for the ImportSnapshot task.
+	// A detailed status message for the import snapshot task.
 	StatusMessage *string `locationName:"statusMessage" type:"string"`
 
 	// The URL of the disk image from which the snapshot is created.
 	URL *string `locationName:"url" type:"string"`
 
-	// User's Amazon S3 bucket details used to access the image.
+	// The S3 bucket for the disk image.
 	UserBucket *UserBucketDetails `locationName:"userBucket" type:"structure"`
 
 	metadataSnapshotTaskDetail `json:"-" xml:"-"`
@@ -16029,6 +18146,66 @@ type metadataSpotDatafeedSubscription struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes a Spot fleet request.
+type SpotFleetRequestConfig struct {
+	// Information about the configuration of the Spot fleet request.
+	SpotFleetRequestConfig *SpotFleetRequestConfigData `locationName:"spotFleetRequestConfig" type:"structure" required:"true"`
+
+	// The ID of the Spot fleet request.
+	SpotFleetRequestID *string `locationName:"spotFleetRequestId" type:"string" required:"true"`
+
+	// The state of the Spot fleet request.
+	SpotFleetRequestState *string `locationName:"spotFleetRequestState" type:"string" required:"true"`
+
+	metadataSpotFleetRequestConfig `json:"-" xml:"-"`
+}
+
+type metadataSpotFleetRequestConfig struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes the configuration of a Spot fleet request.
+type SpotFleetRequestConfigData struct {
+	// A unique, case-sensitive identifier you provide to ensure idempotency of
+	// your listings. This helps avoid duplicate listings. For more information,
+	// see Ensuring Idempotency (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html).
+	ClientToken *string `locationName:"clientToken" type:"string"`
+
+	// Grants the Spot fleet service permission to terminate instances on your behalf
+	// when you cancel a Spot fleet request using CancelSpotFleetRequests or when
+	// the Spot fleet request expires, if you set terminateInstancesWithExpiration.
+	IAMFleetRole *string `locationName:"iamFleetRole" type:"string" required:"true"`
+
+	// Information about the launch specifications for the instances.
+	LaunchSpecifications []*LaunchSpecification `locationName:"launchSpecifications" locationNameList:"item" type:"list" required:"true"`
+
+	// The maximum hourly price (bid) for any Spot Instance launched to fulfill
+	// the request.
+	SpotPrice *string `locationName:"spotPrice" type:"string" required:"true"`
+
+	// The maximum number of Spot Instances to launch.
+	TargetCapacity *int64 `locationName:"targetCapacity" type:"integer" required:"true"`
+
+	// Indicates whether running instances should be terminated when the Spot fleet
+	// request expires.
+	TerminateInstancesWithExpiration *bool `locationName:"terminateInstancesWithExpiration" type:"boolean"`
+
+	// The start date and time of the request, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	// The default is to start fulfilling the request immediately.
+	ValidFrom *time.Time `locationName:"validFrom" type:"timestamp" timestampFormat:"iso8601"`
+
+	// The end date and time of the request, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	// At this point, no new Spot Instance requests are placed or enabled to fulfill
+	// the request.
+	ValidUntil *time.Time `locationName:"validUntil" type:"timestamp" timestampFormat:"iso8601"`
+
+	metadataSpotFleetRequestConfigData `json:"-" xml:"-"`
+}
+
+type metadataSpotFleetRequestConfigData struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
 // Describe a Spot Instance request.
 type SpotInstanceRequest struct {
 	// The Availability Zone group. If you specify the same Availability Zone group
@@ -16036,7 +18213,8 @@ type SpotInstanceRequest struct {
 	// Availability Zone.
 	AvailabilityZoneGroup *string `locationName:"availabilityZoneGroup" type:"string"`
 
-	// The time stamp when the Spot Instance request was created.
+	// The date and time when the Spot Instance request was created, in UTC format
+	// (for example, YYYY-MM-DDTHH:MM:SSZ).
 	CreateTime *time.Time `locationName:"createTime" type:"timestamp" timestampFormat:"iso8601"`
 
 	// The fault codes for the Spot Instance request, if any.
@@ -16081,17 +18259,17 @@ type SpotInstanceRequest struct {
 	// The Spot Instance request type.
 	Type *string `locationName:"type" type:"string"`
 
-	// The start date of the request. If this is a one-time request, the request
-	// becomes active at this date and time and remains active until all instances
-	// launch, the request expires, or the request is canceled. If the request is
-	// persistent, the request becomes active at this date and time and remains
-	// active until it expires or is canceled.
+	// The start date of the request, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	// If this is a one-time request, the request becomes active at this date and
+	// time and remains active until all instances launch, the request expires,
+	// or the request is canceled. If the request is persistent, the request becomes
+	// active at this date and time and remains active until it expires or is canceled.
 	ValidFrom *time.Time `locationName:"validFrom" type:"timestamp" timestampFormat:"iso8601"`
 
-	// The end date of the request. If this is a one-time request, the request remains
-	// active until all instances launch, the request is canceled, or this date
-	// is reached. If the request is persistent, it remains active until it is canceled
-	// or this date is reached.
+	// The end date of the request, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
+	// If this is a one-time request, the request remains active until all instances
+	// launch, the request is canceled, or this date is reached. If the request
+	// is persistent, it remains active until it is canceled or this date is reached.
 	ValidUntil *time.Time `locationName:"validUntil" type:"timestamp" timestampFormat:"iso8601"`
 
 	metadataSpotInstanceRequest `json:"-" xml:"-"`
@@ -16124,7 +18302,8 @@ type SpotInstanceStatus struct {
 	// The description for the status code.
 	Message *string `locationName:"message" type:"string"`
 
-	// The time of the most recent status update.
+	// The date and time of the most recent status update, in UTC format (for example,
+	// YYYY-MM-DDTHH:MM:SSZ).
 	UpdateTime *time.Time `locationName:"updateTime" type:"timestamp" timestampFormat:"iso8601"`
 
 	metadataSpotInstanceStatus `json:"-" xml:"-"`
@@ -16164,7 +18343,7 @@ type SpotPrice struct {
 	// The maximum price (bid) that you are willing to pay for a Spot Instance.
 	SpotPrice *string `locationName:"spotPrice" type:"string"`
 
-	// The date and time the request was created.
+	// The date and time the request was created, in UTC format (for example, YYYY-MM-DDTHH:MM:SSZ).
 	Timestamp *time.Time `locationName:"timestamp" type:"timestamp" timestampFormat:"iso8601"`
 
 	metadataSpotPrice `json:"-" xml:"-"`
@@ -16178,6 +18357,10 @@ type StartInstancesInput struct {
 	// Reserved.
 	AdditionalInfo *string `locationName:"additionalInfo" type:"string"`
 
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more instance IDs.
@@ -16239,6 +18422,10 @@ type metadataStateReason struct {
 }
 
 type StopInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// Forces the instances to stop. The instances do not have an opportunity to
@@ -16362,6 +18549,10 @@ type metadataTagDescription struct {
 }
 
 type TerminateInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more instance IDs.
@@ -16409,6 +18600,10 @@ type metadataUnassignPrivateIPAddressesOutput struct {
 }
 
 type UnmonitorInstancesInput struct {
+	// Checks whether you have the required permissions for the action, without
+	// actually making the request, and provides an error response. If you have
+	// the required permissions, the error response is DryRunOperation. Otherwise,
+	// it is UnauthorizedOperation.
 	DryRun *bool `locationName:"dryRun" type:"boolean"`
 
 	// One or more instance IDs.
@@ -16432,12 +18627,43 @@ type metadataUnmonitorInstancesOutput struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// User's Amazon S3 bucket details used to access the image.
+// Information about items that were not successfully processed in a batch call.
+type UnsuccessfulItem struct {
+	// Information about the error.
+	Error *UnsuccessfulItemError `locationName:"error" type:"structure" required:"true"`
+
+	// The ID of the resource.
+	ResourceID *string `locationName:"resourceId" type:"string"`
+
+	metadataUnsuccessfulItem `json:"-" xml:"-"`
+}
+
+type metadataUnsuccessfulItem struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Information about the error that occured. For more information about errors,
+// see Error Codes (http://docs.aws.amazon.com/AWSEC2/latest/APIReference/errors-overview.html).
+type UnsuccessfulItemError struct {
+	// The error code.
+	Code *string `locationName:"code" type:"string" required:"true"`
+
+	// The error message accompanying the error code.
+	Message *string `locationName:"message" type:"string" required:"true"`
+
+	metadataUnsuccessfulItemError `json:"-" xml:"-"`
+}
+
+type metadataUnsuccessfulItemError struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes the S3 bucket for the disk image.
 type UserBucket struct {
-	// The Amazon S3 bucket name where the disk image is located.
+	// The name of the S3 bucket where the disk image is located.
 	S3Bucket *string `type:"string"`
 
-	// The Amazon S3 Key for the disk image.
+	// The key for the disk image.
 	S3Key *string `type:"string"`
 
 	metadataUserBucket `json:"-" xml:"-"`
@@ -16447,12 +18673,12 @@ type metadataUserBucket struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// User's Amazon S3 bucket details used to access the image.
+// Describes the S3 bucket for the disk image.
 type UserBucketDetails struct {
-	// The Amazon S3 bucket from which the disk image was created.
+	// The S3 bucket from which the disk image was created.
 	S3Bucket *string `locationName:"s3Bucket" type:"string"`
 
-	// The Amazon S3 key from which the disk image was created.
+	// The key from which the disk image was created.
 	S3Key *string `locationName:"s3Key" type:"string"`
 
 	metadataUserBucketDetails `json:"-" xml:"-"`
@@ -16462,7 +18688,9 @@ type metadataUserBucketDetails struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
+// Describes the user data to be made available to an instance.
 type UserData struct {
+	// The Base64-encoded MIME user data for the instance.
 	Data *string `locationName:"data" type:"string"`
 
 	metadataUserData `json:"-" xml:"-"`
@@ -16578,6 +18806,36 @@ type VPCClassicLink struct {
 }
 
 type metadataVPCClassicLink struct {
+	SDKShapeTraits bool `type:"structure"`
+}
+
+// Describes a VPC endpoint.
+type VPCEndpoint struct {
+	// The date and time the VPC endpoint was created.
+	CreationTimestamp *time.Time `locationName:"creationTimestamp" type:"timestamp" timestampFormat:"iso8601"`
+
+	// The policy document associated with the endpoint.
+	PolicyDocument *string `locationName:"policyDocument" type:"string"`
+
+	// One or more route tables associated with the endpoint.
+	RouteTableIDs []*string `locationName:"routeTableIdSet" locationNameList:"item" type:"list"`
+
+	// The name of the AWS service to which the endpoint is associated.
+	ServiceName *string `locationName:"serviceName" type:"string"`
+
+	// The state of the VPC endpoint.
+	State *string `locationName:"state" type:"string"`
+
+	// The ID of the VPC endpoint.
+	VPCEndpointID *string `locationName:"vpcEndpointId" type:"string"`
+
+	// The ID of the VPC to which the endpoint is associated.
+	VPCID *string `locationName:"vpcId" type:"string"`
+
+	metadataVPCEndpoint `json:"-" xml:"-"`
+}
+
+type metadataVPCEndpoint struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
@@ -16756,6 +19014,7 @@ type metadataVPNStaticRoute struct {
 
 // Describes a volume.
 type Volume struct {
+	// Information about the volume attachments.
 	Attachments []*VolumeAttachment `locationName:"attachmentSet" locationNameList:"item" type:"list"`
 
 	// The Availability Zone for the volume.
@@ -16817,7 +19076,7 @@ type VolumeAttachment struct {
 	// The time stamp when the attachment initiated.
 	AttachTime *time.Time `locationName:"attachTime" type:"timestamp" timestampFormat:"iso8601"`
 
-	// Indicates whether the Amazon EBS volume is deleted on instance termination.
+	// Indicates whether the EBS volume is deleted on instance termination.
 	DeleteOnTermination *bool `locationName:"deleteOnTermination" type:"boolean"`
 
 	// The device name.
@@ -16839,7 +19098,7 @@ type metadataVolumeAttachment struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
-// Describes an Amazon EBS volume.
+// Describes an EBS volume.
 type VolumeDetail struct {
 	// The size of the volume, in GiB.
 	Size *int64 `locationName:"size" type:"long" required:"true"`
