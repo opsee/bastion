@@ -2,7 +2,7 @@ package objx
 
 import (
 	"fmt"
-	"github.com/opsee/bastion/Godeps/_workspace/src/github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
