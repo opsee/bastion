@@ -67,7 +67,7 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
 	hostname = netutil.GetHostnameDefault(hostname)
 	var metadata *InstanceMeta = nil
 	if (region == "") {
-		metadata := metap.Get()
+		metadata = metap.Get()
 		region = metadata.Region
 	} else {
 		//if we're passing region in on the cmd line it means we're running outside of aws
