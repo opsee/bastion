@@ -2,9 +2,9 @@ package aws
 
 import (
 	"encoding/json"
+	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
-	"github.com/opsee/bastion/netutil"
 )
 
 const MetadataURL = "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -14,20 +14,20 @@ type HttpClient interface {
 }
 
 type InstanceMeta struct {
-	InstanceId string
-	Architecture string
-	ImageId string
-	InstanceType string
-	KernelId string
-	RamdiskId string
-	Region string
-	Version string
-	PrivateIp string
+	InstanceId       string
+	Architecture     string
+	ImageId          string
+	InstanceType     string
+	KernelId         string
+	RamdiskId        string
+	Region           string
+	Version          string
+	PrivateIp        string
 	AvailabilityZone string
 }
 
 type MetadataProvider struct {
-	client HttpClient
+	client   HttpClient
 	metadata *InstanceMeta
 }
 
@@ -39,7 +39,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 	if httpClient == nil {
 		httpClient = &http.Client{}
 	}
-		
+
 	backoff := netutil.NewBackoffRetrier(func() (interface{}, error) {
 		resp, err := this.client.Get(MetadataURL)
 		if err != nil {
@@ -60,7 +60,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		}
 		return meta, nil
 	})
-	
+
 	err := backoff.Run()
 	if err != nil {
 		log.Error("backoff failed:", err)

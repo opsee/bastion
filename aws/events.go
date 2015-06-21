@@ -3,8 +3,8 @@ package aws
 import (
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/awslabs/aws-sdk-go/service/ec2"
 	"github.com/awslabs/aws-sdk-go/service/elb"
 	"github.com/awslabs/aws-sdk-go/service/rds"
@@ -51,7 +51,7 @@ func MustConnectToOpsee(address string) *netutil.BaseClient {
 }
 
 type AwsApiEventParser struct {
-	config		 *aws.Config
+	config       *aws.Config
 	metadata     *InstanceMeta
 	httpClient   *http.Client
 	DynGroups    map[string]groups.DynGroup
@@ -63,35 +63,35 @@ type AwsApiEventParser struct {
 
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string, customerId string) *AwsApiEventParser {
 	httpClient := &http.Client{}
-	metap := &MetadataProvider{client:httpClient}
+	metap := &MetadataProvider{client: httpClient}
 	hostname = netutil.GetHostnameDefault(hostname)
 	var metadata *InstanceMeta = nil
-	if (region == "") {
+	if region == "" {
 		metadata = metap.Get()
 		region = metadata.Region
 	} else {
 		//if we're passing region in on the cmd line it means we're running outside of aws
-		metadata = &InstanceMeta{InstanceId:hostname}
+		metadata = &InstanceMeta{InstanceId: hostname}
 	}
 	var creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.StaticProvider{Value: credentials.Value{
-				AccessKeyID: accessKeyId,
+				AccessKeyID:     accessKeyId,
 				SecretAccessKey: secretKey,
-				SessionToken: "",
+				SessionToken:    "",
 			}},
 			&credentials.EnvProvider{},
 			&credentials.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
 		})
 	config := &aws.Config{Credentials: creds, Region: region}
 	scanner := &AwsApiEventParser{
-		config: 			 config,
-		metadata: 		 	 metadata,
-		httpClient:          httpClient,
-		DynGroups:   		 make(map[string]groups.DynGroup),
-		GroupMap:            make(map[string]ec2.SecurityGroup),
-		EC2Client:           NewScanner(config),
-		MessageMaker:        netutil.NewEventMessageMaker(defaultEventTtl, metadata.InstanceId, hostname, customerId),
+		config:       config,
+		metadata:     metadata,
+		httpClient:   httpClient,
+		DynGroups:    make(map[string]groups.DynGroup),
+		GroupMap:     make(map[string]ec2.SecurityGroup),
+		EC2Client:    NewScanner(config),
+		MessageMaker: netutil.NewEventMessageMaker(defaultEventTtl, metadata.InstanceId, hostname, customerId),
 	}
 	return scanner
 }

@@ -30,8 +30,8 @@ type MockedHttpClient struct {
 }
 
 type MockedReaderCloser struct {
-	body string
-	idx int
+	body   string
+	idx    int
 	closed bool
 }
 
@@ -70,7 +70,7 @@ func setupMock(m *MockedHttpClient) {
 func TestGetInstanceId(t *testing.T) {
 	m := &MockedHttpClient{}
 	setupMock(m)
-	metap := &MetadataProvider{client:m}
+	metap := &MetadataProvider{client: m}
 	metadata := metap.Get()
 	m.Mock.AssertExpectations(t)
 	assert.Equal(t, "i-e58b75eb", metadata.InstanceId)
