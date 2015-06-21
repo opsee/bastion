@@ -12,7 +12,7 @@ dependencies:
   pre:
     - docker info
     - go get github.com/tools/godep
-    - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws s3 cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
+    - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws s3-cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
 test:
   override:
     - make docker
