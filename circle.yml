@@ -12,7 +12,7 @@ dependencies:
   pre:
     - docker info
     - go get github.com/tools/godep
-    - if [[ ! -e mami/mami.jar ]]; then mkdir mami && curl -k -L -o mami/mami.jar https://s3-us-west-2.amazonaws.com/opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar; fi
+    - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws configure set aws_access_key_id $AWS_ACCESS_KEY && aws configure set aws_secret_access_key $AWS_SECRET_KEY && aws s3 cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
 test:
   override:
     - make docker
