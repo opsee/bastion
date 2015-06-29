@@ -33,7 +33,7 @@ The event bus is the main means of exchanging data within the bastion.  The even
 
 ### Majordoomo
 
-The majordoomo process is responsible for scheduling checks that need to be run periodically. It will accept check definitions and begin scheduling those checks immediately. Fir v1, it will be limited to a very simple timer-based scheduler. It will utilize a caching layer between the bastion and AWS API to resolve group names into instance IP addresses.
+The majordoomo process is responsible for scheduling checks that need to be run periodically. It will accept check definitions and begin scheduling those checks immediately. For v1, it will be limited to a very simple timer-based scheduler. It will utilize a caching layer between the bastion and AWS API to resolve group names into instance IP addresses.
 
 ### API Scanner
 
