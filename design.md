@@ -16,10 +16,25 @@ The bastion will eventually need to be able to run commands and scripts to do th
 
 In order to ensure the reliability of the various component pieces of the bastion, and to better ease development of future planned features, the bastion's architecture will mainly revolve around cooperating OS processes.  Therefore if a user defined check type hard crashes, it minimizes the extent of the failure.  The decoupling of responsibilities into cooperating processes is made tractable by adhearing as closely as possible to uniformity of interface in the data being exchanged.  Therefore we should be able to rapidly develop the following components, mostly gluing them together with off the shelf technology (either nsq or 0mq).
 
+## Event Format ##
+
+All events into and out of the bastion have a common format.  This eases development of the various components and eases the development of unplanned-foruse cases.  Events can be batched together in an envelope for more efficient delivery.  Events and envelopes are encoded on the wire as protocol buffers.
+
 ###Connector###
 
-The connector process is responsible for maintaining communications with either the opsee backend, or the next bastion up in the tree if the bastions are in a tree structure.
+The connector process is responsible for maintaining communications with either the opsee backend, or the next bastion up in the tree if the bastions are in a tree structure.  The connector negotiates the connection, sends up initial registration information that identifies this bastion or bastion network as belonging to a particular customer.  If, at any point in time, the connector becomes disconnected from the opsee backend, the connector will begin to reconnect with randomized exponential backoff.
+
+###Event Bus###
+
+The event bus is the main means of exchanging data within the bastion.  The event bus is a pub-sub system where publishers will send messages to a topic, and consumers of that topic will have have those messages delivered to them.  One salient difference between the bastion event bus and most off the shelf pubsub systems is that the bastion bus implements the concept of a TTL.  The TTL means that a message will be persistent in a topic for the duration of the TTL.  Any subscribers to the topic will have any messages that are still within TTL delivered on subscribe.
 
 ###Majordomo###
 
-The majordomo process is responsible for 
+The majordomo process is responsible for scheduling checks that need to be run periodically, 
+
+###API Scanner###
+
+The API scanner is responsible for periodically scanning through the amazon API's, keeping information in memory about the instances reachable to this bastion, and publishing discovery events to the bastion's event bus.
+
+###
+
