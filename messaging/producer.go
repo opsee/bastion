@@ -37,7 +37,7 @@ func (p *Producer) Publish(message string) error {
 
 // Start the Producer
 func (p *Producer) Start() error {
-	nsqProducer, err := nsq.NewProducer(nsqLookupdURL, p.nsqConfig)
+	nsqProducer, err := nsq.NewProducer(getNsqLookupdURL(), p.nsqConfig)
 
 	if err != nil {
 		return fmt.Errorf("Error creating producer: %v", err)

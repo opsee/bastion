@@ -5,3 +5,7 @@ package messaging
 const (
 	nsqLookupdURL = "http://nsqlookupd:4161"
 )
+
+func getNsqLookupdURL() string {
+	return nsqLookupdURL
+}
