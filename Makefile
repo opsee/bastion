@@ -1,13 +1,16 @@
 PREFIX=/usr/local
 DESTDIR=
-GOFLAGS=
+GOFLAGS=-v
 BINDIR=${PREFIX}/bin
 
 CONNECTOR_SRCS = $(wildcard cmd/connector/*.go)
 BASTION_SRCS = $(wildcard cmd/bastion/*.go)
 
+GOOS ?= $(shell go env GOOS)
+GOARCH ?= $(shell go env GOARCH)
+
 CMDS = connector bastion
-BLDDIR = target
+BLDDIR = target/${GOOS}
 
 all: $(CMDS)
 
@@ -22,7 +25,7 @@ $(BLDDIR)/cmd/connector: $(CONNECTOR_SRCS)
 $(BLDDIR)/cmd/bastion: $(BASTION_SRCS)
 
 clean:
-	rm -fr $(BLDDIR)
+	rm -fr target
 
 .PHONY: install clean all
 .PHONY: $(BINARIES)
@@ -33,9 +36,6 @@ install: $(BINARIES)
 	install -m 755 $(BLDDIR)/cmd/connector ${DESTDIR}${BINDIR}/connector
 	install -m 755 $(BLDDIR)/cmd/bastion ${DESTDIR}${BINDIR}/bastion
 
-docker: test
-	docker build -t opsee/bastion .
-
 deps:
 	@go get github.com/tools/godep
 
@@ -43,5 +43,5 @@ test: build
 	@godep go test -v ./...
 
 fmt:
-	gofmt -w ./
+	@gofmt -w ./
 
