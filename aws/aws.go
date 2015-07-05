@@ -5,11 +5,11 @@ import (
 )
 
 var (
-	log       = logging.MustGetLogger("aws")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
+	logger       = logging.MustGetLogger("aws")
+	loggerFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
 )
 
 func init() {
 	logging.SetLevel(logging.DEBUG, "aws")
-	logging.SetFormatter(logFormat)
+	logging.SetFormatter(loggerFormat)
 }

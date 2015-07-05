@@ -3,17 +3,18 @@ package aws
 import (
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/awslabs/aws-sdk-go/service/ec2"
-	"github.com/awslabs/aws-sdk-go/service/elb"
-	"github.com/awslabs/aws-sdk-go/service/rds"
-	"github.com/opsee/bastion/groups"
-	"github.com/opsee/bastion/netutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/elb"
+	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/opsee/bastion/groups"
+	"github.com/opsee/bastion/netutil"
 )
 
 const (
@@ -34,7 +35,7 @@ func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
 }
 
 func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.EventMessage) bool {
-	log.Info("Received message %+v", reply)
+	logger.Info("Received message %+v", reply)
 	if reply.Command == "healthcheck" {
 
 	}
@@ -45,7 +46,7 @@ func MustConnectToOpsee(address string) *netutil.BaseClient {
 	connectToOpsee := func() (interface{}, error) { return netutil.ConnectTCP(address, &client{}) }
 	connectToOpseeRetrier := netutil.NewBackoffRetrier(connectToOpsee)
 	if err := connectToOpseeRetrier.Run(); err != nil {
-		log.Fatalf("connectToOpsee: %v", err)
+		logger.Fatalf("connectToOpsee: %v", err)
 	}
 	return connectToOpseeRetrier.Result().(*netutil.BaseClient)
 }
@@ -108,20 +109,20 @@ func (a *AwsApiEventParser) Scan() (err error) {
 	if err = a.ScanSecurityGroups(); err == nil {
 		if err = a.ScanLoadBalancers(); err == nil {
 			if err = a.ScanRDS(); err != nil {
-				log.Error("AwsApiEventParser.ScanRDS: %v", err)
+				logger.Error("AwsApiEventParser.ScanRDS: %v", err)
 			}
 		} else {
-			log.Error("AwsApiEventParse.ScanLoadBalancers: %v", err)
+			logger.Error("AwsApiEventParse.ScanLoadBalancers: %v", err)
 		}
 	} else {
-		log.Error("AwsApiEventParser.ScanSecurityGroup: %v", err)
+		logger.Error("AwsApiEventParser.ScanSecurityGroup: %v", err)
 	}
 	return
 }
 
 func (a *AwsApiEventParser) ScanSecurityGroups() (err error) {
 	if groups, err := a.EC2Client.ScanSecurityGroups(); err != nil {
-		log.Error("scanning security groups: %s", err.Error())
+		logger.Error("scanning security groups: %s", err.Error())
 	} else {
 		for _, group := range groups {
 			if group.GroupID != nil {
@@ -149,7 +150,7 @@ func (a *AwsApiEventParser) ScanSecurityGroups() (err error) {
 
 func (a *AwsApiEventParser) ScanRDS() (err error) {
 	if rdbs, err := a.EC2Client.ScanRDS(); err != nil {
-		log.Error("ScanRDS: %v", err)
+		logger.Error("ScanRDS: %v", err)
 	} else {
 		for _, db := range rdbs {
 			err = a.SendEvent(a.ToEvent(db))
@@ -166,7 +167,7 @@ func (a *AwsApiEventParser) ScanLoadBalancers() (err error) {
 			}
 		}
 	} else {
-		log.Error("scanning load balancers: %v", err)
+		logger.Error("scanning load balancers: %v", err)
 	}
 	return
 }
@@ -215,7 +216,7 @@ func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.EventMessag
 		event.State = "failed"
 		event.Tags = []string{"failure", "discovery"}
 		event.Attributes["api-object-description"] = fmt.Sprint(obj)
-		log.Error("unknown API object of type %T:  %+v", obj, obj)
+		logger.Error("unknown API object of type %T:  %+v", obj, obj)
 	}
 	return
 }
@@ -255,7 +256,7 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 		// HTTP:port;/;PathToPing; grouping, for example "HTTP:80/weather/us/wa/seattle"
 		split := strings.Split(*lb.HealthCheck.Target, ":")
 		split2 := strings.Split(split[1], "/")
-		log.Info("split %+v split2 %+v", split, split2)
+		logger.Info("split %+v split2 %+v", split, split2)
 		event.Attributes["port"] = split2[0]
 		event.Attributes["interval"] = string(*lb.HealthCheck.Interval)
 		event.Attributes["protocol"] = split[0]

@@ -1,11 +1,12 @@
 package groups
 
 import (
-	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/service/ec2"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/stretchr/testify/assert"
 )
 
 func sendInstance(group DynGroup, instanceId string, groupId string) {

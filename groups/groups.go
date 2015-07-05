@@ -1,10 +1,11 @@
 package groups
 
 import (
-	"github.com/awslabs/aws-sdk-go/service/ec2"
+	"time"
+
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/op/go-logging"
 	"github.com/streamrail/concurrent-map"
-	"time"
 )
 
 var (
