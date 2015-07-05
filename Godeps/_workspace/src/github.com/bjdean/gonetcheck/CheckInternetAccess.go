@@ -22,8 +22,8 @@ package gonetcheck
  */
 
 import (
-	"fmt"
 	"time"
+	"fmt"
 )
 
 // The final result to be put on the finalResultChan

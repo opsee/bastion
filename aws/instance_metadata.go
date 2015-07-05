@@ -2,9 +2,10 @@ package aws
 
 import (
 	"encoding/json"
-	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/opsee/bastion/netutil"
 )
 
 const MetadataURL = "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -43,19 +44,19 @@ func (this MetadataProvider) Get() *InstanceMeta {
 	backoff := netutil.NewBackoffRetrier(func() (interface{}, error) {
 		resp, err := this.client.Get(MetadataURL)
 		if err != nil {
-			log.Error("error getting ec2 instance metadata:", err)
+			logger.Error("error getting ec2 instance metadata:", err)
 			return nil, err
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Error("error reading ec2 metadata:", err)
+			logger.Error("error reading ec2 metadata:", err)
 			return nil, err
 		}
 		meta := &InstanceMeta{}
 		err = json.Unmarshal(body, meta)
 		if err != nil {
-			log.Error("error parsing instance metadata:", err)
+			logger.Error("error parsing instance metadata:", err)
 			return nil, err
 		}
 		return meta, nil
@@ -63,7 +64,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 
 	err := backoff.Run()
 	if err != nil {
-		log.Error("backoff failed:", err)
+		logger.Error("backoff failed:", err)
 		return nil
 	}
 	this.metadata = backoff.Result().(*InstanceMeta)
