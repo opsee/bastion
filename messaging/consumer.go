@@ -50,7 +50,7 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 func (c *Consumer) Start() error {
 	var err error
 
-	url := getNsqLookupdURL()
+	url := getNsqdURL()
 	if err := c.nsqConsumer.ConnectToNSQD(url); err != nil {
 		err = fmt.Errorf("Unable to connect to NSQLookupd at %s", url)
 	}

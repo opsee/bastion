@@ -9,7 +9,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill %p-%i
 ExecStartPre=-/usr/bin/docker rm %p-%i
 ExecStartPre=/usr/bin/docker pull opsee/bastion:latest
-ExecStart=/usr/bin/docker run --name %p-%i -p 4000:4000 opsee/bastion
+ExecStart=/usr/bin/docker run --name %p-%i -p 4000:4000 --link nsqd:nsqd opsee/bastion
 ExecStop=/usr/bin/docker stop %p-%i
 
 [Install]

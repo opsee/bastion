@@ -3,9 +3,9 @@ package messaging
 // TODO: Migrate shared code and constantize magic strings/numbers here.
 
 const (
-	nsqLookupdURL = "http://nsqlookupd:4161"
+	nsqdURL = "http://nsqd:4150"
 )
 
-func getNsqLookupdURL() string {
-	return nsqLookupdURL
+func getNsqdURL() string {
+	return nsqdURL
 }
