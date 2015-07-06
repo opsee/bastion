@@ -126,17 +126,11 @@ func (a *AwsApiEventParser) ScanSecurityGroups() (err error) {
 	} else {
 		for _, group := range groups {
 			if group.GroupID != nil {
-				dyn := a.DynGroups[*group.GroupID]
 				a.GroupMap[*group.GroupID] = *group
 				reservations, _ := a.EC2Client.ScanSecurityGroupInstances(*group.GroupID)
-				if len(reservations) == 0 {
-					continue
-				}
-				if dyn != nil {
-					for _, reservation := range reservations {
-						for _, instance := range reservation.Instances {
-							dyn.InstanceEvent(instance)
-						}
+				for _, reservation := range reservations {
+					for _, instance := range reservation.Instances {
+						a.SendEvent(a.ToEvent(instance))
 					}
 				}
 			} else {
@@ -210,6 +204,8 @@ func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.EventMessag
 		event = a.elbLoadBalancerDescriptionToEvent(obj.(*elb.LoadBalancerDescription))
 	case *rds.DBInstance:
 		event = a.rdsDBInstanceToEvent(obj.(*rds.DBInstance))
+	case *ec2.Instance:
+		event = a.ec2InstanceToEvent(obj.(*ec2.Instance))
 	default:
 		event = a.MessageMaker.NewEventMessage()
 		event.Command = "discovery-failure"
@@ -264,6 +260,17 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 			event.Attributes["request"] = strings.Join([]string{"/", split2[1]}, "")
 		}
 	}
+	return
+}
+
+func (a *AwsApiEventParser) ec2InstanceToEvent(instance *ec2.Instance) (event *netutil.EventMessage) {
+	event = a.MessageMaker.NewEventMessage()
+	event.Service = "discovery"
+	event.Command = "discovery"
+	event.State = "sg"
+	event.Metric = 0
+	event.Attributes["instance"] = instance
+	logger.Debug("security groups: %v", instance.SecurityGroups)
 	return
 }
 
