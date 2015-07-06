@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"github.com/op/go-logging"
 	"github.com/opsee/bastion"
-	//"github.com/opsee/bastion/netutil"
+	"github.com/opsee/bastion/aws"
+	"github.com/opsee/bastion/connector"
 )
 
 var (
@@ -14,5 +16,10 @@ var (
 
 func main() {
 	config := bastion.GetConfig()
-	fmt.Println("config %s", config)
+	fmt.Println("config", config)
+	httpClient := &http.Client{}
+	mdp := aws.NewMetadataProvider(httpClient, config)
+	connector := connector.StartConnector(config.Opsee, 1000, 1000, mdp.Get(), config)
+	msg := <-connector.Recv
+	fmt.Println("got", msg)
 }

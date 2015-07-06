@@ -3,8 +3,8 @@ DESTDIR=
 GOFLAGS=-v
 BINDIR=${PREFIX}/bin
 
-CONNECTOR_SRCS = $(wildcard cmd/connector/*.go)
-BASTION_SRCS = $(wildcard cmd/bastion/*.go)
+CONNECTOR_SRCS = $(wildcard *.go)
+BASTION_SRCS = $(wildcard *.go)
 
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
