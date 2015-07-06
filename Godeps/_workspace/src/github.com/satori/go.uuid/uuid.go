@@ -58,14 +58,9 @@ const (
 // UUID epoch (October 15, 1582) and Unix epoch (January 1, 1970).
 const epochStart = 122192928000000000
 
-// Used in string method conversion
-const dash byte = '-'
-
 // UUID v1/v2 storage.
 var (
 	storageMutex  sync.Mutex
-	storageOnce   sync.Once
-	epochFunc     = unixTimeFunc
 	clockSequence uint16
 	lastTime      uint64
 	hardwareAddr  [6]byte
@@ -79,40 +74,32 @@ var (
 	byteGroups = []int{8, 4, 4, 4, 12}
 )
 
-func initClockSequence() {
-	buf := make([]byte, 2)
-	safeRandom(buf)
-	clockSequence = binary.BigEndian.Uint16(buf)
-}
+// Epoch calculation function
+var epochFunc func() uint64
 
-func initHardwareAddr() {
+// Initialize storage
+func init() {
+	buf := make([]byte, 2)
+	rand.Read(buf)
+	clockSequence = binary.BigEndian.Uint16(buf)
+
+	// Initialize hardwareAddr randomly in case
+	// of real network interfaces absence
+	rand.Read(hardwareAddr[:])
+
+	// Set multicast bit as recommended in RFC 4122
+	hardwareAddr[0] |= 0x01
+
 	interfaces, err := net.Interfaces()
 	if err == nil {
 		for _, iface := range interfaces {
 			if len(iface.HardwareAddr) >= 6 {
 				copy(hardwareAddr[:], iface.HardwareAddr)
-				return
+				break
 			}
 		}
 	}
-
-	// Initialize hardwareAddr randomly in case
-	// of real network interfaces absence
-	safeRandom(hardwareAddr[:])
-
-	// Set multicast bit as recommended in RFC 4122
-	hardwareAddr[0] |= 0x01
-}
-
-func initStorage() {
-	initClockSequence()
-	initHardwareAddr()
-}
-
-func safeRandom(dest []byte) {
-	if _, err := rand.Read(dest); err != nil {
-		panic(err)
-	}
+	epochFunc = unixTimeFunc
 }
 
 // Returns difference in 100-nanosecond intervals between
@@ -125,10 +112,6 @@ func unixTimeFunc() uint64 {
 // UUID representation compliant with specification
 // described in RFC 4122.
 type UUID [16]byte
-
-// The nil UUID is special form of UUID that is specified to have all
-// 128 bits set to zero.
-var Nil = UUID{}
 
 // Predefined namespace UUIDs.
 var (
@@ -187,19 +170,8 @@ func (u UUID) Bytes() []byte {
 // Returns canonical string representation of UUID:
 // xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
 func (u UUID) String() string {
-	buf := make([]byte, 36)
-
-	hex.Encode(buf[0:8], u[0:4])
-	buf[8] = dash
-	hex.Encode(buf[9:13], u[4:6])
-	buf[13] = dash
-	hex.Encode(buf[14:18], u[6:8])
-	buf[18] = dash
-	hex.Encode(buf[19:23], u[8:10])
-	buf[23] = dash
-	hex.Encode(buf[24:], u[10:])
-
-	return string(buf)
+	return fmt.Sprintf("%x-%x-%x-%x-%x",
+		u[:4], u[4:6], u[6:8], u[8:10], u[10:])
 }
 
 // SetVersion sets version bits.
@@ -307,10 +279,8 @@ func FromString(input string) (u UUID, err error) {
 }
 
 // Returns UUID v1/v2 storage state.
-// Returns epoch timestamp, clock sequence, and hardware address.
-func getStorage() (uint64, uint16, []byte) {
-	storageOnce.Do(initStorage)
-
+// Returns epoch timestamp and clock sequence.
+func getStorage() (uint64, uint16) {
 	storageMutex.Lock()
 	defer storageMutex.Unlock()
 
@@ -322,21 +292,21 @@ func getStorage() (uint64, uint16, []byte) {
 	}
 	lastTime = timeNow
 
-	return timeNow, clockSequence, hardwareAddr[:]
+	return timeNow, clockSequence
 }
 
 // NewV1 returns UUID based on current timestamp and MAC address.
 func NewV1() UUID {
 	u := UUID{}
 
-	timeNow, clockSeq, hardwareAddr := getStorage()
+	timeNow, clockSeq := getStorage()
 
 	binary.BigEndian.PutUint32(u[0:], uint32(timeNow))
 	binary.BigEndian.PutUint16(u[4:], uint16(timeNow>>32))
 	binary.BigEndian.PutUint16(u[6:], uint16(timeNow>>48))
 	binary.BigEndian.PutUint16(u[8:], clockSeq)
 
-	copy(u[10:], hardwareAddr)
+	copy(u[10:], hardwareAddr[:])
 
 	u.SetVersion(1)
 	u.SetVariant()
@@ -348,8 +318,6 @@ func NewV1() UUID {
 func NewV2(domain byte) UUID {
 	u := UUID{}
 
-	timeNow, clockSeq, hardwareAddr := getStorage()
-
 	switch domain {
 	case DomainPerson:
 		binary.BigEndian.PutUint32(u[0:], posixUID)
@@ -357,12 +325,14 @@ func NewV2(domain byte) UUID {
 		binary.BigEndian.PutUint32(u[0:], posixGID)
 	}
 
+	timeNow, clockSeq := getStorage()
+
 	binary.BigEndian.PutUint16(u[4:], uint16(timeNow>>32))
 	binary.BigEndian.PutUint16(u[6:], uint16(timeNow>>48))
 	binary.BigEndian.PutUint16(u[8:], clockSeq)
 	u[9] = domain
 
-	copy(u[10:], hardwareAddr)
+	copy(u[10:], hardwareAddr[:])
 
 	u.SetVersion(2)
 	u.SetVariant()
@@ -382,7 +352,7 @@ func NewV3(ns UUID, name string) UUID {
 // NewV4 returns random generated UUID.
 func NewV4() UUID {
 	u := UUID{}
-	safeRandom(u[:])
+	rand.Read(u[:])
 	u.SetVersion(4)
 	u.SetVariant()
 
