@@ -1,0 +1,13 @@
+{
+	"InstanceId": "i-88888",
+	"Architecture": "",
+	"ImageId": "",
+	"InstanceType": "m3.medium",
+	"Hostname": "localhost",
+	"KernelId": "",
+	"RamdiskId": "",
+	"Region": "us-west-1",
+	"Version": "",
+	"PrivateIp": "",
+	"AvailabilityZone": "us-west-1c"
+}
