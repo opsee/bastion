@@ -20,7 +20,7 @@ var (
 
 const (
 	protocolVersion   = 1
-	minDefaultTtl     = 10
+	minDefaultTtl     = 100 // in ms
 	noInstanceId      = "i-0000000"
 	unknownHostname   = "unknown-hostname"
 	unknownCustomerId = "unknown-customer"
@@ -60,45 +60,34 @@ func InitHostInfo(cid string, rid string, zid string, iid string, hostname strin
 type MessageId uint64
 
 type Message struct {
-	Id         MessageId              `json:"id"`
-	Version    uint8                  `json:"version"`
+	// Routing, flow control
+	Id         MessageId `json:"id"`
+	Version    uint8     `json:"version"`
+	Sent       int64     `json:"sent"`
+	CustomerId string    `json:"customer_id"`
+	InstanceId string    `json:"instance_id"`
+	Ttl        uint32    `json:"ttl"` // in ms
+	// Application layer
 	Command    string                 `json:"command"`
-	Sent       int64                  `json:"sent"`
 	Attributes map[string]interface{} `json:"attributes"`
-	CustomerId string                 `json:"customer_id"`
-	InstanceId string                 `json:"instance_id"`
+	Body       MessageBody            `json:"body"`
 }
 
-type Event struct {
-	Host        string      `json:"host"`
-	Service     string      `json:"service"`
-	State       string      `json:"state"`
-	Time        int64       `json:"time"`
-	Description string      `json:"description"`
-	Tags        []string    `json:"tags"`
-	Metric      interface{} `json:"metric"` // Could be Int, Float32, Float64
-	Ttl         float32     `json:"ttl"`
+type MessageBody struct {
+	Type string `json:"type"`
+	Body string `json:"body"`
 }
 
-type EventMessage struct {
-	Message
-	Event
-}
-
-type MessageMaker interface {
-	NewEventMessage() *EventMessage
-}
-
-type EventMessageMaker struct {
-	Ttl        float32
+type MessageMaker struct {
+	Ttl        uint32
 	InstanceId string
 	Hostname   string
 	CustomerId string
 }
 
-func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultHostname string, defaultCustomerId string) *EventMessageMaker {
+func NewMessageMaker(defaultTtl uint32, defaultInstanceId string, defaultHostname string, defaultCustomerId string) *MessageMaker {
 	logger.Info("ttl: %v iid: %s hostname: %s customerId: %s", defaultTtl, defaultInstanceId, defaultHostname, defaultCustomerId)
-	if defaultTtl < 1.0 {
+	if defaultTtl < 1 {
 		defaultTtl = minDefaultTtl
 	}
 	if defaultInstanceId == "" {
@@ -113,22 +102,16 @@ func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultH
 	if defaultCustomerId == "" {
 		defaultCustomerId = unknownCustomerId
 	}
-	return &EventMessageMaker{Ttl: defaultTtl, InstanceId: defaultInstanceId, Hostname: defaultHostname, CustomerId: defaultCustomerId}
+	return &MessageMaker{Ttl: defaultTtl, InstanceId: defaultInstanceId, Hostname: defaultHostname, CustomerId: defaultCustomerId}
 }
 
-func (e *EventMessageMaker) NewEventMessage() *EventMessage {
-	m := &EventMessage{}
+func (e *MessageMaker) NewMessage() *Message {
+	m := &Message{}
 	m.Id = nextMessageId()
 	m.Version = protocolVersion
-	m.Command = "default"
 	m.Sent = time.Now().UTC().Unix()
-	m.Attributes = make(map[string]interface{})
-	m.Host = string([]byte(e.Hostname))
 	m.InstanceId = string([]byte(e.InstanceId))
 	m.Ttl = e.Ttl
-	m.Tags = []string{}
-	m.Service = "default"
-	m.Metric = 0
 	m.CustomerId = e.CustomerId
 	return m
 }

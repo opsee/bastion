@@ -122,13 +122,11 @@ func startStatic() {
 	}
 }
 
-func reportStaticEvents(events []*netutil.Event) {
+func reportStaticEvents(events []*netutil.Message) {
 	discTick := time.Tick(sendTickInterval)
 	for _, event := range events {
 		<-discTick
-		eventMessage := awsScanner.MessageMaker.NewEventMessage()
-		eventMessage.Event = *event
-		awsScanner.SendEvent(eventMessage)
+		awsScanner.SendEvent(event)
 	}
 }
 
@@ -141,7 +139,7 @@ func startHealthStatusServer() {
 	log.Fatal(http.ListenAndServe(fmt.Sprint(":", config.AdminPort), nil))
 }
 
-func loadEventsFromFile(dataFilePath string) (events []*netutil.Event, err error) {
+func loadEventsFromFile(dataFilePath string) (events []*netutil.Message, err error) {
 	var file *os.File
 	var bytes []byte
 

@@ -146,7 +146,7 @@ type Client interface {
 	SslOptions() SslOptions
 	ConnectionMade(*BaseClient) bool
 	ConnectionLost(*BaseClient, error)
-	ReplyReceived(*BaseClient, *EventMessage) bool
+	ReplyReceived(*BaseClient, *Message) bool
 }
 
 type BaseClient struct {
@@ -155,14 +155,14 @@ type BaseClient struct {
 	callbacks Client
 }
 
-func (c *BaseClient) SendEvent(event *EventMessage) error {
+func (c *BaseClient) SendEvent(event *Message) error {
 	logger.Info("sendEvent: %+v", event)
 	return SerializeMessage(c, event)
 }
 
 func (c *BaseClient) Loop() {
 	for {
-		msg := &EventMessage{}
+		msg := &Message{}
 		err := DeserializeMessage(c.Conn, msg)
 		if err != nil {
 			logger.Error("error receiving message %v", err)
@@ -203,11 +203,11 @@ func (c *Connection) loop() (err error) {
 	return nil
 }
 
-func (c *Connection) readRequest() (message *EventMessage, err error) {
+func (c *Connection) readRequest() (message *Message, err error) {
 	return message, DeserializeMessage(c.Conn, message)
 }
 
-func (c *Connection) handleRequest(request *EventMessage) (err error) {
+func (c *Connection) handleRequest(request *Message) (err error) {
 	return nil
 }
 
