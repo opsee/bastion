@@ -184,10 +184,10 @@ func (b *backoffRetrier) Run() (err error) {
 	for {
 		if b.result, err = b.fun(); err != nil {
 			if duration := b.NextBackOff(); duration == StopBackoff {
-				log.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
+				logger.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
 				return ErrBackOffTimeLimitExpired
 			} else {
-				log.Debug("backoff: sleeping for %.1fms", duration.Seconds())
+				logger.Debug("backoff: sleeping for %.1fms", duration.Seconds())
 				time.Sleep(duration)
 			}
 		} else {

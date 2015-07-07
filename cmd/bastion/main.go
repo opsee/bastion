@@ -4,19 +4,19 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/op/go-logging"
-	"github.com/opsee/bastion/aws"
-	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
+
+	"github.com/opsee/bastion/aws"
+	"github.com/opsee/bastion/logging"
+	"github.com/opsee/bastion/netutil"
 )
 
 var (
-	log       = logging.MustGetLogger("bastion")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} [%{level:.8s}]: [%{module}] %{shortfunc} ▶ %{id:03x}%{color:reset} %{message}")
+	log = logging.GetLogger("bastion.main")
 )
 
 const sendTickInterval = time.Second * 5
@@ -48,8 +48,6 @@ var (
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	logging.SetLevel(logging.DEBUG, "bastion.main")
-	logging.SetFormatter(logFormat)
 
 	// cmdline args
 	flag.StringVar(&config.AccessKeyId, "access_key_id", "", "AWS access key ID.")

@@ -1,15 +1,9 @@
 package aws
 
 import (
-	"github.com/op/go-logging"
+	"github.com/opsee/bastion/logging"
 )
 
 var (
-	logger       = logging.MustGetLogger("aws")
-	loggerFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
+	logger = logging.GetLogger("aws")
 )
-
-func init() {
-	logging.SetLevel(logging.DEBUG, "aws")
-	logging.SetFormatter(loggerFormat)
-}

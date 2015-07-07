@@ -4,18 +4,18 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
-	"github.com/op/go-logging"
 	"io"
 	"net"
 	"os"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/opsee/bastion/logging"
 )
 
 var (
-	log       = logging.MustGetLogger("netutil")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
+	logger = logging.GetLogger("netutil")
 )
 
 const (
@@ -25,11 +25,6 @@ const (
 	unknownHostname   = "unknown-hostname"
 	unknownCustomerId = "unknown-customer"
 )
-
-func init() {
-	logging.SetLevel(logging.DEBUG, "netutil")
-	logging.SetFormatter(logFormat)
-}
 
 type HostInfo struct {
 	CustomerId string `json:"customer_id"`
@@ -102,7 +97,7 @@ type EventMessageMaker struct {
 }
 
 func NewEventMessageMaker(defaultTtl float32, defaultInstanceId string, defaultHostname string, defaultCustomerId string) *EventMessageMaker {
-	log.Info("ttl: %v iid: %s hostname: %s customerId: %s", defaultTtl, defaultInstanceId, defaultHostname, defaultCustomerId)
+	logger.Info("ttl: %v iid: %s hostname: %s customerId: %s", defaultTtl, defaultInstanceId, defaultHostname, defaultCustomerId)
 	if defaultTtl < 1.0 {
 		defaultTtl = minDefaultTtl
 	}
@@ -160,20 +155,20 @@ func ListenTCP(address string, s ServerCallbacks) (server TCPServer, err error) 
 }
 
 func GetHostname() (hostname string, err error) {
-	log.Info("GetHostname()")
+	logger.Info("GetHostname()")
 	if oshostname, err := os.Hostname(); err == nil {
 		hostname = oshostname
 	} else {
-		log.Error("os.Hostname(): %s", err)
+		logger.Error("os.Hostname(): %s", err)
 	}
 	if localIP, err := getLocalIP(); err == nil {
 		if hostnames, err := net.LookupAddr(localIP.String()); err == nil {
 			hostname = hostnames[0]
 		} else {
-			log.Error("LookupAddr(): %s", err)
+			logger.Error("LookupAddr(): %s", err)
 		}
 	} else {
-		log.Error("getLocalIP: %s", err)
+		logger.Error("getLocalIP: %s", err)
 	}
 	return
 }
@@ -222,7 +217,7 @@ var (
 
 func SerializeMessage(writer io.Writer, message interface{}) (err error) {
 	if jsonData, err := json.Marshal(message); err != nil {
-		log.Error("json.Marshal(): %s", err)
+		logger.Error("json.Marshal(): %s", err)
 	} else {
 		_, err = writer.Write(append(jsonData, crlfSlice...))
 	}
