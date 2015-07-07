@@ -2,10 +2,10 @@ package aws
 
 import (
 	"encoding/json"
+	"github.com/opsee/bastion"
+	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/opsee/bastion/netutil"
 )
 
 const MetadataURL = "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -19,6 +19,7 @@ type InstanceMeta struct {
 	Architecture     string
 	ImageId          string
 	InstanceType     string
+	Hostname         string
 	KernelId         string
 	RamdiskId        string
 	Region           string
@@ -30,6 +31,25 @@ type InstanceMeta struct {
 type MetadataProvider struct {
 	client   HttpClient
 	metadata *InstanceMeta
+}
+
+func NewMetadataProvider(client HttpClient, config *bastion.Config) *MetadataProvider {
+	if config != nil && config.MDFile != "" {
+		metad, err := ioutil.ReadFile(config.MDFile)
+		if err == nil {
+			meta := &InstanceMeta{}
+			err = json.Unmarshal(metad, meta)
+			if err == nil {
+				return &MetadataProvider{
+					client:   client,
+					metadata: meta,
+				}
+			}
+		}
+	}
+	return &MetadataProvider{
+		client: client,
+	}
 }
 
 func (this MetadataProvider) Get() *InstanceMeta {
@@ -68,5 +88,6 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		return nil
 	}
 	this.metadata = backoff.Result().(*InstanceMeta)
+	this.metadata.Hostname = netutil.GetHostnameDefault("")
 	return this.metadata
 }
