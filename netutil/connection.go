@@ -63,7 +63,7 @@ func init() {
 func GetFileDir() (dir string, err error) {
 	dir, err = filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	return dir, err
 }
@@ -81,7 +81,7 @@ func (server *BaseServer) Listen() (net.Listener, error) {
 
 func (server *BaseServer) Serve() (err error) {
 	if server.Listener, err = server.Listen(); err != nil {
-		log.Error("listen: %v", err)
+		logger.Error("listen: %v", err)
 		return
 	}
 	for i := 0; i < acceptorCount; i++ {
@@ -89,7 +89,7 @@ func (server *BaseServer) Serve() (err error) {
 		go func() (err error) {
 			defer server.wg.Done()
 			if err = server.loop(); err != nil {
-				log.Notice("server loop exit: %s", err.Error())
+				logger.Notice("server loop exit: %s", err.Error())
 			}
 			return
 		}()
@@ -156,7 +156,7 @@ type BaseClient struct {
 }
 
 func (c *BaseClient) SendEvent(event *EventMessage) error {
-	log.Info("sendEvent: %+v", event)
+	logger.Info("sendEvent: %+v", event)
 	return SerializeMessage(c, event)
 }
 
@@ -165,7 +165,7 @@ func (c *BaseClient) Loop() {
 		msg := &EventMessage{}
 		err := DeserializeMessage(c.Conn, msg)
 		if err != nil {
-			log.Error("error receiving message %v", err)
+			logger.Error("error receiving message %v", err)
 		}
 		c.callbacks.ReplyReceived(c, msg)
 	}
@@ -199,7 +199,7 @@ func (c *Connection) loop() (err error) {
 		//		}
 	}
 	c.span.CollectMemStats()
-	log.Debug(c.span.JSON())
+	logger.Debug(c.span.JSON())
 	return nil
 }
 

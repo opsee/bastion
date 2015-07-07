@@ -4,19 +4,14 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/op/go-logging"
+	"github.com/coreos/fleet/log"
+	"github.com/opsee/bastion/logging"
 	"github.com/streamrail/concurrent-map"
 )
 
 var (
-	log       = logging.MustGetLogger("groups")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
+	logger = logging.GetLogger("groups")
 )
-
-func init() {
-	logging.SetLevel(logging.DEBUG, "groups")
-	logging.SetFormatter(logFormat)
-}
 
 type DynGroup interface {
 	GroupId() string

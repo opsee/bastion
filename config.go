@@ -3,20 +3,15 @@ package bastion
 import (
 	"flag"
 	"fmt"
-	"github.com/op/go-logging"
 	"os"
+
+	"github.com/opsee/bastion/logging"
 )
 
 var (
-	log               = logging.MustGetLogger("config")
-	logFormat         = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
-	config    *Config = nil
+	logger         = logging.GetLogger("config")
+	config *Config = nil
 )
-
-func init() {
-	logging.SetLevel(logging.DEBUG, "config")
-	logging.SetFormatter(logFormat)
-}
 
 type Config struct {
 	AccessKeyId string // AWS Access Key Id
