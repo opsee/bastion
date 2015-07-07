@@ -42,12 +42,11 @@ func GetConfig() *Config {
 		flag.UintVar(&config.AdminPort, "admin_port", 4000, "Port for the admin server.")
 		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
 		flag.Parse()
-		level, err := logging.LogLevel(config.LogLevel)
+		err := logging.SetLevel(config.LogLevel, "bastion")
 		if err != nil {
 			fmt.Printf("%s is not a valid log level")
 			os.Exit(1)
 		}
-		logging.SetLevel(level, "bastion")
 	}
 	return config
 }
