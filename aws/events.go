@@ -34,7 +34,7 @@ func (c *client) ConnectionMade(baseclient *netutil.BaseClient) bool {
 func (c *client) ConnectionLost(bc *netutil.BaseClient, err error) {
 }
 
-func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.EventMessage) bool {
+func (c *client) ReplyReceived(client *netutil.BaseClient, reply *netutil.Message) bool {
 	logger.Info("Received message %+v", reply)
 	if reply.Command == "healthcheck" {
 
@@ -59,7 +59,7 @@ type AwsApiEventParser struct {
 	GroupMap     map[string]ec2.SecurityGroup
 	opseeClient  *netutil.BaseClient
 	EC2Client    EC2Scanner
-	MessageMaker *netutil.EventMessageMaker
+	MessageMaker *netutil.MessageMaker
 }
 
 func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string, region string, customerId string) *AwsApiEventParser {
@@ -92,7 +92,7 @@ func NewAwsApiEventParser(hostname string, accessKeyId string, secretKey string,
 		DynGroups:    make(map[string]groups.DynGroup),
 		GroupMap:     make(map[string]ec2.SecurityGroup),
 		EC2Client:    NewScanner(config),
-		MessageMaker: netutil.NewEventMessageMaker(defaultEventTtl, metadata.InstanceId, hostname, customerId),
+		MessageMaker: netutil.NewMessageMaker(defaultEventTtl, metadata.InstanceId, hostname, customerId),
 	}
 	return scanner
 }
@@ -170,16 +170,16 @@ func (a *AwsApiEventParser) sendDiscoveryStateEvent(state string) error {
 	if state != "start" || state != "end" {
 		return errors.New("invalid discovery event %s (expected 'start' or 'end')")
 	}
-	event := a.MessageMaker.NewEventMessage()
+	event := a.MessageMaker.NewMessage()
 	event.Command = "discovery"
-	event.State = state
+	event.Attributes["state"] = state
 	return a.SendEvent(event)
 }
 
 func (a *AwsApiEventParser) sendConnectedEvent() error {
-	connectedEvent := a.MessageMaker.NewEventMessage()
+	connectedEvent := a.MessageMaker.NewMessage()
 	connectedEvent.Command = "connected"
-	connectedEvent.State = "connected"
+	connectedEvent.Attributes["state"] = "connected"
 	connectedEvent.Ttl = 10
 	return a.SendEvent(connectedEvent)
 }
@@ -192,11 +192,11 @@ func (a *AwsApiEventParser) RunForever() {
 	}
 }
 
-func (a *AwsApiEventParser) SendEvent(event *netutil.EventMessage) error {
+func (a *AwsApiEventParser) SendEvent(event *netutil.Message) error {
 	return a.opseeClient.SendEvent(event)
 }
 
-func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.EventMessage) {
+func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.Message) {
 	switch obj.(type) {
 	case *ec2.SecurityGroup:
 		event = a.ec2SecurityGroupToEvent(obj.(*ec2.SecurityGroup))
@@ -207,23 +207,18 @@ func (a *AwsApiEventParser) ToEvent(obj interface{}) (event *netutil.EventMessag
 	case *ec2.Instance:
 		event = a.ec2InstanceToEvent(obj.(*ec2.Instance))
 	default:
-		event = a.MessageMaker.NewEventMessage()
+		event = a.MessageMaker.NewMessage()
 		event.Command = "discovery-failure"
-		event.State = "failed"
-		event.Tags = []string{"failure", "discovery"}
 		event.Attributes["api-object-description"] = fmt.Sprint(obj)
+		event.Attributes["tags"] = []string{"failure", "discovery"}
 		logger.Error("unknown API object of type %T:  %+v", obj, obj)
 	}
 	return
 }
 
-func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *netutil.EventMessage) {
-	event = e.MessageMaker.NewEventMessage()
-	event.Service = "discovery"
+func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (event *netutil.Message) {
+	event = e.MessageMaker.NewMessage()
 	event.Command = "discovery"
-	event.State = "sg"
-	event.Metric = 0
-	event.Attributes["group_id"] = *group.GroupID
 	event.Attributes["group_id"] = *group.GroupID
 	if group.GroupName != nil {
 		event.Attributes["group_name"] = *group.GroupName
@@ -240,10 +235,9 @@ func (e *AwsApiEventParser) ec2SecurityGroupToEvent(group *ec2.SecurityGroup) (e
 	return
 }
 
-func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *netutil.EventMessage) {
-	event = e.MessageMaker.NewEventMessage()
+func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalancerDescription) (event *netutil.Message) {
+	event = e.MessageMaker.NewMessage()
 	event.Command = "discovery"
-	event.Service = "discovery"
 	event.Attributes["group_name"] = *lb.LoadBalancerName
 	event.Attributes["group_id"] = *lb.DNSName
 	if lb.HealthCheck != nil {
@@ -263,21 +257,17 @@ func (e *AwsApiEventParser) elbLoadBalancerDescriptionToEvent(lb *elb.LoadBalanc
 	return
 }
 
-func (a *AwsApiEventParser) ec2InstanceToEvent(instance *ec2.Instance) (event *netutil.EventMessage) {
-	event = a.MessageMaker.NewEventMessage()
-	event.Service = "discovery"
+func (a *AwsApiEventParser) ec2InstanceToEvent(instance *ec2.Instance) (event *netutil.Message) {
+	event = a.MessageMaker.NewMessage()
 	event.Command = "discovery"
-	event.State = "sg"
-	event.Metric = 0
 	event.Attributes["instance"] = instance
 	logger.Debug("security groups: %v", instance.SecurityGroups)
 	return
 }
 
-func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *netutil.EventMessage) {
-	event = e.MessageMaker.NewEventMessage()
+func (e *AwsApiEventParser) rdsDBInstanceToEvent(db *rds.DBInstance) (event *netutil.Message) {
+	event = e.MessageMaker.NewMessage()
 	event.Command = "discovery"
-	event.Service = "discovery"
 	if db.DBName != nil {
 		event.Attributes["group_name"] = *db.DBName
 		if len(db.VPCSecurityGroups) > 0 {

@@ -5,15 +5,16 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	"github.com/op/go-logging"
-	"github.com/opsee/bastion"
-	"github.com/opsee/bastion/aws"
-	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/op/go-logging"
+	"github.com/opsee/bastion"
+	"github.com/opsee/bastion/aws"
+	"github.com/opsee/bastion/netutil"
 )
 
 var (
@@ -24,8 +25,8 @@ var (
 type Connector struct {
 	Conn        net.Conn
 	Address     string
-	Send        chan *netutil.EventMessage
-	Recv        chan *netutil.EventMessage
+	Send        chan *netutil.Message
+	Recv        chan *netutil.Message
 	config      *bastion.Config
 	metadata    *aws.InstanceMeta
 	sslConfig   *tls.Config
@@ -37,8 +38,8 @@ type Connector struct {
 func StartConnector(address string, sendbuf int, recvbuf int, metadata *aws.InstanceMeta, config *bastion.Config) *Connector {
 	connector := &Connector{
 		Address:     address,
-		Send:        make(chan *netutil.EventMessage, sendbuf),
-		Recv:        make(chan *netutil.EventMessage, recvbuf),
+		Send:        make(chan *netutil.Message, sendbuf),
+		Recv:        make(chan *netutil.Message, recvbuf),
 		config:      config,
 		metadata:    metadata,
 		sslConfig:   initSSLConfig(config),
@@ -108,29 +109,27 @@ func reconnectLoop(connector *Connector) {
 
 func sendRegistration(connector *Connector) {
 	msg := connector.MakeMessage("connected", nil)
-	msg.State = "connected"
+	msg.Attributes["state"] = "connected"
 	connector.Send <- msg
 }
 
-func (c *Connector) MakeMessage(cmd string, attributes map[string]string) *netutil.EventMessage {
+func (c *Connector) MakeMessage(cmd string, attributes map[string]string) *netutil.Message {
 	newAttr := make(map[string]interface{})
 	if attributes != nil {
 		for k, v := range attributes {
 			newAttr[k] = v
 		}
 	}
-	m := &netutil.EventMessage{}
+	m := &netutil.Message{}
 	m.Id = netutil.MessageId(atomic.AddUint64(&c.counter, 1))
 	m.Version = 1
 	m.Command = cmd
 	m.Sent = time.Now().Unix()
 	m.CustomerId = c.config.CustomerId
 	m.InstanceId = c.metadata.InstanceId
-	m.Host = c.metadata.Hostname
 	m.Attributes = newAttr
-	m.Time = time.Now().Unix()
-	m.Metric = 0.0
-	m.Ttl = 0.0
+	m.Attributes["host"] = c.metadata.Hostname
+	m.Ttl = 0
 	return m
 }
 
@@ -157,7 +156,7 @@ func recvLoop(connector *Connector) {
 		scanner := bufio.NewScanner(conn)
 		for scanner.Scan() {
 			bytes := scanner.Bytes()
-			msg := &netutil.EventMessage{}
+			msg := &netutil.Message{}
 			err := json.Unmarshal(bytes, msg)
 			if err != nil {
 				log.Error("encountered an error unmarshalling json: %s", err)
