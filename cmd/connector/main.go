@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/op/go-logging"
 	"github.com/opsee/bastion"
 	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/connector"
+	"net/http"
 )
 
 var (
