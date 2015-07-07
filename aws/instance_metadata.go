@@ -6,8 +6,6 @@ import (
 	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/opsee/bastion/netutil"
 )
 
 const MetadataURL = "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -38,17 +36,14 @@ type MetadataProvider struct {
 func NewMetadataProvider(client HttpClient, config *bastion.Config) *MetadataProvider {
 	if config != nil && config.MDFile != "" {
 		metad, err := ioutil.ReadFile(config.MDFile)
-		if err != nil {
-			log.Error("error reading metadatafile:", err)
-		} else {
+		if err == nil {
 			meta := &InstanceMeta{}
 			err = json.Unmarshal(metad, meta)
-			if err != nil {
-				log.Error("error parsing instance metadata:", err)
-			}
-			return &MetadataProvider{
-				client:   client,
-				metadata: meta,
+			if err == nil {
+				return &MetadataProvider{
+					client:   client,
+					metadata: meta,
+				}
 			}
 		}
 	}

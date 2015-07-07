@@ -12,7 +12,7 @@ GOARCH ?= $(shell go env GOARCH)
 CMDS = connector bastion
 BLDDIR = target/${GOOS}
 
-all: $(CMDS)
+all: deps fmt test $(CMDS)
 
 $(BLDDIR)/%:
 	@mkdir -p $(dir $@)
