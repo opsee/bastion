@@ -1,5 +1,7 @@
 package aws
 
+import "github.com/opsee/bastion/logging"
+
 var (
-	logger = logger.GetLogger("aws")
+	logger = logging.GetLogger("aws")
 )

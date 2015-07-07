@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/coreos/fleet/log"
 	"github.com/opsee/bastion/logging"
 	"github.com/streamrail/concurrent-map"
 )
@@ -31,7 +30,7 @@ func newExpiringInstance(ttl time.Duration, instance *ec2.Instance, fn remove) *
 	go func() {
 		for {
 			<-timer.C
-			log.Debug("Expiring from group %+v", instance)
+			logger.Debug("Expiring from group %+v", instance)
 			fn()
 		}
 	}()

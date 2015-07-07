@@ -7,8 +7,8 @@ const (
 )
 
 var (
-	loggerFormat = logs.MustStringFormatter(loggerFormatString)
-	level        = logs.INFO
+	loggerFormat            = logs.MustStringFormatter(loggerFormatString)
+	level        logs.Level = logs.INFO
 )
 
 func GetLogger(module string) *logs.Logger {
@@ -17,6 +17,11 @@ func GetLogger(module string) *logs.Logger {
 	return logs.MustGetLogger(module)
 }
 
-func SetLevel(level logs.Level, module string) {
-	logs.SetLevel(level, module)
+func SetLevel(newLevel string, module string) error {
+	var err error
+	level, err = logs.LogLevel(newLevel)
+	if err == nil {
+		logs.SetLevel(level, module)
+	}
+	return err
 }
