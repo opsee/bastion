@@ -12,7 +12,3 @@ ENV HOSTNAME=""
 ENV CUSTOMER_ID=""
 
 ADD target/linux/cmd/ /
-
-ADD docker/bin/start.sh /
-
-ENTRYPOINT /start.sh
