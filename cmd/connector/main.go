@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/op/go-logging"
+	"net/http"
+
 	"github.com/opsee/bastion"
 	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/connector"
-	"net/http"
+	"github.com/opsee/bastion/logging"
 )
 
 var (
-	log       = logging.MustGetLogger("bastion")
-	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} [%{level:.8s}]: [%{module}] %{shortfunc} ▶ %{id:03x}%{color:reset} %{message}")
+	log = logging.GetLogger("bastion")
 )
 
 func main() {

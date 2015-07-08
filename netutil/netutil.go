@@ -113,6 +113,7 @@ func (e *MessageMaker) NewMessage() *Message {
 	m.InstanceId = string([]byte(e.InstanceId))
 	m.Ttl = e.Ttl
 	m.CustomerId = e.CustomerId
+	m.Attributes = make(map[string]interface{})
 	return m
 }
 
