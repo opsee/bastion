@@ -17,8 +17,6 @@ dependencies:
 test:
   override:
     - ./dist.sh
-    - docker run -d opsee/bastion; sleep 20
-    - test "$(docker ps | grep bastion | awk '{print $2}')"
 deployment:
   ami:
     branch: master
