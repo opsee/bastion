@@ -25,8 +25,8 @@ type HTTPResponse struct {
 	Code    int               `json:"code"`
 	Body    string            `json:"body"`
 	Headers map[string]string `json:"headers"`
-	Metrics []Metric          `json:"metrics"`
-	Error   string            `json:"error"`
+	Metrics []Metric          `json:"metrics,omitempty"`
+	Error   string            `json:"error,omitempty"`
 }
 
 var (
@@ -53,12 +53,8 @@ func init() {
 	WorkerTypes[httpWorkerTaskType] = NewHTTPWorker
 }
 
-func (r *HTTPRequest) BodyReader() io.Reader {
-	return strings.NewReader(r.Body)
-}
-
 func (r *HTTPRequest) Do() (*HTTPResponse, error) {
-	req, err := http.NewRequest(r.Method, r.Target, r.BodyReader())
+	req, err := http.NewRequest(r.Method, r.Target, strings.NewReader(r.Body))
 	if err != nil {
 		return nil, err
 	}
