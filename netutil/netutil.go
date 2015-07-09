@@ -60,6 +60,7 @@ func InitHostInfo(cid string, rid string, zid string, iid string, hostname strin
 
 type EventInterface interface {
 	Ack()
+	Nack()
 	Type() string
 	Body() string
 }
@@ -79,6 +80,10 @@ func NewEvent(msg *nsq.Message) (EventInterface, error) {
 	}
 
 	return e, nil
+}
+
+func (e *Event) Nack() {
+	e.message.Requeue(0)
 }
 
 func (e *Event) Ack() {

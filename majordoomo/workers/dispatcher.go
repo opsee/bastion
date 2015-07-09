@@ -144,11 +144,16 @@ func (d *Dispatcher) Dispatch() {
 	}()
 
 	go func() {
+		var err error
 		for t := range d.resultsChannel {
-			response := t.Response
 			logger.Info("Publishing response: %s", t.Event)
-			d.producer.Publish(response)
-			t.Event.Ack()
+			// This is synchronous. When it finishes, it is safe to ack/nack.
+			err = d.producer.Publish(t)
+			if err != nil {
+				t.Event.Nack()
+			} else {
+				t.Event.Ack()
+			}
 		}
 	}()
 }
