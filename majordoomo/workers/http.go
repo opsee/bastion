@@ -1,8 +1,7 @@
 package workers
 
 import (
-	"io"
-	"io/ioutil"
+	"bufio"
 	"net"
 	"net/http"
 	"strings"
@@ -72,7 +71,18 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 	}
 
 	logger.Debug("Attempting to read body of response...")
-	body, err := ioutil.ReadAll(resp.Body)
+	// WARNING: You cannot do this.
+	//
+	// 	body, err := ioutil.ReadAll(resp.Body)
+	//
+	// We absolutely must limit the size of the body in the response or we will
+	// end up using up too much memory. There is no telling how large the bodies
+	// could be. If we need to address exceptionally large HTTP bodies, then we
+	// can do that in the future.
+
+	rdr := bufio.NewReader(resp.Body)
+	body := make([]byte, 1024)
+	_, err = rdr.Read(body)
 	if err != nil {
 		return nil, err
 	}
