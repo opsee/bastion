@@ -2,6 +2,7 @@ package workers
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"net/http"
 	"strings"
@@ -120,14 +121,21 @@ func (w HTTPWorker) Work(task *Task) {
 		err      error
 	)
 
-	request = task.Request.(*HTTPRequest)
-	logger.Info("request: %s", request)
-	response, err = request.Do()
-	if err != nil {
+	request, ok := task.Request.(*HTTPRequest)
+	if ok {
+		logger.Info("request: %s", request)
+		response, err = request.Do()
+		if err != nil {
+			response = &HTTPResponse{
+				Error: err.Error(),
+			}
+		}
+	} else {
 		response = &HTTPResponse{
-			Error: err.Error(),
+			Error: fmt.Sprintf("Unable to process request: %s", task.Request),
 		}
 	}
+
 	task.Response = response
 	logger.Info("response: %s", task.Response)
 	w.responses <- task
