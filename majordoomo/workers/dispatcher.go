@@ -97,7 +97,7 @@ const (
 
 func NewDispatcher() *Dispatcher {
 	d := &Dispatcher{
-		// XXX: Figure out what to happen when results can't be published. The
+		// XXX: Figure out what to do when results can't be published. The
 		// contents of this channel end up getting sent to nsqd, but if we can't
 		// talk to nsqd then this channel will back up. We either need to time
 		// events out in the messaging subsystem (s.t. we don't have to handle)
