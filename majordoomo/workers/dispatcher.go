@@ -100,8 +100,8 @@ func NewDispatcher() *Dispatcher {
 		// XXX: Figure out what to do when results can't be published. The
 		// contents of this channel end up getting sent to nsqd, but if we can't
 		// talk to nsqd then this channel will back up. We either need to time
-		// events out in the messaging subsystem (s.t. we don't have to handle)
-		// managing this buffer here, or we do something else. -greg
+		// events out in the messaging subsystem (s.t. we don't have to handle
+		// managing this buffer here), or we do something else. -greg
 		resultsChannel: make(chan *Task, 100),
 	}
 
