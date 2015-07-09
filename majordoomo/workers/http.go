@@ -82,7 +82,7 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 	// can do that in the future.
 
 	rdr := bufio.NewReader(resp.Body)
-	body := make([]byte, 1024)
+	body := make([]byte, 4096)
 	_, err = rdr.Read(body)
 	if err != nil {
 		return nil, err
