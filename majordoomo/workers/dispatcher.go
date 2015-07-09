@@ -13,13 +13,13 @@ import (
 type Manager struct {
 	sync.Mutex
 	maxWorkers int
-	worker     newWorkerFunc
+	worker     NewWorkerFunc
 	queue      WorkQueue
 	results    chan *Task
 	count      int // requires synchronization
 }
 
-func NewManager(results chan *Task, worker newWorkerFunc, maxWorkers int) *Manager {
+func NewManager(results chan *Task, worker NewWorkerFunc, maxWorkers int) *Manager {
 	m := &Manager{
 		maxWorkers: maxWorkers,
 		worker:     worker,
@@ -120,7 +120,7 @@ func NewDispatcher() *Dispatcher {
 	d.producer = producer
 
 	managers := make(map[string]*Manager)
-	for t, w := range WorkerTypes {
+	for t, w := range Recruiters {
 		managers[t] = NewManager(d.resultsChannel, w, maxRoutinesPerWorkerType)
 	}
 	d.managers = managers

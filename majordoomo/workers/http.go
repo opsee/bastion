@@ -50,7 +50,7 @@ func init() {
 		},
 	}
 
-	WorkerTypes[httpWorkerTaskType] = NewHTTPWorker
+	Recruiters[httpWorkerTaskType] = NewHTTPWorker
 }
 
 func (r *HTTPRequest) Do() (*HTTPResponse, error) {

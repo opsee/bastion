@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	WorkerTypes = make(map[string]newWorkerFunc)
-	logger      = logging.GetLogger("workers")
+	Recruiters = make(map[string]NewWorkerFunc)
+	logger     = logging.GetLogger("workers")
 )
 
 type Request interface{}
@@ -29,4 +29,4 @@ type Worker interface {
 	Work(*Task)
 }
 
-type newWorkerFunc func(chan *Task, WorkQueue) Worker
+type NewWorkerFunc func(chan *Task, WorkQueue) Worker
