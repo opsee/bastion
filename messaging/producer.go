@@ -13,7 +13,6 @@ import (
 type Producer struct {
 	Topic      string
 	RoutingKey string
-	Channel    chan *netutil.Event
 
 	nsqProducer *nsq.Producer
 	nsqConfig   *nsq.Config
@@ -22,11 +21,8 @@ type Producer struct {
 // NewProducer will create a named channel on the specified topic and return
 // a Producer attached to a channel.
 func NewProducer(topicName string) (*Producer, error) {
-	channel := make(chan *netutil.Event)
-
 	producer := &Producer{
 		Topic:     topicName,
-		Channel:   channel,
 		nsqConfig: nsq.NewConfig(),
 	}
 
@@ -44,17 +40,20 @@ func NewProducer(topicName string) (*Producer, error) {
 // Publish synchronously sends a message to the producer's given topic.
 func (p *Producer) Publish(message interface{}) error {
 	msgBytes, err := json.Marshal(message)
+	logger.Info("Marshaled message to: ", string(msgBytes))
 	if err != nil {
 		logger.Error("%s", err)
 	}
 
 	event := &netutil.Event{
-		Type: reflect.ValueOf(message).Elem().Type().Name(),
-		Body: string(msgBytes),
+		MessageType: reflect.ValueOf(message).Elem().Type().Name(),
+		MessageBody: string(msgBytes),
 	}
+	logger.Info("Built event: ", event)
 
 	eBytes, _ := json.Marshal(event)
-	logger.Debug("Publishing event: %s", string(eBytes))
+
+	logger.Info("Publishing event: %s", string(eBytes))
 	return p.nsqProducer.Publish(p.Topic, eBytes)
 }
 

@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const httpWorkerTaskType = "HTTPRequest"
+
+// HTTPRequest and HTTPResponse leave their bodies as strings to make life
+// easier for now. As soon as we move away from JSON, these should be []byte.
+
 type HTTPRequest struct {
 	Method  string            `json:"method"`
 	Target  string            `json:"target"`
@@ -21,9 +26,11 @@ type HTTPResponse struct {
 	Body    string            `json:"body"`
 	Headers map[string]string `json:"headers"`
 	Metrics []Metric          `json:"metrics"`
+	Error   string            `json:"error"`
 }
 
 var (
+	// NOTE: http.Client, net.Dialer are safe for concurrent use.
 	client *http.Client
 )
 
@@ -42,6 +49,8 @@ func init() {
 			}).Dial,
 		},
 	}
+
+	WorkerTypes[httpWorkerTaskType] = NewHTTPWorker
 }
 
 func (r *HTTPRequest) BodyReader() io.Reader {
@@ -87,38 +96,34 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 }
 
 type HTTPWorker struct {
-	requests  chan interface{}
-	responses chan interface{}
+	responses chan *Task
+	done      WorkQueue
 }
 
-func NewHTTPWorker() *HTTPWorker {
+func NewHTTPWorker(response chan *Task, done WorkQueue) Worker {
 	return &HTTPWorker{
-		requests:  make(chan interface{}, 1),
-		responses: make(chan interface{}, 1),
+		responses: response,
+		done:      done,
 	}
 }
 
-func (w *HTTPWorker) Requests() chan<- interface{} {
-	return w.requests
-}
+func (w HTTPWorker) Work(task *Task) {
+	var (
+		request  *HTTPRequest
+		response *HTTPResponse
+		err      error
+	)
 
-func (w *HTTPWorker) Responses() <-chan interface{} {
-	return w.responses
-}
-
-func (w *HTTPWorker) Run() {
-	for r := range w.requests {
-		request := r.(*HTTPRequest)
-		logger.Debug("Fetching %s", request.Target)
-		resp, err := request.Do()
-		if err != nil {
-			panic(err)
+	request = task.Request.(*HTTPRequest)
+	logger.Info("request: %s", request)
+	response, err = request.Do()
+	if err != nil {
+		response = &HTTPResponse{
+			Error: err.Error(),
 		}
-
-		logger.Debug("Got response: %s", resp)
-
-		w.responses <- resp
 	}
-
-	close(w.responses)
+	task.Response = response
+	logger.Info("response: %s", task.Response)
+	w.responses <- task
+	w.done <- w
 }

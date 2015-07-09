@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bitly/go-nsq"
 	"github.com/opsee/bastion/logging"
 )
 
@@ -57,12 +58,42 @@ func InitHostInfo(cid string, rid string, zid string, iid string, hostname strin
 		})
 }
 
-type MessageId uint64
+type EventInterface interface {
+	Ack()
+	Type() string
+	Body() string
+}
 
 type Event struct {
-	Type string `json:"type"`
-	Body string `json:"event"`
+	MessageType string `json:"type"`
+	MessageBody string `json:"event"`
+	message     *nsq.Message
 }
+
+func NewEvent(msg *nsq.Message) (EventInterface, error) {
+	e := &Event{message: msg}
+	err := json.Unmarshal(msg.Body, e)
+	if err != nil {
+		logger.Error(err.Error())
+		return nil, err
+	}
+
+	return e, nil
+}
+
+func (e *Event) Ack() {
+	e.message.Finish()
+}
+
+func (e *Event) Type() string {
+	return e.MessageType
+}
+
+func (e *Event) Body() string {
+	return e.MessageBody
+}
+
+type MessageId uint64
 
 type Message struct {
 	// Routing, flow control

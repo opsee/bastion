@@ -1,7 +1,6 @@
 package messaging
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -9,7 +8,6 @@ import (
 	"github.com/opsee/bastion/netutil"
 )
 
-// A Consumer is a triple of a Topic, RoutingKey, and a Channel.
 type Consumer struct {
 	Topic      string
 	RoutingKey string
@@ -40,12 +38,12 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 
 	nsqConsumer.AddHandler(nsq.HandlerFunc(
 		func(message *nsq.Message) error {
-			event := &netutil.Event{}
-			err := json.Unmarshal(message.Body, event)
+			event, err := netutil.NewEvent(message)
 			if err != nil {
-				logger.Error("%s", err)
+				return err
 			}
-			channel <- event
+
+			channel <- event.(*netutil.Event)
 			return nil
 		}))
 
@@ -54,7 +52,6 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 	return consumer, nil
 }
 
-// Return a read-only copy of the consumer channel.
 func (c *Consumer) Channel() <-chan *netutil.Event {
 	return c.channel
 }

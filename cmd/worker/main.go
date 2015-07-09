@@ -15,6 +15,7 @@ var (
 
 func main() {
 	logger.Info("Starting workers...")
+	// XXX: Holy fuck make logging easier.
 	if os.Getenv("DEBUG") != "" {
 		logging.SetLevel("DEBUG", "worker")
 		logging.SetLevel("DEBUG", "workers")
@@ -26,8 +27,8 @@ func main() {
 
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	dispatcher := &workers.Dispatcher{}
-	go dispatcher.Run()
+	dispatcher := workers.NewDispatcher()
+	go dispatcher.Dispatch()
 
 	go func() {
 		sig := <-sigs
