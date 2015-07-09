@@ -5,7 +5,7 @@ import "github.com/opsee/bastion/logging"
 // TODO: Migrate shared code and constantize magic strings/numbers here.
 
 const (
-	nsqdURL = "http://nsqd:4150"
+	nsqdURL = "192.168.248.129:4150"
 )
 
 var (

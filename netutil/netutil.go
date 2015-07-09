@@ -59,6 +59,11 @@ func InitHostInfo(cid string, rid string, zid string, iid string, hostname strin
 
 type MessageId uint64
 
+type Event struct {
+	Type string `json:"type"`
+	Body string `json:"event"`
+}
+
 type Message struct {
 	// Routing, flow control
 	Id         MessageId `json:"id"`
@@ -70,12 +75,7 @@ type Message struct {
 	// Application layer
 	Command    string                 `json:"command"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Body       MessageBody            `json:"body"`
-}
-
-type MessageBody struct {
-	Type string `json:"type"`
-	Body string `json:"body"`
+	Body       Event                  `json:"body"`
 }
 
 type MessageMaker struct {
