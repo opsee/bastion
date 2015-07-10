@@ -80,6 +80,9 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 	// end up using up too much memory. There is no telling how large the bodies
 	// could be. If we need to address exceptionally large HTTP bodies, then we
 	// can do that in the future.
+	//
+	// For a breakdown of potential messaging costs, see:
+	// https://docs.google.com/a/opsee.co/spreadsheets/d/14Y8DvBkJMhIQoZ11C5_GKeB7NknYyt-fHJaQixkJfKs/edit?usp=sharing
 
 	rdr := bufio.NewReader(resp.Body)
 	body := make([]byte, 4096)
