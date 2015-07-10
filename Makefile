@@ -15,6 +15,9 @@ BLDDIR = target/${GOOS}
 
 all: deps fmt test $(CMDS)
 
+build: deps fmt $(CMDS)
+	go build test.go
+
 $(BLDDIR)/%:
 	@mkdir -p $(dir $@)
 	@godep go build ${GOFLAGS} -o $(abspath $@) ./$*

@@ -1,17 +1,18 @@
 package workers
 
 import (
-	"encoding/json"
+	"bufio"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/opsee/bastion/logging"
 )
+
+const httpWorkerTaskType = "HTTPRequest"
+
+// HTTPRequest and HTTPResponse leave their bodies as strings to make life
+// easier for now. As soon as we move away from JSON, these should be []byte.
 
 type HTTPRequest struct {
 	Method  string            `json:"method"`
@@ -24,23 +25,13 @@ type HTTPResponse struct {
 	Code    int               `json:"code"`
 	Body    string            `json:"body"`
 	Headers map[string]string `json:"headers"`
-	Metrics []Metric          `json:"metrics"`
+	Metrics []Metric          `json:"metrics,omitempty"`
+	Error   string            `json:"error,omitempty"`
 }
 
 var (
-	logger  = logging.GetLogger("http_worker")
-	client  *http.Client
-	dialer  *InstrumentedDialer
-	metrics chan Metric
-)
-
-// Arbitrary buffer length is arbitrary.
-// XXX: Revisit this when we have a better idea of messaging patterns and
-// and number of goroutines, etc. Right now this exists solely so that writing
-// to the metrics channel from the dialer is non-blocking, otherwise we'll be
-// artificially increasing latency of the http request as a whole.
-const (
-	metricBufferLength int = 32
+	// NOTE: http.Client, net.Dialer are safe for concurrent use.
+	client *http.Client
 )
 
 type Metric struct {
@@ -49,46 +40,21 @@ type Metric struct {
 	Tags  map[string]interface{} `json:"tags,omitempty"`
 }
 
-type InstrumentedDialer struct {
-	metricChannel chan Metric
-}
-
-func NewInstrumentedDialer(mChannel chan Metric) *InstrumentedDialer {
-	return &InstrumentedDialer{
-		metricChannel: mChannel,
-	}
-}
-
-func (d *InstrumentedDialer) MetricChannel() <-chan Metric {
-	return d.metricChannel
-}
-
-func (d *InstrumentedDialer) Dial(network, addr string) (net.Conn, error) {
-	ts0 := time.Now()
-	ret, err := (&net.Dialer{}).Dial(network, addr)
-
-	d.metricChannel <- Metric{
-		Name:  "connect_latency_ms",
-		Value: time.Since(ts0).Seconds() * 1000,
-	}
-	return ret, err
-}
-
 func init() {
-	metrics = make(chan Metric, metricBufferLength)
 	client = &http.Client{
 		Transport: &http.Transport{
-			Dial: NewInstrumentedDialer(metrics).Dial,
+			ResponseHeaderTimeout: 15 * time.Second,
+			Dial: (&net.Dialer{
+				Timeout: 5 * time.Second,
+			}).Dial,
 		},
 	}
-}
 
-func (r *HTTPRequest) BodyReader() io.Reader {
-	return strings.NewReader(r.Body)
+	Recruiters[httpWorkerTaskType] = NewHTTPWorker
 }
 
 func (r *HTTPRequest) Do() (*HTTPResponse, error) {
-	req, err := http.NewRequest(r.Method, r.Target, r.BodyReader())
+	req, err := http.NewRequest(r.Method, r.Target, strings.NewReader(r.Body))
 	if err != nil {
 		return nil, err
 	}
@@ -99,53 +65,82 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 
 	t0 := time.Now()
 	resp, err := client.Do(req)
-	metrics <- Metric{
-		Name:  "request_latency_ms",
-		Value: time.Since(t0).Seconds() * 1000,
-	}
 
-	defer close(metrics)
 	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
 
-	logger.Info("Attempting to read body of response...")
-	body, err := ioutil.ReadAll(resp.Body)
+	logger.Debug("Attempting to read body of response...")
+	// WARNING: You cannot do this.
+	//
+	// 	body, err := ioutil.ReadAll(resp.Body)
+	//
+	// We absolutely must limit the size of the body in the response or we will
+	// end up using up too much memory. There is no telling how large the bodies
+	// could be. If we need to address exceptionally large HTTP bodies, then we
+	// can do that in the future.
+	//
+	// For a breakdown of potential messaging costs, see:
+	// https://docs.google.com/a/opsee.co/spreadsheets/d/14Y8DvBkJMhIQoZ11C5_GKeB7NknYyt-fHJaQixkJfKs/edit?usp=sharing
+
+	rdr := bufio.NewReader(resp.Body)
+	body := make([]byte, 4096)
+	_, err = rdr.Read(body)
 	if err != nil {
 		return nil, err
 	}
 
 	httpResponse := &HTTPResponse{
-		Code:    resp.StatusCode,
-		Body:    string(body),
-		Metrics: []Metric{},
+		Code: resp.StatusCode,
+		Body: string(body),
+		Metrics: []Metric{
+			Metric{
+				Name:  "request_latency_ms",
+				Value: time.Since(t0).Seconds() * 1000,
+			},
+		},
 	}
 
 	return httpResponse, nil
 }
 
 type HTTPWorker struct {
+	responses chan *Task
+	done      WorkQueue
 }
 
-func (w *HTTPWorker) Run() {
-	logger.Info("Fetching http://api-beta.opsee.co/")
-	resp, err := (&HTTPRequest{
-		Method: "GET",
-		Target: "http://api-beta.opsee.co/health_check",
-	}).Do()
-	if err != nil {
-		panic(err)
+func NewHTTPWorker(response chan *Task, done WorkQueue) Worker {
+	return &HTTPWorker{
+		responses: response,
+		done:      done,
+	}
+}
+
+func (w HTTPWorker) Work(task *Task) {
+	var (
+		request  *HTTPRequest
+		response *HTTPResponse
+		err      error
+	)
+
+	request, ok := task.Request.(*HTTPRequest)
+	if ok {
+		logger.Info("request: %s", request)
+		response, err = request.Do()
+		if err != nil {
+			response = &HTTPResponse{
+				Error: err.Error(),
+			}
+		}
+	} else {
+		response = &HTTPResponse{
+			Error: fmt.Sprintf("Unable to process request: %s", task.Request),
+		}
 	}
 
-	for metric := range metrics {
-		resp.Metrics = append(resp.Metrics, metric)
-	}
-
-	bytes, err := json.Marshal(resp)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Print(string(bytes))
+	task.Response = response
+	logger.Info("response: %s", task.Response)
+	w.responses <- task
+	w.done <- w
 }
