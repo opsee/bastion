@@ -5,14 +5,13 @@ import (
 	"time"
 
 	"github.com/bitly/go-nsq"
-	"github.com/opsee/bastion/netutil"
 )
 
 type Consumer struct {
 	Topic      string
 	RoutingKey string
 
-	channel     chan netutil.EventInterface
+	channel     chan EventInterface
 	nsqConsumer *nsq.Consumer
 	nsqConfig   *nsq.Config
 }
@@ -38,7 +37,7 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 
 	nsqConsumer.AddHandler(nsq.HandlerFunc(
 		func(message *nsq.Message) error {
-			event, err := netutil.NewEvent(message)
+			event, err := NewEvent(message)
 			if err != nil {
 				return err
 			}
@@ -52,7 +51,7 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 	return consumer, nil
 }
 
-func (c *Consumer) Channel() <-chan netutil.EventInterface {
+func (c *Consumer) Channel() <-chan EventInterface {
 	return c.channel
 }
 

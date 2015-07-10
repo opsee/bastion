@@ -23,3 +23,63 @@ func getNsqdURL() string {
 	nsqdURL := os.Getenv("NSQD_HOST")
 	return nsqdURL
 }
+
+const (
+	ProtocolVersion = 1
+)
+
+type MessageId uint64
+
+type Message struct {
+	// Routing, flow control
+	Id         MessageId `json:"id"`
+	Version    uint8     `json:"version"`
+	Sent       int64     `json:"sent"`
+	CustomerId string    `json:"customer_id"`
+	InstanceId string    `json:"instance_id"`
+	Ttl        uint32    `json:"ttl"` // in ms
+	// Application layer
+	Command    string                 `json:"command"`
+	Attributes map[string]interface{} `json:"attributes"`
+	Body       Event                  `json:"body"`
+}
+
+type EventInterface interface {
+	Ack()
+	Nack()
+	Type() string
+	Body() string
+}
+
+type Event struct {
+	MessageType string `json:"type"`
+	MessageBody string `json:"event"`
+	message     *nsq.Message
+}
+
+func NewEvent(msg *nsq.Message) (EventInterface, error) {
+	e := &Event{message: msg}
+	err := json.Unmarshal(msg.Body, e)
+	if err != nil {
+		logger.Error(err.Error())
+		return nil, err
+	}
+
+	return e, nil
+}
+
+func (e *Event) Nack() {
+	e.message.Requeue(0)
+}
+
+func (e *Event) Ack() {
+	e.message.Finish()
+}
+
+func (e *Event) Type() string {
+	return e.MessageType
+}
+
+func (e *Event) Body() string {
+	return e.MessageBody
+}

@@ -12,8 +12,9 @@ import (
 	"time"
 
 	"github.com/op/go-logging"
-	"github.com/opsee/bastion"
 	"github.com/opsee/bastion/aws"
+	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/messaging"
 	"github.com/opsee/bastion/netutil"
 )
 
@@ -23,29 +24,29 @@ var (
 )
 
 type Connector struct {
-	Conn        net.Conn
-	Address     string
-	Send        chan *netutil.Message
-	Recv        chan *netutil.Message
-	config      *bastion.Config
-	metadata    *aws.InstanceMeta
-	sslConfig   *tls.Config
-	reconnCond  *sync.Cond
-	sendrcvCond *sync.Cond
-	counter     uint64
+	Conn         net.Conn
+	Address      string
+	Send         chan *netutil.Message
+	Recv         chan *netutil.Message
+	config       *config.Config
+	metadata     *aws.InstanceMeta
+	sslConfig    *tls.Config
+	reconnCond   *sync.Cond
+	sendrcvCond  *sync.Cond
+	messageMaker *messaging.MessageMaker
 }
 
-func StartConnector(address string, sendbuf int, recvbuf int, metadata *aws.InstanceMeta, config *bastion.Config) *Connector {
+func StartConnector(address string, sendbuf int, recvbuf int, metadata *aws.InstanceMeta, config *config.Config) *Connector {
 	connector := &Connector{
-		Address:     address,
-		Send:        make(chan *netutil.Message, sendbuf),
-		Recv:        make(chan *netutil.Message, recvbuf),
-		config:      config,
-		metadata:    metadata,
-		sslConfig:   initSSLConfig(config),
-		reconnCond:  &sync.Cond{L: &sync.Mutex{}},
-		sendrcvCond: &sync.Cond{L: &sync.Mutex{}},
-		counter:     0,
+		Address:      address,
+		Send:         make(chan *netutil.Message, sendbuf),
+		Recv:         make(chan *netutil.Message, recvbuf),
+		config:       config,
+		metadata:     metadata,
+		sslConfig:    initSSLConfig(config),
+		reconnCond:   &sync.Cond{L: &sync.Mutex{}},
+		sendrcvCond:  &sync.Cond{L: &sync.Mutex{}},
+		messageMaker: *messaging.MessageMaker,
 	}
 	go reconnectLoop(connector)
 	go sendLoop(connector)
@@ -53,7 +54,7 @@ func StartConnector(address string, sendbuf int, recvbuf int, metadata *aws.Inst
 	return connector
 }
 
-func initSSLConfig(config *bastion.Config) *tls.Config {
+func initSSLConfig(config *config.Config) *tls.Config {
 	if config.CaPath == "" || config.CertPath == "" || config.KeyPath == "" {
 		return nil
 	}
@@ -111,26 +112,6 @@ func sendRegistration(connector *Connector) {
 	msg := connector.MakeMessage("connected", nil)
 	msg.Attributes["state"] = "connected"
 	connector.Send <- msg
-}
-
-func (c *Connector) MakeMessage(cmd string, attributes map[string]string) *netutil.Message {
-	newAttr := make(map[string]interface{})
-	if attributes != nil {
-		for k, v := range attributes {
-			newAttr[k] = v
-		}
-	}
-	m := &netutil.Message{}
-	m.Id = netutil.MessageId(atomic.AddUint64(&c.counter, 1))
-	m.Version = 1
-	m.Command = cmd
-	m.Sent = time.Now().Unix()
-	m.CustomerId = c.config.CustomerId
-	m.InstanceId = c.metadata.InstanceId
-	m.Attributes = newAttr
-	m.Attributes["host"] = c.metadata.Hostname
-	m.Ttl = 0
-	return m
 }
 
 func sendLoop(connector *Connector) {
