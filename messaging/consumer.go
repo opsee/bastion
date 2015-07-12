@@ -19,7 +19,7 @@ type Consumer struct {
 // NewConsumer will create a named channel on the specified topic and return
 // the associated message-producing channel.
 func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
-	channel := make(chan netutil.EventInterface, 1)
+	channel := make(chan EventInterface, 1)
 
 	consumer := &Consumer{
 		Topic:      topicName,

@@ -10,13 +10,13 @@ WORKER_SRCS = $(wildcard *.go)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
-CMDS = connector bastion worker
+CMDS = connector worker
 BLDDIR = target/${GOOS}
 
 all: deps fmt test $(CMDS)
 
 build: deps fmt $(CMDS)
-	go build test.go
+	@godep go build test.go
 
 $(BLDDIR)/%:
 	@mkdir -p $(dir $@)
@@ -26,7 +26,6 @@ $(BINARIES): $: $(BLDDIR)/%
 $(CMDS): %: $(BLDDIR)/cmd/%
 
 $(BLDDIR)/cmd/connector: $(CONNECTOR_SRCS)
-$(BLDDIR)/cmd/bastion: $(BASTION_SRCS)
 $(BLDDIR)/cmd/worker: $(WORKER_SRCS)
 
 clean:

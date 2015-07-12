@@ -6,7 +6,7 @@ package workers
 
 import (
 	"github.com/opsee/bastion/logging"
-	"github.com/opsee/bastion/netutil"
+	"github.com/opsee/bastion/messaging"
 )
 
 var (
@@ -20,7 +20,7 @@ type Response interface{}
 type Task struct {
 	Request  Request
 	Response Response
-	Event    netutil.EventInterface
+	Event    messaging.EventInterface
 }
 
 type WorkQueue chan Worker

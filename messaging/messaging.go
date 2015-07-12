@@ -8,8 +8,10 @@
 package messaging
 
 import (
+	"encoding/json"
 	"os"
 
+	"github.com/bitly/go-nsq"
 	"github.com/opsee/bastion/logging"
 )
 
@@ -22,26 +24,6 @@ var (
 func getNsqdURL() string {
 	nsqdURL := os.Getenv("NSQD_HOST")
 	return nsqdURL
-}
-
-const (
-	ProtocolVersion = 1
-)
-
-type MessageId uint64
-
-type Message struct {
-	// Routing, flow control
-	Id         MessageId `json:"id"`
-	Version    uint8     `json:"version"`
-	Sent       int64     `json:"sent"`
-	CustomerId string    `json:"customer_id"`
-	InstanceId string    `json:"instance_id"`
-	Ttl        uint32    `json:"ttl"` // in ms
-	// Application layer
-	Command    string                 `json:"command"`
-	Attributes map[string]interface{} `json:"attributes"`
-	Body       Event                  `json:"body"`
 }
 
 type EventInterface interface {

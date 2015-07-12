@@ -7,50 +7,90 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net"
+	"reflect"
 	"sync"
 	"sync/atomic"
+
 	"time"
 
 	"github.com/op/go-logging"
-	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/config"
-	"github.com/opsee/bastion/messaging"
 	"github.com/opsee/bastion/netutil"
 )
+
+const (
+	protocolVersion = 1
+)
+
+type MessageId uint64
 
 var (
 	log       = logging.MustGetLogger("connector")
 	logFormat = logging.MustStringFormatter("%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}")
 )
 
-type Connector struct {
-	Conn         net.Conn
-	Address      string
-	Send         chan *netutil.Message
-	Recv         chan *netutil.Message
-	config       *config.Config
-	metadata     *aws.InstanceMeta
-	sslConfig    *tls.Config
-	reconnCond   *sync.Cond
-	sendrcvCond  *sync.Cond
-	messageMaker *messaging.MessageMaker
+type Connected struct {
+	Time       int64                `json:"time"`
+	CustomerId string               `json:"customer_id"`
+	Instance   *config.InstanceMeta `json:"instance"`
 }
 
-func StartConnector(address string, sendbuf int, recvbuf int, metadata *aws.InstanceMeta, config *config.Config) *Connector {
+type Connector struct {
+	Conn        net.Conn
+	Address     string
+	Send        chan<- interface{}
+	Recv        <-chan *ConnectorEvent
+	config      *config.Config
+	metadata    *config.InstanceMeta
+	sslConfig   *tls.Config
+	reconnCond  *sync.Cond
+	sendrcvCond *sync.Cond
+	counter     uint64
+}
+
+type ConnectorEvent struct {
+	MessageType string    `json:"type"`
+	MessageBody string    `json:"event"`
+	Id          MessageId `json:"id"`
+	ReplyTo     MessageId `json:"reply_to"`
+	Version     uint8     `json:"version"`
+	Sent        int64     `json:"version"`
+	reply       chan interface{}
+}
+
+func (e *ConnectorEvent) Nack() {
+
+}
+
+func (e *ConnectorEvent) Ack() {
+
+}
+
+func (e *ConnectorEvent) Type() string {
+	return e.MessageType
+}
+
+func (e *ConnectorEvent) Body() string {
+	return e.MessageBody
+}
+
+func StartConnector(address string, sendbuf int, recvbuf int, metadata *config.InstanceMeta, config *config.Config) *Connector {
+	send := make(chan interface{}, sendbuf)
+	recv := make(chan *ConnectorEvent, recvbuf)
 	connector := &Connector{
-		Address:      address,
-		Send:         make(chan *netutil.Message, sendbuf),
-		Recv:         make(chan *netutil.Message, recvbuf),
-		config:       config,
-		metadata:     metadata,
-		sslConfig:    initSSLConfig(config),
-		reconnCond:   &sync.Cond{L: &sync.Mutex{}},
-		sendrcvCond:  &sync.Cond{L: &sync.Mutex{}},
-		messageMaker: *messaging.MessageMaker,
+		Address:     address,
+		Send:        send,
+		Recv:        recv,
+		config:      config,
+		metadata:    metadata,
+		sslConfig:   initSSLConfig(config),
+		reconnCond:  &sync.Cond{L: &sync.Mutex{}},
+		sendrcvCond: &sync.Cond{L: &sync.Mutex{}},
+		counter:     0,
 	}
 	go reconnectLoop(connector)
-	go sendLoop(connector)
-	go recvLoop(connector)
+	go sendLoop(send, connector)
+	go recvLoop(recv, connector)
 	return connector
 }
 
@@ -100,7 +140,7 @@ func reconnectLoop(connector *Connector) {
 			connector.sendrcvCond.L.Unlock()
 			connector.sendrcvCond.Broadcast()
 			log.Info("Successfully connected.")
-			sendRegistration(connector)
+			connector.sendRegistration()
 		}
 		connector.reconnCond.L.Lock()
 		connector.reconnCond.Wait()
@@ -108,20 +148,42 @@ func reconnectLoop(connector *Connector) {
 	}
 }
 
-func sendRegistration(connector *Connector) {
-	msg := connector.MakeMessage("connected", nil)
-	msg.Attributes["state"] = "connected"
-	connector.Send <- msg
+func (c *Connector) makeEvent(msg interface{}) (*ConnectorEvent, error) {
+	bytes, err := json.Marshal(msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ConnectorEvent{
+		MessageType: reflect.ValueOf(msg).Elem().Type().Name(),
+		MessageBody: string(bytes),
+		Id:          MessageId(atomic.AddUint64(&c.counter, 1)),
+		ReplyTo:     MessageId(0),
+		Version:     protocolVersion,
+		Sent:        time.Now().Unix(),
+		reply:       make(chan interface{}),
+	}, nil
 }
 
-func sendLoop(connector *Connector) {
-	for msg := range connector.Send {
-		bytes, err := json.Marshal(msg)
+func (c *Connector) sendRegistration() {
+	connected := &Connected{}
+	c.Send <- connected
+}
+
+func sendLoop(send <-chan interface{}, connector *Connector) {
+	for msg := range send {
+		event, err := connector.makeEvent(msg)
 		if err != nil {
-			log.Error("encountered an error marshalling json: %s", err)
+			log.Error("encountered an error generating the event", err)
 			continue
 		}
-		conn := mustGetConnection(connector)
+
+		bytes, err := json.Marshal(event)
+		if err != nil {
+			log.Error("encountered an error marshalling json", err)
+			continue
+		}
+		conn := connector.mustGetConnection()
 		conn.SetWriteDeadline(time.Now().Add(time.Duration(10) * time.Second))
 		_, err = conn.Write(append(bytes, '\r', '\n'))
 		if err != nil {
@@ -131,19 +193,19 @@ func sendLoop(connector *Connector) {
 	}
 }
 
-func recvLoop(connector *Connector) {
+func recvLoop(recv chan<- *ConnectorEvent, connector *Connector) {
 	for {
-		conn := mustGetConnection(connector)
+		conn := connector.mustGetConnection()
 		scanner := bufio.NewScanner(conn)
 		for scanner.Scan() {
 			bytes := scanner.Bytes()
-			msg := &netutil.Message{}
+			msg := &ConnectorEvent{}
 			err := json.Unmarshal(bytes, msg)
 			if err != nil {
 				log.Error("encountered an error unmarshalling json: %s", err)
 				continue
 			}
-			connector.Recv <- msg
+			recv <- msg
 		}
 		log.Error("encountered an error reading from the connector socket %s", scanner.Err())
 		closeAndSignalReconnect(conn, connector)
@@ -169,7 +231,7 @@ func closeAndSignalReconnect(conn net.Conn, connector *Connector) {
 	connector.reconnCond.Signal()
 }
 
-func mustGetConnection(connector *Connector) net.Conn {
+func (connector *Connector) mustGetConnection() net.Conn {
 	connector.sendrcvCond.L.Lock()
 	conn := connector.Conn
 	for conn == nil {

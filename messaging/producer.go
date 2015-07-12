@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"github.com/bitly/go-nsq"
-	"github.com/opsee/bastion/netutil"
 )
 
 // A Producer is a tuple of a Topic and a Channel.
@@ -45,7 +44,7 @@ func (p *Producer) Publish(message interface{}) error {
 		logger.Error("%s", err)
 	}
 
-	event := &netutil.Event{
+	event := &Event{
 		MessageType: reflect.ValueOf(message).Elem().Type().Name(),
 		MessageBody: string(msgBytes),
 	}

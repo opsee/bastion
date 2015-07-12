@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/connector"
 	"github.com/opsee/bastion/logging"
@@ -15,11 +14,11 @@ var (
 )
 
 func main() {
-	config := bastion.GetConfig()
-	fmt.Println("config", config)
+	configuration := config.GetConfig()
+	fmt.Println("config", configuration)
 	httpClient := &http.Client{}
-	mdp := aws.NewMetadataProvider(httpClient, config)
-	connector := connector.StartConnector(config.Opsee, 1000, 1000, mdp.Get(), config)
+	mdp := config.NewMetadataProvider(httpClient, configuration)
+	connector := connector.StartConnector(configuration.Opsee, 1000, 1000, mdp.Get(), configuration)
 	msg := <-connector.Recv
 	fmt.Println("registration acknowledged", msg)
 
