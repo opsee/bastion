@@ -58,12 +58,18 @@ type ConnectorEvent struct {
 	reply       chan interface{}
 }
 
-func (e *ConnectorEvent) Nack() {
+type Status string
 
+func (e *ConnectorEvent) Nack() {
+	e.reply <- Status("error")
 }
 
 func (e *ConnectorEvent) Ack() {
+	e.reply <- Status("ok")
+}
 
+func (e *ConnectorEvent) Reply(reply interface{}) {
+	e.reply <- reply
 }
 
 func (e *ConnectorEvent) Type() string {
@@ -72,6 +78,27 @@ func (e *ConnectorEvent) Type() string {
 
 func (e *ConnectorEvent) Body() string {
 	return e.MessageBody
+}
+
+func (e *ConnectorEvent) handleReply(connector *Connector) {
+	replyMsg := <-e.reply
+	event, err := connector.makeEvent(replyMsg)
+	if err != nil {
+		log.Error("encountered a problem trying to handle a reply", err)
+		return
+	}
+	bytes, err := json.Marshal(event)
+	if err != nil {
+		log.Error("encountered a problem trying to serialize a reply", err)
+		return
+	}
+	conn := connector.mustGetConnection()
+	conn.SetWriteDeadline(time.Now().Add(time.Duration(10) * time.Second))
+	_, err = conn.Write(append(bytes, '\r', '\n'))
+	if err != nil {
+		log.Error("encountered a problem trying to write reply", err)
+		connector.closeAndSignalReconnect(conn)
+	}
 }
 
 func StartConnector(address string, sendbuf int, recvbuf int, metadata *config.InstanceMeta, config *config.Config) *Connector {
@@ -188,7 +215,7 @@ func sendLoop(send <-chan interface{}, connector *Connector) {
 		_, err = conn.Write(append(bytes, '\r', '\n'))
 		if err != nil {
 			log.Error("encountered an error writing to the connector socket %s", err)
-			closeAndSignalReconnect(conn, connector)
+			connector.closeAndSignalReconnect(conn)
 		}
 	}
 }
@@ -205,10 +232,13 @@ func recvLoop(recv chan<- *ConnectorEvent, connector *Connector) {
 				log.Error("encountered an error unmarshalling json: %s", err)
 				continue
 			}
+			replyChan := make(chan interface{})
+			msg.reply = replyChan
+			go msg.handleReply(connector)
 			recv <- msg
 		}
 		log.Error("encountered an error reading from the connector socket %s", scanner.Err())
-		closeAndSignalReconnect(conn, connector)
+		connector.closeAndSignalReconnect(conn)
 	}
 }
 
@@ -220,7 +250,7 @@ func connectToOpsee(connector *Connector) (net.Conn, error) {
 	}
 }
 
-func closeAndSignalReconnect(conn net.Conn, connector *Connector) {
+func (connector *Connector) closeAndSignalReconnect(conn net.Conn) {
 	connector.sendrcvCond.L.Lock()
 	defer connector.sendrcvCond.L.Unlock()
 	if conn != connector.Conn {

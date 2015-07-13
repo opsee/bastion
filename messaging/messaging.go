@@ -28,6 +28,7 @@ func getNsqdURL() string {
 
 type EventInterface interface {
 	Ack()
+	Reply(reply interface{})
 	Nack()
 	Type() string
 	Body() string
@@ -55,6 +56,10 @@ func (e *Event) Nack() {
 }
 
 func (e *Event) Ack() {
+	e.Reply(nil)
+}
+
+func (e *Event) Reply(reply interface{}) {
 	e.message.Finish()
 }
 
