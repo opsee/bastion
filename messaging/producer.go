@@ -8,10 +8,8 @@ import (
 	"github.com/bitly/go-nsq"
 )
 
-// A Producer is a tuple of a Topic and a Channel.
 type Producer struct {
 	Topic      string
-	RoutingKey string
 
 	nsqProducer *nsq.Producer
 	nsqConfig   *nsq.Config
