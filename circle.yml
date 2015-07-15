@@ -22,6 +22,6 @@ deployment:
     branch: master
     owner: opsee
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-      - docker push opsee/bastion
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD quay.io
+      - docker push quay.io/opsee/bastion
       - java -jar mami/mami.jar build build/mami.json
