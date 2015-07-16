@@ -3,13 +3,12 @@ package messaging
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 
 	"github.com/bitly/go-nsq"
 )
 
 type Producer struct {
-	Topic      string
+	Topic string
 
 	nsqProducer *nsq.Producer
 	nsqConfig   *nsq.Config
@@ -36,21 +35,22 @@ func NewProducer(topicName string) (*Producer, error) {
 
 // Publish synchronously sends a message to the producer's given topic.
 func (p *Producer) Publish(message interface{}) error {
-	msgBytes, err := json.Marshal(message)
-	logger.Info("Marshaled message to: ", string(msgBytes))
+	event, err := NewEvent(message)
 	if err != nil {
-		logger.Error("%s", err)
+		logger.Error(err.Error())
 	}
-
-	event := &Event{
-		MessageType: reflect.ValueOf(message).Elem().Type().Name(),
-		MessageBody: string(msgBytes),
-	}
-	logger.Info("Built event: ", event)
 
 	eBytes, _ := json.Marshal(event)
 
 	logger.Info("Publishing event: %s", string(eBytes))
+	return p.nsqProducer.Publish(p.Topic, eBytes)
+}
+
+func (p *Producer) PublishRepliable(id string, msg EventInterface) error {
+	event, _ := NewEvent(msg)
+	event.MessageId = id
+	eBytes, _ := json.Marshal(event)
+
 	return p.nsqProducer.Publish(p.Topic, eBytes)
 }
 

@@ -15,7 +15,9 @@ import (
 
 	"github.com/op/go-logging"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/messaging"
 	"github.com/opsee/bastion/netutil"
+	"github.com/streamrail/concurrent-map"
 )
 
 const (
@@ -45,6 +47,7 @@ type Connector struct {
 	sslConfig   *tls.Config
 	reconnCond  *sync.Cond
 	sendrcvCond *sync.Cond
+	replies     cmap.ConcurrentMap
 	counter     uint64
 }
 
@@ -87,6 +90,7 @@ func (e *ConnectorEvent) handleReply(connector *Connector) {
 		log.Error("encountered a problem trying to handle a reply", err)
 		return
 	}
+	event.ReplyTo = e.Id
 	bytes, err := json.Marshal(event)
 	if err != nil {
 		log.Error("encountered a problem trying to serialize a reply", err)
@@ -113,12 +117,28 @@ func StartConnector(address string, sendbuf int, recvbuf int, metadata *config.I
 		sslConfig:   initSSLConfig(config),
 		reconnCond:  &sync.Cond{L: &sync.Mutex{}},
 		sendrcvCond: &sync.Cond{L: &sync.Mutex{}},
+		replies:     cmap.New(),
 		counter:     0,
 	}
 	go reconnectLoop(connector)
 	go sendLoop(send, connector)
 	go recvLoop(recv, connector)
 	return connector
+}
+
+func (c *Connector) DeferReply(event *ConnectorEvent) string {
+	token := string(event.Id)
+	c.replies.Set(token, event.reply)
+	return token
+}
+
+func (c *Connector) DoReply(id string, msg interface{}) {
+	tmp, ok := c.replies.Get(id)
+	if ok == true {
+		replyChan := tmp.(chan interface{})
+		replyChan <- msg
+		c.replies.Remove(id)
+	}
 }
 
 func initSSLConfig(config *config.Config) *tls.Config {
@@ -176,14 +196,25 @@ func reconnectLoop(connector *Connector) {
 }
 
 func (c *Connector) makeEvent(msg interface{}) (*ConnectorEvent, error) {
-	bytes, err := json.Marshal(msg)
-	if err != nil {
-		return nil, err
+	messageType := ""
+	messageBody := ""
+
+	switch msg := msg.(type) {
+	case messaging.EventInterface:
+		messageType = msg.Type()
+		messageBody = msg.Body()
+	default:
+		bytes, err := json.Marshal(msg)
+		if err != nil {
+			return nil, err
+		}
+		messageType = reflect.ValueOf(msg).Elem().Type().Name()
+		messageBody = string(bytes)
 	}
 
 	return &ConnectorEvent{
-		MessageType: reflect.ValueOf(msg).Elem().Type().Name(),
-		MessageBody: string(bytes),
+		MessageType: messageType,
+		MessageBody: messageBody,
 		Id:          MessageId(atomic.AddUint64(&c.counter, 1)),
 		ReplyTo:     MessageId(0),
 		Version:     protocolVersion,

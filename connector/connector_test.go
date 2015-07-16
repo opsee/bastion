@@ -31,9 +31,9 @@ var nonSSLConfig = config.Config{
 func TestConnectorTCP(t *testing.T) {
 	server := net.NetServer(30000, t)
 
-	// connector := 
+	// connector :=
 	StartConnector("localhost:30000", 100, 100, &instanceMeta, &nonSSLConfig)
-	// serverConn := 
+	// serverConn :=
 	<-server.Startup
 
 }

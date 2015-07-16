@@ -11,7 +11,7 @@ type Consumer struct {
 	Topic      string
 	RoutingKey string
 
-	channel     chan EventInterface
+	channel     chan *Event
 	nsqConsumer *nsq.Consumer
 	nsqConfig   *nsq.Config
 }
@@ -19,7 +19,7 @@ type Consumer struct {
 // NewConsumer will create a named channel on the specified topic and return
 // the associated message-producing channel.
 func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
-	channel := make(chan EventInterface, 1)
+	channel := make(chan *Event, 1)
 
 	consumer := &Consumer{
 		Topic:      topicName,
@@ -33,7 +33,12 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 		return nil, err
 	}
 
-	consumer.nsqConsumer = nsqConsumer
+	if replyProducer == nil {
+		replyProducer, err = nsq.NewProducer(getNsqdURL(), consumer.nsqConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	nsqConsumer.AddHandler(nsq.HandlerFunc(
 		func(message *nsq.Message) error {
@@ -51,7 +56,7 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 	return consumer, nil
 }
 
-func (c *Consumer) Channel() <-chan EventInterface {
+func (c *Consumer) Channel() <-chan *Event {
 	return c.channel
 }
 
