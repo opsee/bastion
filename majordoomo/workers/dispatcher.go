@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/opsee/bastion/messaging"
-	"github.com/opsee/bastion/netutil"
 )
 
 type Manager struct {
@@ -51,7 +50,7 @@ func (m *Manager) Schedule(task *Task) error {
 	return nil
 }
 
-func deserialize(e netutil.EventInterface) (*Task, error) {
+func deserialize(e messaging.EventInterface) (*Task, error) {
 	var buf interface{}
 
 	switch e.Type() {
@@ -72,7 +71,7 @@ func deserialize(e netutil.EventInterface) (*Task, error) {
 	return task, nil
 }
 
-func (d *Dispatcher) dispatch(e netutil.EventInterface) error {
+func (d *Dispatcher) dispatch(e messaging.EventInterface) error {
 	manager := d.managers[e.Type()]
 	task, err := deserialize(e)
 	if err != nil {

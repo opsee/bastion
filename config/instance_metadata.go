@@ -1,8 +1,7 @@
-package aws
+package config
 
 import (
 	"encoding/json"
-	"github.com/opsee/bastion"
 	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
@@ -33,7 +32,7 @@ type MetadataProvider struct {
 	metadata *InstanceMeta
 }
 
-func NewMetadataProvider(client HttpClient, config *bastion.Config) *MetadataProvider {
+func NewMetadataProvider(client HttpClient, config *Config) *MetadataProvider {
 	if config != nil && config.MDFile != "" {
 		metad, err := ioutil.ReadFile(config.MDFile)
 		if err == nil {
