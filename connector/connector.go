@@ -58,21 +58,21 @@ type ConnectorEvent struct {
 	ReplyTo     MessageId `json:"reply_to"`
 	Version     uint8     `json:"version"`
 	Sent        int64     `json:"version"`
-	reply       chan interface{}
+	connector   *Connector
 }
 
 type Status string
 
 func (e *ConnectorEvent) Nack() {
-	e.reply <- Status("error")
+	e.connector.DoReply(e.Id, Status("error"))
 }
 
 func (e *ConnectorEvent) Ack() {
-	e.reply <- Status("ok")
+	e.connector.DoReply(e.Id, Status("ok"))
 }
 
 func (e *ConnectorEvent) Reply(reply interface{}) {
-	e.reply <- reply
+	e.connector.DoReply(e.Id, reply)
 }
 
 func (e *ConnectorEvent) Type() string {
@@ -81,28 +81,6 @@ func (e *ConnectorEvent) Type() string {
 
 func (e *ConnectorEvent) Body() string {
 	return e.MessageBody
-}
-
-func (e *ConnectorEvent) handleReply(connector *Connector) {
-	replyMsg := <-e.reply
-	event, err := connector.makeEvent(replyMsg)
-	if err != nil {
-		log.Error("encountered a problem trying to handle a reply", err)
-		return
-	}
-	event.ReplyTo = e.Id
-	bytes, err := json.Marshal(event)
-	if err != nil {
-		log.Error("encountered a problem trying to serialize a reply", err)
-		return
-	}
-	conn := connector.mustGetConnection()
-	conn.SetWriteDeadline(time.Now().Add(time.Duration(10) * time.Second))
-	_, err = conn.Write(append(bytes, '\r', '\n'))
-	if err != nil {
-		log.Error("encountered a problem trying to write reply", err)
-		connector.closeAndSignalReconnect(conn)
-	}
 }
 
 func StartConnector(address string, sendbuf int, recvbuf int, metadata *config.InstanceMeta, config *config.Config) *Connector {
@@ -117,7 +95,6 @@ func StartConnector(address string, sendbuf int, recvbuf int, metadata *config.I
 		sslConfig:   initSSLConfig(config),
 		reconnCond:  &sync.Cond{L: &sync.Mutex{}},
 		sendrcvCond: &sync.Cond{L: &sync.Mutex{}},
-		replies:     cmap.New(),
 		counter:     0,
 	}
 	go reconnectLoop(connector)
@@ -126,18 +103,23 @@ func StartConnector(address string, sendbuf int, recvbuf int, metadata *config.I
 	return connector
 }
 
-func (c *Connector) DeferReply(event *ConnectorEvent) string {
-	token := string(event.Id)
-	c.replies.Set(token, event.reply)
-	return token
-}
-
-func (c *Connector) DoReply(id string, msg interface{}) {
-	tmp, ok := c.replies.Get(id)
-	if ok == true {
-		replyChan := tmp.(chan interface{})
-		replyChan <- msg
-		c.replies.Remove(id)
+func (connector *Connector) DoReply(id MessageId, reply interface{}) {
+	event, err := connector.makeEvent(reply)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	event.ReplyTo = id
+	bytes, err := json.Marshal(event)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	conn := connector.mustGetConnection()
+	_, err = conn.Write(append(bytes, '\r', '\n'))
+	if err != nil {
+		log.Error(err.Error())
+		connector.closeAndSignalReconnect(conn)
 	}
 }
 
@@ -219,7 +201,7 @@ func (c *Connector) makeEvent(msg interface{}) (*ConnectorEvent, error) {
 		ReplyTo:     MessageId(0),
 		Version:     protocolVersion,
 		Sent:        time.Now().Unix(),
-		reply:       make(chan interface{}),
+		connector:   c,
 	}, nil
 }
 
@@ -263,9 +245,7 @@ func recvLoop(recv chan<- *ConnectorEvent, connector *Connector) {
 				log.Error("encountered an error unmarshalling json: %s", err)
 				continue
 			}
-			replyChan := make(chan interface{})
-			msg.reply = replyChan
-			go msg.handleReply(connector)
+			msg.connector = connector
 			recv <- msg
 		}
 		log.Error("encountered an error reading from the connector socket %s", scanner.Err())

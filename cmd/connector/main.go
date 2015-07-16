@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/connector"
@@ -38,14 +39,13 @@ func main() {
 
 func processCommands(connector *connector.Connector, cmdProducer *messaging.Producer) {
 	for event := range connector.Recv {
-		id := connector.DeferReply(event)
-		cmdProducer.PublishRepliable(id, event)
+		cmdProducer.PublishRepliable(string(event.Id), event)
 	}
 }
 
-func processReplies(connector *connector.Connector, replyConsumer *messaging.Consumer) {
+func processReplies(co *connector.Connector, replyConsumer *messaging.Consumer) {
 	for event := range replyConsumer.Channel() {
-		id := event.ReplyTo
-		connector.DoReply(id, event)
+		id, _ := strconv.ParseUint(event.ReplyTo, 10, 64)
+		co.DoReply(connector.MessageId(id), event)
 	}
 }
