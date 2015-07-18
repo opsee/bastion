@@ -2,6 +2,7 @@ package checker
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"time"
 
@@ -105,8 +106,12 @@ func (c *Checker) Test(check Check) {
 	)
 
 	if targets, err = c.resolver.Resolve(check.Target); err != nil {
-		logger.Error("Unable to resolve target: ", check.Target)
-		logger.Error(err.Error())
+		errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
+		logger.Error(errStr)
+		response := &ErrorResponse{
+			Error: fmt.Errorf(errStr),
+		}
+		c.producer.Publish(response)
 		return
 	}
 
