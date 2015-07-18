@@ -11,6 +11,10 @@ import (
 	"github.com/opsee/bastion/messaging"
 )
 
+const (
+	MaxTestTargets = 5
+)
+
 var (
 	logger = logging.GetLogger("checker")
 )
@@ -80,17 +84,17 @@ func NewChecker(config *config.Config) (*Checker, error) {
 	return checker, nil
 }
 
-func (c *Checker) Create(check Check) error {
+func (c *Checker) Create(event *messaging.Event, check Check) error {
 
 	return nil
 }
 
-func (c *Checker) Delete(check Check) error {
+func (c *Checker) Delete(event *messaging.Event, check Check) error {
 
 	return nil
 }
 
-func (c *Checker) Update(check Check) error {
+func (c *Checker) Update(event *messaging.Event, check Check) error {
 
 	return nil
 }
@@ -99,7 +103,12 @@ func buildURL(check Check, target Target) string {
 	return ""
 }
 
-func (c *Checker) Test(check Check) {
+type TestResult struct {
+	CheckId     string     `json:"check_id"`
+	ResponseSet []Response `json:"response_set"`
+}
+
+func (c *Checker) Test(event *messaging.Event, check Check) {
 	var (
 		targets []Target
 		err     error
@@ -115,8 +124,12 @@ func (c *Checker) Test(check Check) {
 		return
 	}
 
-	numTargets := int(math.Min(5, float64(len(targets))))
+	numTargets := int(math.Min(MaxTestTargets, float64(len(targets))))
 	targets = targets[0 : numTargets-1]
+	testResult := &TestResult{
+		CheckId:     check.Id,
+		ResponseSet: make([]Response, numTargets),
+	}
 
 	responses := make(chan Response, numTargets)
 	go func() {
@@ -149,14 +162,16 @@ func (c *Checker) Test(check Check) {
 				logger.Error("%s: %s", r, check)
 			}
 		}()
-		for {
+		defer event.Reply(testResult)
+
+		for i := 0; i < numTargets; i++ {
 			select {
 			case response := <-responses:
 				result := Result{
 					CheckId:  check.Id,
 					Response: response,
 				}
-				c.producer.Publish(result)
+				testResult.ResponseSet[i] = result
 			case <-time.After(5 * time.Second):
 				panic("test_check timed out after 5 seconds")
 			}
@@ -173,13 +188,13 @@ func (c *Checker) Start() {
 			} else {
 				switch command.Action {
 				case "test_check":
-					c.Test(command.Check)
+					c.Test(event, command.Check)
 				case "create_check":
-					c.Create(command.Check)
+					c.Create(event, command.Check)
 				case "update_check":
-					c.Update(command.Check)
+					c.Update(event, command.Check)
 				case "delete_check":
-					c.Delete(command.Check)
+					c.Delete(event, command.Check)
 				}
 			}
 		}
