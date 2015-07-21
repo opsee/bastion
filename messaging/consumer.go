@@ -7,7 +7,12 @@ import (
 	"github.com/bitly/go-nsq"
 )
 
-type Consumer struct {
+type Consumer interface {
+	Channel() <-chan *Event
+	Close() error
+}
+
+type NsqConsumer struct {
 	Topic      string
 	RoutingKey string
 
@@ -18,10 +23,10 @@ type Consumer struct {
 
 // NewConsumer will create a named channel on the specified topic and return
 // the associated message-producing channel.
-func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
+func NewConsumer(topicName, routingKey string) (Consumer, error) {
 	channel := make(chan *Event, 1)
 
-	consumer := &Consumer{
+	consumer := &NsqConsumer{
 		Topic:      topicName,
 		RoutingKey: routingKey,
 		nsqConfig:  nsq.NewConfig(),
@@ -56,14 +61,17 @@ func NewConsumer(topicName string, routingKey string) (*Consumer, error) {
 	return consumer, nil
 }
 
-func (c *Consumer) Channel() <-chan *Event {
+// Channel provides an accessor to a channel that yields events from the
+// message bus. Do not close this channel directly. Instead call the
+// Close() method on the Consumer.
+func (c *NsqConsumer) Channel() <-chan *Event {
 	return c.channel
 }
 
-// Stop will first attempt to gracefully shutdown the Consumer. Failing
+// Close will first attempt to gracefully shutdown the Consumer. Failing
 // to shutdown within a 5-second timeout, it closes channels and shuts down
 // the consumer.
-func (c *Consumer) Stop() error {
+func (c *NsqConsumer) Close() error {
 	c.nsqConsumer.Stop()
 
 	var err error

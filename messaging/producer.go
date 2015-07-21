@@ -3,11 +3,18 @@ package messaging
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/bitly/go-nsq"
 )
 
-type Producer struct {
+type Producer interface {
+	Publish(message interface{}) error
+	PublishRepliable(id string, msg EventInterface) error
+	Close() error
+}
+
+type NsqProducer struct {
 	Topic string
 
 	nsqProducer *nsq.Producer
@@ -16,8 +23,8 @@ type Producer struct {
 
 // NewProducer will create a named channel on the specified topic and return
 // a Producer attached to a channel.
-func NewProducer(topicName string) (*Producer, error) {
-	producer := &Producer{
+func NewProducer(topicName string) (Producer, error) {
+	producer := &NsqProducer{
 		Topic:     topicName,
 		nsqConfig: nsq.NewConfig(),
 	}
@@ -34,7 +41,7 @@ func NewProducer(topicName string) (*Producer, error) {
 }
 
 // Publish synchronously sends a message to the producer's given topic.
-func (p *Producer) Publish(message interface{}) error {
+func (p *NsqProducer) Publish(message interface{}) error {
 	event, err := NewEvent(message)
 	if err != nil {
 		logger.Error(err.Error())
@@ -46,7 +53,7 @@ func (p *Producer) Publish(message interface{}) error {
 	return p.nsqProducer.Publish(p.Topic, eBytes)
 }
 
-func (p *Producer) PublishRepliable(id string, msg EventInterface) error {
+func (p *NsqProducer) PublishRepliable(id string, msg EventInterface) error {
 	event, _ := NewEvent(msg)
 	event.MessageId = id
 	eBytes, _ := json.Marshal(event)
@@ -54,13 +61,18 @@ func (p *Producer) PublishRepliable(id string, msg EventInterface) error {
 	return p.nsqProducer.Publish(p.Topic, eBytes)
 }
 
-// Start the Producer
-func (p *Producer) Start() error {
-	return nil
-}
-
 // Stop gracefully terminates producing to nsqd.
 // NOTE: This blocks until completion.
-func (p *Producer) Stop() {
-	p.nsqProducer.Stop()
+func (p *NsqProducer) Close() error {
+	errChan := make(chan error, 1)
+	go func(errChan chan error) {
+		p.nsqProducer.Stop()
+		errChan <- nil
+	}(errChan)
+	select {
+	case err := <-errChan:
+		return err
+	case <-time.After(5 * time.Second):
+		return fmt.Errorf("Timed out waiting for producer to stop.")
+	}
 }
