@@ -1,8 +1,9 @@
-package workers
+package checker
 
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"net"
 	"net/http"
 	"strings"
@@ -15,18 +16,18 @@ const httpWorkerTaskType = "HTTPRequest"
 // easier for now. As soon as we move away from JSON, these should be []byte.
 
 type HTTPRequest struct {
-	Method  string            `json:"method"`
-	Target  string            `json:"target"`
-	Headers map[string]string `json:"headers"`
-	Body    string            `json:"body"`
+	Method  string              `json:"method"`
+	URL     string              `json:"url"`
+	Headers map[string][]string `json:"headers"`
+	Body    string              `json:"body"`
 }
 
 type HTTPResponse struct {
-	Code    int               `json:"code"`
-	Body    string            `json:"body"`
-	Headers map[string]string `json:"headers"`
-	Metrics []Metric          `json:"metrics,omitempty"`
-	Error   string            `json:"error,omitempty"`
+	Code    int                 `json:"code"`
+	Body    string              `json:"body"`
+	Headers map[string][]string `json:"headers"`
+	Metrics []Metric            `json:"metrics,omitempty"`
+	Error   string              `json:"error,omitempty"`
 }
 
 var (
@@ -53,14 +54,16 @@ func init() {
 	Recruiters[httpWorkerTaskType] = NewHTTPWorker
 }
 
-func (r *HTTPRequest) Do() (*HTTPResponse, error) {
-	req, err := http.NewRequest(r.Method, r.Target, strings.NewReader(r.Body))
+func (r *HTTPRequest) Do() (Response, error) {
+	req, err := http.NewRequest(r.Method, r.URL, strings.NewReader(r.Body))
 	if err != nil {
 		return nil, err
 	}
 
-	for header, value := range r.Headers {
-		req.Header.Add(header, value)
+	for header, values := range r.Headers {
+		for _, value := range values {
+			req.Header.Add(header, value)
+		}
 	}
 
 	t0 := time.Now()
@@ -85,11 +88,15 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 	// https://docs.google.com/a/opsee.co/spreadsheets/d/14Y8DvBkJMhIQoZ11C5_GKeB7NknYyt-fHJaQixkJfKs/edit?usp=sharing
 
 	rdr := bufio.NewReader(resp.Body)
-	body := make([]byte, 4096)
-	_, err = rdr.Read(body)
-	if err != nil {
-		return nil, err
+	var contentLength int64
+	if resp.ContentLength > 0 {
+		contentLength = resp.ContentLength
+	} else {
+		contentLength = 4096
 	}
+	length := math.Min(4096, float64(contentLength))
+	body := make([]byte, int64(length))
+	rdr.Read(body)
 
 	httpResponse := &HTTPResponse{
 		Code: resp.StatusCode,
@@ -106,41 +113,34 @@ func (r *HTTPRequest) Do() (*HTTPResponse, error) {
 }
 
 type HTTPWorker struct {
-	responses chan *Task
-	done      WorkQueue
+	WorkQueue chan *Task
 }
 
-func NewHTTPWorker(response chan *Task, done WorkQueue) Worker {
+func NewHTTPWorker(workQueue chan *Task) Worker {
 	return &HTTPWorker{
-		responses: response,
-		done:      done,
+		WorkQueue: workQueue,
 	}
 }
 
-func (w HTTPWorker) Work(task *Task) {
-	var (
-		request  *HTTPRequest
-		response *HTTPResponse
-		err      error
-	)
-
-	request, ok := task.Request.(*HTTPRequest)
-	if ok {
-		logger.Info("request: %s", request)
-		response, err = request.Do()
-		if err != nil {
-			response = &HTTPResponse{
-				Error: err.Error(),
+func (w *HTTPWorker) Work() {
+	for task := range w.WorkQueue {
+		request, ok := task.Request.(*HTTPRequest)
+		if ok {
+			logger.Info("request: ", request)
+			if response, err := request.Do(); err != nil {
+				logger.Error("error processing request: %s", *task)
+				logger.Error("error: %s", err.Error())
+				task.Response <- &ErrorResponse{
+					Error: err,
+				}
+			} else {
+				logger.Info("response: ", response)
+				task.Response <- response
+			}
+		} else {
+			task.Response <- &ErrorResponse{
+				Error: fmt.Errorf("Unable to process request: %s", task.Request),
 			}
 		}
-	} else {
-		response = &HTTPResponse{
-			Error: fmt.Sprintf("Unable to process request: %s", task.Request),
-		}
 	}
-
-	task.Response = response
-	logger.Info("response: %s", task.Response)
-	w.responses <- task
-	w.done <- w
 }

@@ -9,6 +9,7 @@ package messaging
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 
@@ -16,9 +17,10 @@ import (
 	"github.com/opsee/bastion/logging"
 )
 
-// TODO: greg: Refactor Consumer/Producer into interfaces.
-
-const ReplyTopic = "replies"
+const (
+	ReplyTopic          = "replies"
+	messageFormatString = "nsq.Message{ID: %s, Body: %s}"
+)
 
 var (
 	logger                      = logging.GetLogger("messaging")
@@ -46,6 +48,20 @@ type Event struct {
 	message     *nsq.Message
 }
 
+func stringizeMessage(m *nsq.Message) string {
+	return fmt.Sprintf(messageFormatString, m.ID, string(m.Body))
+}
+
+func validEvent(e *Event) (err error) {
+	if e.MessageType == "" {
+		err = fmt.Errorf("Message yielded invalid event: %s", stringizeMessage(e.message))
+	}
+	if e.MessageBody == "" {
+		err = fmt.Errorf("Message yielded invalid event: %s", stringizeMessage(e.message))
+	}
+	return err
+}
+
 func NewEvent(msg interface{}) (*Event, error) {
 	event := &Event{}
 
@@ -56,6 +72,7 @@ func NewEvent(msg interface{}) (*Event, error) {
 		if err != nil {
 			return nil, err
 		}
+		return event, validEvent(event)
 	case EventInterface:
 		event.MessageType = msg.Type()
 		event.MessageBody = msg.Body()
@@ -67,7 +84,7 @@ func NewEvent(msg interface{}) (*Event, error) {
 		event.MessageType = reflect.ValueOf(msg).Elem().Type().Name()
 		event.MessageBody = string(msgBytes)
 	}
-	return event, nil
+	return event, validEvent(event)
 }
 
 func (e *Event) Nack() {

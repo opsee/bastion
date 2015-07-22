@@ -3,14 +3,14 @@ package bastion
 import (
 	"fmt"
 
-	"github.com/opsee/bastion/majordoomo/workers"
+	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/messaging"
 )
 
 func main() {
-	request := &workers.HTTPRequest{
+	request := &checker.HTTPRequest{
 		Method: "GET",
-		Target: "http://api-beta.opsee.co/health_check",
+		URL:    "http://api-beta.opsee.co/health_check",
 	}
 
 	producer, err := messaging.NewProducer("checks")

@@ -1,10 +1,15 @@
 package aws
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/opsee/bastion/config"
 )
 
 type EC2Scanner interface {
@@ -19,8 +24,25 @@ type eC2ScannerImpl struct {
 	config *aws.Config
 }
 
-func NewScanner(config *aws.Config) EC2Scanner {
-	scanner := &eC2ScannerImpl{config}
+func NewScanner(cfg *config.Config) EC2Scanner {
+	httpClient := &http.Client{}
+	metap := config.NewMetadataProvider(httpClient, cfg)
+	metadata := metap.Get()
+	region := metadata.Region
+	var creds = credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&credentials.StaticProvider{Value: credentials.Value{
+				AccessKeyID:     cfg.AccessKeyId,
+				SecretAccessKey: cfg.SecretKey,
+				SessionToken:    "",
+			}},
+			&credentials.EnvProvider{},
+			&credentials.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
+		})
+	config := &aws.Config{Credentials: creds, Region: region}
+	scanner := &eC2ScannerImpl{
+		config: config,
+	}
 	return scanner
 }
 
