@@ -37,15 +37,20 @@ func main() {
 	go processReplies(connector, replyConsumer)
 }
 
-func processCommands(connector *connector.Connector, cmdProducer *messaging.Producer) {
+func processCommands(connector *connector.Connector, cmdProducer messaging.Producer) {
 	for event := range connector.Recv {
 		cmdProducer.PublishRepliable(string(event.Id), event)
 	}
 }
 
-func processReplies(co *connector.Connector, replyConsumer *messaging.Consumer) {
-	for event := range replyConsumer.Channel() {
-		id, _ := strconv.ParseUint(event.ReplyTo, 10, 64)
-		co.DoReply(connector.MessageId(id), event)
+func processReplies(co *connector.Connector, replyConsumer messaging.Consumer) {
+	for reply := range replyConsumer.Channel() {
+		event, ok := reply.(*messaging.Event)
+		if !ok {
+			log.Error("Received invalid Event on reply channel: %s", reply)
+		} else {
+			id, _ := strconv.ParseUint(event.ReplyTo, 10, 64)
+			co.DoReply(connector.MessageId(id), event)
+		}
 	}
 }

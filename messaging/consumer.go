@@ -8,7 +8,7 @@ import (
 )
 
 type Consumer interface {
-	Channel() <-chan *Event
+	Channel() <-chan EventInterface
 	Close() error
 }
 
@@ -16,7 +16,7 @@ type NsqConsumer struct {
 	Topic      string
 	RoutingKey string
 
-	channel     chan *Event
+	channel     chan EventInterface
 	nsqConsumer *nsq.Consumer
 	nsqConfig   *nsq.Config
 }
@@ -24,7 +24,7 @@ type NsqConsumer struct {
 // NewConsumer will create a named channel on the specified topic and return
 // the associated message-producing channel.
 func NewConsumer(topicName, routingKey string) (Consumer, error) {
-	channel := make(chan *Event, 1)
+	channel := make(chan EventInterface, 1)
 
 	consumer := &NsqConsumer{
 		Topic:      topicName,
@@ -64,7 +64,7 @@ func NewConsumer(topicName, routingKey string) (Consumer, error) {
 // Channel provides an accessor to a channel that yields events from the
 // message bus. Do not close this channel directly. Instead call the
 // Close() method on the Consumer.
-func (c *NsqConsumer) Channel() <-chan *Event {
+func (c *NsqConsumer) Channel() <-chan EventInterface {
 	return c.channel
 }
 

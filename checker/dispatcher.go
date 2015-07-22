@@ -54,6 +54,7 @@ func NewDispatcher() *Dispatcher {
 func (d *Dispatcher) Dispatch() {
 	go func() {
 		for task := range d.Requests {
+			logger.Debug("Dispatching request: %s", *task)
 			workGroup := d.workerGroups[task.Type]
 			workGroup.WorkQueue <- task
 		}

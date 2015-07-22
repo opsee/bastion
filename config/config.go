@@ -16,7 +16,6 @@ var (
 type Config struct {
 	AccessKeyId string // AWS Access Key Id
 	SecretKey   string // AWS Secret Key
-	Region      string // AWS Region
 	Opsee       string // Opsee home IP address and port
 	MDFile      string // Path to a file which overrides the instance meta
 	CaPath      string // path to CA

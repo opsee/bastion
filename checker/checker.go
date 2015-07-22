@@ -6,7 +6,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/opsee/bastion/config"
+	"github.com/coreos/fleet/log"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
@@ -28,15 +28,16 @@ type Target struct {
 }
 
 type Check struct {
-	Name     string            `json:"name"`
-	Id       string            `json:"id"`
-	Interval int               `json:"interval"` // in seconds
-	URL      string            `json:"url"`
-	Protocol string            `json:"protocol"`
-	Verb     string            `json:"verb"`
-	Target   Target            `json:"target"`
-	Headers  map[string]string `json:"headers"`
-	Body     string            `json:"body"`
+	Name     string              `json:"name"`
+	Id       string              `json:"id"`
+	Interval int                 `json:"interval"` // in seconds
+	Path     string              `json:"path"`
+	Protocol string              `json:"protocol"`
+	Port     int                 `json:"port"`
+	Verb     string              `json:"verb"`
+	Target   Target              `json:"target"`
+	Headers  map[string][]string `json:"headers"`
+	Body     string              `json:"body"`
 }
 
 type Result struct {
@@ -56,51 +57,35 @@ type CheckCommand struct {
 //    - Emit messages to the dispatcher that work needs to be done
 
 type Checker struct {
-	consumer   *messaging.Consumer
-	producer   *messaging.Producer
+	Consumer   messaging.Consumer
+	Producer   messaging.Producer
+	Resolver   Resolver
 	dispatcher *Dispatcher
-	resolver   *Resolver
 }
 
-func NewChecker(config *config.Config) (*Checker, error) {
-	consumer, err := messaging.NewConsumer("commands", "checker")
-	if err != nil {
-		return nil, err
-	}
-
-	producer, err := messaging.NewProducer("results")
-	if err != nil {
-		logger.Error(err.Error())
-		panic(err)
-	}
-
-	checker := &Checker{
-		consumer:   consumer,
-		producer:   producer,
+func NewChecker() *Checker {
+	return &Checker{
 		dispatcher: NewDispatcher(),
-		resolver:   NewResolver(config),
 	}
-
-	return checker, nil
 }
 
-func (c *Checker) Create(event *messaging.Event, check Check) error {
+func (c *Checker) Create(event messaging.EventInterface, check Check) error {
 
 	return nil
 }
 
-func (c *Checker) Delete(event *messaging.Event, check Check) error {
+func (c *Checker) Delete(event messaging.EventInterface, check Check) error {
 
 	return nil
 }
 
-func (c *Checker) Update(event *messaging.Event, check Check) error {
+func (c *Checker) Update(event messaging.EventInterface, check Check) error {
 
 	return nil
 }
 
-func buildURL(check Check, target Target) string {
-	return ""
+func buildURL(check Check, target string) string {
+	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, target, check.Port, check.Path)
 }
 
 type TestResult struct {
@@ -108,41 +93,53 @@ type TestResult struct {
 	ResponseSet []Response `json:"response_set"`
 }
 
-func (c *Checker) Test(event *messaging.Event, check Check) {
-	var (
-		targets []Target
-		err     error
-	)
+func (c *Checker) Test(event messaging.EventInterface, check Check) {
+	logger.Debug("Testing check: %s", check)
 
-	if targets, err = c.resolver.Resolve(check.Target); err != nil {
+	targets, err := c.Resolver.Resolve(check.Target)
+	if err != nil {
 		errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
 		logger.Error(errStr)
 		response := &ErrorResponse{
 			Error: fmt.Errorf(errStr),
 		}
-		c.producer.Publish(response)
+		c.Producer.Publish(response)
 		return
 	}
 
 	numTargets := int(math.Min(MaxTestTargets, float64(len(targets))))
-	targets = targets[0 : numTargets-1]
+	logger.Debug("numTargets: %d", numTargets)
+	targets = targets[0:numTargets]
 	testResult := &TestResult{
 		CheckId:     check.Id,
 		ResponseSet: make([]Response, numTargets),
 	}
+	defer event.Reply(testResult)
 
 	responses := make(chan Response, numTargets)
+	defer close(responses)
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Error("%s: %s", r, check)
+		}
+	}()
+
 	go func() {
 		for _, target := range targets {
-			if target.Type == "instance" {
-				t := buildURL(check, target)
+			logger.Debug("Target acquired: %s", *target)
+			if target != nil {
+				uri := buildURL(check, *target)
+				logger.Debug("URL: %s", uri)
 
 				request := &HTTPRequest{
 					Method:  check.Verb,
-					Target:  t,
+					URL:     uri,
 					Headers: check.Headers,
 					Body:    check.Body,
 				}
+
+				logger.Debug("issuing request: %s", *request)
+
 				task := &Task{
 					Type:     "HTTPRequest",
 					Request:  request,
@@ -150,41 +147,54 @@ func (c *Checker) Test(event *messaging.Event, check Check) {
 				}
 				c.dispatcher.Requests <- task
 			} else {
-				logger.Error("Target did not resolve to instance: ", target)
+				logger.Error("Got nil target in Checker.Test, targets: ", targets)
 			}
 		}
 	}()
 
+	doneChannel := make(chan bool, 1)
 	go func() {
-		defer close(responses)
-		defer func() {
-			if r := recover(); r != nil {
-				logger.Error("%s: %s", r, check)
-			}
-		}()
-		defer event.Reply(testResult)
-
 		for i := 0; i < numTargets; i++ {
-			select {
-			case response := <-responses:
-				result := Result{
-					CheckId:  check.Id,
-					Response: response,
-				}
-				testResult.ResponseSet[i] = result
-			case <-time.After(5 * time.Second):
-				panic("test_check timed out after 5 seconds")
-			}
+			response := <-responses
+			logger.Debug("Got response: %s", response)
+
+			testResult.ResponseSet[i] = response
 		}
+		doneChannel <- true
 	}()
+
+	select {
+	case <-doneChannel:
+	case <-time.After(30 * time.Second):
+		log.Error("Timed out waiting for check test results: %s", check)
+	}
 }
 
-func (c *Checker) Start() {
+func (c *Checker) Start() error {
+	if c.Consumer == nil {
+		consumer, err := messaging.NewConsumer("commands", "checker")
+		if err != nil {
+			return err
+		}
+		c.Consumer = consumer
+	}
+
+	if c.Producer == nil {
+		producer, err := messaging.NewProducer("results")
+		if err != nil {
+			return err
+		}
+		c.Producer = producer
+	}
+
+	c.dispatcher.Dispatch()
+
 	go func() {
-		for event := range c.consumer.Channel() {
+		for event := range c.Consumer.Channel() {
+			logger.Debug("Event received: %s", event)
 			command := new(CheckCommand)
 			if err := json.Unmarshal([]byte(event.Body()), command); err != nil {
-				logger.Error("Cannot unmarshal command: ", event.Body())
+				logger.Error("Cannot unmarshal command: %s", event.Body())
 			} else {
 				switch command.Action {
 				case "test_check":
@@ -199,9 +209,18 @@ func (c *Checker) Start() {
 			}
 		}
 	}()
+	return nil
 }
 
 func (c *Checker) Stop() {
-	c.consumer.Stop()
-	c.producer.Stop()
+	if c.Consumer != nil {
+		if err := c.Consumer.Close(); err != nil {
+			logger.Error(err.Error())
+		}
+	}
+	if c.Producer != nil {
+		if err := c.Producer.Close(); err != nil {
+			logger.Error(err.Error())
+		}
+	}
 }
