@@ -18,7 +18,11 @@
 		},
 		{
 			"type":"systemd",
-			"unit-file":"build/bastion.service"
+			"unit-file":"build/checker.service"
+		},
+		{
+			"type":"systemd",
+			"unit-file":"build/connector.service"
 		},
 		{
 			"type":"systemd",
