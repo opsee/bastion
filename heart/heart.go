@@ -68,7 +68,7 @@ func (h *Heart) Beat() chan error {
 		for {
 			select {
 			case t := <-h.ticker.C:
-				hb := HeartBeat{
+				hb := &HeartBeat{
 					Process:   h.ProcessName,
 					Timestamp: t.UnixNano(),
 					Metrics:   getMetrics(),
