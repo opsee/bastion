@@ -49,7 +49,7 @@ func main() {
 
 	go func() {
 		sig := <-sigs
-		logger.Debug("Received %s signal, shutting down...", sig)
+		logger.Info("Received %s signal, shutting down...", sig)
 		checks.Stop()
 		done <- true
 	}()
@@ -59,7 +59,10 @@ func main() {
 		case <-done:
 			goto Exit
 		case err := <-heart.Beat():
+			logger.Info("Error sending heartbeat, shutting down...")
 			logger.Error(err.Error())
+			errNum = 1
+			goto Exit
 		}
 	}
 
