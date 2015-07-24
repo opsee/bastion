@@ -70,7 +70,7 @@ func (h *Heart) Beat() chan error {
 			case t := <-h.ticker.C:
 				hb := &HeartBeat{
 					Process:   h.ProcessName,
-					Timestamp: t.UnixNano(),
+					Timestamp: t.UTC().UnixNano(),
 					Metrics:   getMetrics(),
 				}
 

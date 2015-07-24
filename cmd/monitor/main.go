@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/opsee/bastion/logging"
@@ -17,14 +16,14 @@ var (
 )
 
 func main() {
-	// config := config.GetConfig()
+	// _ = config.GetConfig()
 	mon, err := monitor.NewMonitor()
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 
 	http.HandleFunc("/health_check", func(w http.ResponseWriter, r *http.Request) {
-		if stateJSON, err := json.Marshal(mon.State); err != nil {
+		if stateJSON, err := mon.SerializeState(); err != nil {
 			w.WriteHeader(502)
 		} else {
 			w.Write(stateJSON)

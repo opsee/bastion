@@ -10,5 +10,6 @@ ENV CERT_PATH=""
 ENV KEY_PATH=""
 ENV HOSTNAME=""
 ENV CUSTOMER_ID=""
+ENV NSQD_HOST="nsqd:4150"
 
 ADD target/linux/cmd/ /

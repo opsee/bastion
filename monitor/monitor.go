@@ -1,6 +1,8 @@
 package monitor
 
 import (
+	"encoding/json"
+
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
@@ -11,17 +13,18 @@ const (
 )
 
 var (
-	logger = logging.GetLogger(moduleName)
+	logger     = logging.GetLogger(moduleName)
+	components = []string{
+		"connector",
+		"checker",
+		"monitor",
+	}
 )
 
-type State map[string]*ComponentState
-type ComponentState struct {
-	Metrics map[string]uint64
-}
-
 type Monitor struct {
-	State    State
-	consumer messaging.Consumer
+	components map[string]*Component
+	consumer   messaging.Consumer
+	statemap   map[string]*State
 }
 
 func NewMonitor() (*Monitor, error) {
@@ -31,8 +34,15 @@ func NewMonitor() (*Monitor, error) {
 	}
 
 	m := &Monitor{
-		consumer: consumer,
-		State:    State{},
+		consumer:   consumer,
+		components: make(map[string]*Component),
+		statemap:   make(map[string]*State),
+	}
+
+	for _, c := range components {
+		cm := NewComponent(c)
+		m.components[c] = cm
+		m.statemap[c] = cm.State
 	}
 
 	go m.monitorState()
@@ -44,16 +54,20 @@ func (m *Monitor) monitorState() {
 	for event := range m.consumer.Channel() {
 		logger.Debug("event received: %s", event)
 		heartBeat := new(heart.HeartBeat)
-		if m.State[heartBeat.Process] != nil {
-			m.State[heartBeat.Process] = &ComponentState{}
+		if err := json.Unmarshal([]byte(event.Body()), heartBeat); err != nil {
+			logger.Error("Unable to unmarshal heartbeat: %s", *heartBeat)
+		} else {
+			m.components[heartBeat.Process].Send(heartBeat)
 		}
-
-		m.State[heartBeat.Process].Metrics = heartBeat.Metrics
-
 		event.Ack()
 	}
 }
 
-func (m *Monitor) Healthy() bool {
-	return true
+func (m *Monitor) SerializeState() ([]byte, error) {
+	jsonBytes, err := json.Marshal(m.statemap)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonBytes, nil
 }
