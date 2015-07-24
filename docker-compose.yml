@@ -1,0 +1,29 @@
+nsqd:
+  image: nsqio/nsq
+  command: /nsqd
+  expose:
+    - 4150
+    - 4151
+monitor:
+  image: quay.io/opsee/bastion
+  command: /monitor
+  links:
+    - nsqd
+  ports:
+    - 4000:4000
+checker:
+  image: quay.io/opsee/bastion
+  command: /checker -metadata /metadata.json
+  volumes:
+    - metadata.json:/metadata.json
+  links:
+    - nsqd
+connector:
+  image: quay.io/opsee/bastion
+  command: /connector -metadata /metadata.json
+  volumes:
+    - metadata.json:/metadata.json
+  external_links:
+    - vagabond_bartnet_1:bartnet-api
+  links:
+    - nsqd

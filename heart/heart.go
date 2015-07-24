@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	topic     = "heartbeat"
+	Topic     = "heartbeat"
 	heartRate = 15 * time.Second
 )
 
@@ -26,7 +26,7 @@ type HeartBeat struct {
 }
 
 func NewHeart(name string) (*Heart, error) {
-	producer, err := messaging.NewProducer(topic)
+	producer, err := messaging.NewProducer(Topic)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (h *Heart) Beat() chan error {
 			case t := <-h.ticker.C:
 				hb := &HeartBeat{
 					Process:   h.ProcessName,
-					Timestamp: t.UnixNano(),
+					Timestamp: t.UTC().UnixNano(),
 					Metrics:   getMetrics(),
 				}
 

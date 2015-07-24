@@ -3,14 +3,13 @@ DESTDIR=
 GOFLAGS=-v
 BINDIR=${PREFIX}/bin
 
-CONNECTOR_SRCS = $(wildcard *.go)
-BASTION_SRCS = $(wildcard *.go)
-CHECKER_SRCS = $(wildcard *.go)
+SRCS = $(wildcard *.go)
 
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
-CMDS = connector checker
+#CMDS = connector checker
+CMDS = $(notdir $(wildcard cmd/*))
 BLDDIR = target/${GOOS}
 
 all: deps fmt test $(CMDS)
@@ -23,10 +22,7 @@ $(BLDDIR)/%:
 	@godep go build ${GOFLAGS} -o $(abspath $@) ./$*
 
 $(BINARIES): $: $(BLDDIR)/%
-$(CMDS): %: $(BLDDIR)/cmd/%
-
-$(BLDDIR)/cmd/connector: $(CONNECTOR_SRCS)
-$(BLDDIR)/cmd/checker: $(CHECKER_SRCS)
+$(CMDS): %: $(BLDDIR)/cmd/% $(SRCS)
 
 clean:
 	rm -fr target
