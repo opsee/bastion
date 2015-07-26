@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/monitor"
 )
@@ -16,7 +18,8 @@ var (
 )
 
 func main() {
-	// _ = config.GetConfig()
+	cfg := config.GetConfig()
+	listenAddress := fmt.Sprintf(":%d", cfg.AdminPort)
 	mon, err := monitor.NewMonitor()
 	if err != nil {
 		logger.Fatal(err.Error())
@@ -30,5 +33,5 @@ func main() {
 		}
 	})
 
-	logger.Error(http.ListenAndServe(":4000", nil).Error())
+	logger.Error(http.ListenAndServe(listenAddress, nil).Error())
 }

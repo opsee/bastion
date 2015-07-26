@@ -1,15 +1,13 @@
 FROM kiasaki/alpine-golang
 
-ENV BARTNET_HOST="api-beta.opsee.co"
-ENV BARTNET_PORT="4080"
+ENV BARTNET_HOST="api-beta.opsee.co:4080"
+ENV NSQD_HOST="nsqd:4150"
+ENV CA_PATH="ca.pem"
+ENV CERT_PATH="cert.pem"
+ENV KEY_PATH="key.pem"
+ENV CUSTOMER_ID="unknown-customer"
+ENV HOSTNAME=""
 ENV AWS_ACCESS_KEY_ID=""
 ENV AWS_SECRET_ACCESS_KEY=""
-ENV AWS_REGION=""
-ENV CA_PATH=""
-ENV CERT_PATH=""
-ENV KEY_PATH=""
-ENV HOSTNAME=""
-ENV CUSTOMER_ID=""
-ENV NSQD_HOST="nsqd:4150"
 
 ADD target/linux/cmd/ /

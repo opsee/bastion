@@ -7,6 +7,7 @@ import (
 
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/connector"
+	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
@@ -33,8 +34,13 @@ func main() {
 		log.Error(err.Error())
 		return
 	}
+	heart, err := heart.NewHeart("connector")
+	if err != nil {
+		log.Error(err.Error())
+	}
 	go processCommands(connector, cmdProducer)
 	go processReplies(connector, replyConsumer)
+	go heart.Beat()
 }
 
 func processCommands(connector *connector.Connector, cmdProducer messaging.Producer) {

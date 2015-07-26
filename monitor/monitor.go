@@ -17,7 +17,6 @@ var (
 	components = []string{
 		"connector",
 		"checker",
-		"monitor",
 	}
 )
 
