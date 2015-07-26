@@ -43,6 +43,7 @@ func NewHeart(name string) (*Heart, error) {
 func getMetrics() map[string]uint64 {
 	metrics := make(map[string]uint64)
 	memStats := new(runtime.MemStats)
+	runtime.ReadMemStats(memStats)
 
 	metrics["num_goroutines"] = uint64(runtime.NumGoroutine())
 	metrics["alloc"] = memStats.Alloc
