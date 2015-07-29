@@ -24,23 +24,47 @@ func main() {
 	connector := connector.StartConnector(configuration.Opsee, 1000, 1000, mdp.Get(), configuration)
 	msg := <-connector.Recv
 	fmt.Println("registration acknowledged", msg)
+
 	cmdProducer, err := messaging.NewProducer("commands")
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
+
 	replyConsumer, err := messaging.NewConsumer("replies", "connector")
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
+
 	heart, err := heart.NewHeart("connector")
 	if err != nil {
 		log.Error(err.Error())
 	}
+
+	discoveryConsumer, err := messaging.NewConsumer("discovery", "connector")
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	go processDiscovery(connector, discoveryConsumer)
 	go processCommands(connector, cmdProducer)
 	go processReplies(connector, replyConsumer)
 	go heart.Beat()
+}
+
+func processDiscovery(connector *connector.Connector, discoveryConsumer messaging.Consumer) {
+	handleFunc := connector.MakeTopicHandler("discovery")
+	for e := range discoveryConsumer.Channel() {
+		if event, ok := e.(*messaging.Event); !ok {
+			log.Error("Received invalid Event on discovery channel: %s", event)
+		} else {
+			if err := handleFunc(event); err != nil {
+				log.Error("Error publishing discovery event: %s", event)
+			}
+		}
+	}
 }
 
 func processCommands(connector *connector.Connector, cmdProducer messaging.Producer) {

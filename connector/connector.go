@@ -55,6 +55,7 @@ type ConnectorEvent struct {
 	MessageType string    `json:"type"`
 	MessageBody string    `json:"body"`
 	Id          MessageId `json:"id"`
+	Topic       string    `json:"topic"`
 	ReplyTo     MessageId `json:"reply_to"`
 	Version     uint8     `json:"version"`
 	Sent        int64     `json:"sent"`
@@ -110,17 +111,20 @@ func (connector *Connector) DoReply(id MessageId, reply interface{}) {
 		return
 	}
 	event.ReplyTo = id
-	bytes, err := json.Marshal(event)
-	if err != nil {
-		log.Error(err.Error())
-		return
+	connector.Send <- event
+}
+
+func (c *Connector) MakeTopicHandler(topic string) func(interface{}) error {
+	return func(msg interface{}) error {
+		if event, err := c.makeEvent(msg); err != nil {
+			return err
+		} else {
+			event.Topic = topic
+			c.Send <- event
+		}
+		return nil
 	}
-	conn := connector.mustGetConnection()
-	_, err = conn.Write(append(bytes, '\r', '\n'))
-	if err != nil {
-		log.Error(err.Error())
-		connector.closeAndSignalReconnect(conn)
-	}
+	return nil
 }
 
 func initSSLConfig(config *config.Config) *tls.Config {
@@ -207,18 +211,16 @@ func (c *Connector) makeEvent(msg interface{}) (*ConnectorEvent, error) {
 
 func (c *Connector) sendRegistration() {
 	connected := &Connected{}
-	c.Send <- connected
+	if event, err := c.makeEvent(connected); err != nil {
+		log.Error(err.Error())
+	} else {
+		c.Send <- event
+	}
 }
 
 func sendLoop(send <-chan interface{}, connector *Connector) {
 	for msg := range send {
-		event, err := connector.makeEvent(msg)
-		if err != nil {
-			log.Error("encountered an error generating the event", err)
-			continue
-		}
-
-		bytes, err := json.Marshal(event)
+		bytes, err := json.Marshal(msg)
 		if err != nil {
 			log.Error("encountered an error marshalling json", err)
 			continue

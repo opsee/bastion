@@ -6,6 +6,7 @@ import (
 
 	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
@@ -109,6 +110,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	heart, err := heart.NewHeart(moduleName)
+	if err != nil {
+		panic(err)
+	}
+	go heart.Beat()
 
 	for {
 		go scanLoadBalancers()
