@@ -62,6 +62,9 @@ func processDiscovery(connector *connector.Connector, discoveryConsumer messagin
 		} else {
 			if err := handleFunc(event); err != nil {
 				log.Error("Error publishing discovery event: %s", event)
+				event.Nack()
+			} else {
+				event.Ack()
 			}
 		}
 	}
