@@ -1,6 +1,6 @@
 {
 	"region": "us-east-1",
-	"source-ami": "ami-c36583a8",
+	"source-ami": "ami-6b1cd400",
 	"ami-name": "Opsee-Bastion-{{clean-timestamp}}",
 	"ami-description": "Opsee's Bastion Software",
 	"instance-type":"t2.micro",
@@ -18,6 +18,10 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/nsqd.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/checker.service"
 		},
 		{
@@ -31,10 +35,6 @@
 		{
 			"type":"systemd",
 			"unit-file":"build/discovery.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/nsqd.service"
 		},
 		{
 			"type":"waitfor",
