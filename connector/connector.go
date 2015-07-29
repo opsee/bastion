@@ -53,11 +53,11 @@ type Connector struct {
 
 type ConnectorEvent struct {
 	MessageType string    `json:"type"`
-	MessageBody string    `json:"event"`
+	MessageBody string    `json:"body"`
 	Id          MessageId `json:"id"`
 	ReplyTo     MessageId `json:"reply_to"`
 	Version     uint8     `json:"version"`
-	Sent        int64     `json:"version"`
+	Sent        int64     `json:"sent"`
 	connector   *Connector
 }
 
