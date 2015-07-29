@@ -55,7 +55,6 @@ func (s *eC2ScannerImpl) getEC2Client() *ec2.EC2 {
 }
 
 func (s *eC2ScannerImpl) getELBClient() *elb.ELB {
-
 	return elb.New(s.getConfig())
 }
 

@@ -18,6 +18,17 @@ checker:
     - metadata.json:/metadata.json
   links:
     - nsqd
+discovery:
+  image: quay.io/opsee/bastion
+  command: /discovery -metadata /metadata.json
+  volumes:
+    - metadata.json:/metadata.json
+  environment:
+    AWS_ACCESS_KEY_ID:
+    AWS_DEFAULT_REGION:
+    AWS_SECRET_ACCESS_KEY:
+  links:
+    - nsqd
 connector:
   image: quay.io/opsee/bastion
   command: /connector -metadata /metadata.json
