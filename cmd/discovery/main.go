@@ -103,7 +103,7 @@ func main() {
 
 	cfg := config.GetConfig()
 	scanner = aws.NewScanner(cfg)
-	wg := &sync.WaitGroup{}
+	wg = &sync.WaitGroup{}
 
 	producer, err = messaging.NewProducer("discovery")
 	if err != nil {
