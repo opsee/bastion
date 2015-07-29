@@ -26,6 +26,14 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/monitor.service"
+		},
+		{
+			"type":"systemd",
+			"unit-file":"build/discovery.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/nsqd.service"
 		},
 		{
