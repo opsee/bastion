@@ -19,7 +19,7 @@ build: deps fmt $(CMDS)
 
 $(BLDDIR)/%:
 	@mkdir -p $(dir $@)
-	@godep go build ${GOFLAGS} -o $(abspath $@) ./$*
+	@CGO_ENABLED=0 godep go build -ldflags '-w' -tags netgo ${GOFLAGS} -o $(abspath $@) ./$*
 
 $(BINARIES): $: $(BLDDIR)/%
 $(CMDS): %: $(BLDDIR)/cmd/% $(SRCS)
