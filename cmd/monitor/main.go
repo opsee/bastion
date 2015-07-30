@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	moduleName = "monitor.main"
+	moduleName = "monitor"
 )
 
 var (

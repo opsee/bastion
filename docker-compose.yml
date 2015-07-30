@@ -6,21 +6,21 @@ nsqd:
     - 4151
 monitor:
   image: quay.io/opsee/bastion
-  command: /monitor
+  command: /monitor -level debug
   links:
     - nsqd
   ports:
     - 4000:4000
 checker:
   image: quay.io/opsee/bastion
-  command: /checker -metadata /metadata.json
+  command: /checker -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
   links:
     - nsqd
 discovery:
   image: quay.io/opsee/bastion
-  command: /discovery -metadata /metadata.json
+  command: /discovery -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
   environment:
@@ -31,7 +31,7 @@ discovery:
     - nsqd
 connector:
   image: quay.io/opsee/bastion
-  command: /connector -metadata /metadata.json
+  command: /connector -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
   external_links:

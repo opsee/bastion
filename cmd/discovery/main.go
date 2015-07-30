@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	moduleName = "discovery.main"
+	moduleName = "discovery"
 )
 
 var (
@@ -33,13 +33,17 @@ func scanSecurityGroups() {
 					logger.Error(err.Error())
 				}
 				if sg.GroupID != nil {
-					if instances, err := scanner.ScanSecurityGroupInstances(*sg.GroupID); err != nil {
+					if reservations, err := scanner.ScanSecurityGroupInstances(*sg.GroupID); err != nil {
 						logger.Error(err.Error())
 					} else {
-						for _, inst := range instances {
-							if inst != nil {
-								if err := producer.Publish(inst); err != nil {
-									logger.Error(err.Error())
+						for _, reservation := range reservations {
+							if reservation != nil {
+								for _, instance := range reservation.Instances {
+									if instance != nil {
+										if err := producer.Publish(instance); err != nil {
+											logger.Error(err.Error())
+										}
+									}
 								}
 							}
 						}
