@@ -8,18 +8,14 @@ SRCS = $(wildcard *.go)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
-#CMDS = connector checker
 CMDS = $(notdir $(wildcard cmd/*))
 BLDDIR = target/${GOOS}
 
 all: deps fmt test $(CMDS)
 
-build: deps fmt $(CMDS)
-	@godep go build test.go
-
 $(BLDDIR)/%:
 	@mkdir -p $(dir $@)
-	@CGO_ENABLED=0 godep go build -ldflags '-w' -tags netgo ${GOFLAGS} -o $(abspath $@) ./$*
+	@godep go build -ldflags '-w' -tags netgo ${GOFLAGS} -o $(abspath $@) ./$*
 
 $(BINARIES): $: $(BLDDIR)/%
 $(CMDS): %: $(BLDDIR)/cmd/% $(SRCS)
