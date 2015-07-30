@@ -210,7 +210,11 @@ func (c *Connector) makeEvent(msg interface{}) (*ConnectorEvent, error) {
 }
 
 func (c *Connector) sendRegistration() {
-	connected := &Connected{}
+	connected := &Connected{
+		CustomerId: c.config.CustomerId,
+		Instance:   c.metadata,
+	}
+
 	if event, err := c.makeEvent(connected); err != nil {
 		log.Error(err.Error())
 	} else {
