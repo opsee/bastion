@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	log = logging.GetLogger("bastion")
+	log = logging.GetLogger("connector")
 )
 
 func main() {
