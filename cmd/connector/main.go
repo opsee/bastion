@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	log = logging.GetLogger("connector")
+	log  = logging.GetLogger("connector")
+	quit = make(chan bool)
 )
 
 func main() {
@@ -52,6 +53,7 @@ func main() {
 	go processCommands(connector, cmdProducer)
 	go processReplies(connector, replyConsumer)
 	go heart.Beat()
+	<-quit
 }
 
 func processDiscovery(connector *connector.Connector, discoveryConsumer messaging.Consumer) {
