@@ -1,14 +1,13 @@
 #!/bin/bash
 set -e
 
+# Should be run inside of a container.
 
 os=linux
 arch=$(go env GOARCH)
-version=$(git rev-parse HEAD)
 goversion=$(go version | awk '{print $3}')
 
-echo "... building v$version for $os/$arch"
+echo "... building v$VERSION for $os/$arch"
 make clean
 GOOS=$os GOARCH=$arch CGO_ENABLED=0 make
-
-docker build -t quay.io/opsee/bastion:latest .
+cp target/linux/cmd/* /export

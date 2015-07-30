@@ -6,7 +6,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/coreos/fleet/log"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
@@ -166,7 +165,7 @@ func (c *Checker) Test(event messaging.EventInterface, check Check) {
 	select {
 	case <-doneChannel:
 	case <-time.After(30 * time.Second):
-		log.Error("Timed out waiting for check test results: %s", check)
+		logger.Error("Timed out waiting for check test results: %s", check)
 	}
 }
 

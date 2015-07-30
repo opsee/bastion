@@ -1,0 +1,9 @@
+FROM kiasaki/alpine-golang
+
+RUN mkdir -p /export && \
+    apk --update add build-base bash && \
+    mkdir -p /gopath/src/github.com/opsee/bastion
+COPY . /gopath/src/github.com/opsee/bastion
+RUN ln -sf /gopath/src/github.com/opsee/bastion/build/build.sh /build.sh
+
+ENTRYPOINT ["/build.sh"]
