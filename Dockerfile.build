@@ -1,8 +1,7 @@
 FROM kiasaki/alpine-golang
 
-VOLUME /export
-
-RUN apk --update add build-base bash && \
+RUN mkdir -p /export && \
+    apk --update add build-base bash && \
     mkdir -p /gopath/src/github.com/opsee/bastion
 COPY . /gopath/src/github.com/opsee/bastion
 RUN ln -sf /gopath/src/github.com/opsee/bastion/build/build.sh /build.sh

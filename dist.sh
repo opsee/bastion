@@ -10,5 +10,4 @@ goversion=$(go version | awk '{print $3}')
 echo "... building v$VERSION for $os/$arch"
 make clean
 GOOS=$os GOARCH=$arch CGO_ENABLED=0 make
-
-mv target/linux/cmd/* /export
+cp target/linux/cmd/* /export
