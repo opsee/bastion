@@ -8,6 +8,7 @@ version=$(git rev-parse HEAD)
 goversion=$(go version | awk '{print $3}')
 
 echo "... building v$version for $os/$arch"
+make clean
 GOOS=$os GOARCH=$arch CGO_ENABLED=0 make
 
 docker build -t quay.io/opsee/bastion:latest .
