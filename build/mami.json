@@ -45,4 +45,7 @@
 	"public": false,
 	"copy-to": "all",
 	"cleanup": true
+        {{#ci}}
+        ,"cleanup-on-error": true
+        {{/ci}}
 }

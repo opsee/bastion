@@ -3,6 +3,8 @@ machine:
     version: oraclejdk8
   services:
     - docker
+  environment:
+    ci: "true"
 notify:
   webhooks:
     - url: https://hooks.slack.com/services/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
