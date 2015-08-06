@@ -5,6 +5,7 @@ Requires=docker.service nsqd.service
 
 [Service]
 User=core
+EnvironmentFile=/etc/opsee/bastion-env.sh
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill %p
 ExecStartPre=-/usr/bin/docker rm %p
