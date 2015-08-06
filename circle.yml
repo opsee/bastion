@@ -14,13 +14,13 @@ dependencies:
   pre:
     - docker info
     - go version
-    - go get github.com/tools/godep
+    - docker pull quay.io/opsee/go-build
     - sudo pip install awscli
     - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws s3 cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
-    - mkdir export
 test:
   override:
-    - ./build.sh
+    - docker run -e "TARGETS=linux/amd64" -v `pwd`:/build quay.io/opsee/go-build
+    - docker build -t quay.io/opsee/bastion:latest .
 deployment:
   ami:
     branch: master
