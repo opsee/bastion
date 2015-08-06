@@ -11,7 +11,7 @@ GOARCH ?= $(shell go env GOARCH)
 CMDS = $(notdir $(wildcard cmd/*))
 BLDDIR = target/${GOOS}
 
-all: deps fmt test $(CMDS)
+all: deps protoc fmt test $(CMDS)
 
 $(BLDDIR)/%:
 	@mkdir -p $(dir $@)
@@ -34,6 +34,9 @@ install: $(BINARIES)
 
 deps:
 	@go get github.com/tools/godep
+
+protoc:
+	protoc -I/usr/local/include -Iproto proto/bastion.proto --go_out=plugins=grpc:proto
 
 test: build
 	@godep go test -v ./...
