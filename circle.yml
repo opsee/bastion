@@ -17,6 +17,7 @@ dependencies:
     - "mami"
   pre:
     - docker info
+    - go version
     - go get github.com/tools/godep
     - sudo pip install awscli
     - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws s3 cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
@@ -31,4 +32,4 @@ deployment:
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD quay.io
       - docker push quay.io/opsee/bastion:latest
-      - java -jar mami/mami.jar build build/mami.json
+      - java -jar mami/mami.jar build --release stable build/mami.json

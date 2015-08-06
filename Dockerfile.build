@@ -1,8 +1,20 @@
-FROM kiasaki/alpine-golang
+FROM gliderlabs/alpine:3.2
+MAINTAINER Greg Poirier <greg@opsee.co>
 
-RUN mkdir -p /export && \
-    apk --update add build-base bash && \
+ENV GOROOT /usr/lib/go
+ENV GOPATH /gopath
+ENV GOBIN /gopath/bin
+ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
+
+RUN apk update && \
+    apk add curl git mercurial bzr go bash build-base && \
+    rm -rf /var/cache/apk/* && \
+    mkdir -p /export && \
+    mkdir -p /gopath/bin && \
+    mkdir -p /build && \
+    go get github.com/constabulary/gb/... && \
     mkdir -p /gopath/src/github.com/opsee/bastion
+
 COPY . /gopath/src/github.com/opsee/bastion
 RUN ln -sf /gopath/src/github.com/opsee/bastion/build/build.sh /build.sh
 

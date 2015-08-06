@@ -1,12 +1,14 @@
 {
-	"region": "us-east-1",
+	"regions": "all",
+	"copy-to": "all",
+	"build-region": "us-east-1",
 	"source-ami": "ami-6b1cd400",
 	"ami-name": "Opsee-Bastion-{{clean-timestamp}}",
 	"ami-description": "Opsee's Bastion Software",
 	"instance-type":"t2.micro",
 	"ssh-username":"core",
 	"staging":"/tmp/staging",
-	"ami-tags":[["sha", "{{git-rev}}"], ["release", "build"], ["opsee", "bastion"]],
+	"ami-tags":[["opsee", "bastion"]],
 	"prepare": [
 		{
 			"type":"scp",
@@ -43,7 +45,6 @@
 	],
 	"reboot-before-build": false,
 	"public": false,
-	"copy-to": "all",
 	"cleanup": true
         {{#ci}}
         ,"cleanup-on-error": true
