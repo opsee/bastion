@@ -15,7 +15,7 @@ notify:
 dependencies:
   cache_directories:
     - "mami"
-  pre:
+  override:
     - docker info
     - go version
     - docker pull quay.io/opsee/go-build
