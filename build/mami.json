@@ -15,6 +15,17 @@
 			"from":"build/docker_config.json"
 		},
 		{
+			"type":"scp",
+			"from":"build/bastion-env.sh"
+		},
+		{
+			"type":"shell",
+			"instructions":[
+				"sudo mkdir -p /etc/opsee",
+				"sudo mv /tmp/staging/bastion-env.sh /etc/opsee/bastion-env.sh"
+			]
+		},
+		{
 			"type":"shell",
 			"instructions":["mv /tmp/staging/docker_config.json /home/core/.dockercfg"]
 		},
