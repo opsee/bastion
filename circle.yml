@@ -15,11 +15,13 @@ notify:
 dependencies:
   cache_directories:
     - "mami"
+    - "grpc"
   pre:
     - docker info
     - go get github.com/tools/godep
     - sudo pip install awscli
     - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws s3 cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
+    - if [[ ! -d grpc ]]; then ./proto_build.sh; fi
     - mkdir export
 test:
   override:
