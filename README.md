@@ -14,7 +14,7 @@ Binaries will be under bin/
 ### Building the container
 
 ```
-docker pull quay.io/opsee/go-build
-docker run -v `pwd`:/build quay.io/opsee/go-build
+docker pull quay.io/opsee/build-go
+docker run -v `pwd`:/build quay.io/opsee/build-go
 docker build -t quay.io/opsee/bastion:latest .
 ```
