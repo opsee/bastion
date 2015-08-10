@@ -1,3 +1,5 @@
+PROTO_DIR=src/github.com/opsee/bastion/proto
+
 all: protoc fmt build
 
 build:
@@ -6,8 +8,8 @@ build:
 clean:
 	rm -fr target bin
 
-protoc: proto/bastion.proto
-	protoc -I/usr/local/include -Iproto proto/bastion.proto --go_out=plugins=grpc:proto
+protoc: $(PROTO_DIR)/bastion.proto
+	protoc -I/usr/local/include -I$(PROTO_DIR) --go_out=plugins=grpc:$(PROTO_DIR) $(PROTO_DIR)/bastion.proto 
 
 fmt:
 	@gofmt -w ./
