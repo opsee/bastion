@@ -11,6 +11,10 @@ Bastion uses [gb](https://getgb.io) and [go-build](https://github.com/opsee/go-b
 
 Binaries will be under bin/
 
+The bastion, of course, requires you to compile the bastion protobuf spec.
+It's recommended to use the build container for that, as you will not have
+to deal with dependencies locally.
+
 ### Building the container
 
 ```
