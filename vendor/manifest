@@ -2,6 +2,13 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "code.google.com/p/goprotobuf/proto",
+			"repository": "https://code.google.com/p/goprotobuf",
+			"revision": "9352842ae63e",
+			"branch": "default",
+			"path": "/proto"
+		},
+		{
 			"importpath": "github.com/aws/aws-sdk-go/aws",
 			"repository": "https://github.com/aws/aws-sdk-go",
 			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
