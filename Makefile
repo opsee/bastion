@@ -1,4 +1,4 @@
-PROTO_DIR=src/github.com/opsee/bastion/proto
+PROTO_DIR=./proto
 
 all: protoc fmt build
 
