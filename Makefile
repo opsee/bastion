@@ -6,7 +6,7 @@ build:
 	gb build
 
 clean:
-	rm -fr target bin
+	rm -fr target bin pkg
 
 protoc: $(PROTO_DIR)/bastion.proto
 	protoc -I/usr/local/include -I$(PROTO_DIR) --go_out=plugins=grpc:$(PROTO_DIR) $(PROTO_DIR)/bastion.proto 

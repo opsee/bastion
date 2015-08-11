@@ -35,12 +35,6 @@ var (
 	client *http.Client
 )
 
-type Metric struct {
-	Name  string                 `json:"name"`
-	Value interface{}            `json:"value"`
-	Tags  map[string]interface{} `json:"tags,omitempty"`
-}
-
 func init() {
 	client = &http.Client{
 		Transport: &http.Transport{
@@ -103,8 +97,8 @@ func (r *HTTPRequest) Do() (Response, error) {
 		Body: string(body),
 		Metrics: []Metric{
 			Metric{
-				Name:  "request_latency_ms",
-				Value: time.Since(t0).Seconds() * 1000,
+				Name:    "request_latency_ms",
+				Decimal: time.Since(t0).Seconds() * 1000,
 			},
 		},
 	}

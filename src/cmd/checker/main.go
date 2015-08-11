@@ -33,6 +33,7 @@ func main() {
 
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	checks := checker.NewChecker()
+	checks.Port = 4000
 	checks.Resolver = checker.NewResolver(config)
 	if err := checks.Start(); err != nil {
 		errNum = 1

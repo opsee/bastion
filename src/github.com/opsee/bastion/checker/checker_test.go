@@ -1,15 +1,15 @@
 package checker
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/op/go-logging"
 	"github.com/opsee/bastion/config"
-	"github.com/opsee/bastion/messaging"
+	"golang.org/x/net/context"
 )
 
 const (
@@ -20,51 +20,53 @@ const (
 )
 
 var (
-	cfg            *config.Config
-	testChecker    *Checker
-	bus            *testBus
-	commandEvent   *testEvent
-	checkCommand   *CheckCommand
-	check          Check
-	resolver       *testResolver
-	requestChannel chan bool
-	replyChannel   chan interface{}
+	cfg               *config.Config
+	testChecker       *Checker
+	testCheckRequest  *TestCheckRequest
+	check             *HttpCheck
+	resolver          *testResolver
+	checkerTestClient *CheckerRpcClient
 )
 
 func init() {
 	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
 
-	check := Check{
+	check := &HttpCheck{
 		Name:     "test check",
-		Interval: 15,
 		Path:     "/",
 		Protocol: "http",
 		Port:     httpServerPort,
 		Verb:     "GET",
-		Target: Target{
+		Target: &Target{
 			Name: "test target",
 			Type: "sg",
 			Id:   "sg",
 		},
 	}
-	checkCommand := &CheckCommand{
-		Action: "test_check",
-		Check:  check,
-	}
-	commandJSON, err := json.Marshal(checkCommand)
+
+	checkBytes, err := proto.Marshal(check)
 	if err != nil {
-		logger.Fatal("Error: %s", err.Error())
+		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
 	}
 
-	commandEvent = &testEvent{
-		body: string(commandJSON),
+	checkAny := &Any{
+		TypeUrl: "HttpCheck",
+		Value:   checkBytes,
+	}
+
+	deadline := time.Now().Add(5 * time.Second).UnixNano()
+	testCheckRequest = &TestCheckRequest{
+		MaxHosts: 1,
+		Deadline: &Timestamp{
+			Nanos: deadline,
+		},
+		CheckSpec: checkAny,
 	}
 
 	resolver = newTestResolver("127.0.0.1")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Debug("Handling request: %s", *r)
-		requestChannel <- true
 		headerMap := w.Header()
 		headerMap[httpHeaderKey] = []string{httpHeaderValue}
 		w.WriteHeader(200)
@@ -74,18 +76,6 @@ func init() {
 	go func() {
 		errChan <- http.ListenAndServe(fmt.Sprintf(":%d", httpServerPort), nil)
 	}()
-}
-
-type testEvent struct {
-	body string
-}
-
-func (e *testEvent) Ack()         { return }
-func (e *testEvent) Nack()        { return }
-func (e *testEvent) Type() string { return "Command" }
-func (e *testEvent) Body() string { return e.body }
-func (e *testEvent) Reply(msg interface{}) {
-	bus.results <- msg
 }
 
 type testResolver struct {
@@ -105,100 +95,40 @@ func (t *testResolver) Resolve(tgt Target) ([]*string, error) {
 	return []*string{t.addr}, nil
 }
 
-type testBus struct {
-	commands chan messaging.EventInterface
-	results  chan interface{}
-}
-
-func (t *testBus) Channel() <-chan messaging.EventInterface {
-	return t.commands
-}
-
-func (t *testBus) Close() error {
-	return nil
-}
-
-func (t *testBus) Publish(message interface{}) error {
-	evt, err := messaging.NewEvent(message)
-	if err != nil {
-		return err
-	}
-	t.results <- evt
-	return nil
-}
-
-func (t *testBus) PublishRepliable(id string, msg messaging.EventInterface) error {
-
-	return nil
-}
-
 func TestTestHttpCheck(t *testing.T) {
-	setup()
-	bus.commands <- commandEvent
-	select {
-	case r := <-requestChannel:
-		t.Log("Request received by server: %s", r)
-	case <-time.After(5 * time.Second):
-		t.Log("Timed out waiting for request.")
-		t.Fail()
+	setup(t)
+
+	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
+	if err != nil {
+		t.Fatalf("Unable to get RPC response: %v", err)
 	}
 
-	var result *TestResult = nil
+	httpResponse := &HttpResponse{}
+	responses := response.GetResponses()
 
-	select {
-	case r := <-bus.results:
-		t.Log("Result received on message bus: ", r)
-		result = r.(*TestResult)
-	case <-time.After(5 * time.Second):
-		t.Log("Timed out waiting for result on message bus.")
-		t.Fail()
-	}
+	t.Logf("Got responses: %v", responses)
 
-	if result == nil {
-		t.Log("Received nil result.")
-		t.Fail()
-	} else {
-		if len(result.ResponseSet) == 0 {
-			t.Log("Received empty response set in result.")
-			t.Fail()
-		} else {
-			response, ok := result.ResponseSet[0].(*HTTPResponse)
-			if ok {
-				if response.Code != 200 {
-					t.Log("Response had non-200 status: ", response.Code)
-					t.Fail()
-				}
+	proto.Unmarshal(responses[0].Value, httpResponse)
 
-				if response.Body != httpResponseString {
-					t.Log("Received incorrect response: ", response.Body)
-					t.Fail()
-				}
-			} else {
-				t.Log("Unable to cast response: ", response)
-				t.Fail()
-			}
-		}
-	}
-
-	teardown()
+	teardown(t)
 }
 
-func setup() {
+func setup(t *testing.T) {
+	var err error
+
 	// Reset the channel for every test, so we don't accidentally read stale
 	// barbage from a previous test
-	requestChannel = make(chan bool, 1)
 	testChecker = NewChecker()
-	bus = &testBus{
-		commands: make(chan messaging.EventInterface, 1),
-		results:  make(chan interface{}, 1),
-	}
 	testChecker.Resolver = resolver
-	testChecker.Consumer = bus
-	testChecker.Producer = bus
+	testChecker.Port = 4000
 	testChecker.Start()
+
+	checkerTestClient, err = NewRpcClient("127.0.0.1", 4000)
+	if err != nil {
+		t.Fatalf("Cannot create RPC client: %v", err)
+	}
 }
 
-func teardown() {
-	close(bus.commands)
-	close(bus.results)
+func teardown(t *testing.T) {
+	testChecker.Stop()
 }
