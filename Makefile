@@ -1,46 +1,20 @@
-PREFIX=/usr/local
-DESTDIR=
-GOFLAGS=-v
-BINDIR=${PREFIX}/bin
+PROTO_DIR=./proto
 
-SRCS = $(wildcard *.go)
+all: protoc fmt build
 
-GOOS ?= $(shell go env GOOS)
-GOARCH ?= $(shell go env GOARCH)
-
-CMDS = $(notdir $(wildcard cmd/*))
-BLDDIR = target/${GOOS}
-
-all: deps protoc fmt test $(CMDS)
-
-$(BLDDIR)/%:
-	@mkdir -p $(dir $@)
-	@godep go build -ldflags '-w' -tags netgo ${GOFLAGS} -o $(abspath $@) ./$*
-
-$(BINARIES): $: $(BLDDIR)/%
-$(CMDS): %: $(BLDDIR)/cmd/% $(SRCS)
+build:
+	gb build
 
 clean:
-	rm -fr target
+	rm -fr target bin pkg
 
-.PHONY: install clean all
-.PHONY: $(BINARIES)
-.PHONY: $(CMDS)
-
-install: $(BINARIES)
-	install -m 755 -d ${DESTDIR}${BINDIR}
-	install -m 755 $(BLDDIR)/cmd/connector ${DESTDIR}${BINDIR}/connector
-	install -m 755 $(BLDDIR)/cmd/checker ${DESTDIR}${BINDIR}/checker
-
-deps:
-	@go get github.com/tools/godep
-
-protoc:
-	protoc -I/usr/local/include -Iproto proto/bastion.proto --go_out=plugins=grpc:proto
-
-test: build
-	@godep go test -v ./...
+protoc: $(PROTO_DIR)/bastion.proto
+	protoc -I/usr/local/include -I$(PROTO_DIR) --go_out=plugins=grpc:$(PROTO_DIR) $(PROTO_DIR)/bastion.proto 
 
 fmt:
 	@gofmt -w ./
+
+.PHONY: clean all
+.PHONY: $(BINARIES)
+.PHONY: $(CMDS)
 

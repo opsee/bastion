@@ -8,6 +8,7 @@ cookbooks/bastion/files/default/bastion-cf.template
 *.pem
 bastion-cf.template
 packer.log
+.DS_Store
 
 ### Go template
 # Compiled Object files, Static and Dynamic libs (Shared Objects)

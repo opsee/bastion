@@ -1,13 +1,17 @@
 package checker
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
+	"net"
+	"reflect"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -15,39 +19,46 @@ const (
 )
 
 var (
-	logger = logging.GetLogger("checker")
+	logger   = logging.GetLogger("checker")
+	registry = make(map[string]reflect.Type)
 )
 
+func init() {
+	registry["HttpCheck"] = reflect.TypeOf(HttpCheck{})
+}
+
+func UnmarshalAny(any *Any) (interface{}, error) {
+	class := any.TypeUrl
+	bytes := any.Value
+
+	instance := reflect.New(registry[class]).Interface()
+	err := proto.Unmarshal(bytes, instance.(proto.Message))
+	if err != nil {
+		return nil, err
+	}
+	logger.Debug("instance: %v", instance)
+
+	return instance, nil
+}
+
+func MarshalAny(i interface{}) (*Any, error) {
+	msg, ok := i.(proto.Message)
+	if !ok {
+		return nil, fmt.Errorf("Unable to convert to proto.Message: %v", i)
+	}
+	bytes, err := proto.Marshal(msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Any{
+		TypeUrl: reflect.ValueOf(i).Elem().Type().Name(),
+		Value:   bytes,
+	}, nil
+}
+
 type Interval time.Duration
-
-type Target struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Id   string `json:"id"`
-}
-
-type Check struct {
-	Name     string              `json:"name"`
-	Id       string              `json:"id"`
-	Interval int                 `json:"interval"` // in seconds
-	Path     string              `json:"path"`
-	Protocol string              `json:"protocol"`
-	Port     int                 `json:"port"`
-	Verb     string              `json:"verb"`
-	Target   Target              `json:"target"`
-	Headers  map[string][]string `json:"headers"`
-	Body     string              `json:"body"`
-}
-
-type Result struct {
-	CheckId  string `json:"check_id"`
-	Response Response
-}
-
-type CheckCommand struct {
-	Action string `json:"action"`
-	Check  Check  `json:"parameters"`
-}
 
 // Scheduler must:
 //    - Add a check
@@ -56,78 +67,54 @@ type CheckCommand struct {
 //    - Emit messages to the dispatcher that work needs to be done
 
 type Checker struct {
+	Port       int
 	Consumer   messaging.Consumer
 	Producer   messaging.Producer
 	Resolver   Resolver
 	dispatcher *Dispatcher
+	grpcServer *grpc.Server
 }
 
 func NewChecker() *Checker {
 	return &Checker{
 		dispatcher: NewDispatcher(),
+		grpcServer: grpc.NewServer(),
 	}
 }
 
-func (c *Checker) Create(event messaging.EventInterface, check Check) error {
+// func (c *Checker) CreateCheck(event messaging.EventInterface, check Check) error {
+//
+// 	return nil
+// }
+//
+// func (c *Checker) Delete(event messaging.EventInterface, check Check) error {
+//
+// 	return nil
+// }
+//
+// func (c *Checker) Update(event messaging.EventInterface, check Check) error {
+//
+// 	return nil
+// }
 
-	return nil
+func buildURL(check *HttpCheck, target *string) string {
+	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, *target, check.Port, check.Path)
 }
 
-func (c *Checker) Delete(event messaging.EventInterface, check Check) error {
-
-	return nil
-}
-
-func (c *Checker) Update(event messaging.EventInterface, check Check) error {
-
-	return nil
-}
-
-func buildURL(check Check, target string) string {
-	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, target, check.Port, check.Path)
-}
-
-type TestResult struct {
-	CheckId     string     `json:"check_id"`
-	ResponseSet []Response `json:"response_set"`
-}
-
-func (c *Checker) Test(event messaging.EventInterface, check Check) {
-	logger.Debug("Testing check: %s", check)
-
-	targets, err := c.Resolver.Resolve(check.Target)
-	if err != nil {
-		errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
-		logger.Error(errStr)
-		response := &ErrorResponse{
-			Error: fmt.Errorf(errStr),
-		}
-		c.Producer.Publish(response)
-		return
+func (c *Checker) testHttpCheck(check *HttpCheck, targets []*string, responses chan Response, timer <-chan time.Time) {
+	numTargets := len(targets)
+	// buffer so that we don't block on insertion.
+	targetChan := make(chan *string, numTargets)
+	for _, target := range targets {
+		targetChan <- target
 	}
 
-	numTargets := int(math.Min(MaxTestTargets, float64(len(targets))))
-	logger.Debug("numTargets: %d", numTargets)
-	targets = targets[0:numTargets]
-	testResult := &TestResult{
-		CheckId:     check.Id,
-		ResponseSet: make([]Response, numTargets),
-	}
-	defer event.Reply(testResult)
-
-	responses := make(chan Response, numTargets)
-	defer close(responses)
-	defer func() {
-		if r := recover(); r != nil {
-			logger.Error("%s: %s", r, check)
-		}
-	}()
-
-	go func() {
-		for _, target := range targets {
+	for i := 0; i < numTargets; i++ {
+		select {
+		case target := <-targetChan:
 			logger.Debug("Target acquired: %s", *target)
 			if target != nil {
-				uri := buildURL(check, *target)
+				uri := buildURL(check, target)
 				logger.Debug("URL: %s", uri)
 
 				request := &HTTPRequest{
@@ -148,66 +135,93 @@ func (c *Checker) Test(event messaging.EventInterface, check Check) {
 			} else {
 				logger.Error("Got nil target in Checker.Test, targets: ", targets)
 			}
+		case <-timer:
+			logger.Error("Received timeout while attempting to test HTTP check")
+			break
 		}
-	}()
-
-	doneChannel := make(chan bool, 1)
-	go func() {
-		for i := 0; i < numTargets; i++ {
-			response := <-responses
-			logger.Debug("Got response: %s", response)
-
-			testResult.ResponseSet[i] = response
-		}
-		doneChannel <- true
-	}()
-
-	select {
-	case <-doneChannel:
-	case <-time.After(30 * time.Second):
-		logger.Error("Timed out waiting for check test results: %s", check)
 	}
 }
 
-func (c *Checker) Start() error {
-	if c.Consumer == nil {
-		consumer, err := messaging.NewConsumer("commands", "checker")
-		if err != nil {
-			return err
-		}
-		c.Consumer = consumer
+func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
+	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
+
+	if time.Now().After(deadline) {
+		return nil, fmt.Errorf("Deadline expired")
 	}
 
-	if c.Producer == nil {
-		producer, err := messaging.NewProducer("results")
-		if err != nil {
-			return err
-		}
-		c.Producer = producer
+	timer := time.After(deadline.Sub(time.Now()))
+
+	var (
+		numTargets int
+	)
+
+	logger.Debug("Received request: %v", req)
+
+	msg, err := UnmarshalAny(req.CheckSpec)
+	if err != nil {
+		return nil, err
 	}
 
-	c.dispatcher.Dispatch()
+	logger.Debug("Testing check: %v", msg)
 
-	go func() {
-		for event := range c.Consumer.Channel() {
-			logger.Debug("Event received: %s", event)
-			command := new(CheckCommand)
-			if err := json.Unmarshal([]byte(event.Body()), command); err != nil {
-				logger.Error("Cannot unmarshal command: %s", event.Body())
-			} else {
-				switch command.Action {
-				case "test_check":
-					c.Test(event, command.Check)
-				case "create_check":
-					c.Create(event, command.Check)
-				case "update_check":
-					c.Update(event, command.Check)
-				case "delete_check":
-					c.Delete(event, command.Check)
-				}
-			}
+	responses := make(chan Response, MaxTestTargets)
+	defer close(responses)
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Error("TestCheck recovered: %s: %s", r, msg)
 		}
 	}()
+
+	switch check := msg.(type) {
+	case *HttpCheck:
+		targets, err := c.Resolver.Resolve(check.Target)
+		if err != nil {
+			errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
+			logger.Error(errStr)
+			return nil, err
+		}
+
+		numTargets = int(math.Min(float64(req.MaxHosts), float64(len(targets))))
+		logger.Debug("numTargets: %d", numTargets)
+		targets = targets[0:numTargets]
+		go c.testHttpCheck(check, targets, responses, timer)
+	}
+
+	testResult := &TestCheckResponse{
+		Responses: make([]*Any, numTargets),
+	}
+
+	for i := 0; i < numTargets; i++ {
+		select {
+		case response := <-responses:
+			logger.Debug("Got response: %s", response)
+
+			responseAny, err := MarshalAny(response)
+			if err != nil {
+				logger.Error("Error marshalling response: %v", err)
+				return nil, err
+			}
+			testResult.Responses[i] = responseAny
+		case <-timer:
+			return nil, fmt.Errorf("Timed out while testing HTTP check: %v", req)
+		}
+	}
+
+	logger.Debug("Results: %v", testResult)
+	return testResult, nil
+}
+
+func (c *Checker) Start() error {
+	c.dispatcher.Dispatch()
+
+	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", c.Port))
+	if err != nil {
+		return err
+	}
+
+	RegisterCheckerServer(c.grpcServer, c)
+	go c.grpcServer.Serve(listen)
+
 	return nil
 }
 
@@ -222,4 +236,5 @@ func (c *Checker) Stop() {
 			logger.Error(err.Error())
 		}
 	}
+	c.grpcServer.Stop()
 }

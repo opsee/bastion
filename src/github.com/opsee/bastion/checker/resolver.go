@@ -6,7 +6,7 @@ import (
 )
 
 type Resolver interface {
-	Resolve(Target) ([]*string, error)
+	Resolve(*Target) ([]*string, error)
 }
 
 // TODO: The resolver should not query the EC2Scanner directly, but
@@ -44,7 +44,7 @@ func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*string, error) {
 	return targets, nil
 }
 
-func (r *AWSResolver) Resolve(target Target) ([]*string, error) {
+func (r *AWSResolver) Resolve(target *Target) ([]*string, error) {
 	switch target.Type {
 	case "sg":
 		return r.resolveSecurityGroup(target.Id)
