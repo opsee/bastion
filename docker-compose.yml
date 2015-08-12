@@ -16,6 +16,8 @@ checker:
   command: /checker -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
+  expose:
+    - 4000
   links:
     - nsqd
 discovery:
