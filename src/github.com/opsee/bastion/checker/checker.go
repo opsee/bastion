@@ -2,6 +2,7 @@ package checker
 
 import (
 	"fmt"
+	"math"
 	"net"
 	"reflect"
 	"time"
@@ -30,10 +31,31 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 	class := any.TypeUrl
 	bytes := any.Value
 
-	instance := reflect.New(registry[class]).Elem().Interface()
-	final := proto.Unmarshal(bytes, instance.(proto.Message))
+	instance := reflect.New(registry[class]).Interface()
+	err := proto.Unmarshal(bytes, instance.(proto.Message))
+	if err != nil {
+		return nil, err
+	}
+	logger.Debug("instance: %v", instance)
 
-	return final, nil
+	return instance, nil
+}
+
+func MarshalAny(i interface{}) (*Any, error) {
+	msg, ok := i.(proto.Message)
+	if !ok {
+		return nil, fmt.Errorf("Unable to convert to proto.Message: %v", i)
+	}
+	bytes, err := proto.Marshal(msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Any{
+		TypeUrl: reflect.ValueOf(i).Elem().Type().Name(),
+		Value:   bytes,
+	}, nil
 }
 
 type Interval time.Duration
@@ -75,98 +97,118 @@ func NewChecker() *Checker {
 // 	return nil
 // }
 
-// func buildURL(check Check, target string) string {
-// 	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, target, check.Port, check.Path)
-// }
+func buildURL(check *HttpCheck, target *string) string {
+	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, *target, check.Port, check.Path)
+}
 
-type TestResult struct {
-	CheckId     string     `json:"check_id"`
-	ResponseSet []Response `json:"response_set"`
+func (c *Checker) testHttpCheck(check *HttpCheck, targets []*string, responses chan Response, timer <-chan time.Time) {
+	numTargets := len(targets)
+	// buffer so that we don't block on insertion.
+	targetChan := make(chan *string, numTargets)
+	for _, target := range targets {
+		targetChan <- target
+	}
+
+	for i := 0; i < numTargets; i++ {
+		select {
+		case target := <-targetChan:
+			logger.Debug("Target acquired: %s", *target)
+			if target != nil {
+				uri := buildURL(check, target)
+				logger.Debug("URL: %s", uri)
+
+				request := &HTTPRequest{
+					Method:  check.Verb,
+					URL:     uri,
+					Headers: check.Headers,
+					Body:    check.Body,
+				}
+
+				logger.Debug("issuing request: %s", *request)
+
+				task := &Task{
+					Type:     "HTTPRequest",
+					Request:  request,
+					Response: responses,
+				}
+				c.dispatcher.Requests <- task
+			} else {
+				logger.Error("Got nil target in Checker.Test, targets: ", targets)
+			}
+		case <-timer:
+			logger.Error("Received timeout while attempting to test HTTP check")
+			break
+		}
+	}
 }
 
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
+	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
+
+	if time.Now().After(deadline) {
+		return nil, fmt.Errorf("Deadline expired")
+	}
+
+	timer := time.After(deadline.Sub(time.Now()))
+
+	var (
+		numTargets int
+	)
+
 	logger.Debug("Received request: %v", req)
 
-	check, err := UnmarshalAny(req.CheckSpec)
+	msg, err := UnmarshalAny(req.CheckSpec)
 	if err != nil {
 		return nil, err
 	}
 
-	logger.Debug("Testing check: %v", check)
+	logger.Debug("Testing check: %v", msg)
 
-	return nil, nil
+	responses := make(chan Response, MaxTestTargets)
+	defer close(responses)
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Error("TestCheck recovered: %s: %s", r, msg)
+		}
+	}()
 
-	// targets, err := c.Resolver.Resolve(check.Target)
-	// if err != nil {
-	// 	errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
-	// 	logger.Error(errStr)
-	// 	response := &ErrorResponse{
-	// 		Error: fmt.Errorf(errStr),
-	// 	}
-	// 	c.Producer.Publish(response)
-	// 	return nil, err
-	// }
-	//
-	// numTargets := int(math.Min(MaxTestTargets, float64(len(targets))))
-	// logger.Debug("numTargets: %d", numTargets)
-	// targets = targets[0:numTargets]
-	// testResult := &TestResult{
-	// 	CheckId:     check.Id,
-	// 	ResponseSet: make([]Response, numTargets),
-	// }
-	//
-	// responses := make(chan Response, numTargets)
-	// defer close(responses)
-	// defer func() {
-	// 	if r := recover(); r != nil {
-	// 		logger.Error("%s: %s", r, check)
-	// 	}
-	// }()
-	//
-	// go func() {
-	// 	for _, target := range targets {
-	// 		logger.Debug("Target acquired: %s", *target)
-	// 		if target != nil {
-	// 			uri := buildURL(check, *target)
-	// 			logger.Debug("URL: %s", uri)
-	//
-	// 			request := &HTTPRequest{
-	// 				Method:  check.Verb,
-	// 				URL:     uri,
-	// 				Headers: check.Headers,
-	// 				Body:    check.Body,
-	// 			}
-	//
-	// 			logger.Debug("issuing request: %s", *request)
-	//
-	// 			task := &Task{
-	// 				Type:     "HTTPRequest",
-	// 				Request:  request,
-	// 				Response: responses,
-	// 			}
-	// 			c.dispatcher.Requests <- task
-	// 		} else {
-	// 			logger.Error("Got nil target in Checker.Test, targets: ", targets)
-	// 		}
-	// 	}
-	// }()
-	//
-	// doneChannel := make(chan bool, 1)
-	// go func() {
-	// 	for i := 0; i < numTargets; i++ {
-	// 		response := <-responses
-	// 		logger.Debug("Got response: %s", response)
-	//
-	// 		testResult.ResponseSet[i] = response
-	// 	}
-	// 	doneChannel <- true
-	// }()
-	//
-	// select {
-	// case <-doneChannel:
-	// case <-time.After(30 * time.Second):
-	// 	logger.Error("Timed out waiting for check test results: %s", check)
-	// }
+	switch check := msg.(type) {
+	case *HttpCheck:
+		targets, err := c.Resolver.Resolve(check.Target)
+		if err != nil {
+			errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
+			logger.Error(errStr)
+			return nil, err
+		}
+
+		numTargets = int(math.Min(float64(req.MaxHosts), float64(len(targets))))
+		logger.Debug("numTargets: %d", numTargets)
+		targets = targets[0:numTargets]
+		go c.testHttpCheck(check, targets, responses, timer)
+	}
+
+	testResult := &TestCheckResponse{
+		Responses: make([]*Any, numTargets),
+	}
+
+	for i := 0; i < numTargets; i++ {
+		select {
+		case response := <-responses:
+			logger.Debug("Got response: %s", response)
+
+			responseAny, err := MarshalAny(response)
+			if err != nil {
+				logger.Error("Error marshalling response: %v", err)
+				return nil, err
+			}
+			testResult.Responses[i] = responseAny
+		case <-timer:
+			return nil, fmt.Errorf("Timed out while testing HTTP check: %v", req)
+		}
+	}
+
+	logger.Debug("Results: %v", testResult)
+	return testResult, nil
 }
 
 func (c *Checker) Start() error {

@@ -16,18 +16,10 @@ const httpWorkerTaskType = "HTTPRequest"
 // easier for now. As soon as we move away from JSON, these should be []byte.
 
 type HTTPRequest struct {
-	Method  string              `json:"method"`
-	URL     string              `json:"url"`
-	Headers map[string][]string `json:"headers"`
-	Body    string              `json:"body"`
-}
-
-type HTTPResponse struct {
-	Code    int                 `json:"code"`
-	Body    string              `json:"body"`
-	Headers map[string][]string `json:"headers"`
-	Metrics []Metric            `json:"metrics,omitempty"`
-	Error   string              `json:"error,omitempty"`
+	Method  string    `json:"method"`
+	URL     string    `json:"url"`
+	Headers []*Header `json:"headers"`
+	Body    string    `json:"body"`
 }
 
 var (
@@ -38,9 +30,9 @@ var (
 func init() {
 	client = &http.Client{
 		Transport: &http.Transport{
-			ResponseHeaderTimeout: 15 * time.Second,
+			ResponseHeaderTimeout: 30 * time.Second,
 			Dial: (&net.Dialer{
-				Timeout: 5 * time.Second,
+				Timeout: 15 * time.Second,
 			}).Dial,
 		},
 	}
@@ -54,9 +46,10 @@ func (r *HTTPRequest) Do() (Response, error) {
 		return nil, err
 	}
 
-	for header, values := range r.Headers {
-		for _, value := range values {
-			req.Header.Add(header, value)
+	for _, header := range r.Headers {
+		key := header.Name
+		for _, value := range header.Values {
+			req.Header.Add(key, value)
 		}
 	}
 
@@ -92,11 +85,11 @@ func (r *HTTPRequest) Do() (Response, error) {
 	body := make([]byte, int64(length))
 	rdr.Read(body)
 
-	httpResponse := &HTTPResponse{
-		Code: resp.StatusCode,
+	httpResponse := &HttpResponse{
+		Code: int32(resp.StatusCode),
 		Body: string(body),
-		Metrics: []Metric{
-			Metric{
+		Metrics: []*Metric{
+			&Metric{
 				Name:    "request_latency_ms",
 				Decimal: time.Since(t0).Seconds() * 1000,
 			},

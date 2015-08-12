@@ -22,8 +22,6 @@ const (
 var (
 	cfg               *config.Config
 	testChecker       *Checker
-	testCheckRequest  *TestCheckRequest
-	check             *HttpCheck
 	resolver          *testResolver
 	checkerTestClient *CheckerRpcClient
 )
@@ -31,39 +29,7 @@ var (
 func init() {
 	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
 
-	check := &HttpCheck{
-		Name:     "test check",
-		Path:     "/",
-		Protocol: "http",
-		Port:     httpServerPort,
-		Verb:     "GET",
-		Target: &Target{
-			Name: "test target",
-			Type: "sg",
-			Id:   "sg",
-		},
-	}
-
-	checkBytes, err := proto.Marshal(check)
-	if err != nil {
-		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
-	}
-
-	checkAny := &Any{
-		TypeUrl: "HttpCheck",
-		Value:   checkBytes,
-	}
-
-	deadline := time.Now().Add(5 * time.Second).UnixNano()
-	testCheckRequest = &TestCheckRequest{
-		MaxHosts: 1,
-		Deadline: &Timestamp{
-			Nanos: deadline,
-		},
-		CheckSpec: checkAny,
-	}
-
-	resolver = newTestResolver("127.0.0.1")
+	resolver = newTestResolver()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Debug("Handling request: %s", *r)
@@ -79,24 +45,62 @@ func init() {
 }
 
 type testResolver struct {
-	addr *string
+	t map[string]*string
 }
 
-func newTestResolver(addr string) *testResolver {
-	strPtr := new(string)
-	*strPtr = addr
+func newTestResolver() *testResolver {
+	addr := "127.0.0.1"
+	addrPtr := &addr
 	return &testResolver{
-		addr: strPtr,
+		t: map[string]*string{
+			"sg": addrPtr,
+		},
 	}
 }
 
-func (t *testResolver) Resolve(tgt Target) ([]*string, error) {
+func (t *testResolver) Resolve(tgt *Target) ([]*string, error) {
 	logger.Debug("Resolving target: %s", tgt)
-	return []*string{t.addr}, nil
+	resolved := t.t[tgt.Id]
+	if resolved == nil {
+		return nil, fmt.Errorf("Unable to resolve target: tgt")
+	}
+	return []*string{resolved}, nil
 }
 
-func TestTestHttpCheck(t *testing.T) {
+func TestPassingTestHttpCheck(t *testing.T) {
 	setup(t)
+
+	passingCheck := &HttpCheck{
+		Name:     "test check",
+		Path:     "/",
+		Protocol: "http",
+		Port:     httpServerPort,
+		Verb:     "GET",
+		Target: &Target{
+			Name: "test target",
+			Type: "sg",
+			Id:   "sg",
+		},
+	}
+
+	checkBytes, err := proto.Marshal(passingCheck)
+	if err != nil {
+		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
+	}
+
+	checkAny := &Any{
+		TypeUrl: "HttpCheck",
+		Value:   checkBytes,
+	}
+
+	deadline := time.Now().Add(5 * time.Second).UnixNano()
+	testCheckRequest := &TestCheckRequest{
+		MaxHosts: 1,
+		Deadline: &Timestamp{
+			Nanos: deadline,
+		},
+		CheckSpec: checkAny,
+	}
 
 	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
 	if err != nil {
@@ -109,6 +113,102 @@ func TestTestHttpCheck(t *testing.T) {
 	t.Logf("Got responses: %v", responses)
 
 	proto.Unmarshal(responses[0].Value, httpResponse)
+
+	teardown(t)
+}
+
+func TestResolverFailure(t *testing.T) {
+	setup(t)
+
+	check := &HttpCheck{
+		Name:     "test check",
+		Path:     "/",
+		Protocol: "http",
+		Port:     httpServerPort,
+		Verb:     "GET",
+		Target: &Target{
+			Name: "test target",
+			Type: "sg",
+			Id:   "unknown",
+		},
+	}
+
+	checkBytes, err := proto.Marshal(check)
+	if err != nil {
+		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
+	}
+
+	checkAny := &Any{
+		TypeUrl: "HttpCheck",
+		Value:   checkBytes,
+	}
+
+	deadline := time.Now().Add(5 * time.Second).UnixNano()
+	testCheckRequest := &TestCheckRequest{
+		MaxHosts: 1,
+		Deadline: &Timestamp{
+			Nanos: deadline,
+		},
+		CheckSpec: checkAny,
+	}
+
+	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
+	if err != nil {
+		t.Logf("Received error: %v", err)
+	} else {
+		t.Fail()
+	}
+
+	if response != nil {
+		t.Fail()
+	}
+	teardown(t)
+}
+
+func TestTimeoutTestCheck(t *testing.T) {
+	setup(t)
+
+	check := &HttpCheck{
+		Name:     "test check",
+		Path:     "/",
+		Protocol: "http",
+		Port:     httpServerPort,
+		Verb:     "GET",
+		Target: &Target{
+			Name: "test target",
+			Type: "sg",
+			Id:   "unknown",
+		},
+	}
+
+	checkBytes, err := proto.Marshal(check)
+	if err != nil {
+		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
+	}
+
+	checkAny := &Any{
+		TypeUrl: "HttpCheck",
+		Value:   checkBytes,
+	}
+
+	testCheckRequest := &TestCheckRequest{
+		MaxHosts: 1,
+		Deadline: &Timestamp{
+			Seconds: time.Now().Unix(),
+		},
+		CheckSpec: checkAny,
+	}
+
+	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
+	if err != nil {
+		t.Logf("Received error: %v", err)
+	} else {
+		t.Fail()
+	}
+
+	if response != nil {
+		t.Fail()
+	}
 
 	teardown(t)
 }
