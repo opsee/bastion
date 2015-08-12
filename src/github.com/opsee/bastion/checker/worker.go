@@ -10,10 +10,6 @@ type Request interface {
 
 type Response interface{}
 
-type ErrorResponse struct {
-	Error error `json:"error"`
-}
-
 type Task struct {
 	Type     string
 	Request  Request

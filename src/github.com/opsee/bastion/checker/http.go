@@ -113,20 +113,20 @@ func (w *HTTPWorker) Work() {
 	for task := range w.WorkQueue {
 		request, ok := task.Request.(*HTTPRequest)
 		if ok {
-			logger.Info("request: ", request)
+			logger.Debug("request: ", request)
 			if response, err := request.Do(); err != nil {
 				logger.Error("error processing request: %s", *task)
 				logger.Error("error: %s", err.Error())
-				task.Response <- &ErrorResponse{
-					Error: err,
+				task.Response <- &HttpResponse{
+					Error: err.Error(),
 				}
 			} else {
-				logger.Info("response: ", response)
+				logger.Debug("response: ", response)
 				task.Response <- response
 			}
 		} else {
-			task.Response <- &ErrorResponse{
-				Error: fmt.Errorf("Unable to process request: %s", task.Request),
+			task.Response <- &HttpResponse{
+				Error: fmt.Sprintf("Unable to process request: %s", task.Request),
 			}
 		}
 	}
