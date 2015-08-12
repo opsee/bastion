@@ -62,7 +62,7 @@ func (t *testResolver) Resolve(tgt *Target) ([]*string, error) {
 	logger.Debug("Resolving target: %s", tgt)
 	resolved := t.t[tgt.Id]
 	if resolved == nil {
-		return nil, fmt.Errorf("Unable to resolve target: tgt")
+		return nil, fmt.Errorf("Unable to resolve target: %v", tgt)
 	}
 	return []*string{resolved}, nil
 }
