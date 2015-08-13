@@ -27,6 +27,7 @@ func main() {
 	// XXX: Holy fuck make logging easier.
 	logging.SetLevel(config.LogLevel, moduleName)
 	logging.SetLevel(config.LogLevel, "messaging")
+	logging.SetLevel(config.LogLevel, "scanner")
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)

@@ -168,7 +168,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	defer close(responses)
 	defer func() {
 		if r := recover(); r != nil {
-			logger.Error("TestCheck recovered: %s: %s", r, msg)
+			logger.Error("TestCheck panic: %s: %s", r, msg)
 		}
 	}()
 
@@ -180,6 +180,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 			logger.Error(errStr)
 			return nil, err
 		}
+		logger.Debug("Checker.TestCheck -- Targets: %v", targets)
 
 		numTargets = int(math.Min(float64(req.MaxHosts), float64(len(targets))))
 		logger.Debug("numTargets: %d", numTargets)

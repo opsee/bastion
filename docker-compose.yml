@@ -1,9 +1,9 @@
 nsqd:
   image: nsqio/nsq
   command: /nsqd
-  expose:
-    - 4150
-    - 4151
+  ports:
+    - 4150:4150
+    - 4151:4151
 monitor:
   image: quay.io/opsee/bastion
   command: /monitor -level debug
@@ -16,6 +16,12 @@ checker:
   command: /checker -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
+  ports:
+    - 5000:4000
+  environment:
+    AWS_ACCESS_KEY_ID:
+    AWS_DEFAULT_REGION:
+    AWS_SECRET_ACCESS_KEY:
   links:
     - nsqd
 discovery:
@@ -27,14 +33,5 @@ discovery:
     AWS_ACCESS_KEY_ID:
     AWS_DEFAULT_REGION:
     AWS_SECRET_ACCESS_KEY:
-  links:
-    - nsqd
-connector:
-  image: quay.io/opsee/bastion
-  command: /connector -metadata /metadata.json -level debug
-  volumes:
-    - metadata.json:/metadata.json
-  external_links:
-    - vagabond_bartnet_1:bartnet-api
   links:
     - nsqd
