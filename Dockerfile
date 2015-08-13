@@ -10,6 +10,6 @@ ENV HOSTNAME=""
 ENV AWS_ACCESS_KEY_ID=""
 ENV AWS_SECRET_ACCESS_KEY=""
 
-RUN apk add --update bash
+RUN apk add --update bash ca-certificates
 
 COPY target/linux/amd64/bin/* /

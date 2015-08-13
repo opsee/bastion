@@ -55,11 +55,11 @@ func (r *HTTPRequest) Do() (Response, error) {
 
 	t0 := time.Now()
 	resp, err := client.Do(req)
-
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+
+	defer resp.Body.Close()
 
 	logger.Debug("Attempting to read body of response...")
 	// WARNING: You cannot do this.

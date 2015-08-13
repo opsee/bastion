@@ -1,6 +1,7 @@
-package aws
+package scanner
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,11 +11,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/logging"
+)
+
+var (
+	logger = logging.GetLogger("scanner")
 )
 
 type EC2Scanner interface {
+	GetInstance(string) (*ec2.Reservation, error)
 	ScanSecurityGroups() ([]*ec2.SecurityGroup, error)
-	ScanSecurityGroupInstances(groupId string) ([]*ec2.Reservation, error)
+	ScanSecurityGroupInstances(string) ([]*ec2.Reservation, error)
+	GetLoadBalancer(string) (*elb.LoadBalancerDescription, error)
 	ScanLoadBalancers() ([]*elb.LoadBalancerDescription, error)
 	ScanRDS() ([]*rds.DBInstance, error)
 	ScanRDSSecurityGroups() ([]*rds.DBSecurityGroup, error)
@@ -62,6 +70,22 @@ func (s *eC2ScannerImpl) getRDSClient() *rds.RDS {
 	return rds.New(s.getConfig())
 }
 
+func (s *eC2ScannerImpl) GetInstance(instanceId string) (*ec2.Reservation, error) {
+	client := s.getEC2Client()
+	resp, err := client.DescribeInstances(&ec2.DescribeInstancesInput{InstanceIDs: []*string{&instanceId}})
+	if err != nil {
+		if len(resp.Reservations) > 1 {
+			return nil, fmt.Errorf("Received multiple reservations for instance id: %v, %v", instanceId, resp)
+		}
+		return nil, err
+	}
+
+	// InstanceID to Reservation mappings are 1-to-1
+	reservation := resp.Reservations[0]
+
+	return reservation, nil
+}
+
 func (s *eC2ScannerImpl) ScanSecurityGroups() ([]*ec2.SecurityGroup, error) {
 	client := s.getEC2Client()
 	resp, err := client.DescribeSecurityGroups(nil)
@@ -77,10 +101,26 @@ func (s *eC2ScannerImpl) ScanSecurityGroupInstances(groupId string) ([]*ec2.Rese
 	filters := []*ec2.Filter{&ec2.Filter{Name: aws.String("instance.group-id"), Values: grs}}
 	//[]string{groupId}}}})
 	resp, err := client.DescribeInstances(&ec2.DescribeInstancesInput{Filters: filters})
+	logger.Debug("eC2ScannerImpl.ScanSecurityGroupInstances -- DescribeInstances response: %v", resp)
+
 	if err != nil {
 		return nil, err
 	}
+
 	return resp.Reservations, nil
+}
+
+func (s *eC2ScannerImpl) GetLoadBalancer(elbId string) (*elb.LoadBalancerDescription, error) {
+	client := s.getELBClient()
+	input := &elb.DescribeLoadBalancersInput{
+		LoadBalancerNames: []*string{aws.String(elbId)},
+	}
+	resp, err := client.DescribeLoadBalancers(input)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.LoadBalancerDescriptions[0], nil
 }
 
 func (s *eC2ScannerImpl) ScanLoadBalancers() ([]*elb.LoadBalancerDescription, error) {

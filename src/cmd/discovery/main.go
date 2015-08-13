@@ -4,11 +4,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/opsee/bastion/aws"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
+	"github.com/opsee/bastion/scanner"
 )
 
 const (
@@ -19,12 +19,12 @@ var (
 	logger   = logging.GetLogger(moduleName)
 	producer messaging.Producer
 	wg       *sync.WaitGroup
-	scanner  aws.EC2Scanner
+	sc       scanner.EC2Scanner
 )
 
 func scanSecurityGroups() {
 	wg.Add(1)
-	if sgs, err := scanner.ScanSecurityGroups(); err != nil {
+	if sgs, err := sc.ScanSecurityGroups(); err != nil {
 		logger.Error(err.Error())
 	} else {
 		for _, sg := range sgs {
@@ -33,7 +33,8 @@ func scanSecurityGroups() {
 					logger.Error(err.Error())
 				}
 				if sg.GroupID != nil {
-					if reservations, err := scanner.ScanSecurityGroupInstances(*sg.GroupID); err != nil {
+					logger.Info("Scanning SG: %v", *sg.GroupID)
+					if reservations, err := sc.ScanSecurityGroupInstances(*sg.GroupID); err != nil {
 						logger.Error(err.Error())
 					} else {
 						for _, reservation := range reservations {
@@ -57,7 +58,7 @@ func scanSecurityGroups() {
 
 func scanLoadBalancers() {
 	wg.Add(1)
-	if lbs, err := scanner.ScanLoadBalancers(); err != nil {
+	if lbs, err := sc.ScanLoadBalancers(); err != nil {
 		logger.Error(err.Error())
 	} else {
 		for _, lb := range lbs {
@@ -73,7 +74,7 @@ func scanLoadBalancers() {
 
 func scanRDS() {
 	wg.Add(1)
-	if rdses, err := scanner.ScanRDS(); err != nil {
+	if rdses, err := sc.ScanRDS(); err != nil {
 		logger.Error(err.Error())
 	} else {
 		for _, rdsInst := range rdses {
@@ -89,7 +90,7 @@ func scanRDS() {
 
 func scanRDSSecurityGroups() {
 	wg.Add(1)
-	if rdssgs, err := scanner.ScanRDSSecurityGroups(); err != nil {
+	if rdssgs, err := sc.ScanRDSSecurityGroups(); err != nil {
 		logger.Error(err.Error())
 	} else {
 		for _, rdssg := range rdssgs {
@@ -107,7 +108,7 @@ func main() {
 	var err error
 
 	cfg := config.GetConfig()
-	scanner = aws.NewScanner(cfg)
+	sc = scanner.NewScanner(cfg)
 	wg = &sync.WaitGroup{}
 
 	producer, err = messaging.NewProducer("discovery")
