@@ -24,6 +24,23 @@ var (
 	testChecker       *Checker
 	resolver          *testResolver
 	checkerTestClient *CheckerRpcClient
+	ctx               = context.TODO()
+	checkStub         = &HttpCheck{
+		Name:     "test check",
+		Path:     "/",
+		Protocol: "http",
+		Port:     httpServerPort,
+		Verb:     "GET",
+	}
+
+	requestStub = &TestCheckRequest{
+		MaxHosts: 1,
+		Deadline: &Timestamp{
+			Nanos: time.Now().Add(30 * time.Minute).UnixNano(),
+		},
+		Target:    &Target{},
+		CheckSpec: nil,
+	}
 )
 
 func init() {
@@ -67,42 +84,36 @@ func (t *testResolver) Resolve(tgt *Target) ([]*string, error) {
 	return []*string{resolved}, nil
 }
 
-func TestPassingTestHttpCheck(t *testing.T) {
-	setup(t)
+/*******************************************************************************
+ * TestCheck()
+ ******************************************************************************/
 
-	passingCheck := &HttpCheck{
-		Name:     "test check",
-		Path:     "/",
-		Protocol: "http",
-		Port:     httpServerPort,
-		Verb:     "GET",
-		Target: &Target{
-			Name: "test target",
-			Type: "sg",
-			Id:   "sg",
-		},
-	}
-
-	checkBytes, err := proto.Marshal(passingCheck)
+func buildTestCheckRequest(check *HttpCheck, target *Target) *TestCheckRequest {
+	request := requestStub
+	checkBytes, err := proto.Marshal(check)
 	if err != nil {
 		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
 	}
-
 	checkAny := &Any{
 		TypeUrl: "HttpCheck",
 		Value:   checkBytes,
 	}
+	request.CheckSpec = checkAny
+	request.Target = target
+	return request
+}
 
-	deadline := time.Now().Add(5 * time.Second).UnixNano()
-	testCheckRequest := &TestCheckRequest{
-		MaxHosts: 1,
-		Deadline: &Timestamp{
-			Nanos: deadline,
-		},
-		CheckSpec: checkAny,
+func TestPassingTestHttpCheck(t *testing.T) {
+	setup(t)
+
+	target := &Target{
+		Id:   "sg",
+		Name: "sg",
+		Type: "sg",
 	}
+	request := buildTestCheckRequest(checkStub, target)
 
-	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
+	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
 		t.Fatalf("Unable to get RPC response: %v", err)
 	}
@@ -119,46 +130,19 @@ func TestPassingTestHttpCheck(t *testing.T) {
 
 func TestResolverFailure(t *testing.T) {
 	setup(t)
-
-	check := &HttpCheck{
-		Name:     "test check",
-		Path:     "/",
-		Protocol: "http",
-		Port:     httpServerPort,
-		Verb:     "GET",
-		Target: &Target{
-			Name: "test target",
-			Type: "sg",
-			Id:   "unknown",
-		},
+	target := &Target{
+		Id:   "unknown",
+		Type: "sg",
+		Name: "unknown",
 	}
+	request := buildTestCheckRequest(checkStub, target)
 
-	checkBytes, err := proto.Marshal(check)
-	if err != nil {
-		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
-	}
-
-	checkAny := &Any{
-		TypeUrl: "HttpCheck",
-		Value:   checkBytes,
-	}
-
-	deadline := time.Now().Add(5 * time.Second).UnixNano()
-	testCheckRequest := &TestCheckRequest{
-		MaxHosts: 1,
-		Deadline: &Timestamp{
-			Nanos: deadline,
-		},
-		CheckSpec: checkAny,
-	}
-
-	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
+	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
 		t.Logf("Received error: %v", err)
 	} else {
 		t.Fail()
 	}
-
 	if response != nil {
 		t.Fail()
 	}
@@ -167,39 +151,14 @@ func TestResolverFailure(t *testing.T) {
 
 func TestTimeoutTestCheck(t *testing.T) {
 	setup(t)
-
-	check := &HttpCheck{
-		Name:     "test check",
-		Path:     "/",
-		Protocol: "http",
-		Port:     httpServerPort,
-		Verb:     "GET",
-		Target: &Target{
-			Name: "test target",
-			Type: "sg",
-			Id:   "unknown",
-		},
+	target := &Target{
+		Name: "test target",
+		Type: "sg",
+		Id:   "unknown",
 	}
+	request := buildTestCheckRequest(checkStub, target)
 
-	checkBytes, err := proto.Marshal(check)
-	if err != nil {
-		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
-	}
-
-	checkAny := &Any{
-		TypeUrl: "HttpCheck",
-		Value:   checkBytes,
-	}
-
-	testCheckRequest := &TestCheckRequest{
-		MaxHosts: 1,
-		Deadline: &Timestamp{
-			Seconds: time.Now().Unix(),
-		},
-		CheckSpec: checkAny,
-	}
-
-	response, err := checkerTestClient.Client.TestCheck(context.TODO(), testCheckRequest)
+	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
 		t.Logf("Received error: %v", err)
 	} else {
@@ -210,6 +169,31 @@ func TestTimeoutTestCheck(t *testing.T) {
 		t.Fail()
 	}
 
+	teardown(t)
+}
+
+/*******************************************************************************
+ * CreateCheck()
+ ******************************************************************************/
+
+/*******************************************************************************
+ * RetrieveCheck()
+ ******************************************************************************/
+
+/*******************************************************************************
+ * DeleteCheck()
+ ******************************************************************************/
+
+/*******************************************************************************
+ * UpdateCheck()
+ ******************************************************************************/
+
+func TestUpdateCheck(t *testing.T) {
+	setup(t)
+	_, err := testChecker.UpdateCheck(nil, nil)
+	if err == nil {
+		t.Fail()
+	}
 	teardown(t)
 }
 
