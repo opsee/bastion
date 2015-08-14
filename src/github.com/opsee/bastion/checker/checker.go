@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	// The
 	MaxTestTargets = 5
 )
 
@@ -71,6 +72,7 @@ type Checker struct {
 	Consumer   messaging.Consumer
 	Producer   messaging.Producer
 	Resolver   Resolver
+	scheduler  *Scheduler
 	dispatcher *Dispatcher
 	grpcServer *grpc.Server
 }
@@ -79,23 +81,48 @@ func NewChecker() *Checker {
 	return &Checker{
 		dispatcher: NewDispatcher(),
 		grpcServer: grpc.NewServer(),
+		scheduler:  &Scheduler{},
 	}
 }
 
-// func (c *Checker) CreateCheck(event messaging.EventInterface, check Check) error {
-//
-// 	return nil
-// }
-//
-// func (c *Checker) Delete(event messaging.EventInterface, check Check) error {
-//
-// 	return nil
-// }
-//
-// func (c *Checker) Update(event messaging.EventInterface, check Check) error {
-//
-// 	return nil
-// }
+// TODO: One way or another, all CRUD requests should be transactional.
+
+func (c *Checker) invoke(cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
+	responses := make([]*CheckResourceResponse, len(req.Checks))
+	response := &ResourceResponse{
+		Responses: responses,
+	}
+	for i, check := range req.Checks {
+		in := []reflect.Value{reflect.ValueOf(check)}
+		out := reflect.ValueOf(c.scheduler).MethodByName(cmd).Call(in)
+		checkResponse := out[0].Interface().(*Check)
+		err := out[1].Interface().(error)
+		if err != nil {
+			responses[i] = &CheckResourceResponse{Error: err.Error()}
+		}
+		responses[i] = &CheckResourceResponse{
+			Id:    check.Id,
+			Check: checkResponse,
+		}
+	}
+	return response, nil
+}
+
+func (c *Checker) CreateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	return c.invoke("CreateCheck", req)
+}
+
+func (c *Checker) RetrieveCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	return c.invoke("RetrieveCheck", req)
+}
+
+func (c *Checker) UpdateCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	return nil, fmt.Errorf("Not Implemented")
+}
+
+func (c *Checker) DeleteCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	return c.invoke("DeleteCheck", req)
+}
 
 func buildURL(check *HttpCheck, target *string) string {
 	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, *target, check.Port, check.Path)
@@ -103,7 +130,8 @@ func buildURL(check *HttpCheck, target *string) string {
 
 func (c *Checker) testHttpCheck(check *HttpCheck, targets []*string, responses chan Response, timer <-chan time.Time) {
 	numTargets := len(targets)
-	// buffer so that we don't block on insertion.
+	// buffer so that we don't block on insertion, and so that we can hard timeout
+	// with a timer and select combo.
 	targetChan := make(chan *string, numTargets)
 	for _, target := range targets {
 		targetChan <- target
@@ -151,10 +179,6 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	timer := time.After(deadline.Sub(time.Now()))
 
-	var (
-		numTargets int
-	)
-
 	logger.Debug("Received request: %v", req)
 
 	msg, err := UnmarshalAny(req.CheckSpec)
@@ -164,7 +188,24 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	logger.Debug("Testing check: %v", msg)
 
-	responses := make(chan Response, MaxTestTargets)
+	targets, err := c.Resolver.Resolve(req.Target)
+	if err != nil {
+		errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, msg)
+		logger.Error(errStr)
+		return nil, err
+	}
+
+	numTargets := int(math.Min(float64(req.MaxHosts), float64(len(targets))))
+	logger.Debug("numTargets: %d", numTargets)
+	targets = targets[0:numTargets]
+
+	logger.Debug("Checker.TestCheck -- Targets: %v", targets)
+
+	testResult := &TestCheckResponse{
+		Responses: make([]*Any, numTargets),
+	}
+
+	responses := make(chan Response, numTargets)
 	defer close(responses)
 	defer func() {
 		if r := recover(); r != nil {
@@ -174,22 +215,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	switch check := msg.(type) {
 	case *HttpCheck:
-		targets, err := c.Resolver.Resolve(check.Target)
-		if err != nil {
-			errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, check)
-			logger.Error(errStr)
-			return nil, err
-		}
-		logger.Debug("Checker.TestCheck -- Targets: %v", targets)
-
-		numTargets = int(math.Min(float64(req.MaxHosts), float64(len(targets))))
-		logger.Debug("numTargets: %d", numTargets)
-		targets = targets[0:numTargets]
 		go c.testHttpCheck(check, targets, responses, timer)
-	}
-
-	testResult := &TestCheckResponse{
-		Responses: make([]*Any, numTargets),
 	}
 
 	for i := 0; i < numTargets; i++ {
