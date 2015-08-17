@@ -30,7 +30,7 @@ func (m *concurrentMap) Get(key string) *Check {
 func (m *concurrentMap) Delete(key string) *Check {
 	m.Lock()
 	v := m.checks[key]
-	m.checks[key] = nil
+	delete(m.checks, key)
 	m.Unlock()
 	return v
 }
@@ -74,9 +74,30 @@ func (s *Scheduler) CreateCheck(check *Check) (*Check, error) {
 }
 
 func (s *Scheduler) RetrieveCheck(id string) (*Check, error) {
-	return s.checkMap.Get(id), nil
+	var (
+		c   *Check
+		err error
+	)
+
+	c = s.checkMap.Get(id)
+
+	if c == nil {
+		err = fmt.Errorf("Non-existent check: %s", id)
+	}
+
+	return c, err
 }
 
 func (s *Scheduler) DeleteCheck(id string) (*Check, error) {
-	return s.checkMap.Delete(id), nil
+	var (
+		c   *Check
+		err error
+	)
+	c = s.checkMap.Delete(id)
+
+	if c == nil {
+		err = fmt.Errorf("Non-existent check: %s", id)
+	}
+
+	return c, err
 }

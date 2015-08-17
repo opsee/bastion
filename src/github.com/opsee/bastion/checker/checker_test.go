@@ -1,5 +1,9 @@
 package checker
 
+// The Scheduler actually handles all of the check creation, so don't worry
+// about testing CRUD for checks here until there's logic or some feature
+// worth testing.
+
 import (
 	"fmt"
 	"net/http"
@@ -25,7 +29,7 @@ var (
 	resolver          *testResolver
 	checkerTestClient *CheckerRpcClient
 	ctx               = context.TODO()
-	checkStub         = &HttpCheck{
+	httpCheckStub     = &HttpCheck{
 		Name:     "test check",
 		Path:     "/",
 		Protocol: "http",
@@ -103,7 +107,7 @@ func buildTestCheckRequest(check *HttpCheck, target *Target) *TestCheckRequest {
 	return request
 }
 
-func TestPassingTestHttpCheck(t *testing.T) {
+func TestCheckerTestCheckRequest(t *testing.T) {
 	setup(t)
 
 	target := &Target{
@@ -111,7 +115,7 @@ func TestPassingTestHttpCheck(t *testing.T) {
 		Name: "sg",
 		Type: "sg",
 	}
-	request := buildTestCheckRequest(checkStub, target)
+	request := buildTestCheckRequest(httpCheckStub, target)
 
 	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
@@ -128,14 +132,14 @@ func TestPassingTestHttpCheck(t *testing.T) {
 	teardown(t)
 }
 
-func TestResolverFailure(t *testing.T) {
+func TestCheckerResolverFailure(t *testing.T) {
 	setup(t)
 	target := &Target{
 		Id:   "unknown",
 		Type: "sg",
 		Name: "unknown",
 	}
-	request := buildTestCheckRequest(checkStub, target)
+	request := buildTestCheckRequest(httpCheckStub, target)
 
 	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
@@ -156,7 +160,7 @@ func TestTimeoutTestCheck(t *testing.T) {
 		Type: "sg",
 		Id:   "unknown",
 	}
-	request := buildTestCheckRequest(checkStub, target)
+	request := buildTestCheckRequest(httpCheckStub, target)
 
 	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
@@ -171,22 +175,6 @@ func TestTimeoutTestCheck(t *testing.T) {
 
 	teardown(t)
 }
-
-/*******************************************************************************
- * CreateCheck()
- ******************************************************************************/
-
-/*******************************************************************************
- * RetrieveCheck()
- ******************************************************************************/
-
-/*******************************************************************************
- * DeleteCheck()
- ******************************************************************************/
-
-/*******************************************************************************
- * UpdateCheck()
- ******************************************************************************/
 
 func TestUpdateCheck(t *testing.T) {
 	setup(t)
