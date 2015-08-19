@@ -6,15 +6,6 @@ import (
 
 // Test the Scheduler
 
-func testCheckStub() *Check {
-	return &Check{
-		Id:        "string",
-		Interval:  60,
-		Target:    &Target{},
-		CheckSpec: &Any{},
-	}
-}
-
 func testScheduler() *Scheduler {
 	return NewScheduler()
 }

@@ -2,7 +2,6 @@ package checker
 
 import (
 	"fmt"
-	"math"
 	"net"
 	"reflect"
 	"time"
@@ -37,7 +36,7 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger.Debug("instance: %v", instance)
+	logger.Debug("unmarshaled Any to: %s", instance)
 
 	return instance, nil
 }
@@ -71,30 +70,27 @@ type Checker struct {
 	Port       int
 	Consumer   messaging.Consumer
 	Producer   messaging.Producer
-	Resolver   Resolver
-	scheduler  *Scheduler
-	dispatcher *Dispatcher
+	Scheduler  *Scheduler
 	grpcServer *grpc.Server
 }
 
 func NewChecker() *Checker {
 	return &Checker{
-		dispatcher: NewDispatcher(),
 		grpcServer: grpc.NewServer(),
-		scheduler:  &Scheduler{},
+		Scheduler:  NewScheduler(),
 	}
 }
 
 // TODO: One way or another, all CRUD requests should be transactional.
 
-func (c *Checker) invoke(cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
+func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
 	responses := make([]*CheckResourceResponse, len(req.Checks))
 	response := &ResourceResponse{
 		Responses: responses,
 	}
 	for i, check := range req.Checks {
 		in := []reflect.Value{reflect.ValueOf(check)}
-		out := reflect.ValueOf(c.scheduler).MethodByName(cmd).Call(in)
+		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
 		checkResponse := out[0].Interface().(*Check)
 		err := out[1].Interface().(error)
 		if err != nil {
@@ -109,138 +105,73 @@ func (c *Checker) invoke(cmd string, req *CheckResourceRequest) (*ResourceRespon
 }
 
 func (c *Checker) CreateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
-	return c.invoke("CreateCheck", req)
+	return c.invoke(ctx, "CreateCheck", req)
 }
 
-func (c *Checker) RetrieveCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
-	return c.invoke("RetrieveCheck", req)
+func (c *Checker) RetrieveCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	return c.invoke(ctx, "RetrieveCheck", req)
 }
 
 func (c *Checker) UpdateCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
 	return nil, fmt.Errorf("Not Implemented")
 }
 
-func (c *Checker) DeleteCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
-	return c.invoke("DeleteCheck", req)
+func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	return c.invoke(ctx, "DeleteCheck", req)
 }
 
 func buildURL(check *HttpCheck, target *string) string {
 	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, *target, check.Port, check.Path)
 }
 
-func (c *Checker) testHttpCheck(check *HttpCheck, targets []*string, responses chan Response, timer <-chan time.Time) {
-	numTargets := len(targets)
-	// buffer so that we don't block on insertion, and so that we can hard timeout
-	// with a timer and select combo.
-	targetChan := make(chan *string, numTargets)
-	for _, target := range targets {
-		targetChan <- target
-	}
-
-	for i := 0; i < numTargets; i++ {
-		select {
-		case target := <-targetChan:
-			logger.Debug("Target acquired: %s", *target)
-			if target != nil {
-				uri := buildURL(check, target)
-				logger.Debug("URL: %s", uri)
-
-				request := &HTTPRequest{
-					Method:  check.Verb,
-					URL:     uri,
-					Headers: check.Headers,
-					Body:    check.Body,
-				}
-
-				logger.Debug("issuing request: %s", *request)
-
-				task := &Task{
-					Type:     "HTTPRequest",
-					Request:  request,
-					Response: responses,
-				}
-				c.dispatcher.Requests <- task
-			} else {
-				logger.Error("Got nil target in Checker.Test, targets: ", targets)
-			}
-		case <-timer:
-			logger.Error("Received timeout while attempting to test HTTP check")
-			break
-		}
-	}
-}
-
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
+	var (
+		cancel context.CancelFunc
+	)
+
 	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
 
-	if time.Now().After(deadline) {
-		return nil, fmt.Errorf("Deadline expired")
-	}
-
-	timer := time.After(deadline.Sub(time.Now()))
+	ctx = context.WithValue(ctx, "MaxHosts", req.MaxHosts)
+	ctx, cancel = context.WithDeadline(ctx, deadline)
 
 	logger.Debug("Received request: %v", req)
+	responses, errs := c.Scheduler.RunCheck(ctx, req.Check)
+	defer close(errs)
 
-	msg, err := UnmarshalAny(req.CheckSpec)
-	if err != nil {
-		return nil, err
+	testCheckResponse := &TestCheckResponse{
+		Responses: make([]*Any, req.MaxHosts),
 	}
 
-	logger.Debug("Testing check: %v", msg)
-
-	targets, err := c.Resolver.Resolve(req.Target)
-	if err != nil {
-		errStr := fmt.Sprintf("Resolver error: %s, check: %s ", err, msg)
-		logger.Error(errStr)
-		return nil, err
-	}
-
-	numTargets := int(math.Min(float64(req.MaxHosts), float64(len(targets))))
-	logger.Debug("numTargets: %d", numTargets)
-	targets = targets[0:numTargets]
-
-	logger.Debug("Checker.TestCheck -- Targets: %v", targets)
-
-	testResult := &TestCheckResponse{
-		Responses: make([]*Any, numTargets),
-	}
-
-	responses := make(chan Response, numTargets)
-	defer close(responses)
-	defer func() {
-		if r := recover(); r != nil {
-			logger.Error("TestCheck panic: %s: %s", r, msg)
-		}
-	}()
-
-	switch check := msg.(type) {
-	case *HttpCheck:
-		go c.testHttpCheck(check, targets, responses, timer)
-	}
-
-	for i := 0; i < numTargets; i++ {
+	for i := 0; i < int(req.MaxHosts); i++ {
+		logger.Debug("Waiting for response %d", i)
 		select {
 		case response := <-responses:
-			logger.Debug("Got response: %s", response)
+			if response != nil {
+				logger.Debug("Got response: %s", response)
 
-			responseAny, err := MarshalAny(response)
-			if err != nil {
-				logger.Error("Error marshalling response: %v", err)
-				return nil, err
+				responseAny, err := MarshalAny(response)
+				if err != nil {
+					logger.Error("Error marshalling response: ", err)
+					cancel()
+					return testCheckResponse, err
+				}
+				testCheckResponse.Responses[i] = responseAny
 			}
-			testResult.Responses[i] = responseAny
-		case <-timer:
-			return nil, fmt.Errorf("Timed out while testing HTTP check: %v", req)
+		case err := <-errs:
+			logger.Error("Got an error: %v", err.Error())
+			cancel()
+			return testCheckResponse, err
+		case <-ctx.Done():
+			err := ctx.Err()
+			return testCheckResponse, err
 		}
 	}
 
-	logger.Debug("Results: %v", testResult)
-	return testResult, nil
+	logger.Debug("Results: %v", testCheckResponse)
+	return testCheckResponse, nil
 }
 
 func (c *Checker) Start() error {
-	c.dispatcher.Dispatch()
-
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", c.Port))
 	if err != nil {
 		return err

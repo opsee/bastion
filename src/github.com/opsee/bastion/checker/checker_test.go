@@ -29,7 +29,8 @@ var (
 	resolver          *testResolver
 	checkerTestClient *CheckerRpcClient
 	ctx               = context.TODO()
-	httpCheckStub     = &HttpCheck{
+
+	httpCheckStub = &HttpCheck{
 		Name:     "test check",
 		Path:     "/",
 		Protocol: "http",
@@ -42,15 +43,12 @@ var (
 		Deadline: &Timestamp{
 			Nanos: time.Now().Add(30 * time.Minute).UnixNano(),
 		},
-		Target:    &Target{},
-		CheckSpec: nil,
+		Check: nil,
 	}
 )
 
 func init() {
 	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
-
-	resolver = newTestResolver()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Debug("Handling request: %s", *r)
@@ -63,6 +61,38 @@ func init() {
 	go func() {
 		errChan <- http.ListenAndServe(fmt.Sprintf(":%d", httpServerPort), nil)
 	}()
+}
+
+func setup(t *testing.T) {
+	var err error
+
+	// Reset the channel for every test, so we don't accidentally read stale
+	// barbage from a previous test
+	testChecker = NewChecker()
+	scheduler := NewScheduler()
+	scheduler.Resolver = newTestResolver()
+	testChecker.Scheduler = scheduler
+	testChecker.Port = 4000
+	testChecker.Start()
+	t.Log(testChecker)
+
+	checkerTestClient, err = NewRpcClient("127.0.0.1", 4000)
+	if err != nil {
+		t.Fatalf("Cannot create RPC client: %v", err)
+	}
+}
+
+func teardown(t *testing.T) {
+	testChecker.Stop()
+}
+
+func testCheckStub() *Check {
+	return &Check{
+		Id:        "string",
+		Interval:  60,
+		Target:    &Target{},
+		CheckSpec: &Any{},
+	}
 }
 
 type testResolver struct {
@@ -92,19 +122,24 @@ func (t *testResolver) Resolve(tgt *Target) ([]*string, error) {
  * TestCheck()
  ******************************************************************************/
 
-func buildTestCheckRequest(check *HttpCheck, target *Target) *TestCheckRequest {
+func buildTestCheckRequest(check *HttpCheck, target *Target) (*TestCheckRequest, error) {
 	request := requestStub
 	checkBytes, err := proto.Marshal(check)
 	if err != nil {
 		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
+		return nil, err
 	}
 	checkAny := &Any{
 		TypeUrl: "HttpCheck",
 		Value:   checkBytes,
 	}
-	request.CheckSpec = checkAny
-	request.Target = target
-	return request
+
+	c := testCheckStub()
+	c.CheckSpec = checkAny
+	c.Target = target
+
+	request.Check = c
+	return request, nil
 }
 
 func TestCheckerTestCheckRequest(t *testing.T) {
@@ -115,7 +150,10 @@ func TestCheckerTestCheckRequest(t *testing.T) {
 		Name: "sg",
 		Type: "sg",
 	}
-	request := buildTestCheckRequest(httpCheckStub, target)
+	request, err := buildTestCheckRequest(httpCheckStub, target)
+	if err != nil {
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+	}
 
 	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
@@ -139,7 +177,10 @@ func TestCheckerResolverFailure(t *testing.T) {
 		Type: "sg",
 		Name: "unknown",
 	}
-	request := buildTestCheckRequest(httpCheckStub, target)
+	request, err := buildTestCheckRequest(httpCheckStub, target)
+	if err != nil {
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+	}
 
 	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
@@ -160,7 +201,10 @@ func TestTimeoutTestCheck(t *testing.T) {
 		Type: "sg",
 		Id:   "unknown",
 	}
-	request := buildTestCheckRequest(httpCheckStub, target)
+	request, err := buildTestCheckRequest(httpCheckStub, target)
+	if err != nil {
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+	}
 
 	response, err := checkerTestClient.Client.TestCheck(ctx, request)
 	if err != nil {
@@ -183,24 +227,4 @@ func TestUpdateCheck(t *testing.T) {
 		t.Fail()
 	}
 	teardown(t)
-}
-
-func setup(t *testing.T) {
-	var err error
-
-	// Reset the channel for every test, so we don't accidentally read stale
-	// barbage from a previous test
-	testChecker = NewChecker()
-	testChecker.Resolver = resolver
-	testChecker.Port = 4000
-	testChecker.Start()
-
-	checkerTestClient, err = NewRpcClient("127.0.0.1", 4000)
-	if err != nil {
-		t.Fatalf("Cannot create RPC client: %v", err)
-	}
-}
-
-func teardown(t *testing.T) {
-	testChecker.Stop()
 }

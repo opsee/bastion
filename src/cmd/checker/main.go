@@ -1,10 +1,6 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
@@ -20,7 +16,8 @@ var (
 )
 
 func main() {
-	errNum := 0
+	var err error
+
 	config := config.GetConfig()
 
 	logger.Info("Starting %s...", moduleName)
@@ -29,45 +26,23 @@ func main() {
 	logging.SetLevel(config.LogLevel, "messaging")
 	logging.SetLevel(config.LogLevel, "scanner")
 
-	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 1)
-
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	checks := checker.NewChecker()
+	defer checks.Stop()
+
+	scheduler := checker.NewScheduler()
 	checks.Port = 4000
-	checks.Resolver = checker.NewResolver(config)
-	if err := checks.Start(); err != nil {
-		errNum = 1
-		done <- true
+	scheduler.Resolver = checker.NewResolver(config)
+	if err = checks.Start(); err != nil {
 		logger.Error(err.Error())
+		panic(err)
 	}
 
 	heart, err := heart.NewHeart(moduleName)
 	if err != nil {
-		errNum = 1
-		done <- true
 		logger.Error(err.Error())
+		panic(err)
 	}
 
-	go func() {
-		sig := <-sigs
-		logger.Info("Received %s signal, shutting down...", sig)
-		checks.Stop()
-		done <- true
-	}()
-
-	for {
-		select {
-		case <-done:
-			goto Exit
-		case err := <-heart.Beat():
-			logger.Info("Error sending heartbeat, shutting down...")
-			logger.Error(err.Error())
-			errNum = 1
-			goto Exit
-		}
-	}
-
-Exit:
-	os.Exit(errNum)
+	err = <-heart.Beat()
+	panic(err)
 }
