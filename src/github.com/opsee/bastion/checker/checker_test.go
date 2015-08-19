@@ -5,38 +5,22 @@ package checker
 // worth testing.
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/op/go-logging"
-	"github.com/opsee/bastion/config"
 	"golang.org/x/net/context"
 )
 
 const (
-	httpHeaderKey      = "header"
-	httpHeaderValue    = "header value"
-	httpResponseString = "OK"
-	httpServerPort     = 40000
+	testHTTPHeaderKey   = "header"
+	testHTTPHeaderValue = "header value"
 )
 
 var (
-	cfg               *config.Config
 	testChecker       *Checker
-	resolver          *testResolver
-	checkerTestClient *CheckerRpcClient
-	ctx               = context.TODO()
-
-	httpCheckStub = &HttpCheck{
-		Name:     "test check",
-		Path:     "/",
-		Protocol: "http",
-		Port:     httpServerPort,
-		Verb:     "GET",
-	}
+	testCheckerClient *CheckerRpcClient
+	testContext       = context.TODO()
 
 	requestStub = &TestCheckRequest{
 		MaxHosts: 1,
@@ -47,36 +31,20 @@ var (
 	}
 )
 
-func init() {
-	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		logger.Debug("Handling request: %s", *r)
-		headerMap := w.Header()
-		headerMap[httpHeaderKey] = []string{httpHeaderValue}
-		w.WriteHeader(200)
-		w.Write([]byte(httpResponseString))
-	})
-	errChan := make(chan error, 1)
-	go func() {
-		errChan <- http.ListenAndServe(fmt.Sprintf(":%d", httpServerPort), nil)
-	}()
-}
-
 func setup(t *testing.T) {
 	var err error
 
 	// Reset the channel for every test, so we don't accidentally read stale
 	// barbage from a previous test
 	testChecker = NewChecker()
-	scheduler := NewScheduler()
-	scheduler.Resolver = newTestResolver()
-	testChecker.Scheduler = scheduler
+	testScheduler := NewScheduler()
+	testScheduler.Resolver = newTestResolver()
+	testChecker.Scheduler = testScheduler
 	testChecker.Port = 4000
 	testChecker.Start()
 	t.Log(testChecker)
 
-	checkerTestClient, err = NewRpcClient("127.0.0.1", 4000)
+	testCheckerClient, err = NewRpcClient("127.0.0.1", 4000)
 	if err != nil {
 		t.Fatalf("Cannot create RPC client: %v", err)
 	}
@@ -84,38 +52,6 @@ func setup(t *testing.T) {
 
 func teardown(t *testing.T) {
 	testChecker.Stop()
-}
-
-func testCheckStub() *Check {
-	return &Check{
-		Id:        "string",
-		Interval:  60,
-		Target:    &Target{},
-		CheckSpec: &Any{},
-	}
-}
-
-type testResolver struct {
-	t map[string]*string
-}
-
-func newTestResolver() *testResolver {
-	addr := "127.0.0.1"
-	addrPtr := &addr
-	return &testResolver{
-		t: map[string]*string{
-			"sg": addrPtr,
-		},
-	}
-}
-
-func (t *testResolver) Resolve(tgt *Target) ([]*string, error) {
-	logger.Debug("Resolving target: %s", tgt)
-	resolved := t.t[tgt.Id]
-	if resolved == nil {
-		return nil, fmt.Errorf("Unable to resolve target: %v", tgt)
-	}
-	return []*string{resolved}, nil
 }
 
 /*******************************************************************************
@@ -150,12 +86,12 @@ func TestCheckerTestCheckRequest(t *testing.T) {
 		Name: "sg",
 		Type: "sg",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub, target)
+	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
 		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
 	}
 
-	response, err := checkerTestClient.Client.TestCheck(ctx, request)
+	response, err := testCheckerClient.Client.TestCheck(testContext, request)
 	if err != nil {
 		t.Fatalf("Unable to get RPC response: %v", err)
 	}
@@ -177,12 +113,12 @@ func TestCheckerResolverFailure(t *testing.T) {
 		Type: "sg",
 		Name: "unknown",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub, target)
+	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
 		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
 	}
 
-	response, err := checkerTestClient.Client.TestCheck(ctx, request)
+	response, err := testCheckerClient.Client.TestCheck(testContext, request)
 	if err != nil {
 		t.Logf("Received error: %v", err)
 	} else {
@@ -201,12 +137,12 @@ func TestTimeoutTestCheck(t *testing.T) {
 		Type: "sg",
 		Id:   "unknown",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub, target)
+	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
 		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
 	}
 
-	response, err := checkerTestClient.Client.TestCheck(ctx, request)
+	response, err := testCheckerClient.Client.TestCheck(testContext, request)
 	if err != nil {
 		t.Logf("Received error: %v", err)
 	} else {
