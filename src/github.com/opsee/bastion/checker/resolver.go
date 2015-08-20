@@ -16,7 +16,7 @@ type AWSResolver struct {
 	sc scanner.EC2Scanner
 }
 
-func NewResolver(cfg *config.Config) *AWSResolver {
+func NewResolver(cfg *config.Config) Resolver {
 	resolver := &AWSResolver{
 		sc: scanner.NewScanner(cfg),
 	}

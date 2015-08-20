@@ -33,13 +33,13 @@ func (d *Dispatcher) dispatch(t *Task) {
 }
 
 type Dispatcher struct {
-	Requests     chan *Task
+	Tasks        chan *Task
 	workerGroups map[string]*WorkerGroup
 }
 
 func NewDispatcher() *Dispatcher {
 	d := &Dispatcher{
-		Requests: make(chan *Task, MaxQueueDepth),
+		Tasks: make(chan *Task, MaxQueueDepth),
 	}
 
 	workerGroups := make(map[string]*WorkerGroup)
@@ -53,8 +53,8 @@ func NewDispatcher() *Dispatcher {
 
 func (d *Dispatcher) Dispatch() {
 	go func() {
-		for task := range d.Requests {
-			logger.Debug("Dispatching request: %s", *task)
+		for task := range d.Tasks {
+			logger.Debug("Dispatching request: task = %s, type = %s", *task, task.Type)
 			workGroup := d.workerGroups[task.Type]
 			workGroup.WorkQueue <- task
 		}

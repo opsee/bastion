@@ -2,21 +2,17 @@ package checker
 
 import (
 	"testing"
+
+	"github.com/op/go-logging"
+	"golang.org/x/net/context"
 )
 
 // Test the Scheduler
 
-func testCheckStub() *Check {
-	return &Check{
-		Id:        "string",
-		Interval:  60,
-		Target:    &Target{},
-		CheckSpec: &Any{},
-	}
-}
-
 func testScheduler() *Scheduler {
-	return NewScheduler()
+	scheduler := NewScheduler()
+	scheduler.Resolver = newTestResolver()
+	return scheduler
 }
 
 // I am lazy, so I am only testing validateCheck once.
@@ -151,4 +147,18 @@ func TestSchedulerDeleteReturnsOriginalCheck(t *testing.T) {
 	}
 }
 
-// Test the concurrent map
+/*******************************************************************************
+ * RunCheck() Benchmarks
+  ******************************************************************************/
+
+func BenchmarkRunCheckParallel(b *testing.B) {
+	logging.SetLevel(logging.GetLevel("ERROR"), "checker")
+	scheduler := testScheduler()
+	check := testMakePassingTestCheck()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			scheduler.RunCheck(context.TODO(), check)
+		}
+	})
+	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
+}
