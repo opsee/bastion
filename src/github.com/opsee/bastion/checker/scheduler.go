@@ -135,6 +135,10 @@ func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error
 			errors <- err
 			return
 		}
+		if len(targets) == 0 {
+			errors <- er.New(fmt.Sprintf("No valid targets resolved from %s", check.Target))
+			return
+		}
 
 		var (
 			maxHosts int
@@ -171,19 +175,14 @@ func (s *Scheduler) makeRequestFromCheck(ctx context.Context, errors chan error,
 		logger.Debug("makeRequestFromCheck - check = %s", check)
 
 		for {
-			targetCount := 0
 			select {
 			case target, ok := <-targets:
 				if !ok {
 					logger.Debug("makeRequestFromCheck - targets channel closed")
-					if targetCount == 0 {
-						errors <- er.New("Resolved to 0 valid targets")
-					}
 					return
 				}
 				if target != nil {
 					logger.Debug("makeRequestFromCheck - Handling target: %s", *target)
-					targetCount += 1
 					switch typedCheck := c.(type) {
 					case *HttpCheck:
 						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, *target, typedCheck.Port, typedCheck.Path)
