@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"sync"
 	"time"
-
+	er "errors"
 	"golang.org/x/net/context"
 )
 
@@ -129,6 +129,7 @@ func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error
 	go func() {
 		defer close(out)
 
+		logger.Debug("Scheduler = %s", s)
 		targets, err := s.Resolver.Resolve(check.Target)
 		if err != nil {
 			errors <- err
@@ -170,10 +171,19 @@ func (s *Scheduler) makeRequestFromCheck(ctx context.Context, errors chan error,
 		logger.Debug("makeRequestFromCheck - check = %s", check)
 
 		for {
+			targetCount := 0
 			select {
-			case target := <-targets:
+			case target, ok := <-targets:
+				if !ok {
+					logger.Debug("makeRequestFromCheck - targets channel closed")
+					if targetCount == 0 {
+						errors <- er.New("Resolved to 0 valid targets")
+					}
+					return
+				}
 				if target != nil {
 					logger.Debug("makeRequestFromCheck - Handling target: %s", *target)
+					targetCount += 1
 					switch typedCheck := c.(type) {
 					case *HttpCheck:
 						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, *target, typedCheck.Port, typedCheck.Path)
