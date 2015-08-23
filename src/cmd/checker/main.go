@@ -29,9 +29,8 @@ func main() {
 	checks := checker.NewChecker()
 	defer checks.Stop()
 
-	scheduler := checker.NewScheduler()
 	checks.Port = 4000
-	scheduler.Resolver = checker.NewResolver(config)
+	checks.Scheduler.Resolver = checker.NewResolver(config)
 	if err = checks.Start(); err != nil {
 		logger.Error(err.Error())
 		panic(err)
