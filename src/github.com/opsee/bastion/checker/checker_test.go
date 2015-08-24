@@ -130,6 +130,30 @@ func TestCheckerResolverFailure(t *testing.T) {
 	teardown(t)
 }
 
+func TestCheckerResolverEmpty(t *testing.T) {
+	setup(t)
+	target := &Target{
+		Id:   "empty",
+		Type: "sg",
+		Name: "unknown",
+	}
+	request, err := buildTestCheckRequest(httpCheckStub(), target)
+	if err != nil {
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+	}
+
+	response, err := testCheckerClient.Client.TestCheck(testContext, request)
+	if err != nil {
+		t.Logf("Received error: %v", err)
+	} else {
+		t.Fail()
+	}
+	if response != nil {
+		t.Fail()
+	}
+	teardown(t)
+}
+
 func TestTimeoutTestCheck(t *testing.T) {
 	setup(t)
 	target := &Target{
