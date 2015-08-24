@@ -88,7 +88,7 @@ func TestCheckerTestCheckRequest(t *testing.T) {
 	}
 	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
 	}
 
 	response, err := testCheckerClient.Client.TestCheck(testContext, request)
@@ -115,7 +115,7 @@ func TestCheckerResolverFailure(t *testing.T) {
 	}
 	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
 	}
 
 	response, err := testCheckerClient.Client.TestCheck(testContext, request)
@@ -139,7 +139,7 @@ func TestCheckerResolverEmpty(t *testing.T) {
 	}
 	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
 	}
 
 	response, err := testCheckerClient.Client.TestCheck(testContext, request)
@@ -163,7 +163,7 @@ func TestTimeoutTestCheck(t *testing.T) {
 	}
 	request, err := buildTestCheckRequest(httpCheckStub(), target)
 	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, httpCheckStub)
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
 	}
 
 	response, err := testCheckerClient.Client.TestCheck(testContext, request)
