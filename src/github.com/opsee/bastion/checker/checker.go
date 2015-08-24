@@ -128,6 +128,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	var (
 		cancel context.CancelFunc
 	)
+	logger.Debug("Received request: %s", req)
 
 	if req.Deadline == nil {
 		return nil, fmt.Errorf("Deadline required but missing in request. %v", req)
@@ -135,9 +136,9 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
 	ctx, cancel = context.WithDeadline(ctx, deadline)
-	ctx = context.WithValue(ctx, "MaxHosts", req.MaxHosts)
+	ctx = context.WithValue(ctx, "MaxHosts", int(req.MaxHosts))
 
-	logger.Debug("Received request: %v", req)
+	
 	responses, errs := c.Scheduler.RunCheck(ctx, req.Check)
 	defer close(errs)
 

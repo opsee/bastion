@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"sync"
 	"time"
-
 	"golang.org/x/net/context"
 )
 
@@ -135,17 +134,23 @@ func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error
 			return
 		}
 
+		if len(targets) == 0 {
+			errors <- fmt.Errorf("No valid targets resolved from %s", check.Target)
+			return
+		}
+
 		var (
 			maxHosts int
 			ok       bool
 		)
-
+		
 		maxHosts, ok = ctx.Value("MaxHosts").(int)
 		if !ok {
 			maxHosts = len(targets)
 		}
+		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
 
-		for i := 0; i < maxHosts; i++ {
+		for i := 0; i < int(maxHosts) && i < len(targets); i++ {
 			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
 			out <- targets[i]
 		}
@@ -171,7 +176,11 @@ func (s *Scheduler) makeRequestFromCheck(ctx context.Context, errors chan error,
 
 		for {
 			select {
-			case target := <-targets:
+			case target, ok := <-targets:
+				if !ok {
+					logger.Debug("makeRequestFromCheck - targets channel closed")
+					return
+				}
 				if target != nil {
 					logger.Debug("makeRequestFromCheck - Handling target: %s", *target)
 					switch typedCheck := c.(type) {

@@ -37,6 +37,9 @@ type testResolver struct {
 
 func (t *testResolver) Resolve(tgt *Target) ([]*string, error) {
 	logger.Debug("Resolving target: %s", tgt)
+	if tgt.Id == "empty" {
+		return []*string{}, nil
+	}
 	resolved := t.t[tgt.Id]
 	if resolved == nil {
 		return nil, fmt.Errorf("Unable to resolve target: %v", tgt)

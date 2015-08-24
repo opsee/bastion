@@ -45,10 +45,10 @@ func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*string, error) {
 
 	logger.Debug("reservations: %v", reservations)
 
-	targets := make([]*string, len(reservations))
-	for i, reservation := range reservations {
+	targets := make([]*string, 0)
+	for _, reservation := range reservations {
 		for _, instance := range reservation.Instances {
-			targets[i] = getAddrFromInstance(instance)
+			targets = append(targets, getAddrFromInstance(instance))
 		}
 	}
 	return targets, nil
