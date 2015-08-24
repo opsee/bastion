@@ -143,13 +143,14 @@ func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error
 			maxHosts int
 			ok       bool
 		)
-
+		
 		maxHosts, ok = ctx.Value("MaxHosts").(int)
 		if !ok {
 			maxHosts = len(targets)
 		}
+		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
 
-		for i := 0; i < maxHosts; i++ {
+		for i := 0; i < int(maxHosts) && i < len(targets); i++ {
 			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
 			out <- targets[i]
 		}
