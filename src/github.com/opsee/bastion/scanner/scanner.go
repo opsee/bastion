@@ -96,7 +96,6 @@ func (s *eC2ScannerImpl) ScanSecurityGroups() ([]*ec2.SecurityGroup, error) {
 }
 
 func (s *eC2ScannerImpl) ScanSecurityGroupInstances(groupId string) ([]*ec2.Reservation, error) {
-	logger.Debug("groupId %s", groupId)
 	client := s.getEC2Client()
 	var grs []*string = []*string{&groupId}
 	filters := []*ec2.Filter{&ec2.Filter{Name: aws.String("instance.group-id"), Values: grs}}

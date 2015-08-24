@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"sync"
 	"time"
-	er "errors"
 	"golang.org/x/net/context"
 )
 
@@ -129,14 +128,14 @@ func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error
 	go func() {
 		defer close(out)
 
-		logger.Debug("Scheduler = %s", s)
 		targets, err := s.Resolver.Resolve(check.Target)
 		if err != nil {
 			errors <- err
 			return
 		}
+
 		if len(targets) == 0 {
-			errors <- er.New(fmt.Sprintf("No valid targets resolved from %s", check.Target))
+			errors <- fmt.Errorf("No valid targets resolved from %s", check.Target)
 			return
 		}
 
