@@ -19,9 +19,9 @@ checker:
   ports:
     - 5000:4000
   environment:
-    AWS_ACCESS_KEY_ID:
-    AWS_DEFAULT_REGION:
-    AWS_SECRET_ACCESS_KEY:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
   links:
     - nsqd
 discovery:
@@ -30,8 +30,17 @@ discovery:
   volumes:
     - metadata.json:/metadata.json
   environment:
-    AWS_ACCESS_KEY_ID:
-    AWS_DEFAULT_REGION:
-    AWS_SECRET_ACCESS_KEY:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
   links:
     - nsqd
+connector:
+  image: quay.io/opsee/zuul
+  command: client
+  net: host
+  privileged: true
+  environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
