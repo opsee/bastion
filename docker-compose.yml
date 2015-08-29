@@ -1,29 +1,76 @@
-nsqd:
-  image: nsqio/nsq
-  command: /nsqd
+connector:
+  image: quay.io/opsee/zuul
+  command: client
+  environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
+  cap_add:
+    - NET_ADMIN
+  devices:
+    - "/dev/net/tun"
   ports:
     - 4150:4150
     - 4151:4151
+    - 4171:4171
+    - 4000:4000
+    - 5000:4001
+nsqd:
+  image: nsqio/nsq:v0.3.5
+  command: /nsqd
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+nsqadmin:
+  image: nsqio/nsq:v0.3.5
+  command: /nsqadmin -nsqd-http-address=127.0.0.1:4151
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+shoveldiscovery:
+  image: nsqio/nsq:v0.3.5
+  command: /nsq_to_nsq --topic=discovery --channel=shovel-discovery --nsqd-tcp-address=127.0.0.1:4150 --destination-nsqd-tcp-address=nsqd.opsy.co:4150 --destination-topic=discovery-testingclient
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+shovelresults:
+  image: nsqio/nsq:v0.3.5
+  command: /nsq_to_nsq --topic=results --channel=shovel-results --nsqd-tcp-address=127.0.0.1:4150 --destination-nsqd-tcp-address=nsqd.opsy.co:4150 --destination-topic=results-testingclient
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
 monitor:
   image: quay.io/opsee/bastion
   command: /monitor -level debug
-  links:
-    - nsqd
-  ports:
-    - 4000:4000
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+  environment:
+    - NSQD_HOST=127.0.0.1:4150
+#worker:
+#  image: quay.io/opsee/bastion
+#  command: /worker -metadata /metadata.json -level debug
+#  volumes:
+#    - metadata.json:/metadata.json
+#  environment:
+#    - AWS_ACCESS_KEY_ID
+#    - AWS_DEFAULT_REGION
+#    - AWS_SECRET_ACCESS_KEY
+#  links:
+#    - nsqd
 checker:
   image: quay.io/opsee/bastion
   command: /checker -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
-  ports:
-    - 5000:4000
   environment:
     - AWS_ACCESS_KEY_ID
     - AWS_DEFAULT_REGION
     - AWS_SECRET_ACCESS_KEY
-  links:
-    - nsqd
+    - NSQD_HOST=127.0.0.1:4150
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
 discovery:
   image: quay.io/opsee/bastion
   command: /discovery -metadata /metadata.json -level debug
@@ -34,13 +81,4 @@ discovery:
     - AWS_DEFAULT_REGION
     - AWS_SECRET_ACCESS_KEY
   links:
-    - nsqd
-connector:
-  image: quay.io/opsee/zuul
-  command: client
-  net: host
-  privileged: true
-  environment:
-    - AWS_ACCESS_KEY_ID
-    - AWS_DEFAULT_REGION
-    - AWS_SECRET_ACCESS_KEY
+    - "connector:nsqd"

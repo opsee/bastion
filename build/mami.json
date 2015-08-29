@@ -31,6 +31,18 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/shovel-discovery.service"
+		},
+		{
+			"type":"systemd",
+			"unit-file":"build/shovel-results.service"
+		},
+		{
+			"type":"systemd",
+			"unit-file":"build/nsqadmin.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/nsqd.service"
 		},
 		{
