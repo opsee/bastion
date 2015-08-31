@@ -31,6 +31,14 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/nsqd.service"
+		},
+		{
+			"type":"systemd",
+			"unit-file":"build/connector.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/shovel-discovery.service"
 		},
 		{
@@ -43,15 +51,7 @@
 		},
 		{
 			"type":"systemd",
-			"unit-file":"build/nsqd.service"
-		},
-		{
-			"type":"systemd",
 			"unit-file":"build/checker.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/connector.service"
 		},
 		{
 			"type":"systemd",
