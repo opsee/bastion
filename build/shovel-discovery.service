@@ -4,6 +4,7 @@ After=docker.service nsqd.service connector.service
 Requires=docker.service nsqd.service connector.service
 
 [Service]
+Restart=always
 EnvironmentFile=/etc/opsee/bastion-env.sh
 User=core
 TimeoutStartSec=0
