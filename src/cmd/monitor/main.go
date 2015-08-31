@@ -7,6 +7,7 @@ import (
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/monitor"
+	"github.com/opsee/bastion/registry"
 )
 
 const (
@@ -32,6 +33,9 @@ func main() {
 			w.Write(stateJSON)
 		}
 	})
+
+	registry.Register(moduleName, int(cfg.AdminPort))
+	defer registry.Unregister(moduleName, int(cfg.AdminPort))
 
 	logger.Error(http.ListenAndServe(listenAddress, nil).Error())
 }

@@ -11,7 +11,8 @@ Environment="NSQD_HOST=127.0.0.1:4150"
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/docker pull quay.io/opsee/bastion:latest
-ExecStart=/usr/bin/docker run --name %p --net="container:connector" --device=/dev/net/tun --env-file /etc/opsee/bastion-env.sh quay.io/opsee/bastion:latest /monitor -admin_port=4001
+ExecStartPre=mkdir -p /var/run/bastion
+ExecStart=/usr/bin/docker run --volume /var/run/bastion:/var/run/bastion --name %p --net="container:connector" --device=/dev/net/tun --env-file /etc/opsee/bastion-env.sh quay.io/opsee/bastion:latest /monitor -admin_port=4001
 ExecStop=/usr/bin/docker stop -t 5 %p
 
 [Install]
