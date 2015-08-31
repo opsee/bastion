@@ -90,8 +90,8 @@ func (r *HTTPRequest) Do() (Response, error) {
 		Body: string(body),
 		Metrics: []*Metric{
 			&Metric{
-				Name:    "request_latency_ms",
-				Decimal: time.Since(t0).Seconds() * 1000,
+				Name:  "request_latency_ms",
+				Value: time.Since(t0).Seconds() * 1000,
 			},
 		},
 	}
