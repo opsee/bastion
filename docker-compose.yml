@@ -5,6 +5,8 @@ connector:
     - AWS_ACCESS_KEY_ID
     - AWS_DEFAULT_REGION
     - AWS_SECRET_ACCESS_KEY
+    - BASTION_ID=61f25e94-4f6e-11e5-a99f-4771161a3517
+    - VPN_PASSWORD=2YuVKIF+IsYMbrXT/TaOR9ZG
   cap_add:
     - NET_ADMIN
   devices:
@@ -14,7 +16,7 @@ connector:
     - 4151:4151
     - 4171:4171
     - 4000:4000
-    - 5000:4001
+    - 4001:4001
 nsqd:
   image: nsqio/nsq:v0.3.5
   command: /nsqd
@@ -41,7 +43,7 @@ shovelresults:
     - "/dev/net/tun"
 monitor:
   image: quay.io/opsee/bastion
-  command: /monitor -level debug
+  command: /monitor -level debug -admin_port=4001
   net: "container:connector"
   devices:
     - "/dev/net/tun"

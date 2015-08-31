@@ -1,9 +1,10 @@
 [Unit]
 Description=Bastion - Checker
-After=docker.service
-Requires=docker.service nsqd.service
+After=docker.service nsqd.service connector.service
+Requires=docker.service nsqd.service connector.service
 
 [Service]
+Restart=always
 User=core
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
