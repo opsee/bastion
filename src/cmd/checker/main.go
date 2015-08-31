@@ -5,6 +5,7 @@ import (
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
+	"github.com/opsee/bastion/registry"
 )
 
 const (
@@ -41,6 +42,9 @@ func main() {
 		logger.Error(err.Error())
 		panic(err)
 	}
+
+	registry.Register(moduleName, checks.Port)
+	defer registry.Unregister(moduleName, checks.Port)
 
 	err = <-heart.Beat()
 	panic(err)
