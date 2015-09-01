@@ -17,6 +17,20 @@ connector:
     - 4171:4171
     - 4000:4000
     - 4001:4001
+  volumes:
+    - /zuul/state
+register:
+  image: quay.io/opsee/zuul
+  command: register
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+  volumes_from:
+    - connector
+  environment:
+    - BASTION_ID=61f25e94-4f6e-11e5-a99f-4771161a3517
+    - CUSTOMER_ID=testing
+    - INSTANCE_ID=unknown
 nsqd:
   image: nsqio/nsq:v0.3.5
   command: /nsqd
