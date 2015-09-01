@@ -1,4 +1,4 @@
-package registry
+package pomapper
 
 import (
 	"encoding/json"
@@ -8,10 +8,16 @@ import (
 	"path/filepath"
 )
 
-const (
-	bastionRegistryPath = "/var/run/bastion"
+var (
+  // The path to a directory where the registry will store data.
+  RegistryPath string
 )
 
+func init() {
+  RegistryPath = "/var/run/bastion"
+}
+
+// Service is a mapping between a service name and port.
 type Service struct {
 	Name string `json:"name"`
 	Port int    `json:"port"`
@@ -29,9 +35,11 @@ func (s *Service) validate() error {
 }
 
 func (s *Service) path() string {
-	return fmt.Sprintf("%s/%s.service", bastionRegistryPath, s.Name)
+	return fmt.Sprintf("%s/%s.service", RegistryPath, s.Name)
 }
 
+// Marshal returns the byte array of the JSON-serialized version of the
+// service.
 func (s *Service) Marshal() ([]byte, error) {
 	bytes, err := json.Marshal(s)
 	if err != nil {
@@ -40,6 +48,7 @@ func (s *Service) Marshal() ([]byte, error) {
 	return bytes, nil
 }
 
+// Given a byte array, unmarshal it.
 func UnmarshalService(bytes []byte) (*Service, error) {
 	s := &Service{}
 	err := json.Unmarshal(bytes, s)
@@ -50,6 +59,7 @@ func UnmarshalService(bytes []byte) (*Service, error) {
 	return s, nil
 }
 
+// Unregister a (service, port) tuple.
 func Unregister(name string, port int) error {
 	svc := &Service{name, port}
 	if err := svc.validate(); err != nil {
@@ -64,6 +74,7 @@ func Unregister(name string, port int) error {
 	return nil
 }
 
+// Register a (service, port) tuple.
 func Register(name string, port int) error {
 	svc := &Service{name, port}
 	if err := svc.validate(); err != nil {
@@ -78,8 +89,10 @@ func Register(name string, port int) error {
 	return ioutil.WriteFile(svc.path(), bytes, 0644)
 }
 
+// Services returns an array of Service pointers detailing the service name and
+// port of each registered service.
 func Services() ([]*Service, error) {
-	svcPaths, err := filepath.Glob(fmt.Sprintf("%s/*.service", bastionRegistryPath))
+	svcPaths, err := filepath.Glob(fmt.Sprintf("%s/*.service", RegistryPath))
 	if err != nil {
 		return nil, err
 	}

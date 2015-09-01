@@ -136,6 +136,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/opsee/pomapper",
+			"repository": "https://github.com/opsee/pomapper",
+			"revision": "531ed787d3bbbe68fc3d1a6e857f74e8c7847053",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/satori/go.uuid",
 			"repository": "https://github.com/satori/go.uuid",
 			"revision": "6b8e5b55d20d01ad47ecfe98e5171688397c61e9",
