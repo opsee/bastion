@@ -2,7 +2,7 @@
 	"regions": "all",
 	"copy-to": "all",
 	"build-region": "us-east-1",
-	"source-ami": "ami-6b1cd400",
+	"source-ami": "ami-3d73d356",
 	"ami-name": "Opsee-Bastion-{{clean-timestamp}}",
 	"ami-description": "Opsee's Bastion Software",
 	"instance-type":"t2.micro",
@@ -31,15 +31,15 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/connector.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/bastion-etcd.service"
 		},
 		{
 			"type":"systemd",
 			"unit-file":"build/nsqd.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/connector.service"
 		},
 		{
 			"type":"systemd",
