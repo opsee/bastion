@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/logging"
@@ -34,6 +35,7 @@ func main() {
 		}
 	})
 
+	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 	portmapper.Register(moduleName, int(cfg.AdminPort))
 	defer portmapper.Unregister(moduleName, int(cfg.AdminPort))
 

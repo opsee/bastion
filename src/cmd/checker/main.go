@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
@@ -43,6 +45,7 @@ func main() {
 		panic(err)
 	}
 
+	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 	portmapper.Register(moduleName, checks.Port)
 	defer portmapper.Unregister(moduleName, checks.Port)
 
