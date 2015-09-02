@@ -138,7 +138,7 @@
 		{
 			"importpath": "github.com/opsee/pomapper",
 			"repository": "https://github.com/opsee/pomapper",
-			"revision": "531ed787d3bbbe68fc3d1a6e857f74e8c7847053",
+			"revision": "49f2cd5668b8e2ca7e6c46cc59c3c929b40c49c8",
 			"branch": "master"
 		},
 		{

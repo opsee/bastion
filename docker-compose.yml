@@ -63,6 +63,8 @@ monitor:
     - "/dev/net/tun"
   environment:
     - NSQD_HOST=127.0.0.1:4150
+  volumes_from:
+    - connector
 #worker:
 #  image: quay.io/opsee/bastion
 #  command: /worker -metadata /metadata.json -level debug
@@ -79,6 +81,8 @@ checker:
   command: /checker -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
+  volumes_from:
+    - connector
   environment:
     - AWS_ACCESS_KEY_ID
     - AWS_DEFAULT_REGION
