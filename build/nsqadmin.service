@@ -10,7 +10,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/docker pull nsqio/nsq:v0.3.5
-ExecStart=/usr/bin/docker run --name nsqadmin --net="container:connector" --device=/dev/net/tun nsqio/nsq /nsqadmin -nsqd-http-address http://127.0.0.1:4151/
+ExecStart=/usr/bin/docker run --name nsqadmin --net="container:connector" --device=/dev/net/tun nsqio/nsq /nsqadmin -nsqd-http-address 127.0.0.1:4151
 ExecStop=/usr/bin/docker stop -t 5 %p
 
 [Install]
