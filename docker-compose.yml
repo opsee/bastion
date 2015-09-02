@@ -1,3 +1,9 @@
+etcd:
+  image: quay.io/coreos/etcd:v2.0.8
+  command: -name bastion_etcd -advertise-client-urls http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 -initial-advertise-peer-urls http://127.0.0.1:2380 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token opsee -initial-cluster bastion_etcd=http://127.0.0.1:2380 -initial-cluster-state new
+  expose:
+    - 2379
+    - 2380
 connector:
   image: quay.io/opsee/zuul
   command: client
@@ -31,6 +37,8 @@ register:
     - BASTION_ID=61f25e94-4f6e-11e5-a99f-4771161a3517
     - CUSTOMER_ID=testing
     - INSTANCE_ID=unknown
+  links:
+    - etcd:etcd
 nsqd:
   image: nsqio/nsq:v0.3.5
   command: /nsqd
@@ -63,8 +71,8 @@ monitor:
     - "/dev/net/tun"
   environment:
     - NSQD_HOST=127.0.0.1:4150
-  volumes_from:
-    - connector
+  links:
+    - etcd:etcd
 #worker:
 #  image: quay.io/opsee/bastion
 #  command: /worker -metadata /metadata.json -level debug
@@ -81,8 +89,6 @@ checker:
   command: /checker -metadata /metadata.json -level debug
   volumes:
     - metadata.json:/metadata.json
-  volumes_from:
-    - connector
   environment:
     - AWS_ACCESS_KEY_ID
     - AWS_DEFAULT_REGION
@@ -91,6 +97,8 @@ checker:
   net: "container:connector"
   devices:
     - "/dev/net/tun"
+  links:
+    - etcd:etcd
 discovery:
   image: quay.io/opsee/bastion
   command: /discovery -metadata /metadata.json -level debug

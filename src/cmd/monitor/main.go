@@ -7,7 +7,7 @@ import (
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/monitor"
-	"github.com/opsee/pomapper"
+	"github.com/opsee/portmapper"
 )
 
 const (
@@ -34,8 +34,8 @@ func main() {
 		}
 	})
 
-	pomapper.Register(moduleName, int(cfg.AdminPort))
-	defer pomapper.Unregister(moduleName, int(cfg.AdminPort))
+	portmapper.Register(moduleName, int(cfg.AdminPort))
+	defer portmapper.Unregister(moduleName, int(cfg.AdminPort))
 
 	logger.Error(http.ListenAndServe(listenAddress, nil).Error())
 }

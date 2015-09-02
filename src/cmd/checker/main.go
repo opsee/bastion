@@ -5,7 +5,7 @@ import (
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
-	"github.com/opsee/pomapper"
+	"github.com/opsee/portmapper"
 )
 
 const (
@@ -43,8 +43,8 @@ func main() {
 		panic(err)
 	}
 
-	pomapper.Register(moduleName, checks.Port)
-	defer pomapper.Unregister(moduleName, checks.Port)
+	portmapper.Register(moduleName, checks.Port)
+	defer portmapper.Unregister(moduleName, checks.Port)
 
 	err = <-heart.Beat()
 	panic(err)

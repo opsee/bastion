@@ -105,6 +105,13 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/coreos/go-etcd/etcd",
+			"repository": "https://github.com/coreos/go-etcd",
+			"revision": "126041ef7b24a28359a12f8bf7f6a7db6756113d",
+			"branch": "master",
+			"path": "/etcd"
+		},
+		{
 			"importpath": "github.com/golang/glog",
 			"repository": "https://github.com/golang/glog",
 			"revision": "fca8c8854093a154ff1eb580aae10276ad6b1b5f",
@@ -136,9 +143,9 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/opsee/pomapper",
-			"repository": "https://github.com/opsee/pomapper",
-			"revision": "49f2cd5668b8e2ca7e6c46cc59c3c929b40c49c8",
+			"importpath": "github.com/opsee/portmapper",
+			"repository": "https://github.com/opsee/portmapper",
+			"revision": "78307866a1d52d6de10bdd98985e46a73a7c8380",
 			"branch": "master"
 		},
 		{
@@ -172,6 +179,13 @@
 			"revision": "089c7181b8c728499929ff09b62d3fdd8df8adff",
 			"branch": "master",
 			"path": "/mock"
+		},
+		{
+			"importpath": "github.com/ugorji/go/codec",
+			"repository": "https://github.com/ugorji/go",
+			"revision": "5abd4e96a45c386928ed2ca2a7ef63e2533e18ec",
+			"branch": "master",
+			"path": "/codec"
 		},
 		{
 			"importpath": "github.com/vaughan0/go-ini",
