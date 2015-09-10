@@ -111,7 +111,7 @@ func main() {
 	sc = scanner.NewScanner(cfg)
 	wg = &sync.WaitGroup{}
 
-	producer, err = messaging.NewProducer("discovery")
+	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
 	if err != nil {
 		panic(err)
 	}

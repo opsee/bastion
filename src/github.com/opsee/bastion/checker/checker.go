@@ -138,7 +138,6 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	ctx, cancel = context.WithDeadline(ctx, deadline)
 	ctx = context.WithValue(ctx, "MaxHosts", int(req.MaxHosts))
 
-	
 	responses, errs := c.Scheduler.RunCheck(ctx, req.Check)
 	defer close(errs)
 

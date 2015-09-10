@@ -2,10 +2,10 @@ package checker
 
 import (
 	"fmt"
+	"golang.org/x/net/context"
 	"reflect"
 	"sync"
 	"time"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -143,7 +143,7 @@ func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error
 			maxHosts int
 			ok       bool
 		)
-		
+
 		maxHosts, ok = ctx.Value("MaxHosts").(int)
 		if !ok {
 			maxHosts = len(targets)

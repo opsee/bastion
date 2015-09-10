@@ -15,7 +15,8 @@ type Producer interface {
 }
 
 type NsqProducer struct {
-	Topic string
+	Topic      string
+	CustomerId string
 
 	nsqProducer *nsq.Producer
 	nsqConfig   *nsq.Config
@@ -40,11 +41,25 @@ func NewProducer(topicName string) (Producer, error) {
 	return producer, nil
 }
 
+func NewCustomerProducer(customerId, topicName string) (Producer, error) {
+	producer, err := NewProducer(topicName)
+	if err != nil {
+		return nil, err
+	}
+
+	producer.(*NsqProducer).CustomerId = customerId
+	return producer, nil
+}
+
 // Publish synchronously sends a message to the producer's given topic.
 func (p *NsqProducer) Publish(message interface{}) error {
 	event, err := NewEvent(message)
 	if err != nil {
 		logger.Error(err.Error())
+	}
+
+	if p.CustomerId != "" {
+		event.CustomerId = p.CustomerId
 	}
 
 	eBytes, _ := json.Marshal(event)
@@ -56,6 +71,11 @@ func (p *NsqProducer) Publish(message interface{}) error {
 func (p *NsqProducer) PublishRepliable(id string, msg EventInterface) error {
 	event, _ := NewEvent(msg)
 	event.MessageId = id
+
+	if p.CustomerId != "" {
+		event.CustomerId = p.CustomerId
+	}
+
 	eBytes, _ := json.Marshal(event)
 
 	return p.nsqProducer.Publish(p.Topic, eBytes)
