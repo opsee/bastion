@@ -58,9 +58,7 @@ func (p *NsqProducer) Publish(message interface{}) error {
 		logger.Error(err.Error())
 	}
 
-	if p.CustomerId != "" {
-		event.CustomerId = p.CustomerId
-	}
+	event.CustomerId = p.CustomerId
 
 	eBytes, _ := json.Marshal(event)
 
@@ -71,10 +69,7 @@ func (p *NsqProducer) Publish(message interface{}) error {
 func (p *NsqProducer) PublishRepliable(id string, msg EventInterface) error {
 	event, _ := NewEvent(msg)
 	event.MessageId = id
-
-	if p.CustomerId != "" {
-		event.CustomerId = p.CustomerId
-	}
+	event.CustomerId = p.CustomerId
 
 	eBytes, _ := json.Marshal(event)
 
