@@ -45,6 +45,7 @@ type Event struct {
 	ReplyTo     string `json:"reply_to"`
 	MessageType string `json:"type"`
 	MessageBody string `json:"event"`
+	CustomerId  string `json:"customer_id,omitempty"`
 	message     *nsq.Message
 }
 
