@@ -32,9 +32,9 @@ func scanSecurityGroups() {
 				if err := producer.Publish(sg); err != nil {
 					logger.Error(err.Error())
 				}
-				if sg.GroupID != nil {
-					logger.Info("Scanning SG: %v", *sg.GroupID)
-					if reservations, err := sc.ScanSecurityGroupInstances(*sg.GroupID); err != nil {
+				if sg.GroupId != nil {
+					logger.Info("Scanning SG: %v", *sg.GroupId)
+					if reservations, err := sc.ScanSecurityGroupInstances(*sg.GroupId); err != nil {
 						logger.Error(err.Error())
 					} else {
 						for _, reservation := range reservations {

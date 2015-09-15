@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
@@ -45,7 +46,7 @@ func NewScanner(cfg *config.Config) EC2Scanner {
 				SessionToken:    "",
 			}},
 			&credentials.EnvProvider{},
-			&credentials.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
+			&ec2rolecreds.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
 		})
 	config := &aws.Config{Credentials: creds, Region: aws.String(region)}
 	scanner := &eC2ScannerImpl{
@@ -72,7 +73,7 @@ func (s *eC2ScannerImpl) getRDSClient() *rds.RDS {
 
 func (s *eC2ScannerImpl) GetInstance(instanceId string) (*ec2.Reservation, error) {
 	client := s.getEC2Client()
-	resp, err := client.DescribeInstances(&ec2.DescribeInstancesInput{InstanceIDs: []*string{&instanceId}})
+	resp, err := client.DescribeInstances(&ec2.DescribeInstancesInput{InstanceIds: []*string{&instanceId}})
 	if err != nil {
 		if len(resp.Reservations) > 1 {
 			return nil, fmt.Errorf("Received multiple reservations for instance id: %v, %v", instanceId, resp)

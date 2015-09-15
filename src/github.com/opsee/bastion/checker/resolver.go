@@ -28,10 +28,10 @@ func NewResolver(cfg *config.Config) Resolver {
 // instance
 func getAddrFromInstance(instance *ec2.Instance) *string {
 	var addr *string
-	if instance.PrivateIPAddress != nil {
-		addr = instance.PrivateIPAddress
-	} else if instance.PublicIPAddress != nil {
-		addr = instance.PublicIPAddress
+	if instance.PrivateIpAddress != nil {
+		addr = instance.PrivateIpAddress
+	} else if instance.PublicIpAddress != nil {
+		addr = instance.PublicIpAddress
 	}
 
 	return addr
@@ -63,7 +63,7 @@ func (r *AWSResolver) resolveELB(elbId string) ([]*string, error) {
 	targets := make([]*string, len(elb.Instances))
 	var instances []*string
 	for i, elbInstance := range elb.Instances {
-		instances, err = r.resolveInstance(*elbInstance.InstanceID)
+		instances, err = r.resolveInstance(*elbInstance.InstanceId)
 		if err != nil {
 			return nil, err
 		}
