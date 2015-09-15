@@ -2,6 +2,7 @@
 Description=Bastion - Checker
 After=docker.service nsqd.service connector.service
 Requires=docker.service nsqd.service connector.service
+PartOf=connector.service
 
 [Service]
 Restart=always
@@ -10,7 +11,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/docker pull quay.io/opsee/bastion:latest
-ExecStart=/usr/bin/docker run --name %p --link connector:nsqd --env-file /etc/opsee/bastion-env.sh -e ETCD_HOST=http://nsqd:2379 quay.io/opsee/bastion:latest /checker
+ExecStart=/usr/bin/docker run --name %p --link bastion-etcd:etcd --link nsqd:nsqd --env-file /etc/opsee/bastion-env.sh -e ETCD_HOST=http://etcd:2379 quay.io/opsee/bastion:latest /checker
 ExecStop=/usr/bin/docker stop -t 5 %p
 
 [Install]
