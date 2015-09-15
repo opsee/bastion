@@ -11,84 +11,84 @@
 		{
 			"importpath": "github.com/aws/aws-sdk-go/aws",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/aws"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/aws/credentials",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/aws/credentials"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/internal/endpoints",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/internal/endpoints"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/ec2query",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/internal/protocol/ec2query"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/query",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/internal/protocol/query"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/rest",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/internal/protocol/rest"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/xml/xmlutil",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/internal/protocol/xml/xmlutil"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/internal/signer/v4",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/internal/signer/v4"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/service/ec2",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/service/ec2"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/service/elb",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/service/elb"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/service/rds",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/service/rds"
 		},
 		{
 			"importpath": "github.com/aws/aws-sdk-go/service/sts",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "bed164a424e75154a40550c04c313ef51a7bb275",
+			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
 			"branch": "master",
 			"path": "/service/sts"
 		},
