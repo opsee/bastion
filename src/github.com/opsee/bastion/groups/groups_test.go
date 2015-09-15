@@ -10,9 +10,9 @@ import (
 )
 
 func sendInstance(group DynGroup, instanceId string, groupId string) {
-	group.InstanceEvent(&ec2.Instance{InstanceID: aws.String(instanceId),
+	group.InstanceEvent(&ec2.Instance{InstanceId: aws.String(instanceId),
 		SecurityGroups: []*ec2.GroupIdentifier{
-			&ec2.GroupIdentifier{GroupID: aws.String(groupId),
+			&ec2.GroupIdentifier{GroupId: aws.String(groupId),
 				GroupName: aws.String(groupId)}}})
 }
 
@@ -20,7 +20,7 @@ func TestSecurityGroupStoresInstances(t *testing.T) {
 	group := NewSGGroup("abc", time.Second)
 	sendInstance(group, "123", "abc")
 	instance := group.GetInstance("123")
-	assert.Equal(t, "123", *instance.InstanceID)
+	assert.Equal(t, "123", *instance.InstanceId)
 }
 
 func TestSecurityGroupDropsExpired(t *testing.T) {

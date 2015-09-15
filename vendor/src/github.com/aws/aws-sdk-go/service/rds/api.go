@@ -6,15 +6,15 @@ package rds
 import (
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
+	"github.com/aws/aws-sdk-go/aws/request"
 )
 
 const opAddSourceIdentifierToSubscription = "AddSourceIdentifierToSubscription"
 
 // AddSourceIdentifierToSubscriptionRequest generates a request for the AddSourceIdentifierToSubscription operation.
-func (c *RDS) AddSourceIdentifierToSubscriptionRequest(input *AddSourceIdentifierToSubscriptionInput) (req *aws.Request, output *AddSourceIdentifierToSubscriptionOutput) {
-	op := &aws.Operation{
+func (c *RDS) AddSourceIdentifierToSubscriptionRequest(input *AddSourceIdentifierToSubscriptionInput) (req *request.Request, output *AddSourceIdentifierToSubscriptionOutput) {
+	op := &request.Operation{
 		Name:       opAddSourceIdentifierToSubscription,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -40,8 +40,8 @@ func (c *RDS) AddSourceIdentifierToSubscription(input *AddSourceIdentifierToSubs
 const opAddTagsToResource = "AddTagsToResource"
 
 // AddTagsToResourceRequest generates a request for the AddTagsToResource operation.
-func (c *RDS) AddTagsToResourceRequest(input *AddTagsToResourceInput) (req *aws.Request, output *AddTagsToResourceOutput) {
-	op := &aws.Operation{
+func (c *RDS) AddTagsToResourceRequest(input *AddTagsToResourceInput) (req *request.Request, output *AddTagsToResourceOutput) {
+	op := &request.Operation{
 		Name:       opAddTagsToResource,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -72,8 +72,8 @@ func (c *RDS) AddTagsToResource(input *AddTagsToResourceInput) (*AddTagsToResour
 const opApplyPendingMaintenanceAction = "ApplyPendingMaintenanceAction"
 
 // ApplyPendingMaintenanceActionRequest generates a request for the ApplyPendingMaintenanceAction operation.
-func (c *RDS) ApplyPendingMaintenanceActionRequest(input *ApplyPendingMaintenanceActionInput) (req *aws.Request, output *ApplyPendingMaintenanceActionOutput) {
-	op := &aws.Operation{
+func (c *RDS) ApplyPendingMaintenanceActionRequest(input *ApplyPendingMaintenanceActionInput) (req *request.Request, output *ApplyPendingMaintenanceActionOutput) {
+	op := &request.Operation{
 		Name:       opApplyPendingMaintenanceAction,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -100,8 +100,8 @@ func (c *RDS) ApplyPendingMaintenanceAction(input *ApplyPendingMaintenanceAction
 const opAuthorizeDBSecurityGroupIngress = "AuthorizeDBSecurityGroupIngress"
 
 // AuthorizeDBSecurityGroupIngressRequest generates a request for the AuthorizeDBSecurityGroupIngress operation.
-func (c *RDS) AuthorizeDBSecurityGroupIngressRequest(input *AuthorizeDBSecurityGroupIngressInput) (req *aws.Request, output *AuthorizeDBSecurityGroupIngressOutput) {
-	op := &aws.Operation{
+func (c *RDS) AuthorizeDBSecurityGroupIngressRequest(input *AuthorizeDBSecurityGroupIngressInput) (req *request.Request, output *AuthorizeDBSecurityGroupIngressOutput) {
+	op := &request.Operation{
 		Name:       opAuthorizeDBSecurityGroupIngress,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -138,8 +138,8 @@ func (c *RDS) AuthorizeDBSecurityGroupIngress(input *AuthorizeDBSecurityGroupIng
 const opCopyDBClusterSnapshot = "CopyDBClusterSnapshot"
 
 // CopyDBClusterSnapshotRequest generates a request for the CopyDBClusterSnapshot operation.
-func (c *RDS) CopyDBClusterSnapshotRequest(input *CopyDBClusterSnapshotInput) (req *aws.Request, output *CopyDBClusterSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) CopyDBClusterSnapshotRequest(input *CopyDBClusterSnapshotInput) (req *request.Request, output *CopyDBClusterSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opCopyDBClusterSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -167,8 +167,8 @@ func (c *RDS) CopyDBClusterSnapshot(input *CopyDBClusterSnapshotInput) (*CopyDBC
 const opCopyDBParameterGroup = "CopyDBParameterGroup"
 
 // CopyDBParameterGroupRequest generates a request for the CopyDBParameterGroup operation.
-func (c *RDS) CopyDBParameterGroupRequest(input *CopyDBParameterGroupInput) (req *aws.Request, output *CopyDBParameterGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CopyDBParameterGroupRequest(input *CopyDBParameterGroupInput) (req *request.Request, output *CopyDBParameterGroupOutput) {
+	op := &request.Operation{
 		Name:       opCopyDBParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -194,8 +194,8 @@ func (c *RDS) CopyDBParameterGroup(input *CopyDBParameterGroupInput) (*CopyDBPar
 const opCopyDBSnapshot = "CopyDBSnapshot"
 
 // CopyDBSnapshotRequest generates a request for the CopyDBSnapshot operation.
-func (c *RDS) CopyDBSnapshotRequest(input *CopyDBSnapshotInput) (req *aws.Request, output *CopyDBSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) CopyDBSnapshotRequest(input *CopyDBSnapshotInput) (req *request.Request, output *CopyDBSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opCopyDBSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -222,8 +222,8 @@ func (c *RDS) CopyDBSnapshot(input *CopyDBSnapshotInput) (*CopyDBSnapshotOutput,
 const opCopyOptionGroup = "CopyOptionGroup"
 
 // CopyOptionGroupRequest generates a request for the CopyOptionGroup operation.
-func (c *RDS) CopyOptionGroupRequest(input *CopyOptionGroupInput) (req *aws.Request, output *CopyOptionGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CopyOptionGroupRequest(input *CopyOptionGroupInput) (req *request.Request, output *CopyOptionGroupOutput) {
+	op := &request.Operation{
 		Name:       opCopyOptionGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -249,8 +249,8 @@ func (c *RDS) CopyOptionGroup(input *CopyOptionGroupInput) (*CopyOptionGroupOutp
 const opCreateDBCluster = "CreateDBCluster"
 
 // CreateDBClusterRequest generates a request for the CreateDBCluster operation.
-func (c *RDS) CreateDBClusterRequest(input *CreateDBClusterInput) (req *aws.Request, output *CreateDBClusterOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBClusterRequest(input *CreateDBClusterInput) (req *request.Request, output *CreateDBClusterOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBCluster,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -278,8 +278,8 @@ func (c *RDS) CreateDBCluster(input *CreateDBClusterInput) (*CreateDBClusterOutp
 const opCreateDBClusterParameterGroup = "CreateDBClusterParameterGroup"
 
 // CreateDBClusterParameterGroupRequest generates a request for the CreateDBClusterParameterGroup operation.
-func (c *RDS) CreateDBClusterParameterGroupRequest(input *CreateDBClusterParameterGroupInput) (req *aws.Request, output *CreateDBClusterParameterGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBClusterParameterGroupRequest(input *CreateDBClusterParameterGroupInput) (req *request.Request, output *CreateDBClusterParameterGroupOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBClusterParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -332,8 +332,8 @@ func (c *RDS) CreateDBClusterParameterGroup(input *CreateDBClusterParameterGroup
 const opCreateDBClusterSnapshot = "CreateDBClusterSnapshot"
 
 // CreateDBClusterSnapshotRequest generates a request for the CreateDBClusterSnapshot operation.
-func (c *RDS) CreateDBClusterSnapshotRequest(input *CreateDBClusterSnapshotInput) (req *aws.Request, output *CreateDBClusterSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBClusterSnapshotRequest(input *CreateDBClusterSnapshotInput) (req *request.Request, output *CreateDBClusterSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBClusterSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -361,8 +361,8 @@ func (c *RDS) CreateDBClusterSnapshot(input *CreateDBClusterSnapshotInput) (*Cre
 const opCreateDBInstance = "CreateDBInstance"
 
 // CreateDBInstanceRequest generates a request for the CreateDBInstance operation.
-func (c *RDS) CreateDBInstanceRequest(input *CreateDBInstanceInput) (req *aws.Request, output *CreateDBInstanceOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBInstanceRequest(input *CreateDBInstanceInput) (req *request.Request, output *CreateDBInstanceOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBInstance,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -388,8 +388,8 @@ func (c *RDS) CreateDBInstance(input *CreateDBInstanceInput) (*CreateDBInstanceO
 const opCreateDBInstanceReadReplica = "CreateDBInstanceReadReplica"
 
 // CreateDBInstanceReadReplicaRequest generates a request for the CreateDBInstanceReadReplica operation.
-func (c *RDS) CreateDBInstanceReadReplicaRequest(input *CreateDBInstanceReadReplicaInput) (req *aws.Request, output *CreateDBInstanceReadReplicaOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBInstanceReadReplicaRequest(input *CreateDBInstanceReadReplicaInput) (req *request.Request, output *CreateDBInstanceReadReplicaOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBInstanceReadReplica,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -423,8 +423,8 @@ func (c *RDS) CreateDBInstanceReadReplica(input *CreateDBInstanceReadReplicaInpu
 const opCreateDBParameterGroup = "CreateDBParameterGroup"
 
 // CreateDBParameterGroupRequest generates a request for the CreateDBParameterGroup operation.
-func (c *RDS) CreateDBParameterGroupRequest(input *CreateDBParameterGroupInput) (req *aws.Request, output *CreateDBParameterGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBParameterGroupRequest(input *CreateDBParameterGroupInput) (req *request.Request, output *CreateDBParameterGroupOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -470,8 +470,8 @@ func (c *RDS) CreateDBParameterGroup(input *CreateDBParameterGroupInput) (*Creat
 const opCreateDBSecurityGroup = "CreateDBSecurityGroup"
 
 // CreateDBSecurityGroupRequest generates a request for the CreateDBSecurityGroup operation.
-func (c *RDS) CreateDBSecurityGroupRequest(input *CreateDBSecurityGroupInput) (req *aws.Request, output *CreateDBSecurityGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBSecurityGroupRequest(input *CreateDBSecurityGroupInput) (req *request.Request, output *CreateDBSecurityGroupOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBSecurityGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -498,8 +498,8 @@ func (c *RDS) CreateDBSecurityGroup(input *CreateDBSecurityGroupInput) (*CreateD
 const opCreateDBSnapshot = "CreateDBSnapshot"
 
 // CreateDBSnapshotRequest generates a request for the CreateDBSnapshot operation.
-func (c *RDS) CreateDBSnapshotRequest(input *CreateDBSnapshotInput) (req *aws.Request, output *CreateDBSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBSnapshotRequest(input *CreateDBSnapshotInput) (req *request.Request, output *CreateDBSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -525,8 +525,8 @@ func (c *RDS) CreateDBSnapshot(input *CreateDBSnapshotInput) (*CreateDBSnapshotO
 const opCreateDBSubnetGroup = "CreateDBSubnetGroup"
 
 // CreateDBSubnetGroupRequest generates a request for the CreateDBSubnetGroup operation.
-func (c *RDS) CreateDBSubnetGroupRequest(input *CreateDBSubnetGroupInput) (req *aws.Request, output *CreateDBSubnetGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateDBSubnetGroupRequest(input *CreateDBSubnetGroupInput) (req *request.Request, output *CreateDBSubnetGroupOutput) {
+	op := &request.Operation{
 		Name:       opCreateDBSubnetGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -553,8 +553,8 @@ func (c *RDS) CreateDBSubnetGroup(input *CreateDBSubnetGroupInput) (*CreateDBSub
 const opCreateEventSubscription = "CreateEventSubscription"
 
 // CreateEventSubscriptionRequest generates a request for the CreateEventSubscription operation.
-func (c *RDS) CreateEventSubscriptionRequest(input *CreateEventSubscriptionInput) (req *aws.Request, output *CreateEventSubscriptionOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateEventSubscriptionRequest(input *CreateEventSubscriptionInput) (req *request.Request, output *CreateEventSubscriptionOutput) {
+	op := &request.Operation{
 		Name:       opCreateEventSubscription,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -598,8 +598,8 @@ func (c *RDS) CreateEventSubscription(input *CreateEventSubscriptionInput) (*Cre
 const opCreateOptionGroup = "CreateOptionGroup"
 
 // CreateOptionGroupRequest generates a request for the CreateOptionGroup operation.
-func (c *RDS) CreateOptionGroupRequest(input *CreateOptionGroupInput) (req *aws.Request, output *CreateOptionGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) CreateOptionGroupRequest(input *CreateOptionGroupInput) (req *request.Request, output *CreateOptionGroupOutput) {
+	op := &request.Operation{
 		Name:       opCreateOptionGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -625,8 +625,8 @@ func (c *RDS) CreateOptionGroup(input *CreateOptionGroupInput) (*CreateOptionGro
 const opDeleteDBCluster = "DeleteDBCluster"
 
 // DeleteDBClusterRequest generates a request for the DeleteDBCluster operation.
-func (c *RDS) DeleteDBClusterRequest(input *DeleteDBClusterInput) (req *aws.Request, output *DeleteDBClusterOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBClusterRequest(input *DeleteDBClusterInput) (req *request.Request, output *DeleteDBClusterOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBCluster,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -659,8 +659,8 @@ func (c *RDS) DeleteDBCluster(input *DeleteDBClusterInput) (*DeleteDBClusterOutp
 const opDeleteDBClusterParameterGroup = "DeleteDBClusterParameterGroup"
 
 // DeleteDBClusterParameterGroupRequest generates a request for the DeleteDBClusterParameterGroup operation.
-func (c *RDS) DeleteDBClusterParameterGroupRequest(input *DeleteDBClusterParameterGroupInput) (req *aws.Request, output *DeleteDBClusterParameterGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBClusterParameterGroupRequest(input *DeleteDBClusterParameterGroupInput) (req *request.Request, output *DeleteDBClusterParameterGroupOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBClusterParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -690,8 +690,8 @@ func (c *RDS) DeleteDBClusterParameterGroup(input *DeleteDBClusterParameterGroup
 const opDeleteDBClusterSnapshot = "DeleteDBClusterSnapshot"
 
 // DeleteDBClusterSnapshotRequest generates a request for the DeleteDBClusterSnapshot operation.
-func (c *RDS) DeleteDBClusterSnapshotRequest(input *DeleteDBClusterSnapshotInput) (req *aws.Request, output *DeleteDBClusterSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBClusterSnapshotRequest(input *DeleteDBClusterSnapshotInput) (req *request.Request, output *DeleteDBClusterSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBClusterSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -722,8 +722,8 @@ func (c *RDS) DeleteDBClusterSnapshot(input *DeleteDBClusterSnapshotInput) (*Del
 const opDeleteDBInstance = "DeleteDBInstance"
 
 // DeleteDBInstanceRequest generates a request for the DeleteDBInstance operation.
-func (c *RDS) DeleteDBInstanceRequest(input *DeleteDBInstanceInput) (req *aws.Request, output *DeleteDBInstanceOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBInstanceRequest(input *DeleteDBInstanceInput) (req *request.Request, output *DeleteDBInstanceOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBInstance,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -762,8 +762,8 @@ func (c *RDS) DeleteDBInstance(input *DeleteDBInstanceInput) (*DeleteDBInstanceO
 const opDeleteDBParameterGroup = "DeleteDBParameterGroup"
 
 // DeleteDBParameterGroupRequest generates a request for the DeleteDBParameterGroup operation.
-func (c *RDS) DeleteDBParameterGroupRequest(input *DeleteDBParameterGroupInput) (req *aws.Request, output *DeleteDBParameterGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBParameterGroupRequest(input *DeleteDBParameterGroupInput) (req *request.Request, output *DeleteDBParameterGroupOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -790,8 +790,8 @@ func (c *RDS) DeleteDBParameterGroup(input *DeleteDBParameterGroupInput) (*Delet
 const opDeleteDBSecurityGroup = "DeleteDBSecurityGroup"
 
 // DeleteDBSecurityGroupRequest generates a request for the DeleteDBSecurityGroup operation.
-func (c *RDS) DeleteDBSecurityGroupRequest(input *DeleteDBSecurityGroupInput) (req *aws.Request, output *DeleteDBSecurityGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBSecurityGroupRequest(input *DeleteDBSecurityGroupInput) (req *request.Request, output *DeleteDBSecurityGroupOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBSecurityGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -819,8 +819,8 @@ func (c *RDS) DeleteDBSecurityGroup(input *DeleteDBSecurityGroupInput) (*DeleteD
 const opDeleteDBSnapshot = "DeleteDBSnapshot"
 
 // DeleteDBSnapshotRequest generates a request for the DeleteDBSnapshot operation.
-func (c *RDS) DeleteDBSnapshotRequest(input *DeleteDBSnapshotInput) (req *aws.Request, output *DeleteDBSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBSnapshotRequest(input *DeleteDBSnapshotInput) (req *request.Request, output *DeleteDBSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -849,8 +849,8 @@ func (c *RDS) DeleteDBSnapshot(input *DeleteDBSnapshotInput) (*DeleteDBSnapshotO
 const opDeleteDBSubnetGroup = "DeleteDBSubnetGroup"
 
 // DeleteDBSubnetGroupRequest generates a request for the DeleteDBSubnetGroup operation.
-func (c *RDS) DeleteDBSubnetGroupRequest(input *DeleteDBSubnetGroupInput) (req *aws.Request, output *DeleteDBSubnetGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteDBSubnetGroupRequest(input *DeleteDBSubnetGroupInput) (req *request.Request, output *DeleteDBSubnetGroupOutput) {
+	op := &request.Operation{
 		Name:       opDeleteDBSubnetGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -878,8 +878,8 @@ func (c *RDS) DeleteDBSubnetGroup(input *DeleteDBSubnetGroupInput) (*DeleteDBSub
 const opDeleteEventSubscription = "DeleteEventSubscription"
 
 // DeleteEventSubscriptionRequest generates a request for the DeleteEventSubscription operation.
-func (c *RDS) DeleteEventSubscriptionRequest(input *DeleteEventSubscriptionInput) (req *aws.Request, output *DeleteEventSubscriptionOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteEventSubscriptionRequest(input *DeleteEventSubscriptionInput) (req *request.Request, output *DeleteEventSubscriptionOutput) {
+	op := &request.Operation{
 		Name:       opDeleteEventSubscription,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -905,8 +905,8 @@ func (c *RDS) DeleteEventSubscription(input *DeleteEventSubscriptionInput) (*Del
 const opDeleteOptionGroup = "DeleteOptionGroup"
 
 // DeleteOptionGroupRequest generates a request for the DeleteOptionGroup operation.
-func (c *RDS) DeleteOptionGroupRequest(input *DeleteOptionGroupInput) (req *aws.Request, output *DeleteOptionGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) DeleteOptionGroupRequest(input *DeleteOptionGroupInput) (req *request.Request, output *DeleteOptionGroupOutput) {
+	op := &request.Operation{
 		Name:       opDeleteOptionGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -932,8 +932,8 @@ func (c *RDS) DeleteOptionGroup(input *DeleteOptionGroupInput) (*DeleteOptionGro
 const opDescribeAccountAttributes = "DescribeAccountAttributes"
 
 // DescribeAccountAttributesRequest generates a request for the DescribeAccountAttributes operation.
-func (c *RDS) DescribeAccountAttributesRequest(input *DescribeAccountAttributesInput) (req *aws.Request, output *DescribeAccountAttributesOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeAccountAttributesRequest(input *DescribeAccountAttributesInput) (req *request.Request, output *DescribeAccountAttributesOutput) {
+	op := &request.Operation{
 		Name:       opDescribeAccountAttributes,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -964,8 +964,8 @@ func (c *RDS) DescribeAccountAttributes(input *DescribeAccountAttributesInput) (
 const opDescribeCertificates = "DescribeCertificates"
 
 // DescribeCertificatesRequest generates a request for the DescribeCertificates operation.
-func (c *RDS) DescribeCertificatesRequest(input *DescribeCertificatesInput) (req *aws.Request, output *DescribeCertificatesOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeCertificatesRequest(input *DescribeCertificatesInput) (req *request.Request, output *DescribeCertificatesOutput) {
+	op := &request.Operation{
 		Name:       opDescribeCertificates,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -991,8 +991,8 @@ func (c *RDS) DescribeCertificates(input *DescribeCertificatesInput) (*DescribeC
 const opDescribeDBClusterParameterGroups = "DescribeDBClusterParameterGroups"
 
 // DescribeDBClusterParameterGroupsRequest generates a request for the DescribeDBClusterParameterGroups operation.
-func (c *RDS) DescribeDBClusterParameterGroupsRequest(input *DescribeDBClusterParameterGroupsInput) (req *aws.Request, output *DescribeDBClusterParameterGroupsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBClusterParameterGroupsRequest(input *DescribeDBClusterParameterGroupsInput) (req *request.Request, output *DescribeDBClusterParameterGroupsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBClusterParameterGroups,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1023,8 +1023,8 @@ func (c *RDS) DescribeDBClusterParameterGroups(input *DescribeDBClusterParameter
 const opDescribeDBClusterParameters = "DescribeDBClusterParameters"
 
 // DescribeDBClusterParametersRequest generates a request for the DescribeDBClusterParameters operation.
-func (c *RDS) DescribeDBClusterParametersRequest(input *DescribeDBClusterParametersInput) (req *aws.Request, output *DescribeDBClusterParametersOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBClusterParametersRequest(input *DescribeDBClusterParametersInput) (req *request.Request, output *DescribeDBClusterParametersOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBClusterParameters,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1054,8 +1054,8 @@ func (c *RDS) DescribeDBClusterParameters(input *DescribeDBClusterParametersInpu
 const opDescribeDBClusterSnapshots = "DescribeDBClusterSnapshots"
 
 // DescribeDBClusterSnapshotsRequest generates a request for the DescribeDBClusterSnapshots operation.
-func (c *RDS) DescribeDBClusterSnapshotsRequest(input *DescribeDBClusterSnapshotsInput) (req *aws.Request, output *DescribeDBClusterSnapshotsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBClusterSnapshotsRequest(input *DescribeDBClusterSnapshotsInput) (req *request.Request, output *DescribeDBClusterSnapshotsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBClusterSnapshots,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1084,8 +1084,8 @@ func (c *RDS) DescribeDBClusterSnapshots(input *DescribeDBClusterSnapshotsInput)
 const opDescribeDBClusters = "DescribeDBClusters"
 
 // DescribeDBClustersRequest generates a request for the DescribeDBClusters operation.
-func (c *RDS) DescribeDBClustersRequest(input *DescribeDBClustersInput) (req *aws.Request, output *DescribeDBClustersOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBClustersRequest(input *DescribeDBClustersInput) (req *request.Request, output *DescribeDBClustersOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBClusters,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1115,12 +1115,12 @@ func (c *RDS) DescribeDBClusters(input *DescribeDBClustersInput) (*DescribeDBClu
 const opDescribeDBEngineVersions = "DescribeDBEngineVersions"
 
 // DescribeDBEngineVersionsRequest generates a request for the DescribeDBEngineVersions operation.
-func (c *RDS) DescribeDBEngineVersionsRequest(input *DescribeDBEngineVersionsInput) (req *aws.Request, output *DescribeDBEngineVersionsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBEngineVersionsRequest(input *DescribeDBEngineVersionsInput) (req *request.Request, output *DescribeDBEngineVersionsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBEngineVersions,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1155,12 +1155,12 @@ func (c *RDS) DescribeDBEngineVersionsPages(input *DescribeDBEngineVersionsInput
 const opDescribeDBInstances = "DescribeDBInstances"
 
 // DescribeDBInstancesRequest generates a request for the DescribeDBInstances operation.
-func (c *RDS) DescribeDBInstancesRequest(input *DescribeDBInstancesInput) (req *aws.Request, output *DescribeDBInstancesOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBInstancesRequest(input *DescribeDBInstancesInput) (req *request.Request, output *DescribeDBInstancesOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBInstances,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1195,12 +1195,12 @@ func (c *RDS) DescribeDBInstancesPages(input *DescribeDBInstancesInput, fn func(
 const opDescribeDBLogFiles = "DescribeDBLogFiles"
 
 // DescribeDBLogFilesRequest generates a request for the DescribeDBLogFiles operation.
-func (c *RDS) DescribeDBLogFilesRequest(input *DescribeDBLogFilesInput) (req *aws.Request, output *DescribeDBLogFilesOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBLogFilesRequest(input *DescribeDBLogFilesInput) (req *request.Request, output *DescribeDBLogFilesOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBLogFiles,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1235,12 +1235,12 @@ func (c *RDS) DescribeDBLogFilesPages(input *DescribeDBLogFilesInput, fn func(p 
 const opDescribeDBParameterGroups = "DescribeDBParameterGroups"
 
 // DescribeDBParameterGroupsRequest generates a request for the DescribeDBParameterGroups operation.
-func (c *RDS) DescribeDBParameterGroupsRequest(input *DescribeDBParameterGroupsInput) (req *aws.Request, output *DescribeDBParameterGroupsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBParameterGroupsRequest(input *DescribeDBParameterGroupsInput) (req *request.Request, output *DescribeDBParameterGroupsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBParameterGroups,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1277,12 +1277,12 @@ func (c *RDS) DescribeDBParameterGroupsPages(input *DescribeDBParameterGroupsInp
 const opDescribeDBParameters = "DescribeDBParameters"
 
 // DescribeDBParametersRequest generates a request for the DescribeDBParameters operation.
-func (c *RDS) DescribeDBParametersRequest(input *DescribeDBParametersInput) (req *aws.Request, output *DescribeDBParametersOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBParametersRequest(input *DescribeDBParametersInput) (req *request.Request, output *DescribeDBParametersOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBParameters,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1317,12 +1317,12 @@ func (c *RDS) DescribeDBParametersPages(input *DescribeDBParametersInput, fn fun
 const opDescribeDBSecurityGroups = "DescribeDBSecurityGroups"
 
 // DescribeDBSecurityGroupsRequest generates a request for the DescribeDBSecurityGroups operation.
-func (c *RDS) DescribeDBSecurityGroupsRequest(input *DescribeDBSecurityGroupsInput) (req *aws.Request, output *DescribeDBSecurityGroupsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBSecurityGroupsRequest(input *DescribeDBSecurityGroupsInput) (req *request.Request, output *DescribeDBSecurityGroupsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBSecurityGroups,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1359,12 +1359,12 @@ func (c *RDS) DescribeDBSecurityGroupsPages(input *DescribeDBSecurityGroupsInput
 const opDescribeDBSnapshots = "DescribeDBSnapshots"
 
 // DescribeDBSnapshotsRequest generates a request for the DescribeDBSnapshots operation.
-func (c *RDS) DescribeDBSnapshotsRequest(input *DescribeDBSnapshotsInput) (req *aws.Request, output *DescribeDBSnapshotsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBSnapshotsRequest(input *DescribeDBSnapshotsInput) (req *request.Request, output *DescribeDBSnapshotsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBSnapshots,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1399,12 +1399,12 @@ func (c *RDS) DescribeDBSnapshotsPages(input *DescribeDBSnapshotsInput, fn func(
 const opDescribeDBSubnetGroups = "DescribeDBSubnetGroups"
 
 // DescribeDBSubnetGroupsRequest generates a request for the DescribeDBSubnetGroups operation.
-func (c *RDS) DescribeDBSubnetGroupsRequest(input *DescribeDBSubnetGroupsInput) (req *aws.Request, output *DescribeDBSubnetGroupsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeDBSubnetGroupsRequest(input *DescribeDBSubnetGroupsInput) (req *request.Request, output *DescribeDBSubnetGroupsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeDBSubnetGroups,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1442,8 +1442,8 @@ func (c *RDS) DescribeDBSubnetGroupsPages(input *DescribeDBSubnetGroupsInput, fn
 const opDescribeEngineDefaultClusterParameters = "DescribeEngineDefaultClusterParameters"
 
 // DescribeEngineDefaultClusterParametersRequest generates a request for the DescribeEngineDefaultClusterParameters operation.
-func (c *RDS) DescribeEngineDefaultClusterParametersRequest(input *DescribeEngineDefaultClusterParametersInput) (req *aws.Request, output *DescribeEngineDefaultClusterParametersOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeEngineDefaultClusterParametersRequest(input *DescribeEngineDefaultClusterParametersInput) (req *request.Request, output *DescribeEngineDefaultClusterParametersOutput) {
+	op := &request.Operation{
 		Name:       opDescribeEngineDefaultClusterParameters,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1473,12 +1473,12 @@ func (c *RDS) DescribeEngineDefaultClusterParameters(input *DescribeEngineDefaul
 const opDescribeEngineDefaultParameters = "DescribeEngineDefaultParameters"
 
 // DescribeEngineDefaultParametersRequest generates a request for the DescribeEngineDefaultParameters operation.
-func (c *RDS) DescribeEngineDefaultParametersRequest(input *DescribeEngineDefaultParametersInput) (req *aws.Request, output *DescribeEngineDefaultParametersOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeEngineDefaultParametersRequest(input *DescribeEngineDefaultParametersInput) (req *request.Request, output *DescribeEngineDefaultParametersOutput) {
+	op := &request.Operation{
 		Name:       opDescribeEngineDefaultParameters,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"EngineDefaults.Marker"},
 			LimitToken:      "MaxRecords",
@@ -1514,8 +1514,8 @@ func (c *RDS) DescribeEngineDefaultParametersPages(input *DescribeEngineDefaultP
 const opDescribeEventCategories = "DescribeEventCategories"
 
 // DescribeEventCategoriesRequest generates a request for the DescribeEventCategories operation.
-func (c *RDS) DescribeEventCategoriesRequest(input *DescribeEventCategoriesInput) (req *aws.Request, output *DescribeEventCategoriesOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeEventCategoriesRequest(input *DescribeEventCategoriesInput) (req *request.Request, output *DescribeEventCategoriesOutput) {
+	op := &request.Operation{
 		Name:       opDescribeEventCategories,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1544,12 +1544,12 @@ func (c *RDS) DescribeEventCategories(input *DescribeEventCategoriesInput) (*Des
 const opDescribeEventSubscriptions = "DescribeEventSubscriptions"
 
 // DescribeEventSubscriptionsRequest generates a request for the DescribeEventSubscriptions operation.
-func (c *RDS) DescribeEventSubscriptionsRequest(input *DescribeEventSubscriptionsInput) (req *aws.Request, output *DescribeEventSubscriptionsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeEventSubscriptionsRequest(input *DescribeEventSubscriptionsInput) (req *request.Request, output *DescribeEventSubscriptionsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeEventSubscriptions,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1588,12 +1588,12 @@ func (c *RDS) DescribeEventSubscriptionsPages(input *DescribeEventSubscriptionsI
 const opDescribeEvents = "DescribeEvents"
 
 // DescribeEventsRequest generates a request for the DescribeEvents operation.
-func (c *RDS) DescribeEventsRequest(input *DescribeEventsInput) (req *aws.Request, output *DescribeEventsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeEventsRequest(input *DescribeEventsInput) (req *request.Request, output *DescribeEventsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeEvents,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1632,12 +1632,12 @@ func (c *RDS) DescribeEventsPages(input *DescribeEventsInput, fn func(p *Describ
 const opDescribeOptionGroupOptions = "DescribeOptionGroupOptions"
 
 // DescribeOptionGroupOptionsRequest generates a request for the DescribeOptionGroupOptions operation.
-func (c *RDS) DescribeOptionGroupOptionsRequest(input *DescribeOptionGroupOptionsInput) (req *aws.Request, output *DescribeOptionGroupOptionsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeOptionGroupOptionsRequest(input *DescribeOptionGroupOptionsInput) (req *request.Request, output *DescribeOptionGroupOptionsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeOptionGroupOptions,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1672,12 +1672,12 @@ func (c *RDS) DescribeOptionGroupOptionsPages(input *DescribeOptionGroupOptionsI
 const opDescribeOptionGroups = "DescribeOptionGroups"
 
 // DescribeOptionGroupsRequest generates a request for the DescribeOptionGroups operation.
-func (c *RDS) DescribeOptionGroupsRequest(input *DescribeOptionGroupsInput) (req *aws.Request, output *DescribeOptionGroupsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeOptionGroupsRequest(input *DescribeOptionGroupsInput) (req *request.Request, output *DescribeOptionGroupsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeOptionGroups,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1712,12 +1712,12 @@ func (c *RDS) DescribeOptionGroupsPages(input *DescribeOptionGroupsInput, fn fun
 const opDescribeOrderableDBInstanceOptions = "DescribeOrderableDBInstanceOptions"
 
 // DescribeOrderableDBInstanceOptionsRequest generates a request for the DescribeOrderableDBInstanceOptions operation.
-func (c *RDS) DescribeOrderableDBInstanceOptionsRequest(input *DescribeOrderableDBInstanceOptionsInput) (req *aws.Request, output *DescribeOrderableDBInstanceOptionsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeOrderableDBInstanceOptionsRequest(input *DescribeOrderableDBInstanceOptionsInput) (req *request.Request, output *DescribeOrderableDBInstanceOptionsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeOrderableDBInstanceOptions,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1752,8 +1752,8 @@ func (c *RDS) DescribeOrderableDBInstanceOptionsPages(input *DescribeOrderableDB
 const opDescribePendingMaintenanceActions = "DescribePendingMaintenanceActions"
 
 // DescribePendingMaintenanceActionsRequest generates a request for the DescribePendingMaintenanceActions operation.
-func (c *RDS) DescribePendingMaintenanceActionsRequest(input *DescribePendingMaintenanceActionsInput) (req *aws.Request, output *DescribePendingMaintenanceActionsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribePendingMaintenanceActionsRequest(input *DescribePendingMaintenanceActionsInput) (req *request.Request, output *DescribePendingMaintenanceActionsOutput) {
+	op := &request.Operation{
 		Name:       opDescribePendingMaintenanceActions,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1780,12 +1780,12 @@ func (c *RDS) DescribePendingMaintenanceActions(input *DescribePendingMaintenanc
 const opDescribeReservedDBInstances = "DescribeReservedDBInstances"
 
 // DescribeReservedDBInstancesRequest generates a request for the DescribeReservedDBInstances operation.
-func (c *RDS) DescribeReservedDBInstancesRequest(input *DescribeReservedDBInstancesInput) (req *aws.Request, output *DescribeReservedDBInstancesOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeReservedDBInstancesRequest(input *DescribeReservedDBInstancesInput) (req *request.Request, output *DescribeReservedDBInstancesOutput) {
+	op := &request.Operation{
 		Name:       opDescribeReservedDBInstances,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1821,12 +1821,12 @@ func (c *RDS) DescribeReservedDBInstancesPages(input *DescribeReservedDBInstance
 const opDescribeReservedDBInstancesOfferings = "DescribeReservedDBInstancesOfferings"
 
 // DescribeReservedDBInstancesOfferingsRequest generates a request for the DescribeReservedDBInstancesOfferings operation.
-func (c *RDS) DescribeReservedDBInstancesOfferingsRequest(input *DescribeReservedDBInstancesOfferingsInput) (req *aws.Request, output *DescribeReservedDBInstancesOfferingsOutput) {
-	op := &aws.Operation{
+func (c *RDS) DescribeReservedDBInstancesOfferingsRequest(input *DescribeReservedDBInstancesOfferingsInput) (req *request.Request, output *DescribeReservedDBInstancesOfferingsOutput) {
+	op := &request.Operation{
 		Name:       opDescribeReservedDBInstancesOfferings,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "MaxRecords",
@@ -1861,12 +1861,12 @@ func (c *RDS) DescribeReservedDBInstancesOfferingsPages(input *DescribeReservedD
 const opDownloadDBLogFilePortion = "DownloadDBLogFilePortion"
 
 // DownloadDBLogFilePortionRequest generates a request for the DownloadDBLogFilePortion operation.
-func (c *RDS) DownloadDBLogFilePortionRequest(input *DownloadDBLogFilePortionInput) (req *aws.Request, output *DownloadDBLogFilePortionOutput) {
-	op := &aws.Operation{
+func (c *RDS) DownloadDBLogFilePortionRequest(input *DownloadDBLogFilePortionInput) (req *request.Request, output *DownloadDBLogFilePortionOutput) {
+	op := &request.Operation{
 		Name:       opDownloadDBLogFilePortion,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
-		Paginator: &aws.Paginator{
+		Paginator: &request.Paginator{
 			InputTokens:     []string{"Marker"},
 			OutputTokens:    []string{"Marker"},
 			LimitToken:      "NumberOfLines",
@@ -1901,8 +1901,8 @@ func (c *RDS) DownloadDBLogFilePortionPages(input *DownloadDBLogFilePortionInput
 const opFailoverDBCluster = "FailoverDBCluster"
 
 // FailoverDBClusterRequest generates a request for the FailoverDBCluster operation.
-func (c *RDS) FailoverDBClusterRequest(input *FailoverDBClusterInput) (req *aws.Request, output *FailoverDBClusterOutput) {
-	op := &aws.Operation{
+func (c *RDS) FailoverDBClusterRequest(input *FailoverDBClusterInput) (req *request.Request, output *FailoverDBClusterOutput) {
+	op := &request.Operation{
 		Name:       opFailoverDBCluster,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1942,8 +1942,8 @@ func (c *RDS) FailoverDBCluster(input *FailoverDBClusterInput) (*FailoverDBClust
 const opListTagsForResource = "ListTagsForResource"
 
 // ListTagsForResourceRequest generates a request for the ListTagsForResource operation.
-func (c *RDS) ListTagsForResourceRequest(input *ListTagsForResourceInput) (req *aws.Request, output *ListTagsForResourceOutput) {
-	op := &aws.Operation{
+func (c *RDS) ListTagsForResourceRequest(input *ListTagsForResourceInput) (req *request.Request, output *ListTagsForResourceOutput) {
+	op := &request.Operation{
 		Name:       opListTagsForResource,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -1972,8 +1972,8 @@ func (c *RDS) ListTagsForResource(input *ListTagsForResourceInput) (*ListTagsFor
 const opModifyDBCluster = "ModifyDBCluster"
 
 // ModifyDBClusterRequest generates a request for the ModifyDBCluster operation.
-func (c *RDS) ModifyDBClusterRequest(input *ModifyDBClusterInput) (req *aws.Request, output *ModifyDBClusterOutput) {
-	op := &aws.Operation{
+func (c *RDS) ModifyDBClusterRequest(input *ModifyDBClusterInput) (req *request.Request, output *ModifyDBClusterOutput) {
+	op := &request.Operation{
 		Name:       opModifyDBCluster,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2003,8 +2003,8 @@ func (c *RDS) ModifyDBCluster(input *ModifyDBClusterInput) (*ModifyDBClusterOutp
 const opModifyDBClusterParameterGroup = "ModifyDBClusterParameterGroup"
 
 // ModifyDBClusterParameterGroupRequest generates a request for the ModifyDBClusterParameterGroup operation.
-func (c *RDS) ModifyDBClusterParameterGroupRequest(input *ModifyDBClusterParameterGroupInput) (req *aws.Request, output *DBClusterParameterGroupNameMessage) {
-	op := &aws.Operation{
+func (c *RDS) ModifyDBClusterParameterGroupRequest(input *ModifyDBClusterParameterGroupInput) (req *request.Request, output *DBClusterParameterGroupNameMessage) {
+	op := &request.Operation{
 		Name:       opModifyDBClusterParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2051,8 +2051,8 @@ func (c *RDS) ModifyDBClusterParameterGroup(input *ModifyDBClusterParameterGroup
 const opModifyDBInstance = "ModifyDBInstance"
 
 // ModifyDBInstanceRequest generates a request for the ModifyDBInstance operation.
-func (c *RDS) ModifyDBInstanceRequest(input *ModifyDBInstanceInput) (req *aws.Request, output *ModifyDBInstanceOutput) {
-	op := &aws.Operation{
+func (c *RDS) ModifyDBInstanceRequest(input *ModifyDBInstanceInput) (req *request.Request, output *ModifyDBInstanceOutput) {
+	op := &request.Operation{
 		Name:       opModifyDBInstance,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2079,8 +2079,8 @@ func (c *RDS) ModifyDBInstance(input *ModifyDBInstanceInput) (*ModifyDBInstanceO
 const opModifyDBParameterGroup = "ModifyDBParameterGroup"
 
 // ModifyDBParameterGroupRequest generates a request for the ModifyDBParameterGroup operation.
-func (c *RDS) ModifyDBParameterGroupRequest(input *ModifyDBParameterGroupInput) (req *aws.Request, output *DBParameterGroupNameMessage) {
-	op := &aws.Operation{
+func (c *RDS) ModifyDBParameterGroupRequest(input *ModifyDBParameterGroupInput) (req *request.Request, output *DBParameterGroupNameMessage) {
+	op := &request.Operation{
 		Name:       opModifyDBParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2123,8 +2123,8 @@ func (c *RDS) ModifyDBParameterGroup(input *ModifyDBParameterGroupInput) (*DBPar
 const opModifyDBSubnetGroup = "ModifyDBSubnetGroup"
 
 // ModifyDBSubnetGroupRequest generates a request for the ModifyDBSubnetGroup operation.
-func (c *RDS) ModifyDBSubnetGroupRequest(input *ModifyDBSubnetGroupInput) (req *aws.Request, output *ModifyDBSubnetGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) ModifyDBSubnetGroupRequest(input *ModifyDBSubnetGroupInput) (req *request.Request, output *ModifyDBSubnetGroupOutput) {
+	op := &request.Operation{
 		Name:       opModifyDBSubnetGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2151,8 +2151,8 @@ func (c *RDS) ModifyDBSubnetGroup(input *ModifyDBSubnetGroupInput) (*ModifyDBSub
 const opModifyEventSubscription = "ModifyEventSubscription"
 
 // ModifyEventSubscriptionRequest generates a request for the ModifyEventSubscription operation.
-func (c *RDS) ModifyEventSubscriptionRequest(input *ModifyEventSubscriptionInput) (req *aws.Request, output *ModifyEventSubscriptionOutput) {
-	op := &aws.Operation{
+func (c *RDS) ModifyEventSubscriptionRequest(input *ModifyEventSubscriptionInput) (req *request.Request, output *ModifyEventSubscriptionOutput) {
+	op := &request.Operation{
 		Name:       opModifyEventSubscription,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2186,8 +2186,8 @@ func (c *RDS) ModifyEventSubscription(input *ModifyEventSubscriptionInput) (*Mod
 const opModifyOptionGroup = "ModifyOptionGroup"
 
 // ModifyOptionGroupRequest generates a request for the ModifyOptionGroup operation.
-func (c *RDS) ModifyOptionGroupRequest(input *ModifyOptionGroupInput) (req *aws.Request, output *ModifyOptionGroupOutput) {
-	op := &aws.Operation{
+func (c *RDS) ModifyOptionGroupRequest(input *ModifyOptionGroupInput) (req *request.Request, output *ModifyOptionGroupOutput) {
+	op := &request.Operation{
 		Name:       opModifyOptionGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2213,8 +2213,8 @@ func (c *RDS) ModifyOptionGroup(input *ModifyOptionGroupInput) (*ModifyOptionGro
 const opPromoteReadReplica = "PromoteReadReplica"
 
 // PromoteReadReplicaRequest generates a request for the PromoteReadReplica operation.
-func (c *RDS) PromoteReadReplicaRequest(input *PromoteReadReplicaInput) (req *aws.Request, output *PromoteReadReplicaOutput) {
-	op := &aws.Operation{
+func (c *RDS) PromoteReadReplicaRequest(input *PromoteReadReplicaInput) (req *request.Request, output *PromoteReadReplicaOutput) {
+	op := &request.Operation{
 		Name:       opPromoteReadReplica,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2245,8 +2245,8 @@ func (c *RDS) PromoteReadReplica(input *PromoteReadReplicaInput) (*PromoteReadRe
 const opPurchaseReservedDBInstancesOffering = "PurchaseReservedDBInstancesOffering"
 
 // PurchaseReservedDBInstancesOfferingRequest generates a request for the PurchaseReservedDBInstancesOffering operation.
-func (c *RDS) PurchaseReservedDBInstancesOfferingRequest(input *PurchaseReservedDBInstancesOfferingInput) (req *aws.Request, output *PurchaseReservedDBInstancesOfferingOutput) {
-	op := &aws.Operation{
+func (c *RDS) PurchaseReservedDBInstancesOfferingRequest(input *PurchaseReservedDBInstancesOfferingInput) (req *request.Request, output *PurchaseReservedDBInstancesOfferingOutput) {
+	op := &request.Operation{
 		Name:       opPurchaseReservedDBInstancesOffering,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2272,8 +2272,8 @@ func (c *RDS) PurchaseReservedDBInstancesOffering(input *PurchaseReservedDBInsta
 const opRebootDBInstance = "RebootDBInstance"
 
 // RebootDBInstanceRequest generates a request for the RebootDBInstance operation.
-func (c *RDS) RebootDBInstanceRequest(input *RebootDBInstanceInput) (req *aws.Request, output *RebootDBInstanceOutput) {
-	op := &aws.Operation{
+func (c *RDS) RebootDBInstanceRequest(input *RebootDBInstanceInput) (req *request.Request, output *RebootDBInstanceOutput) {
+	op := &request.Operation{
 		Name:       opRebootDBInstance,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2315,8 +2315,8 @@ func (c *RDS) RebootDBInstance(input *RebootDBInstanceInput) (*RebootDBInstanceO
 const opRemoveSourceIdentifierFromSubscription = "RemoveSourceIdentifierFromSubscription"
 
 // RemoveSourceIdentifierFromSubscriptionRequest generates a request for the RemoveSourceIdentifierFromSubscription operation.
-func (c *RDS) RemoveSourceIdentifierFromSubscriptionRequest(input *RemoveSourceIdentifierFromSubscriptionInput) (req *aws.Request, output *RemoveSourceIdentifierFromSubscriptionOutput) {
-	op := &aws.Operation{
+func (c *RDS) RemoveSourceIdentifierFromSubscriptionRequest(input *RemoveSourceIdentifierFromSubscriptionInput) (req *request.Request, output *RemoveSourceIdentifierFromSubscriptionOutput) {
+	op := &request.Operation{
 		Name:       opRemoveSourceIdentifierFromSubscription,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2342,8 +2342,8 @@ func (c *RDS) RemoveSourceIdentifierFromSubscription(input *RemoveSourceIdentifi
 const opRemoveTagsFromResource = "RemoveTagsFromResource"
 
 // RemoveTagsFromResourceRequest generates a request for the RemoveTagsFromResource operation.
-func (c *RDS) RemoveTagsFromResourceRequest(input *RemoveTagsFromResourceInput) (req *aws.Request, output *RemoveTagsFromResourceOutput) {
-	op := &aws.Operation{
+func (c *RDS) RemoveTagsFromResourceRequest(input *RemoveTagsFromResourceInput) (req *request.Request, output *RemoveTagsFromResourceOutput) {
+	op := &request.Operation{
 		Name:       opRemoveTagsFromResource,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2372,8 +2372,8 @@ func (c *RDS) RemoveTagsFromResource(input *RemoveTagsFromResourceInput) (*Remov
 const opResetDBClusterParameterGroup = "ResetDBClusterParameterGroup"
 
 // ResetDBClusterParameterGroupRequest generates a request for the ResetDBClusterParameterGroup operation.
-func (c *RDS) ResetDBClusterParameterGroupRequest(input *ResetDBClusterParameterGroupInput) (req *aws.Request, output *DBClusterParameterGroupNameMessage) {
-	op := &aws.Operation{
+func (c *RDS) ResetDBClusterParameterGroupRequest(input *ResetDBClusterParameterGroupInput) (req *request.Request, output *DBClusterParameterGroupNameMessage) {
+	op := &request.Operation{
 		Name:       opResetDBClusterParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2411,8 +2411,8 @@ func (c *RDS) ResetDBClusterParameterGroup(input *ResetDBClusterParameterGroupIn
 const opResetDBParameterGroup = "ResetDBParameterGroup"
 
 // ResetDBParameterGroupRequest generates a request for the ResetDBParameterGroup operation.
-func (c *RDS) ResetDBParameterGroupRequest(input *ResetDBParameterGroupInput) (req *aws.Request, output *DBParameterGroupNameMessage) {
-	op := &aws.Operation{
+func (c *RDS) ResetDBParameterGroupRequest(input *ResetDBParameterGroupInput) (req *request.Request, output *DBParameterGroupNameMessage) {
+	op := &request.Operation{
 		Name:       opResetDBParameterGroup,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2444,8 +2444,8 @@ func (c *RDS) ResetDBParameterGroup(input *ResetDBParameterGroupInput) (*DBParam
 const opRestoreDBClusterFromSnapshot = "RestoreDBClusterFromSnapshot"
 
 // RestoreDBClusterFromSnapshotRequest generates a request for the RestoreDBClusterFromSnapshot operation.
-func (c *RDS) RestoreDBClusterFromSnapshotRequest(input *RestoreDBClusterFromSnapshotInput) (req *aws.Request, output *RestoreDBClusterFromSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) RestoreDBClusterFromSnapshotRequest(input *RestoreDBClusterFromSnapshotInput) (req *request.Request, output *RestoreDBClusterFromSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opRestoreDBClusterFromSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2477,8 +2477,8 @@ func (c *RDS) RestoreDBClusterFromSnapshot(input *RestoreDBClusterFromSnapshotIn
 const opRestoreDBClusterToPointInTime = "RestoreDBClusterToPointInTime"
 
 // RestoreDBClusterToPointInTimeRequest generates a request for the RestoreDBClusterToPointInTime operation.
-func (c *RDS) RestoreDBClusterToPointInTimeRequest(input *RestoreDBClusterToPointInTimeInput) (req *aws.Request, output *RestoreDBClusterToPointInTimeOutput) {
-	op := &aws.Operation{
+func (c *RDS) RestoreDBClusterToPointInTimeRequest(input *RestoreDBClusterToPointInTimeInput) (req *request.Request, output *RestoreDBClusterToPointInTimeOutput) {
+	op := &request.Operation{
 		Name:       opRestoreDBClusterToPointInTime,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2511,8 +2511,8 @@ func (c *RDS) RestoreDBClusterToPointInTime(input *RestoreDBClusterToPointInTime
 const opRestoreDBInstanceFromDBSnapshot = "RestoreDBInstanceFromDBSnapshot"
 
 // RestoreDBInstanceFromDBSnapshotRequest generates a request for the RestoreDBInstanceFromDBSnapshot operation.
-func (c *RDS) RestoreDBInstanceFromDBSnapshotRequest(input *RestoreDBInstanceFromDBSnapshotInput) (req *aws.Request, output *RestoreDBInstanceFromDBSnapshotOutput) {
-	op := &aws.Operation{
+func (c *RDS) RestoreDBInstanceFromDBSnapshotRequest(input *RestoreDBInstanceFromDBSnapshotInput) (req *request.Request, output *RestoreDBInstanceFromDBSnapshotOutput) {
+	op := &request.Operation{
 		Name:       opRestoreDBInstanceFromDBSnapshot,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2554,8 +2554,8 @@ func (c *RDS) RestoreDBInstanceFromDBSnapshot(input *RestoreDBInstanceFromDBSnap
 const opRestoreDBInstanceToPointInTime = "RestoreDBInstanceToPointInTime"
 
 // RestoreDBInstanceToPointInTimeRequest generates a request for the RestoreDBInstanceToPointInTime operation.
-func (c *RDS) RestoreDBInstanceToPointInTimeRequest(input *RestoreDBInstanceToPointInTimeInput) (req *aws.Request, output *RestoreDBInstanceToPointInTimeOutput) {
-	op := &aws.Operation{
+func (c *RDS) RestoreDBInstanceToPointInTimeRequest(input *RestoreDBInstanceToPointInTimeInput) (req *request.Request, output *RestoreDBInstanceToPointInTimeOutput) {
+	op := &request.Operation{
 		Name:       opRestoreDBInstanceToPointInTime,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2589,8 +2589,8 @@ func (c *RDS) RestoreDBInstanceToPointInTime(input *RestoreDBInstanceToPointInTi
 const opRevokeDBSecurityGroupIngress = "RevokeDBSecurityGroupIngress"
 
 // RevokeDBSecurityGroupIngressRequest generates a request for the RevokeDBSecurityGroupIngress operation.
-func (c *RDS) RevokeDBSecurityGroupIngressRequest(input *RevokeDBSecurityGroupIngressInput) (req *aws.Request, output *RevokeDBSecurityGroupIngressOutput) {
-	op := &aws.Operation{
+func (c *RDS) RevokeDBSecurityGroupIngressRequest(input *RevokeDBSecurityGroupIngressInput) (req *request.Request, output *RevokeDBSecurityGroupIngressOutput) {
+	op := &request.Operation{
 		Name:       opRevokeDBSecurityGroupIngress,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
@@ -2813,7 +2813,7 @@ type AuthorizeDBSecurityGroupIngressInput struct {
 	// Id of the EC2 security group to authorize. For VPC DB security groups, EC2SecurityGroupId
 	// must be provided. Otherwise, EC2SecurityGroupOwnerId and either EC2SecurityGroupName
 	// or EC2SecurityGroupId must be provided.
-	EC2SecurityGroupID *string `locationName:"EC2SecurityGroupId" type:"string"`
+	EC2SecurityGroupId *string `type:"string"`
 
 	// Name of the EC2 security group to authorize. For VPC DB security groups,
 	// EC2SecurityGroupId must be provided. Otherwise, EC2SecurityGroupOwnerId and
@@ -2825,7 +2825,7 @@ type AuthorizeDBSecurityGroupIngressInput struct {
 	// value. For VPC DB security groups, EC2SecurityGroupId must be provided. Otherwise,
 	// EC2SecurityGroupOwnerId and either EC2SecurityGroupName or EC2SecurityGroupId
 	// must be provided.
-	EC2SecurityGroupOwnerID *string `locationName:"EC2SecurityGroupOwnerId" type:"string"`
+	EC2SecurityGroupOwnerId *string `type:"string"`
 
 	metadataAuthorizeDBSecurityGroupIngressInput `json:"-" xml:"-"`
 }
@@ -3340,7 +3340,7 @@ type CreateDBClusterInput struct {
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
 	// A list of EC2 VPC security groups to associate with this DB cluster.
-	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupIds []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataCreateDBClusterInput `json:"-" xml:"-"`
 }
@@ -3819,7 +3819,7 @@ type CreateDBInstanceInput struct {
 	// initially allocated for the DB instance.
 	//
 	//  Constraints: To use PIOPS, this value must be an integer greater than 1000.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
+	Iops *int64 `type:"integer"`
 
 	// The KMS key identifier for an encrypted DB instance.
 	//
@@ -3832,7 +3832,7 @@ type CreateDBInstanceInput struct {
 	// for the KmsKeyId parameter, then Amazon RDS will use your default encryption
 	// key. AWS KMS creates the default encryption key for your AWS account. Your
 	// AWS account has a different default encryption key for each AWS region.
-	KMSKeyID *string `locationName:"KmsKeyId" type:"string"`
+	KmsKeyId *string `type:"string"`
 
 	// License model information for this DB instance.
 	//
@@ -3995,20 +3995,20 @@ type CreateDBInstanceInput struct {
 	//  Default: io1 if the Iops parameter is specified; otherwise standard
 	StorageType *string `type:"string"`
 
+	// A list of tags.
+	Tags []*Tag `locationNameList:"Tag" type:"list"`
+
 	// The ARN from the Key Store with which to associate the instance for TDE encryption.
-	TDECredentialARN *string `locationName:"TdeCredentialArn" type:"string"`
+	TdeCredentialArn *string `type:"string"`
 
 	// The password for the given ARN from the Key Store in order to access the
 	// device.
-	TDECredentialPassword *string `locationName:"TdeCredentialPassword" type:"string"`
-
-	// A list of tags.
-	Tags []*Tag `locationNameList:"Tag" type:"list"`
+	TdeCredentialPassword *string `type:"string"`
 
 	// A list of EC2 VPC security groups to associate with this DB instance.
 	//
 	//  Default: The default EC2 VPC security group for the DB subnet group's VPC.
-	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupIds []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataCreateDBInstanceInput `json:"-" xml:"-"`
 }
@@ -4097,7 +4097,7 @@ type CreateDBInstanceReadReplicaInput struct {
 
 	// The amount of Provisioned IOPS (input/output operations per second) to be
 	// initially allocated for the DB instance.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
+	Iops *int64 `type:"integer"`
 
 	// The option group the DB instance will be associated with. If omitted, the
 	// default option group for the engine specified will be used.
@@ -4391,7 +4391,7 @@ type CreateDBSubnetGroupInput struct {
 	DBSubnetGroupName *string `type:"string" required:"true"`
 
 	// The EC2 Subnet IDs for the DB subnet group.
-	SubnetIDs []*string `locationName:"SubnetIds" locationNameList:"SubnetIdentifier" type:"list" required:"true"`
+	SubnetIds []*string `locationNameList:"SubnetIdentifier" type:"list" required:"true"`
 
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
@@ -4453,7 +4453,7 @@ type CreateEventSubscriptionInput struct {
 	// The Amazon Resource Name (ARN) of the SNS topic created for event notification.
 	// The ARN is created by Amazon SNS when you create a topic and subscribe to
 	// it.
-	SNSTopicARN *string `locationName:"SnsTopicArn" type:"string" required:"true"`
+	SnsTopicArn *string `type:"string" required:"true"`
 
 	// The list of identifiers of the event sources for which events will be returned.
 	// If not specified, then all sources are included in the response. An identifier
@@ -4468,7 +4468,7 @@ type CreateEventSubscriptionInput struct {
 	// If the source type is a DB parameter group, a DBParameterGroupName must be
 	// supplied. If the source type is a DB snapshot, a DBSnapshotIdentifier must
 	// be supplied.
-	SourceIDs []*string `locationName:"SourceIds" locationNameList:"SourceId" type:"list"`
+	SourceIds []*string `locationNameList:"SourceId" type:"list"`
 
 	// The type of source that will be generating the events. For example, if you
 	// want to be notified of events generated by a DB instance, you would set this
@@ -4666,7 +4666,7 @@ type DBCluster struct {
 	Status *string `type:"string"`
 
 	// Provides a list of VPC security groups that the DB cluster belongs to.
-	VPCSecurityGroups []*VPCSecurityGroupMembership `locationName:"VpcSecurityGroups" locationNameList:"VpcSecurityGroupMembership" type:"list"`
+	VpcSecurityGroups []*VpcSecurityGroupMembership `locationNameList:"VpcSecurityGroupMembership" type:"list"`
 
 	metadataDBCluster `json:"-" xml:"-"`
 }
@@ -4855,7 +4855,7 @@ type DBClusterSnapshot struct {
 	Status *string `type:"string"`
 
 	// Provides the VPC ID associated with the DB cluster snapshot.
-	VPCID *string `locationName:"VpcId" type:"string"`
+	VpcId *string `type:"string"`
 
 	metadataDBClusterSnapshot `json:"-" xml:"-"`
 }
@@ -4944,21 +4944,12 @@ type DBInstance struct {
 	// DB cluster that the DB instance is a member of.
 	DBClusterIdentifier *string `type:"string"`
 
-	// If StorageEncrypted is true, the region-unique, immutable identifier for
-	// the encrypted DB instance. This identifier is found in AWS CloudTrail log
-	// entries whenever the KMS key for the DB instance is accessed.
-	DBIResourceID *string `locationName:"DbiResourceId" type:"string"`
-
 	// Contains the name of the compute and memory capacity class of the DB instance.
 	DBInstanceClass *string `type:"string"`
 
 	// Contains a user-supplied database identifier. This identifier is the unique
 	// key that identifies a DB instance.
 	DBInstanceIdentifier *string `type:"string"`
-
-	// Specifies the port that the DB instance listens on. If the DB instance is
-	// part of a DB cluster, this can be a different port than the DB cluster port.
-	DBInstancePort *int64 `locationName:"DbInstancePort" type:"integer"`
 
 	// Specifies the current state of this database.
 	DBInstanceStatus *string `type:"string"`
@@ -4993,6 +4984,15 @@ type DBInstance struct {
 	// including the name, description, and subnets in the subnet group.
 	DBSubnetGroup *DBSubnetGroup `type:"structure"`
 
+	// Specifies the port that the DB instance listens on. If the DB instance is
+	// part of a DB cluster, this can be a different port than the DB cluster port.
+	DbInstancePort *int64 `type:"integer"`
+
+	// If StorageEncrypted is true, the region-unique, immutable identifier for
+	// the encrypted DB instance. This identifier is found in AWS CloudTrail log
+	// entries whenever the KMS key for the DB instance is accessed.
+	DbiResourceId *string `type:"string"`
+
 	// Specifies the connection endpoint.
 	Endpoint *Endpoint `type:"structure"`
 
@@ -5002,15 +5002,15 @@ type DBInstance struct {
 	// Indicates the database engine version.
 	EngineVersion *string `type:"string"`
 
-	// Specifies the Provisioned IOPS (I/O operations per second) value.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
-
 	// Provides the date and time the DB instance was created.
 	InstanceCreateTime *time.Time `type:"timestamp" timestampFormat:"iso8601"`
 
+	// Specifies the Provisioned IOPS (I/O operations per second) value.
+	Iops *int64 `type:"integer"`
+
 	// If StorageEncrypted is true, the KMS key identifier for the encrypted DB
 	// instance.
-	KMSKeyID *string `locationName:"KmsKeyId" type:"string"`
+	KmsKeyId *string `type:"string"`
 
 	// Specifies the latest time to which a database can be restored with point-in-time
 	// restore.
@@ -5079,11 +5079,11 @@ type DBInstance struct {
 
 	// The ARN from the Key Store with which the instance is associated for TDE
 	// encryption.
-	TDECredentialARN *string `locationName:"TdeCredentialArn" type:"string"`
+	TdeCredentialArn *string `type:"string"`
 
 	// Provides List of VPC security group elements that the DB instance belongs
 	// to.
-	VPCSecurityGroups []*VPCSecurityGroupMembership `locationName:"VpcSecurityGroups" locationNameList:"VpcSecurityGroupMembership" type:"list"`
+	VpcSecurityGroups []*VpcSecurityGroupMembership `locationNameList:"VpcSecurityGroupMembership" type:"list"`
 
 	metadataDBInstance `json:"-" xml:"-"`
 }
@@ -5241,10 +5241,10 @@ type DBSecurityGroup struct {
 	IPRanges []*IPRange `locationNameList:"IPRange" type:"list"`
 
 	// Provides the AWS ID of the owner of a specific DB security group.
-	OwnerID *string `locationName:"OwnerId" type:"string"`
+	OwnerId *string `type:"string"`
 
 	// Provides the VpcId of the DB security group.
-	VPCID *string `locationName:"VpcId" type:"string"`
+	VpcId *string `type:"string"`
 
 	metadataDBSecurityGroup `json:"-" xml:"-"`
 }
@@ -5319,16 +5319,16 @@ type DBSnapshot struct {
 	// Specifies the version of the database engine.
 	EngineVersion *string `type:"string"`
 
-	// Specifies the Provisioned IOPS (I/O operations per second) value of the DB
-	// instance at the time of the snapshot.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
-
 	// Specifies the time when the snapshot was taken, in Universal Coordinated
 	// Time (UTC).
 	InstanceCreateTime *time.Time `type:"timestamp" timestampFormat:"iso8601"`
 
+	// Specifies the Provisioned IOPS (I/O operations per second) value of the DB
+	// instance at the time of the snapshot.
+	Iops *int64 `type:"integer"`
+
 	// If Encrypted is true, the KMS key identifier for the encrypted DB snapshot.
-	KMSKeyID *string `locationName:"KmsKeyId" type:"string"`
+	KmsKeyId *string `type:"string"`
 
 	// License model information for the restored DB instance.
 	LicenseModel *string `type:"string"`
@@ -5367,10 +5367,10 @@ type DBSnapshot struct {
 	StorageType *string `type:"string"`
 
 	// The ARN from the Key Store with which to associate the instance for TDE encryption.
-	TDECredentialARN *string `locationName:"TdeCredentialArn" type:"string"`
+	TdeCredentialArn *string `type:"string"`
 
 	// Provides the VPC ID associated with the DB snapshot.
-	VPCID *string `locationName:"VpcId" type:"string"`
+	VpcId *string `type:"string"`
 
 	metadataDBSnapshot `json:"-" xml:"-"`
 }
@@ -5408,7 +5408,7 @@ type DBSubnetGroup struct {
 	Subnets []*Subnet `locationNameList:"Subnet" type:"list"`
 
 	// Provides the VpcId of the DB subnet group.
-	VPCID *string `locationName:"VpcId" type:"string"`
+	VpcId *string `type:"string"`
 
 	metadataDBSubnetGroup `json:"-" xml:"-"`
 }
@@ -7500,7 +7500,7 @@ type DescribeOrderableDBInstanceOptionsInput struct {
 
 	// The VPC filter value. Specify this parameter to show only the available VPC
 	// or non-VPC offerings.
-	VPC *bool `locationName:"Vpc" type:"boolean"`
+	Vpc *bool `type:"boolean"`
 
 	metadataDescribeOrderableDBInstanceOptionsInput `json:"-" xml:"-"`
 }
@@ -7664,11 +7664,11 @@ type DescribeReservedDBInstancesInput struct {
 
 	// The reserved DB instance identifier filter value. Specify this parameter
 	// to show only the reservation that matches the specified reservation ID.
-	ReservedDBInstanceID *string `locationName:"ReservedDBInstanceId" type:"string"`
+	ReservedDBInstanceId *string `type:"string"`
 
 	// The offering identifier filter value. Specify this parameter to show only
 	// purchased reservations matching the specified offering identifier.
-	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string"`
+	ReservedDBInstancesOfferingId *string `type:"string"`
 
 	metadataDescribeReservedDBInstancesInput `json:"-" xml:"-"`
 }
@@ -7733,7 +7733,7 @@ type DescribeReservedDBInstancesOfferingsInput struct {
 	// the available offering that matches the specified reservation identifier.
 	//
 	// Example: 438012d3-4052-4cc7-b2e3-8d3372e0e706
-	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string"`
+	ReservedDBInstancesOfferingId *string `type:"string"`
 
 	metadataDescribeReservedDBInstancesOfferingsInput `json:"-" xml:"-"`
 }
@@ -7898,14 +7898,14 @@ func (s DownloadDBLogFilePortionOutput) GoString() string {
 //   AuthorizeDBSecurityGroupIngress   DescribeDBSecurityGroups   RevokeDBSecurityGroupIngress
 type EC2SecurityGroup struct {
 	// Specifies the id of the EC2 security group.
-	EC2SecurityGroupID *string `locationName:"EC2SecurityGroupId" type:"string"`
+	EC2SecurityGroupId *string `type:"string"`
 
 	// Specifies the name of the EC2 security group.
 	EC2SecurityGroupName *string `type:"string"`
 
 	// Specifies the AWS ID of the owner of the EC2 security group specified in
 	// the EC2SecurityGroupName field.
-	EC2SecurityGroupOwnerID *string `locationName:"EC2SecurityGroupOwnerId" type:"string"`
+	EC2SecurityGroupOwnerId *string `type:"string"`
 
 	// Provides the status of the EC2 security group. Status can be "authorizing",
 	// "authorized", "revoking", and "revoked".
@@ -8051,10 +8051,10 @@ func (s EventCategoriesMap) GoString() string {
 // action.
 type EventSubscription struct {
 	// The RDS event notification subscription Id.
-	CustSubscriptionID *string `locationName:"CustSubscriptionId" type:"string"`
+	CustSubscriptionId *string `type:"string"`
 
 	// The AWS customer account associated with the RDS event notification subscription.
-	CustomerAWSID *string `locationName:"CustomerAwsId" type:"string"`
+	CustomerAwsId *string `type:"string"`
 
 	// A Boolean value indicating if the subscription is enabled. True indicates
 	// the subscription is enabled.
@@ -8064,10 +8064,10 @@ type EventSubscription struct {
 	EventCategoriesList []*string `locationNameList:"EventCategory" type:"list"`
 
 	// The topic ARN of the RDS event notification subscription.
-	SNSTopicARN *string `locationName:"SnsTopicArn" type:"string"`
+	SnsTopicArn *string `type:"string"`
 
 	// A list of source IDs for the RDS event notification subscription.
-	SourceIDsList []*string `locationName:"SourceIdsList" locationNameList:"SourceId" type:"list"`
+	SourceIdsList []*string `locationNameList:"SourceId" type:"list"`
 
 	// The source type for the RDS event notification subscription.
 	SourceType *string `type:"string"`
@@ -8354,7 +8354,7 @@ type ModifyDBClusterInput struct {
 	PreferredMaintenanceWindow *string `type:"string"`
 
 	// A lst of VPC security groups that the DB cluster will belong to.
-	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupIds []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataModifyDBClusterInput `json:"-" xml:"-"`
 }
@@ -8629,7 +8629,7 @@ type ModifyDBInstanceInput struct {
 	// instance, including modifying the instance, rebooting the instance, deleting
 	// the instance, creating a Read Replica for the instance, and creating a DB
 	// snapshot of the instance.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
+	Iops *int64 `type:"integer"`
 
 	// The new password for the DB instance master user. Can be any printable ASCII
 	// character except "/", """, or "@".
@@ -8724,11 +8724,11 @@ type ModifyDBInstanceInput struct {
 	StorageType *string `type:"string"`
 
 	// The ARN from the Key Store with which to associate the instance for TDE encryption.
-	TDECredentialARN *string `locationName:"TdeCredentialArn" type:"string"`
+	TdeCredentialArn *string `type:"string"`
 
 	// The password for the given ARN from the Key Store in order to access the
 	// device.
-	TDECredentialPassword *string `locationName:"TdeCredentialPassword" type:"string"`
+	TdeCredentialPassword *string `type:"string"`
 
 	// A list of EC2 VPC security groups to authorize on this DB instance. This
 	// change is asynchronously applied as soon as possible.
@@ -8737,7 +8737,7 @@ type ModifyDBInstanceInput struct {
 	//
 	//  Must be 1 to 255 alphanumeric characters First character must be a letter
 	// Cannot end with a hyphen or contain two consecutive hyphens
-	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupIds []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataModifyDBInstanceInput `json:"-" xml:"-"`
 }
@@ -8832,7 +8832,7 @@ type ModifyDBSubnetGroupInput struct {
 	DBSubnetGroupName *string `type:"string" required:"true"`
 
 	// The EC2 subnet IDs for the DB subnet group.
-	SubnetIDs []*string `locationName:"SubnetIds" locationNameList:"SubnetIdentifier" type:"list" required:"true"`
+	SubnetIds []*string `locationNameList:"SubnetIdentifier" type:"list" required:"true"`
 
 	metadataModifyDBSubnetGroupInput `json:"-" xml:"-"`
 }
@@ -8890,7 +8890,7 @@ type ModifyEventSubscriptionInput struct {
 	// The Amazon Resource Name (ARN) of the SNS topic created for event notification.
 	// The ARN is created by Amazon SNS when you create a topic and subscribe to
 	// it.
-	SNSTopicARN *string `locationName:"SnsTopicArn" type:"string"`
+	SnsTopicArn *string `type:"string"`
 
 	// The type of source that will be generating the events. For example, if you
 	// want to be notified of events generated by a DB instance, you would set this
@@ -9024,7 +9024,7 @@ type Option struct {
 
 	// If the option requires access to a port, then this VPC security group allows
 	// access to the port.
-	VPCSecurityGroupMemberships []*VPCSecurityGroupMembership `locationName:"VpcSecurityGroupMemberships" locationNameList:"VpcSecurityGroupMembership" type:"list"`
+	VpcSecurityGroupMemberships []*VpcSecurityGroupMembership `locationNameList:"VpcSecurityGroupMembership" type:"list"`
 
 	metadataOption `json:"-" xml:"-"`
 }
@@ -9058,7 +9058,7 @@ type OptionConfiguration struct {
 	Port *int64 `type:"integer"`
 
 	// A list of VpcSecurityGroupMemebrship name strings used for this option.
-	VPCSecurityGroupMemberships []*string `locationName:"VpcSecurityGroupMemberships" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupMemberships []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataOptionConfiguration `json:"-" xml:"-"`
 }
@@ -9081,7 +9081,7 @@ type OptionGroup struct {
 	// Indicates whether this option group can be applied to both VPC and non-VPC
 	// instances. The value true indicates the option group can be applied to both
 	// VPC and non-VPC instances.
-	AllowsVPCAndNonVPCInstanceMemberships *bool `locationName:"AllowsVpcAndNonVpcInstanceMemberships" type:"boolean"`
+	AllowsVpcAndNonVpcInstanceMemberships *bool `type:"boolean"`
 
 	// Indicates the name of the engine that this option group can be applied to.
 	EngineName *string `type:"string"`
@@ -9103,7 +9103,7 @@ type OptionGroup struct {
 	// this option group can be applied to both VPC and non-VPC instances. If this
 	// field contains a value, then this option group can only be applied to instances
 	// that are in the VPC indicated by this field.
-	VPCID *string `locationName:"VpcId" type:"string"`
+	VpcId *string `type:"string"`
 
 	metadataOptionGroup `json:"-" xml:"-"`
 }
@@ -9326,13 +9326,13 @@ type OrderableDBInstanceOption struct {
 	StorageType *string `type:"string"`
 
 	// Indicates whether this orderable DB instance supports provisioned IOPS.
-	SupportsIOPS *bool `locationName:"SupportsIops" type:"boolean"`
+	SupportsIops *bool `type:"boolean"`
 
 	// Indicates whether this orderable DB instance supports encrypted storage.
 	SupportsStorageEncryption *bool `type:"boolean"`
 
 	// Indicates whether this is a VPC orderable DB instance.
-	VPC *bool `locationName:"Vpc" type:"boolean"`
+	Vpc *bool `type:"boolean"`
 
 	metadataOrderableDBInstanceOption `json:"-" xml:"-"`
 }
@@ -9478,7 +9478,7 @@ type PendingModifiedValues struct {
 
 	// Specifies the new Provisioned IOPS value for the DB instance that will be
 	// applied or is being applied.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
+	Iops *int64 `type:"integer"`
 
 	// Contains the pending or in-progress change of the master credentials for
 	// the DB instance.
@@ -9597,12 +9597,12 @@ type PurchaseReservedDBInstancesOfferingInput struct {
 	// Customer-specified identifier to track this reservation.
 	//
 	// Example: myreservationID
-	ReservedDBInstanceID *string `locationName:"ReservedDBInstanceId" type:"string"`
+	ReservedDBInstanceId *string `type:"string"`
 
 	// The ID of the Reserved DB instance offering to purchase.
 	//
 	// Example: 438012d3-4052-4cc7-b2e3-8d3372e0e706
-	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string" required:"true"`
+	ReservedDBInstancesOfferingId *string `type:"string" required:"true"`
 
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
@@ -9851,10 +9851,10 @@ type ReservedDBInstance struct {
 	RecurringCharges []*RecurringCharge `locationNameList:"RecurringCharge" type:"list"`
 
 	// The unique identifier for the reservation.
-	ReservedDBInstanceID *string `locationName:"ReservedDBInstanceId" type:"string"`
+	ReservedDBInstanceId *string `type:"string"`
 
 	// The offering identifier.
-	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string"`
+	ReservedDBInstancesOfferingId *string `type:"string"`
 
 	// The time the reservation started.
 	StartTime *time.Time `type:"timestamp" timestampFormat:"iso8601"`
@@ -9910,7 +9910,7 @@ type ReservedDBInstancesOffering struct {
 	RecurringCharges []*RecurringCharge `locationNameList:"RecurringCharge" type:"list"`
 
 	// The offering identifier.
-	ReservedDBInstancesOfferingID *string `locationName:"ReservedDBInstancesOfferingId" type:"string"`
+	ReservedDBInstancesOfferingId *string `type:"string"`
 
 	// The hourly price charged for this offering.
 	UsagePrice *float64 `type:"double"`
@@ -10092,7 +10092,7 @@ type RestoreDBClusterFromSnapshotInput struct {
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
 	// A list of VPC security groups that the new DB cluster will belong to.
-	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupIds []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataRestoreDBClusterFromSnapshotInput `json:"-" xml:"-"`
 }
@@ -10189,7 +10189,7 @@ type RestoreDBClusterToPointInTimeInput struct {
 	UseLatestRestorableTime *bool `type:"boolean"`
 
 	// A lst of VPC security groups that the new DB cluster belongs to.
-	VPCSecurityGroupIDs []*string `locationName:"VpcSecurityGroupIds" locationNameList:"VpcSecurityGroupId" type:"list"`
+	VpcSecurityGroupIds []*string `locationNameList:"VpcSecurityGroupId" type:"list"`
 
 	metadataRestoreDBClusterToPointInTimeInput `json:"-" xml:"-"`
 }
@@ -10304,7 +10304,7 @@ type RestoreDBInstanceFromDBSnapshotInput struct {
 	//  SQL Server
 	//
 	// Setting the IOPS value for the SQL Server database engine is not supported.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
+	Iops *int64 `type:"integer"`
 
 	// License model information for the restored DB instance.
 	//
@@ -10357,15 +10357,15 @@ type RestoreDBInstanceFromDBSnapshotInput struct {
 	//  Default: io1 if the Iops parameter is specified; otherwise standard
 	StorageType *string `type:"string"`
 
+	// A list of tags.
+	Tags []*Tag `locationNameList:"Tag" type:"list"`
+
 	// The ARN from the Key Store with which to associate the instance for TDE encryption.
-	TDECredentialARN *string `locationName:"TdeCredentialArn" type:"string"`
+	TdeCredentialArn *string `type:"string"`
 
 	// The password for the given ARN from the Key Store in order to access the
 	// device.
-	TDECredentialPassword *string `locationName:"TdeCredentialPassword" type:"string"`
-
-	// A list of tags.
-	Tags []*Tag `locationNameList:"Tag" type:"list"`
+	TdeCredentialPassword *string `type:"string"`
 
 	metadataRestoreDBInstanceFromDBSnapshotInput `json:"-" xml:"-"`
 }
@@ -10459,7 +10459,7 @@ type RestoreDBInstanceToPointInTimeInput struct {
 	//  SQL Server
 	//
 	// Setting the IOPS value for the SQL Server database engine is not supported.
-	IOPS *int64 `locationName:"Iops" type:"integer"`
+	Iops *int64 `type:"integer"`
 
 	// License model information for the restored DB instance.
 	//
@@ -10531,13 +10531,6 @@ type RestoreDBInstanceToPointInTimeInput struct {
 	//  Default: io1 if the Iops parameter is specified; otherwise standard
 	StorageType *string `type:"string"`
 
-	// The ARN from the Key Store with which to associate the instance for TDE encryption.
-	TDECredentialARN *string `locationName:"TdeCredentialArn" type:"string"`
-
-	// The password for the given ARN from the Key Store in order to access the
-	// device.
-	TDECredentialPassword *string `locationName:"TdeCredentialPassword" type:"string"`
-
 	// A list of tags.
 	Tags []*Tag `locationNameList:"Tag" type:"list"`
 
@@ -10548,6 +10541,13 @@ type RestoreDBInstanceToPointInTimeInput struct {
 	//  Must contain from 1 to 63 alphanumeric characters or hyphens First character
 	// must be a letter Cannot end with a hyphen or contain two consecutive hyphens
 	TargetDBInstanceIdentifier *string `type:"string" required:"true"`
+
+	// The ARN from the Key Store with which to associate the instance for TDE encryption.
+	TdeCredentialArn *string `type:"string"`
+
+	// The password for the given ARN from the Key Store in order to access the
+	// device.
+	TdeCredentialPassword *string `type:"string"`
 
 	// Specifies whether (true) or not (false) the DB instance is restored from
 	// the latest backup time.
@@ -10610,7 +10610,7 @@ type RevokeDBSecurityGroupIngressInput struct {
 	// The id of the EC2 security group to revoke access from. For VPC DB security
 	// groups, EC2SecurityGroupId must be provided. Otherwise, EC2SecurityGroupOwnerId
 	// and either EC2SecurityGroupName or EC2SecurityGroupId must be provided.
-	EC2SecurityGroupID *string `locationName:"EC2SecurityGroupId" type:"string"`
+	EC2SecurityGroupId *string `type:"string"`
 
 	// The name of the EC2 security group to revoke access from. For VPC DB security
 	// groups, EC2SecurityGroupId must be provided. Otherwise, EC2SecurityGroupOwnerId
@@ -10622,7 +10622,7 @@ type RevokeDBSecurityGroupIngressInput struct {
 	// value. For VPC DB security groups, EC2SecurityGroupId must be provided. Otherwise,
 	// EC2SecurityGroupOwnerId and either EC2SecurityGroupName or EC2SecurityGroupId
 	// must be provided.
-	EC2SecurityGroupOwnerID *string `locationName:"EC2SecurityGroupOwnerId" type:"string"`
+	EC2SecurityGroupOwnerId *string `type:"string"`
 
 	metadataRevokeDBSecurityGroupIngressInput `json:"-" xml:"-"`
 }
@@ -10730,27 +10730,27 @@ func (s Tag) GoString() string {
 
 // This data type is used as a response element for queries on VPC security
 // group membership.
-type VPCSecurityGroupMembership struct {
+type VpcSecurityGroupMembership struct {
 	// The status of the VPC security group.
 	Status *string `type:"string"`
 
 	// The name of the VPC security group.
-	VPCSecurityGroupID *string `locationName:"VpcSecurityGroupId" type:"string"`
+	VpcSecurityGroupId *string `type:"string"`
 
-	metadataVPCSecurityGroupMembership `json:"-" xml:"-"`
+	metadataVpcSecurityGroupMembership `json:"-" xml:"-"`
 }
 
-type metadataVPCSecurityGroupMembership struct {
+type metadataVpcSecurityGroupMembership struct {
 	SDKShapeTraits bool `type:"structure"`
 }
 
 // String returns the string representation
-func (s VPCSecurityGroupMembership) String() string {
+func (s VpcSecurityGroupMembership) String() string {
 	return awsutil.Prettify(s)
 }
 
 // GoString returns the string representation
-func (s VPCSecurityGroupMembership) GoString() string {
+func (s VpcSecurityGroupMembership) GoString() string {
 	return s.String()
 }
 

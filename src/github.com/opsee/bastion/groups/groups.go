@@ -56,9 +56,9 @@ func (this *sgGroup) GroupId() string {
 }
 
 func (this *sgGroup) InstanceEvent(instance *ec2.Instance) {
-	id := *instance.InstanceID
+	id := *instance.InstanceId
 	for _, gId := range instance.SecurityGroups {
-		if *gId.GroupID == this.groupId {
+		if *gId.GroupId == this.groupId {
 			exp, ok := this.instances.Get(id)
 			if ok {
 				expInstance := exp.(*expiringInstance)
