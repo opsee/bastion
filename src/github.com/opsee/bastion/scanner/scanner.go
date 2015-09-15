@@ -81,7 +81,7 @@ func (s *eC2ScannerImpl) GetInstance(instanceId string) (*ec2.Reservation, error
 		return nil, err
 	}
 
-	// InstanceID to Reservation mappings are 1-to-1
+	// InstanceId to Reservation mappings are 1-to-1
 	reservation := resp.Reservations[0]
 
 	return reservation, nil
