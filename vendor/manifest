@@ -194,6 +194,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "go.pedge.io/google-protobuf",
+			"repository": "https://github.com/peter-edge/go-google-protobuf",
+			"revision": "5da1cb8231f05f166fda3e2d638e19a4e3a936e0",
+			"branch": "master"
+		},
+		{
 			"importpath": "golang.org/x/net/context",
 			"repository": "https://go.googlesource.com/net",
 			"revision": "4a71d182556e05375344f3da665304f3d5784ab4",
