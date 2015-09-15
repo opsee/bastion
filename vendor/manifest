@@ -149,12 +149,6 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/peter-edge/go-google-protobuf",
-			"repository": "https://github.com/peter-edge/go-google-protobuf",
-			"revision": "5da1cb8231f05f166fda3e2d638e19a4e3a936e0",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/satori/go.uuid",
 			"repository": "https://github.com/satori/go.uuid",
 			"revision": "6b8e5b55d20d01ad47ecfe98e5171688397c61e9",
@@ -197,6 +191,12 @@
 			"importpath": "github.com/vaughan0/go-ini",
 			"repository": "https://github.com/vaughan0/go-ini",
 			"revision": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1",
+			"branch": "master"
+		},
+		{
+			"importpath": "go.pedge.io/google-protobuf",
+			"repository": "https://github.com/peter-edge/go-google-protobuf",
+			"revision": "5da1cb8231f05f166fda3e2d638e19a4e3a936e0",
 			"branch": "master"
 		},
 		{
