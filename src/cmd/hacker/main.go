@@ -75,7 +75,7 @@ func main() {
 		}
 
 		for _, sg := range sgs {
-			logger.Debug("Found security group: %s", sg)
+			logger.Debug("Found security group: %v", *sg)
 			found = false
 			for _, perm := range sg.IpPermissions {
 				for _, ipr := range perm.IpRanges {
@@ -90,22 +90,22 @@ func main() {
 					GroupId: sg.GroupId,
 					IpPermissions: []*ec2.IpPermission{
 						&ec2.IpPermission{
-							IpRanges: []*ec2.IpRange{
-								&ec2.IpRange{
-									CidrIp: bastionSgId,
-								},
-							},
 							IpProtocol: aws.String("-1"),
 							FromPort:   aws.Int64(0),
 							ToPort:     aws.Int64(65535),
+							UserIdGroupPairs: []*ec2.UserIdGroupPair{
+								&ec2.UserIdGroupPair{
+									GroupId: bastionSgId,
+								},
+							},
 						},
 					},
 				})
 				if err != nil {
-					logger.Error("Unable to add ourselves to security group: %s", sg.GroupId)
+					logger.Error("Unable to add ourselves to security group: %s", *sg.GroupId)
 					logger.Error(err.Error())
 				} else {
-					logger.Info("Added ourselves to security group: %s", sg.GroupId)
+					logger.Info("Added ourselves to security group: %s", *sg.GroupId)
 				}
 			}
 			// Janky, but in order to space out our requests, slow us down some.
