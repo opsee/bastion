@@ -75,7 +75,7 @@ func main() {
 		}
 
 		for _, sg := range sgs {
-			logger.Info("Found security group:", sg)
+			logger.Info("Found security group: %s", sg)
 			found = false
 			for _, perm := range sg.IpPermissions {
 				for _, ipr := range perm.IpRanges {
@@ -102,10 +102,15 @@ func main() {
 					ToPort:   aws.Int64(65535),
 				})
 				if err != nil {
-					logger.Error("Unable to add ourselves to security group:", sg.GroupId)
+					logger.Error("Unable to add ourselves to security group: %s", sg.GroupId)
 					logger.Error(err.Error())
 				}
 			}
+			// Janky, but in order to space out our requests, slow us down some.
+			time.Sleep(1 * time.Second)
 		}
+
+		// Only run this every half hour.
+		time.Sleep(30 * time.Minute)
 	}
 }
