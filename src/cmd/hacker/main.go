@@ -90,16 +90,16 @@ func main() {
 					GroupId: sg.GroupId,
 					IpPermissions: []*ec2.IpPermission{
 						&ec2.IpPermission{
-							IpProtocol: aws.String("-1"), // Any
 							IpRanges: []*ec2.IpRange{
 								&ec2.IpRange{
 									CidrIp: bastionSgId,
 								},
 							},
+							IpProtocol: aws.String("-1"),
+							FromPort:   aws.Int64(0),
+							ToPort:     aws.Int64(65535),
 						},
 					},
-					FromPort: aws.Int64(0),
-					ToPort:   aws.Int64(65535),
 				})
 				if err != nil {
 					logger.Error("Unable to add ourselves to security group: %s", sg.GroupId)
