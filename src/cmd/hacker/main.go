@@ -75,7 +75,7 @@ func main() {
 		}
 
 		for _, sg := range sgs {
-			logger.Info("Found security group: %s", sg)
+			logger.Debug("Found security group: %s", sg)
 			found = false
 			for _, perm := range sg.IpPermissions {
 				for _, ipr := range perm.IpRanges {
@@ -104,6 +104,8 @@ func main() {
 				if err != nil {
 					logger.Error("Unable to add ourselves to security group: %s", sg.GroupId)
 					logger.Error(err.Error())
+				} else {
+					logger.Info("Added ourselves to security group: %s", sg.GroupId)
 				}
 			}
 			// Janky, but in order to space out our requests, slow us down some.
