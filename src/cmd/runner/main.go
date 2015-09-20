@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"golang.org/x/net/context"
 	"os"
 	"os/signal"
@@ -65,7 +66,10 @@ func main() {
 		if err := proto.Unmarshal(m.Body, check); err != nil {
 			return err
 		}
-		responseChan := runner.RunCheck(context.TODO(), check)
+
+		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
+		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
+		responseChan := runner.RunCheck(ctx, check)
 		var responses []*checker.CheckResponse
 
 		for response := range responseChan {
@@ -79,14 +83,17 @@ func main() {
 			CustomerId: customerID,
 			CheckId:    check.Id,
 			Timestamp:  timestamp,
+			Responses:  responses,
 		}
 
 		msg, err := proto.Marshal(result)
 		if err != nil {
+			cancel()
 			return err
 		}
 
 		if err := producer.Publish("results", msg); err != nil {
+			cancel()
 			return err
 		}
 

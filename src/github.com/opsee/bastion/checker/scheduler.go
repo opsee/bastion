@@ -110,6 +110,16 @@ func (m *scheduleMap) Delete(key string) *checkWithTicker {
 	return v
 }
 
+// Destroy will stop all of the tickers in a schedulemap and close the
+// channel returned by RunChan().
+func (m *scheduleMap) Destroy() {
+	m.Lock()
+	for _, check := range m.checks {
+		check.ticker.Stop()
+	}
+	close(m.runChan)
+}
+
 type Publisher interface {
 	Publish(string, []byte) error
 	Stop()
@@ -195,6 +205,7 @@ func (s *Scheduler) Start() error {
 			select {
 			case <-s.stopChan:
 				s.Producer.Stop()
+				s.scheduleMap.Destroy()
 				return
 			case check := <-s.scheduleMap.RunChan():
 				if msg, err := proto.Marshal(check); err != nil {
