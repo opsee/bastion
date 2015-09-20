@@ -17,19 +17,19 @@ type Discoverer interface {
 
 type Event struct {
 	Result interface{}
-	Err error
+	Err    error
 }
 
 type discoverer struct {
-	wg *sync.WaitGroup
-	sc scanner.EC2Scanner
+	wg        *sync.WaitGroup
+	sc        scanner.EC2Scanner
 	discoChan chan Event
 }
 
 func NewDiscoverer(cfg *config.Config) Discoverer {
 	disco := &discoverer{
-		sc: scanner.NewScanner(cfg),
-		wg: &sync.WaitGroup{},
+		sc:        scanner.NewScanner(cfg),
+		wg:        &sync.WaitGroup{},
 		discoChan: make(chan Event, 128),
 	}
 	return disco

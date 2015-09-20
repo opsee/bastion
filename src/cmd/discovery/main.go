@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/discovery"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
-	"github.com/opsee/bastion/discovery"
 )
 
 const (
@@ -35,11 +35,10 @@ func main() {
 	}
 	go heart.Beat()
 
-	
 	for {
 		disco := discovery.NewDiscoverer(cfg)
 		for event := range disco.Discover() {
-			if event.Err  != nil {
+			if event.Err != nil {
 				logger.Error(event.Err.Error())
 			} else {
 				producer.Publish(event.Result)
