@@ -37,9 +37,8 @@ func setup(t *testing.T) {
 	// Reset the channel for every test, so we don't accidentally read stale
 	// barbage from a previous test
 	testChecker = NewChecker()
-	testScheduler := NewScheduler()
-	testScheduler.Resolver = newTestResolver()
-	testChecker.Scheduler = testScheduler
+	testRunner := NewRunner(newTestResolver())
+	testChecker.Runner = testRunner
 	testChecker.Port = 4000
 	testChecker.Start()
 	t.Log(testChecker)
@@ -101,7 +100,7 @@ func TestCheckerTestCheckRequest(t *testing.T) {
 
 	t.Logf("Got responses: %v", responses)
 
-	proto.Unmarshal(responses[0].Value, httpResponse)
+	proto.Unmarshal(responses[0].Response.Value, httpResponse)
 
 	teardown(t)
 }

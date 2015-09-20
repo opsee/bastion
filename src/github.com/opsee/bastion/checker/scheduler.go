@@ -2,8 +2,6 @@ package checker
 
 import (
 	"fmt"
-	"golang.org/x/net/context"
-	"reflect"
 	"sync"
 	"time"
 )
@@ -107,169 +105,14 @@ func (m *scheduleMap) Delete(key string) *checkWithTicker {
 //
 type Scheduler struct {
 	scheduleMap *scheduleMap
-	dispatcher  *Dispatcher
-	Resolver    Resolver
 }
 
 func NewScheduler() *Scheduler {
 	scheduler := &Scheduler{
 		scheduleMap: newScheduleMap(),
-		dispatcher:  NewDispatcher(),
 	}
 
-	scheduler.dispatcher.Dispatch()
-
 	return scheduler
-}
-
-func (s *Scheduler) resolveRequestTargets(ctx context.Context, errors chan error, check *Check) chan *string {
-	out := make(chan *string)
-
-	go func() {
-		defer close(out)
-
-		targets, err := s.Resolver.Resolve(check.Target)
-		if err != nil {
-			errors <- err
-			return
-		}
-
-		if len(targets) == 0 {
-			errors <- fmt.Errorf("No valid targets resolved from %s", check.Target)
-			return
-		}
-
-		var (
-			maxHosts int
-			ok       bool
-		)
-
-		maxHosts, ok = ctx.Value("MaxHosts").(int)
-		if !ok {
-			maxHosts = len(targets)
-		}
-		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
-
-		for i := 0; i < int(maxHosts) && i < len(targets); i++ {
-			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
-			out <- targets[i]
-		}
-		logger.Debug("resolveRequestTargets: Goroutine returning")
-	}()
-
-	return out
-}
-
-func (s *Scheduler) makeRequestFromCheck(ctx context.Context, errors chan error, check *Check, targets chan *string) chan Request {
-	requests := make(chan Request)
-
-	go func(check *Check) {
-		defer close(requests)
-
-		c, err := UnmarshalAny(check.CheckSpec)
-		if err != nil {
-			logger.Error("makeRequestFromCheck - unable to unmarshal check: %s", err.Error())
-			errors <- err
-			return
-		}
-		logger.Debug("makeRequestFromCheck - check = %s", check)
-
-		for {
-			select {
-			case target, ok := <-targets:
-				if !ok {
-					logger.Debug("makeRequestFromCheck - targets channel closed")
-					return
-				}
-				if target != nil {
-					logger.Debug("makeRequestFromCheck - Handling target: %s", *target)
-					switch typedCheck := c.(type) {
-					case *HttpCheck:
-						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, *target, typedCheck.Port, typedCheck.Path)
-						request := &HTTPRequest{
-							Method:  typedCheck.Verb,
-							URL:     uri,
-							Headers: typedCheck.Headers,
-							Body:    typedCheck.Body,
-						}
-						requests <- request
-					default:
-						logger.Error("makeRequestFromCheck - Unknown check type: %s", reflect.TypeOf(c))
-						errors <- err
-						return
-					}
-				}
-			case <-ctx.Done():
-				logger.Error("makeRequestFromCheck - %s", ctx.Err())
-				return
-			}
-		}
-		logger.Debug("makeRequestFromCheck - goroutine returned")
-	}(check)
-
-	return requests
-}
-
-func (s *Scheduler) makeTasksFromRequests(ctx context.Context, errors chan error, requests chan Request) chan *Task {
-	tasks := make(chan *Task)
-
-	go func() {
-		defer close(tasks)
-
-		for {
-			select {
-			case req := <-requests:
-				if req != nil {
-					logger.Debug("makeTasksFromRequests - handling request: %s", req)
-					t := reflect.TypeOf(req).Elem().Name()
-					task := &Task{
-						Type:    t,
-						Request: req,
-					}
-					tasks <- task
-				}
-			case <-ctx.Done():
-				logger.Debug("makeTasksFromRequests - %s", ctx.Err())
-				return
-			}
-		}
-		logger.Debug("makeTasksFromRequests - goroutine returning")
-	}()
-	return tasks
-}
-
-func (s *Scheduler) dispatchTasks(ctx context.Context, errors chan error, tasks chan *Task, responses chan Response) {
-	go func() {
-		defer close(responses)
-
-		for {
-			select {
-			case t := <-tasks:
-				if t != nil {
-					logger.Debug("dispatchTasks - dispatching task: %s", t)
-					t.Response = responses
-					s.dispatcher.Tasks <- t
-				}
-			case <-ctx.Done():
-				logger.Debug("dispatchTasks - %s", ctx.Err())
-				return
-			}
-		}
-	}()
-}
-
-func (s *Scheduler) RunCheck(ctx context.Context, check *Check) (chan Response, chan error) {
-	responses := make(chan Response)
-	errors := make(chan error, 1)
-
-	go func() {
-		targets := s.resolveRequestTargets(ctx, errors, check)
-		requests := s.makeRequestFromCheck(ctx, errors, check, targets)
-		tasks := s.makeTasksFromRequests(ctx, errors, requests)
-		s.dispatchTasks(ctx, errors, tasks, responses)
-	}()
-
-	return responses, errors
 }
 
 // CreateCheck takes as its input a Check. It maintains an internal mapping

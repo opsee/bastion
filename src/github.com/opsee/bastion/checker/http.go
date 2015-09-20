@@ -40,10 +40,10 @@ func init() {
 	Recruiters[httpWorkerTaskType] = NewHTTPWorker
 }
 
-func (r *HTTPRequest) Do() (Response, error) {
+func (r *HTTPRequest) Do() *Response {
 	req, err := http.NewRequest(r.Method, r.URL, strings.NewReader(r.Body))
 	if err != nil {
-		return nil, err
+		return &Response{Error: err}
 	}
 
 	for _, header := range r.Headers {
@@ -56,7 +56,7 @@ func (r *HTTPRequest) Do() (Response, error) {
 	t0 := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return &Response{Error: err}
 	}
 
 	defer resp.Body.Close()
@@ -96,7 +96,9 @@ func (r *HTTPRequest) Do() (Response, error) {
 		},
 	}
 
-	return httpResponse, nil
+	return &Response{
+		Response: httpResponse,
+	}
 }
 
 type HTTPWorker struct {
@@ -114,20 +116,21 @@ func (w *HTTPWorker) Work() {
 		request, ok := task.Request.(*HTTPRequest)
 		if ok {
 			logger.Debug("request: ", request)
-			if response, err := request.Do(); err != nil {
+			if response := request.Do(); response.Error != nil {
 				logger.Error("error processing request: %s", *task)
-				logger.Error("error: %s", err.Error())
-				task.Response <- &HttpResponse{
-					Error: err.Error(),
+				logger.Error("error: %s", response.Error.Error())
+				task.Response = &Response{
+					Error: response.Error,
 				}
 			} else {
 				logger.Debug("response: ", response)
-				task.Response <- response
+				task.Response = response
 			}
 		} else {
-			task.Response <- &HttpResponse{
-				Error: fmt.Sprintf("Unable to process request: %s", task.Request),
+			task.Response = &Response{
+				Error: fmt.Errorf("Unable to process request: %s", task.Request),
 			}
 		}
+		task.Finished <- task
 	}
 }

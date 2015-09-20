@@ -7,7 +7,8 @@ import (
 )
 
 type Resolver interface {
-	Resolve(*Target) ([]*string, error)
+	Resolve(*Target) ([]*Target, error)
+	ResolveInstance(string) ([]*string, error)
 }
 
 // TODO: The resolver should not query the EC2Scanner directly, but
@@ -37,7 +38,7 @@ func getAddrFromInstance(instance *ec2.Instance) *string {
 	return addr
 }
 
-func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*string, error) {
+func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*Target, error) {
 	reservations, err := r.sc.ScanSecurityGroupInstances(sgid)
 	if err != nil {
 		return nil, err
@@ -45,36 +46,36 @@ func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*string, error) {
 
 	logger.Debug("reservations: %v", reservations)
 
-	targets := make([]*string, 0)
+	var targets []*Target
 	for _, reservation := range reservations {
 		for _, instance := range reservation.Instances {
-			targets = append(targets, getAddrFromInstance(instance))
+			targets = append(targets, &Target{
+				Id:   *instance.InstanceId,
+				Type: "instance",
+			})
 		}
 	}
 	return targets, nil
 }
 
-func (r *AWSResolver) resolveELB(elbId string) ([]*string, error) {
+func (r *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
 	elb, err := r.sc.GetLoadBalancer(elbId)
 	if err != nil {
 		return nil, err
 	}
 
-	targets := make([]*string, len(elb.Instances))
-	var instances []*string
+	targets := make([]*Target, len(elb.Instances))
 	for i, elbInstance := range elb.Instances {
-		instances, err = r.resolveInstance(*elbInstance.InstanceId)
-		if err != nil {
-			return nil, err
+		targets[i] = &Target{
+			Id:   *elbInstance.InstanceId,
+			Type: "instance",
 		}
-		// TODO: More of this shitty assumption sauce about reservations.
-		targets[i] = instances[0]
 	}
 
 	return targets, nil
 }
 
-func (r *AWSResolver) resolveInstance(instanceId string) ([]*string, error) {
+func (r *AWSResolver) ResolveInstance(instanceId string) ([]*string, error) {
 	reservation, err := r.sc.GetInstance(instanceId)
 	if err != nil {
 		return nil, err
@@ -88,17 +89,15 @@ func (r *AWSResolver) resolveInstance(instanceId string) ([]*string, error) {
 	return target, nil
 }
 
-func (r *AWSResolver) Resolve(target *Target) ([]*string, error) {
+func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 	logger.Debug("Resolving target: %v", *target)
 
 	switch target.Type {
-	case "instance":
-		return r.resolveInstance(target.Id)
 	case "sg":
 		return r.resolveSecurityGroup(target.Id)
 	case "elb":
 		return r.resolveELB(target.Name)
 	}
 
-	return []*string{}, nil
+	return []*Target{}, nil
 }
