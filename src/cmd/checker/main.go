@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/nsqio/go-nsq"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
@@ -31,6 +32,13 @@ func main() {
 
 	checks := checker.NewChecker()
 	checks.Runner = checker.NewRunner(checker.NewResolver(config))
+	scheduler := checker.NewScheduler()
+
+	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
+	if err != nil {
+		logger.Fatal(err)
+	}
+	scheduler.Producer = producer
 	defer checks.Stop()
 
 	checks.Port = 4000

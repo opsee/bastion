@@ -70,7 +70,7 @@ type Checker struct {
 	Port       int
 	Consumer   messaging.Consumer
 	Producer   messaging.Producer
-	scheduler  *Scheduler
+	Scheduler  *Scheduler
 	Runner     *Runner
 	grpcServer *grpc.Server
 }
@@ -78,7 +78,6 @@ type Checker struct {
 func NewChecker() *Checker {
 	return &Checker{
 		grpcServer: grpc.NewServer(),
-		scheduler:  NewScheduler(),
 	}
 }
 
@@ -91,7 +90,7 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 	}
 	for i, check := range req.Checks {
 		in := []reflect.Value{reflect.ValueOf(check)}
-		out := reflect.ValueOf(c.scheduler).MethodByName(cmd).Call(in)
+		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
 		checkResponse := out[0].Interface().(*Check)
 		err := out[1].Interface().(error)
 		if err != nil {
@@ -168,6 +167,9 @@ func (c *Checker) Start() error {
 
 	RegisterCheckerServer(c.grpcServer, c)
 	go c.grpcServer.Serve(listen)
+	if err := c.Scheduler.Start(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -184,4 +186,5 @@ func (c *Checker) Stop() {
 		}
 	}
 	c.grpcServer.Stop()
+	c.Scheduler.Stop()
 }

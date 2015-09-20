@@ -31,6 +31,19 @@ var (
 	}
 )
 
+type testPublisher struct {
+	MsgChan chan []byte
+}
+
+func (t *testPublisher) Publish(topic string, msg []byte) error {
+	t.MsgChan <- msg
+	return nil
+}
+
+func (t *testPublisher) Stop() {
+	close(t.MsgChan)
+}
+
 func setup(t *testing.T) {
 	var err error
 
@@ -38,6 +51,8 @@ func setup(t *testing.T) {
 	// barbage from a previous test
 	testChecker = NewChecker()
 	testRunner := NewRunner(newTestResolver())
+	testChecker.Scheduler = NewScheduler()
+	testChecker.Scheduler.Producer = &testPublisher{make(chan []byte, 1)}
 	testChecker.Runner = testRunner
 	testChecker.Port = 4000
 	testChecker.Start()
