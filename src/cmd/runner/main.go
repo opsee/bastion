@@ -1,17 +1,14 @@
 package main
 
 import (
-	"os"
-
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
-	"github.com/opsee/portmapper"
 )
 
 const (
-	moduleName = "checker"
+	moduleName = "runner"
 )
 
 var (
@@ -29,25 +26,13 @@ func main() {
 	logging.SetLevel(config.LogLevel, "messaging")
 	logging.SetLevel(config.LogLevel, "scanner")
 
-	checks := checker.NewChecker()
-	checks.Runner = checker.NewRunner(checker.NewResolver(config))
-	defer checks.Stop()
-
-	checks.Port = 4000
-	if err = checks.Start(); err != nil {
-		logger.Error(err.Error())
-		panic(err)
-	}
+	_ = checker.NewRunner(checker.NewResolver(config))
 
 	heart, err := heart.NewHeart(moduleName)
 	if err != nil {
 		logger.Error(err.Error())
 		panic(err)
 	}
-
-	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
-	portmapper.Register(moduleName, checks.Port)
-	defer portmapper.Unregister(moduleName, checks.Port)
 
 	err = <-heart.Beat()
 	panic(err)

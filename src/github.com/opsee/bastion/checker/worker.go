@@ -5,15 +5,20 @@ var (
 )
 
 type Request interface {
-	Do() (Response, error)
+	Do() *Response
 }
 
-type Response interface{}
+type Response struct {
+	Response interface{}
+	Error    error
+}
 
 type Task struct {
 	Type     string
+	Target   *Target
 	Request  Request
-	Response chan Response
+	Response *Response
+	Finished chan *Task
 }
 
 type Worker interface {

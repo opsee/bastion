@@ -11,7 +11,6 @@ import (
 
 func testScheduler() *Scheduler {
 	scheduler := NewScheduler()
-	scheduler.Resolver = newTestResolver()
 	return scheduler
 }
 
@@ -153,11 +152,11 @@ func TestSchedulerDeleteReturnsOriginalCheck(t *testing.T) {
 
 func BenchmarkRunCheckParallel(b *testing.B) {
 	logging.SetLevel(logging.GetLevel("ERROR"), "checker")
-	scheduler := testScheduler()
+	runner := NewRunner(newTestResolver())
 	check := testMakePassingTestCheck()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			scheduler.RunCheck(context.TODO(), check)
+			runner.RunCheck(context.TODO(), check)
 		}
 	})
 	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")

@@ -60,24 +60,25 @@ func MarshalAny(i interface{}) (*Any, error) {
 
 type Interval time.Duration
 
-// Scheduler must:
+// Checker must:
 //    - Add a check
 //    - Delete a check
 //    - Test a check
-//    - Emit messages to the dispatcher that work needs to be done
+//    - Inform the scheduler that things need to happen
 
 type Checker struct {
 	Port       int
 	Consumer   messaging.Consumer
 	Producer   messaging.Producer
-	Scheduler  *Scheduler
+	scheduler  *Scheduler
+	Runner     *Runner
 	grpcServer *grpc.Server
 }
 
 func NewChecker() *Checker {
 	return &Checker{
 		grpcServer: grpc.NewServer(),
-		Scheduler:  NewScheduler(),
+		scheduler:  NewScheduler(),
 	}
 }
 
@@ -90,7 +91,7 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 	}
 	for i, check := range req.Checks {
 		in := []reflect.Value{reflect.ValueOf(check)}
-		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
+		out := reflect.ValueOf(c.scheduler).MethodByName(cmd).Call(in)
 		checkResponse := out[0].Interface().(*Check)
 		err := out[1].Interface().(error)
 		if err != nil {
@@ -120,14 +121,7 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*
 	return c.invoke(ctx, "DeleteCheck", req)
 }
 
-func buildURL(check *HttpCheck, target *string) string {
-	return fmt.Sprintf("%s://%s:%d%s", check.Protocol, *target, check.Port, check.Path)
-}
-
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
-	var (
-		cancel context.CancelFunc
-	)
 	logger.Debug("Received request: %s", req)
 
 	if req.Deadline == nil {
@@ -135,14 +129,14 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	}
 
 	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
-	ctx, cancel = context.WithDeadline(ctx, deadline)
+	ctx, _ = context.WithDeadline(ctx, deadline)
 	ctx = context.WithValue(ctx, "MaxHosts", int(req.MaxHosts))
 
-	responses, errs := c.Scheduler.RunCheck(ctx, req.Check)
-	defer close(errs)
+	responses := c.Runner.RunCheck(ctx, req.Check)
+	defer close(responses)
 
 	testCheckResponse := &TestCheckResponse{
-		Responses: make([]*Any, req.MaxHosts),
+		Responses: make([]*CheckResponse, req.MaxHosts),
 	}
 
 	for i := 0; i < int(req.MaxHosts); i++ {
@@ -151,19 +145,11 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 		case response := <-responses:
 			if response != nil {
 				logger.Debug("Got response: %s", response)
-
-				responseAny, err := MarshalAny(response)
-				if err != nil {
-					logger.Error("Error marshalling response: ", err)
-					cancel()
-					return testCheckResponse, err
+				if response.Error != "" {
+					return nil, fmt.Errorf(response.Error)
 				}
-				testCheckResponse.Responses[i] = responseAny
+				testCheckResponse.Responses[i] = response
 			}
-		case err := <-errs:
-			logger.Error("Got an error: %v", err.Error())
-			cancel()
-			return testCheckResponse, err
 		case <-ctx.Done():
 			err := ctx.Err()
 			return testCheckResponse, err
