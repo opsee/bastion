@@ -33,6 +33,7 @@ func main() {
 	checks := checker.NewChecker()
 	checks.Runner = checker.NewRunner(checker.NewResolver(config))
 	scheduler := checker.NewScheduler()
+	checks.Scheduler = scheduler
 
 	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
 	if err != nil {
