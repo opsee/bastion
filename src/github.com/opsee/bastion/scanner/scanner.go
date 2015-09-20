@@ -36,7 +36,7 @@ type eC2ScannerImpl struct {
 func NewScanner(cfg *config.Config) EC2Scanner {
 	var region string
 	if cfg.Region != "" {
-		region = cg.Region
+		region = cfg.Region
 	} else {
 		httpClient := &http.Client{}
 		metap := config.NewMetadataProvider(httpClient, cfg)
