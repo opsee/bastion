@@ -41,7 +41,7 @@ func NewScanner(cfg *config.Config) EC2Scanner {
 		httpClient := &http.Client{}
 		metap := config.NewMetadataProvider(httpClient, cfg)
 		metadata := metap.Get()
-		region := metadata.Region
+		region = metadata.Region
 	}
 
 	var creds = credentials.NewChainCredentials(
