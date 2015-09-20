@@ -53,11 +53,22 @@ func newCheckWithTicker(check *Check, runChan chan *Check) (*checkWithTicker, er
 		time.NewTicker(d),
 	}
 
+	go func() {
+		for {
+			select {
+			case <-ct.ticker.C:
+				ct.runChan <- ct.Check
+			case <-ct.stop:
+				ct.ticker.Stop()
+				return
+			}
+		}
+	}()
+
 	return ct, nil
 }
 
 func (c *checkWithTicker) Stop() {
-	c.ticker.Stop()
 	c.stop <- struct{}{}
 }
 
