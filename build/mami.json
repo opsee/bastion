@@ -63,6 +63,10 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/runner.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/hacker.service"
 		},
 		{
