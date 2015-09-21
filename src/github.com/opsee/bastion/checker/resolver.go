@@ -101,6 +101,8 @@ func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 		return r.resolveELB(target.Name)
 	case "instance":
 		return r.resolveInstance(target.Id)
+	case "ip":
+		return []*Target{target}, nil
 	}
 
 	return []*Target{}, nil

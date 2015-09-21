@@ -46,7 +46,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan 
 		}
 		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
 
-		for i := 0; i < maxHosts; i++ {
+		for i := 0; i < maxHosts && i < len(targets); i++ {
 			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
 			out <- targets[i]
 		}
