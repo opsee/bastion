@@ -22,14 +22,23 @@ func NewRunner(resolver Resolver) *Runner {
 }
 
 func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan *Target, error) {
+	var (
+		targets []*Target
+		err     error
+	)
+
 	out := make(chan *Target)
 
-	targets, err := r.resolver.Resolve(check.Target)
-	if err != nil {
-		return nil, err
-	}
-	if len(targets) == 0 {
-		return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
+	if check.Target.Type != "instance" {
+		targets, err = r.resolver.Resolve(check.Target)
+		if err != nil {
+			return nil, err
+		}
+		if len(targets) == 0 {
+			return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
+		}
+	} else {
+		targets = []*Target{check.Target}
 	}
 
 	go func() {
@@ -46,7 +55,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan 
 		}
 		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
 
-		for i := 0; i < maxHosts; i++ {
+		for i := 0; i < len(targets) && i < maxHosts; i++ {
 			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
 			out <- targets[i]
 		}

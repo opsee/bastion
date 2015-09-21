@@ -83,8 +83,9 @@ func (r *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
 	target := make([]*Target, len(reservation.Instances))
 	for i, instance := range reservation.Instances {
 		target[i] = &Target{
-			Type: "ip",
-			Id:   getAddrFromInstance(instance),
+			Type:    "instance",
+			Id:      instanceId,
+			Address: getAddrFromInstance(instance),
 		}
 	}
 

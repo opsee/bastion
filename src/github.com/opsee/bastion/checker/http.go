@@ -94,6 +94,14 @@ func (r *HTTPRequest) Do() *Response {
 				Value: time.Since(t0).Seconds() * 1000,
 			},
 		},
+		Headers: []*Header{},
+	}
+
+	for k, v := range resp.Header {
+		header := &Header{}
+		header.Name = k
+		header.Values = v
+		httpResponse.Headers = append(httpResponse.Headers, header)
 	}
 
 	return &Response{
