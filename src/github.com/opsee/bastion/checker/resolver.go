@@ -49,8 +49,9 @@ func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*Target, error) {
 	for _, reservation := range reservations {
 		for _, instance := range reservation.Instances {
 			targets = append(targets, &Target{
-				Id:   *instance.InstanceId,
-				Type: "instance",
+				Id:      *instance.InstanceId,
+				Type:    "instance",
+				Address: getAddrFromInstance(instance),
 			})
 		}
 	}
@@ -65,10 +66,11 @@ func (r *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
 
 	targets := make([]*Target, len(elb.Instances))
 	for i, elbInstance := range elb.Instances {
-		targets[i] = &Target{
-			Id:   *elbInstance.InstanceId,
-			Type: "instance",
+		t, err := r.resolveInstance(*elbInstance.InstanceId)
+		if err != nil {
+			return nil, err
 		}
+		targets[i] = t[0]
 	}
 
 	return targets, nil

@@ -3,15 +3,23 @@ package checker
 import (
 	"testing"
 
-	"github.com/op/go-logging"
-	"golang.org/x/net/context"
+	// "github.com/op/go-logging"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	// "golang.org/x/net/context"
 )
 
 // Test the Scheduler
 
-func testScheduler() *Scheduler {
-	scheduler := NewScheduler()
-	return scheduler
+type SchedulerTestSuite struct {
+	suite.Suite
+	Common    TestCommonStubs
+	Scheduler *Scheduler
+}
+
+func (s *SchedulerTestSuite) SetupTest() {
+	s.Common = TestCommonStubs{}
+	s.Scheduler = NewScheduler()
 }
 
 // I am lazy, so I am only testing validateCheck once.
@@ -20,48 +28,33 @@ func testScheduler() *Scheduler {
  * validateCheck()
  ******************************************************************************/
 
-func TestSchedulerValidateGoodCheck(t *testing.T) {
-	check := testCheckStub()
-
-	if err := validateCheck(check); err != nil {
-		t.Fail()
-	}
+func (s *SchedulerTestSuite) TestValidCheckIsValid() {
+	check := s.Common.Check()
+	assert.NoError(s.T(), validateCheck(check))
 }
 
-func TestSchedulerValidateWithoutId(t *testing.T) {
-	check := testCheckStub()
+func (s *SchedulerTestSuite) TestCheckWithoutIDIsInvalid() {
+	check := s.Common.Check()
 	check.Id = ""
-
-	if err := validateCheck(check); err == nil {
-		t.Fail()
-	}
+	assert.Error(s.T(), validateCheck(check))
 }
 
-func TestSchedulerValidateInvalidInterval(t *testing.T) {
-	check := testCheckStub()
+func (s *SchedulerTestSuite) TestCheckWithZeroIntervalIsInvalid() {
+	check := s.Common.Check()
 	check.Interval = 0
-
-	if err := validateCheck(check); err == nil {
-		t.Fail()
-	}
+	assert.Error(s.T(), validateCheck(check))
 }
 
-func TestSchedulerValidateWithoutTarget(t *testing.T) {
-	check := testCheckStub()
+func (s *SchedulerTestSuite) TestCheckWithoutTargetIsInvalid() {
+	check := s.Common.Check()
 	check.Target = nil
-
-	if err := validateCheck(check); err == nil {
-		t.Fail()
-	}
+	assert.Error(s.T(), validateCheck(check))
 }
 
-func TestSchedulerValidateWithoutCheckSpec(t *testing.T) {
-	check := testCheckStub()
+func (s *SchedulerTestSuite) TestCheckWithoutCheckSpecIsInvalid() {
+	check := s.Common.Check()
 	check.CheckSpec = nil
-
-	if err := validateCheck(check); err == nil {
-		t.Fail()
-	}
+	assert.Error(s.T(), validateCheck(check))
 }
 
 /*******************************************************************************
@@ -69,95 +62,70 @@ func TestSchedulerValidateWithoutCheckSpec(t *testing.T) {
  ******************************************************************************/
 
 // I'm okay with this testing both successful creates and retrieves.
-func TestSchedulerCreateCheckStoresCheck(t *testing.T) {
-	scheduler := testScheduler()
-	check := testCheckStub()
+func (s *SchedulerTestSuite) TestCreateCheckStoresCheck() {
+	scheduler := s.Scheduler
+	check := s.Common.Check()
 	id := check.Id
-
-	scheduler.CreateCheck(testCheckStub())
-
+	scheduler.CreateCheck(s.Common.Check())
 	c, err := scheduler.RetrieveCheck(id)
-
-	if err != nil {
-		t.Fail()
-	}
-
-	if c == nil {
-		t.FailNow()
-	}
-
-	if c.Id != id {
-		t.Fail()
-	}
+	assert.NoError(s.T(), err, "Scheduler.RetrieveCheck return unexpected error.", err)
+	assert.IsType(s.T(), new(Check), c, "Scheduler.RetrieveCheck returned incorrect object type.")
+	assert.Equal(s.T(), id, c.Id, "Scheduler.RetrieveCheck returned ID does not match.")
 }
 
 /*******************************************************************************
  * RetrieveCheck()
  ******************************************************************************/
 
-func TestSchedulerRetrieveNonexistentCheck(t *testing.T) {
-	scheduler := testScheduler()
+func (s *SchedulerTestSuite) TestRetrieveNonexistentCheckReturnsError() {
+	scheduler := s.Scheduler
 
 	c, err := scheduler.RetrieveCheck("id string")
-	if c != nil {
-		t.Fail()
-	}
-
-	if err == nil {
-		t.Fail()
-	}
+	assert.Nil(s.T(), c)
+	assert.Error(s.T(), err, "Scheduler.RetrieveCheck did not return error for non-existent check.")
 }
 
 /*******************************************************************************
  * DeleteCheck()
  ******************************************************************************/
 
-func TestSchedulerDeleteNonexistentCheck(t *testing.T) {
-	scheduler := testScheduler()
+func (s *SchedulerTestSuite) TestDeleteNonexistentCheckReturnsError() {
+	scheduler := s.Scheduler
 
 	c, err := scheduler.DeleteCheck("id string")
-	if c != nil {
-		t.Fail()
-	}
-
-	if err == nil {
-		t.Fail()
-	}
+	scheduler.DeleteCheck("id string")
+	assert.Nil(s.T(), c)
+	assert.Error(s.T(), err, "Scheduler.DeleteCheck did not return error for non-existent check.")
 }
 
-func TestSchedulerDeleteReturnsOriginalCheck(t *testing.T) {
-	scheduler := testScheduler()
-	check := testCheckStub()
+func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
+	scheduler := s.Scheduler
+	check := s.Common.Check()
 	scheduler.CreateCheck(check)
 
 	scheduler.CreateCheck(check)
 	c, err := scheduler.DeleteCheck(check.Id)
-
-	if c == nil {
-		t.FailNow()
-	}
-
-	if err != nil {
-		t.Fail()
-	}
-
-	if c != check {
-		t.Fail()
-	}
+	assert.NoError(s.T(), err, "DeleteCheck returned unexpected error.", err)
+	assert.IsType(s.T(), new(Check), c, "DeleteCheck returned object of incorrect type.")
+	assert.Equal(s.T(), check.Id, c.Id, "DeleteCheck returned incorrect check ID.")
 }
 
 /*******************************************************************************
  * RunCheck() Benchmarks
   ******************************************************************************/
 
-func BenchmarkRunCheckParallel(b *testing.B) {
-	logging.SetLevel(logging.GetLevel("ERROR"), "checker")
-	runner := NewRunner(newTestResolver())
-	check := testMakePassingTestCheck()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			runner.RunCheck(context.TODO(), check)
-		}
-	})
-	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
+// func (s *SchedulerTestSuite) TestBenchmarkRunCheckParallel(b *testing.B) {
+// 	logging.SetLevel(logging.GetLevel("ERROR"), "checker")
+// 	runner := NewRunner(newTestResolver())
+// 	check := s.Common.PassingCheck()
+// 	b.RunParallel(func(pb *testing.PB) {
+// 		for pb.Next() {
+// 			runner.RunCheck(context.TODO(), check)
+// 		}
+// 	})
+// 	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
+// }
+
+func TestSchedulerTestSuite(t *testing.T) {
+	suite.Run(t, new(SchedulerTestSuite))
 }

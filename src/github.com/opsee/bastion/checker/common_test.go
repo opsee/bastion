@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/op/go-logging"
+	// "github.com/stretchr/testify/assert"
+	// "github.com/stretchr/testify/suite"
 )
 
 const (
@@ -12,7 +14,10 @@ const (
 	testHTTPServerPort     = 40000
 )
 
-func httpCheckStub() *HttpCheck {
+type TestCommonStubs struct {
+}
+
+func (t TestCommonStubs) HTTPCheck() *HttpCheck {
 	return &HttpCheck{
 		Name:     "test check",
 		Path:     "/",
@@ -22,7 +27,7 @@ func httpCheckStub() *HttpCheck {
 	}
 }
 
-func testCheckStub() *Check {
+func (t TestCommonStubs) Check() *Check {
 	return &Check{
 		Id:        "string",
 		Interval:  60,
@@ -31,9 +36,21 @@ func testCheckStub() *Check {
 	}
 }
 
+func (t TestCommonStubs) PassingCheck() *Check {
+	check := t.Check()
+	check.Target = &Target{
+		Type: "sg",
+		Id:   "sg",
+		Name: "sg",
+	}
+
+	spec, _ := MarshalAny(t.HTTPCheck())
+	check.CheckSpec = spec
+	return check
+}
+
 type testResolver struct {
-	Targets   map[string][]*Target
-	Instances map[string][]*Target
+	Targets map[string][]*Target
 }
 
 func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
@@ -42,9 +59,6 @@ func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
 		return []*Target{}, nil
 	}
 
-	if tgt.Type == "instance" {
-		return t.Instances[tgt.Id], nil
-	}
 	return t.Targets[tgt.Id], nil
 }
 
@@ -54,49 +68,34 @@ func newTestResolver() *testResolver {
 		Targets: map[string][]*Target{
 			"sg": []*Target{
 				&Target{
-					Id:   "id",
-					Type: "instance",
+					Id:      "id",
+					Type:    "instance",
+					Name:    "id",
+					Address: addr,
 				},
 			},
 			"sg3": []*Target{
 				&Target{
-					Id:   "id",
-					Name: "id",
-					Type: "instance",
+					Id:      "id",
+					Name:    "id",
+					Type:    "instance",
+					Address: addr,
 				},
 				&Target{
-					Id:   "id",
-					Name: "id",
-					Type: "instance",
+					Id:      "id",
+					Name:    "id",
+					Type:    "instance",
+					Address: addr,
 				},
 				&Target{
-					Id:   "id",
-					Name: "id",
-					Type: "instance",
+					Id:      "id",
+					Name:    "id",
+					Type:    "instance",
+					Address: addr,
 				},
 			},
 		},
-		Instances: map[string][]*Target{
-			"id": []*Target{
-				&Target{
-					Type: "ip",
-					Id:   addr,
-				}},
-		},
 	}
-}
-
-func testMakePassingTestCheck() *Check {
-	check := testCheckStub()
-	check.Target = &Target{
-		Type: "sg",
-		Id:   "sg",
-		Name: "sg",
-	}
-
-	spec, _ := MarshalAny(httpCheckStub())
-	check.CheckSpec = spec
-	return check
 }
 
 func init() {
@@ -105,7 +104,7 @@ func init() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Debug("Handling request: %s", *r)
 		headerMap := w.Header()
-		headerMap[testHTTPHeaderKey] = []string{testHTTPHeaderValue}
+		headerMap["header"] = []string{"ok"}
 		w.WriteHeader(200)
 		w.Write([]byte(testHTTPResponseString))
 	})
