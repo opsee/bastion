@@ -96,7 +96,7 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Targe
 						if err != nil {
 							logger.Error(err.Error())
 						}
-						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, ip[0].Id, typedCheck.Port, typedCheck.Path)
+						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, ip[0].Address, typedCheck.Port, typedCheck.Path)
 						request = &HTTPRequest{
 							Method:  typedCheck.Verb,
 							URL:     uri,
