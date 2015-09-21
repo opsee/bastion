@@ -33,7 +33,7 @@ func testCheckStub() *Check {
 
 type testResolver struct {
 	Targets   map[string][]*Target
-	Instances map[string][]*string
+	Instances map[string][]*Target
 }
 
 func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
@@ -41,20 +41,15 @@ func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
 	if tgt.Id == "empty" {
 		return []*Target{}, nil
 	}
-	return t.Targets[tgt.Id], nil
-}
 
-func (t *testResolver) ResolveInstance(instanceId string) ([]*string, error) {
-	resolved := t.Instances[instanceId]
-	if resolved == nil {
-		return nil, fmt.Errorf("Unable to resolve target: %v", instanceId)
+	if tgt.Type == "instance" {
+		return t.Instances[tgt.Id], nil
 	}
-	return resolved, nil
+	return t.Targets[tgt.Id], nil
 }
 
 func newTestResolver() *testResolver {
 	addr := "127.0.0.1"
-	addrPtr := &addr
 	return &testResolver{
 		Targets: map[string][]*Target{
 			"sg": []*Target{
@@ -81,8 +76,12 @@ func newTestResolver() *testResolver {
 				},
 			},
 		},
-		Instances: map[string][]*string{
-			"id": []*string{addrPtr},
+		Instances: map[string][]*Target{
+			"id": []*Target{
+				&Target{
+					Type: "ip",
+					Id:   addr,
+				}},
 		},
 	}
 }
