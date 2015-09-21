@@ -32,8 +32,8 @@ func testCheckStub() *Check {
 }
 
 type testResolver struct {
-	t map[string][]*Target
-	i map[string][]*string
+	Targets   map[string][]*Target
+	Instances map[string][]*string
 }
 
 func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
@@ -41,11 +41,11 @@ func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
 	if tgt.Id == "empty" {
 		return []*Target{}, nil
 	}
-	return t.t[tgt.Id], nil
+	return t.Targets[tgt.Id], nil
 }
 
 func (t *testResolver) ResolveInstance(instanceId string) ([]*string, error) {
-	resolved := t.i[instanceId]
+	resolved := t.Instances[instanceId]
 	if resolved == nil {
 		return nil, fmt.Errorf("Unable to resolve target: %v", instanceId)
 	}
@@ -56,15 +56,32 @@ func newTestResolver() *testResolver {
 	addr := "127.0.0.1"
 	addrPtr := &addr
 	return &testResolver{
-		t: map[string][]*Target{
+		Targets: map[string][]*Target{
 			"sg": []*Target{
 				&Target{
 					Id:   "id",
 					Type: "instance",
 				},
 			},
+			"sg3": []*Target{
+				&Target{
+					Id:   "id",
+					Name: "id",
+					Type: "instance",
+				},
+				&Target{
+					Id:   "id",
+					Name: "id",
+					Type: "instance",
+				},
+				&Target{
+					Id:   "id",
+					Name: "id",
+					Type: "instance",
+				},
+			},
 		},
-		i: map[string][]*string{
+		Instances: map[string][]*string{
 			"id": []*string{addrPtr},
 		},
 	}

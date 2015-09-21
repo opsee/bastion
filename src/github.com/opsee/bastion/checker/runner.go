@@ -46,7 +46,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan 
 		}
 		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
 
-		for i := 0; i < int(maxHosts) && i < len(targets); i++ {
+		for i := 0; i < maxHosts; i++ {
 			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
 			out <- targets[i]
 		}
@@ -132,6 +132,16 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 
 	finishedTasks, err := r.dispatch(ctx, check, targets)
 	defer close(finishedTasks)
+
+	// If the deadline is exceeded, we may panic because we try to write to
+	// a closed channel. Avoid this by recovering. We want to try to avoid
+	// crashing on bad check data anyway.
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Error("Recovered from panic in runCheck: %v", r)
+		}
+	}()
+
 	if err != nil {
 		responses <- &CheckResponse{
 			Target: check.Target,
@@ -145,10 +155,15 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 			if t != nil {
 				logger.Debug("runCheck - Handling finished task: %s", *t)
 				var responseError string
-				responseAny, err := MarshalAny(t.Response.Response)
-				if err != nil {
-					responseError = err.Error()
-				} else if t.Response.Error != nil {
+				var responseAny *Any
+				if t.Response.Response != nil {
+					responseAny, err = MarshalAny(t.Response.Response)
+					if err != nil {
+						responseError = err.Error()
+					}
+				}
+				// Overwrite the error if there is an error on the response.
+				if t.Response.Error != nil {
 					responseError = t.Response.Error.Error()
 				}
 				response := &CheckResponse{
