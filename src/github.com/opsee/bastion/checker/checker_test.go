@@ -20,7 +20,7 @@ const (
 var (
 	testChecker       *Checker
 	testCheckerClient *CheckerRpcClient
-	testContext       = context.TODO()
+	testContext       = context.Background()
 
 	requestStub = &TestCheckRequest{
 		MaxHosts: 1,
@@ -188,6 +188,32 @@ func TestTimeoutTestCheck(t *testing.T) {
 	}
 
 	if response != nil {
+		t.Fail()
+	}
+
+	teardown(t)
+}
+
+func TestCheckerTestCheckWithMaxHosts(t *testing.T) {
+	setup(t)
+
+	target := &Target{
+		Type: "sg",
+		Id:   "sg3",
+	}
+
+	request, err := buildTestCheckRequest(httpCheckStub(), target)
+	if err != nil {
+		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
+	}
+
+	response, err := testCheckerClient.Client.TestCheck(testContext, request)
+
+	if err != nil {
+		t.Fail()
+	}
+
+	if response == nil {
 		t.Fail()
 	}
 
