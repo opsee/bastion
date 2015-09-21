@@ -88,15 +88,12 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Targe
 					var request Request
 					switch typedCheck := c.(type) {
 					case *HttpCheck:
-						// XXX: This is mildly jank. When you resolve instances (we should have instances
-						// at this point), you get a Target with a type of "ip" back and the address is
-						// stored in the Id field. This will have to be redone.
-						ip, err := r.resolver.Resolve(target)
-						logger.Debug("dispatch - Resolved target to ip: %s", ip[0].Id)
-						if err != nil {
-							logger.Error(err.Error())
+						logger.Debug("dispatch - dispatching for target %s", target.Address)
+						if target.Address == "" {
+							logger.Error("Target missing address: %s", *target)
+							continue
 						}
-						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, ip[0].Address, typedCheck.Port, typedCheck.Path)
+						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
 						request = &HTTPRequest{
 							Method:  typedCheck.Verb,
 							URL:     uri,

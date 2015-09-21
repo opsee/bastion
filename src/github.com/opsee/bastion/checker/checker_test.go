@@ -9,26 +9,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
-)
-
-const (
-	testHTTPHeaderKey   = "header"
-	testHTTPHeaderValue = "header value"
-)
-
-var (
-	testChecker       *Checker
-	testCheckerClient *CheckerRpcClient
-	testContext       = context.Background()
-
-	requestStub = &TestCheckRequest{
-		MaxHosts: 1,
-		Deadline: &Timestamp{
-			Nanos: time.Now().Add(30 * time.Minute).UnixNano(),
-		},
-		Check: nil,
-	}
 )
 
 type testPublisher struct {
@@ -44,36 +27,57 @@ func (t *testPublisher) Stop() {
 	close(t.MsgChan)
 }
 
-func setup(t *testing.T) {
+type CheckerTestSuite struct {
+	suite.Suite
+	Common           TestCommonStubs
+	Checker          *Checker
+	CheckerClient    *CheckerRpcClient
+	Context          context.Context
+	TestCheckRequest *TestCheckRequest
+	Publisher        Publisher
+}
+
+func (s *CheckerTestSuite) SetupTest() {
 	var err error
 
 	// Reset the channel for every test, so we don't accidentally read stale
 	// barbage from a previous test
-	testChecker = NewChecker()
+	checker := NewChecker()
 	testRunner := NewRunner(newTestResolver())
-	testChecker.Scheduler = NewScheduler()
-	testChecker.Scheduler.Producer = &testPublisher{make(chan []byte, 1)}
-	testChecker.Runner = testRunner
-	testChecker.Port = 4000
-	testChecker.Start()
-	t.Log(testChecker)
+	checker.Scheduler = NewScheduler()
+	checker.Scheduler.Producer = &testPublisher{make(chan []byte, 1)}
+	checker.Runner = testRunner
+	checker.Port = 4000
+	checker.Start()
 
-	testCheckerClient, err = NewRpcClient("127.0.0.1", 4000)
-	if err != nil {
-		t.Fatalf("Cannot create RPC client: %v", err)
+	s.Checker = checker
+
+	checkerClient, err := NewRpcClient("127.0.0.1", 4000)
+	assert.Nil(s.T(), err)
+	s.CheckerClient = checkerClient
+	s.Context = context.Background()
+	s.Common = TestCommonStubs{}
+	s.TestCheckRequest = &TestCheckRequest{
+		MaxHosts: 1,
+		Deadline: &Timestamp{
+			Nanos: time.Now().Add(30 * time.Minute).UnixNano(),
+		},
+		Check: nil,
 	}
+
+	s.Publisher = &testPublisher{}
 }
 
-func teardown(t *testing.T) {
-	testChecker.Stop()
+func (s *CheckerTestSuite) TearDownTest() {
+	s.Checker.Stop()
 }
 
 /*******************************************************************************
  * TestCheck()
  ******************************************************************************/
 
-func buildTestCheckRequest(check *HttpCheck, target *Target) (*TestCheckRequest, error) {
-	request := requestStub
+func (s *CheckerTestSuite) buildTestCheckRequest(check *HttpCheck, target *Target) (*TestCheckRequest, error) {
+	request := s.TestCheckRequest
 	checkBytes, err := proto.Marshal(check)
 	if err != nil {
 		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
@@ -84,7 +88,7 @@ func buildTestCheckRequest(check *HttpCheck, target *Target) (*TestCheckRequest,
 		Value:   checkBytes,
 	}
 
-	c := testCheckStub()
+	c := s.Common.Check()
 	c.CheckSpec = checkAny
 	c.Target = target
 
@@ -92,139 +96,89 @@ func buildTestCheckRequest(check *HttpCheck, target *Target) (*TestCheckRequest,
 	return request, nil
 }
 
-func TestCheckerTestCheckRequest(t *testing.T) {
-	setup(t)
-
+func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 	target := &Target{
 		Id:   "sg",
 		Name: "sg",
 		Type: "sg",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub(), target)
-	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
-	}
+	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	assert.NoError(s.T(), err)
 
-	response, err := testCheckerClient.Client.TestCheck(testContext, request)
-	if err != nil {
-		t.Fatalf("Unable to get RPC response: %v", err)
-	}
+	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.NoError(s.T(), err)
 
 	httpResponse := &HttpResponse{}
 	responses := response.GetResponses()
+	assert.NotNil(s.T(), responses)
+	assert.Equal(s.T(), len(responses), 1)
+	assert.Equal(s.T(), responses[0].Response.TypeUrl, "HttpResponse")
 
-	t.Logf("Got responses: %v", responses)
-
-	proto.Unmarshal(responses[0].Response.Value, httpResponse)
-
-	teardown(t)
+	err = proto.Unmarshal(responses[0].Response.Value, httpResponse)
+	assert.Nil(s.T(), err)
 }
 
-func TestCheckerResolverFailure(t *testing.T) {
-	setup(t)
+func (s *CheckerTestSuite) TestCheckResolverFailure() {
 	target := &Target{
 		Id:   "unknown",
 		Type: "sg",
 		Name: "unknown",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub(), target)
-	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
-	}
+	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	assert.NoError(s.T(), err)
 
-	response, err := testCheckerClient.Client.TestCheck(testContext, request)
-	if err != nil {
-		t.Logf("Received error: %v", err)
-	} else {
-		t.Fail()
-	}
-	if response != nil {
-		t.Fail()
-	}
-	teardown(t)
+	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.Error(s.T(), err)
+	assert.Nil(s.T(), response)
 }
 
-func TestCheckerResolverEmpty(t *testing.T) {
-	setup(t)
+func (s *CheckerTestSuite) TestCheckResolverEmpty() {
 	target := &Target{
 		Id:   "empty",
 		Type: "sg",
 		Name: "unknown",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub(), target)
-	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
-	}
+	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	assert.NoError(s.T(), err)
 
-	response, err := testCheckerClient.Client.TestCheck(testContext, request)
-	if err != nil {
-		t.Logf("Received error: %v", err)
-	} else {
-		t.Fail()
-	}
-	if response != nil {
-		t.Fail()
-	}
-	teardown(t)
+	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.Error(s.T(), err)
+	assert.Nil(s.T(), response)
 }
 
-func TestTimeoutTestCheck(t *testing.T) {
-	setup(t)
+func (s *CheckerTestSuite) TestCheckTimeout() {
 	target := &Target{
 		Name: "test target",
 		Type: "sg",
 		Id:   "unknown",
 	}
-	request, err := buildTestCheckRequest(httpCheckStub(), target)
-	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
-	}
+	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	assert.NoError(s.T(), err)
 
-	response, err := testCheckerClient.Client.TestCheck(testContext, request)
-	if err != nil {
-		t.Logf("Received error: %v", err)
-	} else {
-		t.Fail()
-	}
-
-	if response != nil {
-		t.Fail()
-	}
-
-	teardown(t)
+	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.Error(s.T(), err)
+	assert.Nil(s.T(), response)
 }
 
-func TestCheckerTestCheckWithMaxHosts(t *testing.T) {
-	setup(t)
-
+func (s *CheckerTestSuite) TestCheckLimitsResponsesToOne() {
 	target := &Target{
 		Type: "sg",
 		Id:   "sg3",
 	}
+	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	assert.NoError(s.T(), err)
 
-	request, err := buildTestCheckRequest(httpCheckStub(), target)
-	if err != nil {
-		t.Fatalf("Unable to build test check request: target = %s, check stub = %s", target, request)
-	}
-
-	response, err := testCheckerClient.Client.TestCheck(testContext, request)
-
-	if err != nil {
-		t.Fail()
-	}
-
-	if response == nil {
-		t.Fail()
-	}
-
-	teardown(t)
+	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.NoError(s.T(), err)
+	assert.NotNil(s.T(), response)
+	assert.Len(s.T(), response.GetResponses(), 1)
 }
 
-func TestUpdateCheck(t *testing.T) {
-	setup(t)
-	_, err := testChecker.UpdateCheck(nil, nil)
-	if err == nil {
-		t.Fail()
-	}
-	teardown(t)
+func (s *CheckerTestSuite) TestUpdateCheck() {
+	_, err := s.Checker.UpdateCheck(nil, nil)
+	assert.Error(s.T(), err)
+}
+
+func TestCheckerTestSuite(t *testing.T) {
+	suite.Run(t, new(CheckerTestSuite))
 }

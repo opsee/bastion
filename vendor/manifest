@@ -167,18 +167,10 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/stretchr/testify/assert",
+			"importpath": "github.com/stretchr/testify",
 			"repository": "https://github.com/stretchr/testify",
-			"revision": "089c7181b8c728499929ff09b62d3fdd8df8adff",
-			"branch": "master",
-			"path": "/assert"
-		},
-		{
-			"importpath": "github.com/stretchr/testify/mock",
-			"repository": "https://github.com/stretchr/testify",
-			"revision": "089c7181b8c728499929ff09b62d3fdd8df8adff",
-			"branch": "master",
-			"path": "/mock"
+			"revision": "232e8563676cd15c3a36ba5e675ad4312ac4cb11",
+			"branch": "HEAD"
 		},
 		{
 			"importpath": "github.com/ugorji/go/codec",
