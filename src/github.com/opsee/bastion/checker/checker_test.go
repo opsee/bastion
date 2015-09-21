@@ -69,6 +69,7 @@ func (s *CheckerTestSuite) SetupTest() {
 }
 
 func (s *CheckerTestSuite) TearDownTest() {
+	s.CheckerClient.Close()
 	s.Checker.Stop()
 }
 
