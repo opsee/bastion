@@ -7,12 +7,17 @@ import (
 	"golang.org/x/net/context"
 )
 
-// A Runner is responsible for running checks and
+// A Runner is responsible for running checks. Given a request for a check
+// (see: RunCheck), it will execute that check within a context, returning
+// a response for every resolved check target. The Runner is not meant for
+// concurrent use. It provides an asynchronous API for submitting jobs and
+// manages its own concurrency.
 type Runner struct {
 	resolver   Resolver
 	dispatcher *Dispatcher
 }
 
+// NewRunner returns a runner associated with a particular resolver.
 func NewRunner(resolver Resolver) *Runner {
 	dispatcher := NewDispatcher()
 	return &Runner{
@@ -21,13 +26,11 @@ func NewRunner(resolver Resolver) *Runner {
 	}
 }
 
-func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan *Target, error) {
+func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Target, error) {
 	var (
 		targets []*Target
 		err     error
 	)
-
-	out := make(chan *Target)
 
 	if check.Target.Type != "instance" {
 		targets, err = r.resolver.Resolve(check.Target)
@@ -41,31 +44,20 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan 
 		targets = []*Target{check.Target}
 	}
 
-	go func() {
-		defer close(out)
+	var (
+		maxHosts int
+		ok       bool
+	)
 
-		var (
-			maxHosts int
-			ok       bool
-		)
+	maxHosts, ok = ctx.Value("MaxHosts").(int)
+	if !ok {
+		maxHosts = len(targets)
+	}
 
-		maxHosts, ok = ctx.Value("MaxHosts").(int)
-		if !ok {
-			maxHosts = len(targets)
-		}
-		logger.Debug("resolveRequestTargets: MaxHosts = %s", maxHosts)
-
-		for i := 0; i < len(targets) && i < maxHosts; i++ {
-			logger.Debug("resolveRequestTargets: target = %s", *targets[i])
-			out <- targets[i]
-		}
-		logger.Debug("resolveRequestTargets: Goroutine returning")
-	}()
-
-	return out, nil
+	return targets[:maxHosts], nil
 }
 
-func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Target) (chan *Task, error) {
+func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) (chan *Task, error) {
 	// If the Check submitted is invalid, RunCheck will return a single
 	// CheckResponse indicating that there was an error with the Check.
 	c, err := UnmarshalAny(check.CheckSpec)
@@ -77,73 +69,55 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Targe
 
 	tg := TaskGroup{}
 
-	for target := range targets {
-		if target != nil {
-			logger.Debug("dispatch - Handling target: %s", *target)
+	for _, target := range targets {
+		logger.Debug("dispatch - Handling target: %s", *target)
 
-			var request Request
-			switch typedCheck := c.(type) {
-			case *HttpCheck:
-				logger.Debug("dispatch - dispatching for target %s", target.Address)
-				if target.Address == "" {
-					logger.Error("Target missing address: %s", *target)
-					continue
-				}
-				uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
-				request = &HTTPRequest{
-					Method:  typedCheck.Verb,
-					URL:     uri,
-					Headers: typedCheck.Headers,
-					Body:    typedCheck.Body,
-				}
-			default:
-				logger.Error("dispatch - Unknown check type: %s", reflect.TypeOf(c))
-				return nil, fmt.Errorf("Unrecognized check type.")
+		var request Request
+		switch typedCheck := c.(type) {
+		case *HttpCheck:
+			logger.Debug("dispatch - dispatching for target %s", target.Address)
+			if target.Address == "" {
+				logger.Error("Target missing address: %s", *target)
+				continue
 			}
-
-			logger.Debug("dispatch - Creating task from request: %s", request)
-			t := reflect.TypeOf(request).Elem().Name()
-			logger.Debug("dispatch - Request type: %s", t)
-
-			task := &Task{
-				Target:  target,
-				Type:    t,
-				Request: request,
+			uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
+			request = &HTTPRequest{
+				Method:  typedCheck.Verb,
+				URL:     uri,
+				Headers: typedCheck.Headers,
+				Body:    typedCheck.Body,
 			}
-
-			logger.Debug("dispatch - Dispatching task: %s", *task)
-
-			tg = append(tg, task)
+		default:
+			logger.Error("dispatch - Unknown check type: %s", reflect.TypeOf(c))
+			return nil, fmt.Errorf("Unrecognized check type.")
 		}
+
+		logger.Debug("dispatch - Creating task from request: %s", request)
+		t := reflect.TypeOf(request).Elem().Name()
+		logger.Debug("dispatch - Request type: %s", t)
+
+		task := &Task{
+			Target:  target,
+			Type:    t,
+			Request: request,
+		}
+
+		logger.Debug("dispatch - Dispatching task: %s", *task)
+
+		tg = append(tg, task)
 	}
 
 	return r.dispatcher.Dispatch(ctx, tg), nil
 }
 
-func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *CheckResponse) {
-	// If there is an error resolving the target, RunCheck will return a single
-	// CheckResponse indicating that there was a target resolution error.
-	targets, err := r.resolveRequestTargets(ctx, check)
-	if err != nil {
-		responses <- &CheckResponse{
-			Target: check.Target,
-			Error:  err.Error(),
-		}
-		return
-	}
-
-	finishedTasks, err := r.dispatch(ctx, check, targets)
-	if err != nil {
-		responses <- &CheckResponse{
-			Target: check.Target,
-			Error:  err.Error(),
-		}
-	}
-
-	for t := range finishedTasks {
+func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, responses chan *CheckResponse) {
+	for t := range tasks {
 		logger.Debug("runCheck - Handling finished task: %s", *t)
-		var responseError string
-		var responseAny *Any
+		var (
+			responseError string
+			responseAny   *Any
+			err           error
+		)
 		if t.Response.Response != nil {
 			responseAny, err = MarshalAny(t.Response.Response)
 			if err != nil {
@@ -169,11 +143,8 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 // may receive all of the CheckResponse objects -- 1:1 with the number of
 // resolved targets.
 //
-// If there is an error resolving the target, RunCheck will return a single
-// CheckResponse indicating that there was a target resolution error.
-//
-// If the Check submitted is invalid, RunCheck will return a single
-// CheckResponse indicating that there was an error with the Check.
+// RunCheck will return errors immediately if it cannot resolve the check's
+// target or if it cannot unmarshal the check body.
 //
 // If the Context passed to RunCheck includes a MaxHosts value, at most MaxHosts
 // CheckResponse objects will be returned.
@@ -181,11 +152,24 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 // If the Context passed to RunCheck is cancelled or its deadline is exceeded,
 // all CheckResponse objects after that event will be passed to the channel
 // with appropriate errors associated with them.
-func (r *Runner) RunCheck(ctx context.Context, check *Check) chan *CheckResponse {
+func (r *Runner) RunCheck(ctx context.Context, check *Check) (chan *CheckResponse, error) {
+	targets, err := r.resolveRequestTargets(ctx, check)
+	if err != nil {
+		return nil, err
+	}
+
+	tasks, err := r.dispatch(ctx, check, targets)
+	if err != nil {
+		return nil, err
+	}
+
 	responses := make(chan *CheckResponse, 1)
+	// TODO: Place requests on a queue, much like the dispatcher. Working from that
+	// queue--thus giving us the ability to limit the number of concurrently
+	// executing checks.
 	go func() {
 		defer close(responses)
-		r.runCheck(ctx, check, responses)
+		r.runCheck(ctx, check, tasks, responses)
 	}()
-	return responses
+	return responses, nil
 }

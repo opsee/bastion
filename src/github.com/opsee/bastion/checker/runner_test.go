@@ -26,7 +26,8 @@ func (s *RunnerTestSuite) SetupTest() {
 
 func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	check := s.Common.PassingCheckMultiTarget()
-	responses := s.Runner.RunCheck(s.Context, check)
+	responses, err := s.Runner.RunCheck(s.Context, check)
+	assert.NoError(s.T(), err)
 	targets, err := s.Resolver.Resolve(&Target{
 		Id: "sg3",
 	})
@@ -45,7 +46,8 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 	ctx := context.WithValue(s.Context, "MaxHosts", 1)
 	check := s.Common.PassingCheckMultiTarget()
-	responses := s.Runner.RunCheck(ctx, check)
+	responses, err := s.Runner.RunCheck(ctx, check)
+	assert.NoError(s.T(), err)
 	count := 0
 	for response := range responses {
 		count++
@@ -57,7 +59,8 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 
 func (s *RunnerTestSuite) TestRunCheckClosesChannel() {
 	check := s.Common.PassingCheckMultiTarget()
-	responses := s.Runner.RunCheck(s.Context, check)
+	responses, err := s.Runner.RunCheck(s.Context, check)
+	assert.NoError(s.T(), err)
 	for {
 		select {
 		case r, ok := <-responses:
@@ -74,7 +77,8 @@ func (s *RunnerTestSuite) TestRunCheckClosesChannel() {
 func (s *RunnerTestSuite) TestRunCheckDeadlineExceeded() {
 	ctx, _ := context.WithDeadline(s.Context, time.Unix(0, 0))
 	check := s.Common.PassingCheckMultiTarget()
-	responses := s.Runner.RunCheck(ctx, check)
+	responses, err := s.Runner.RunCheck(ctx, check)
+	assert.NoError(s.T(), err)
 	count := 0
 	for response := range responses {
 		count++
@@ -88,7 +92,8 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	ctx, cancel := context.WithCancel(s.Context)
 	cancel()
 	check := s.Common.PassingCheckMultiTarget()
-	responses := s.Runner.RunCheck(ctx, check)
+	responses, err := s.Runner.RunCheck(ctx, check)
+	assert.NoError(s.T(), err)
 	count := 0
 	for response := range responses {
 		count++
@@ -98,28 +103,18 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	assert.Equal(s.T(), 3, count)
 }
 
-func (s *RunnerTestSuite) TestRunCheckResolveFailureHasOneResponse() {
+func (s *RunnerTestSuite) TestRunCheckResolveFailureReturnsError() {
 	check := s.Common.BadCheck()
-	responses := s.Runner.RunCheck(s.Context, check)
-	count := 0
-	for response := range responses {
-		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
-		assert.NotNil(s.T(), response.Error)
-	}
-	assert.Equal(s.T(), 1, count)
+	responses, err := s.Runner.RunCheck(s.Context, check)
+	assert.Error(s.T(), err)
+	assert.Nil(s.T(), responses)
 }
 
-func (s *RunnerTestSuite) TestRunCheckBadCheckHasOneResponse() {
+func (s *RunnerTestSuite) TestRunCheckBadCheckReturnsError() {
 	check := s.Common.BadCheck()
-	responses := s.Runner.RunCheck(s.Context, check)
-	count := 0
-	for response := range responses {
-		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
-		assert.NotNil(s.T(), response.Error)
-	}
-	assert.Equal(s.T(), 1, count)
+	responses, err := s.Runner.RunCheck(s.Context, check)
+	assert.Error(s.T(), err)
+	assert.Nil(s.T(), responses)
 }
 
 func TestRunnerTestSuite(t *testing.T) {

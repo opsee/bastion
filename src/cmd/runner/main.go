@@ -69,7 +69,12 @@ func main() {
 
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
-		responseChan := runner.RunCheck(ctx, check)
+		responseChan, err := runner.RunCheck(ctx, check)
+		if err != nil {
+			cancel()
+			return err
+		}
+
 		var responses []*checker.CheckResponse
 
 		for response := range responseChan {

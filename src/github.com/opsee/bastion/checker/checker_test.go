@@ -108,6 +108,7 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
 	assert.NoError(s.T(), err)
+	assert.IsType(s.T(), new(TestCheckResponse), response)
 
 	httpResponse := &HttpResponse{}
 	responses := response.GetResponses()
@@ -149,24 +150,30 @@ func (s *CheckerTestSuite) TestCheckResolverEmpty() {
 
 func (s *CheckerTestSuite) TestCheckTimeout() {
 	target := &Target{
-		Name: "test target",
+		Name: "sg",
 		Type: "sg",
-		Id:   "unknown",
+		Id:   "sg",
 	}
 	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
 	assert.NoError(s.T(), err)
 
-	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.Error(s.T(), err)
-	assert.Nil(s.T(), response)
+	ctx, _ := context.WithDeadline(s.Context, time.Now())
+
+	// We bypass the client here, because it will intercept the context and return
+	// an error, but we want to simulate what happens if the deadline is met
+	// _after_ we get to the Checker.
+	response, err := s.Checker.TestCheck(ctx, request)
+	assert.NoError(s.T(), err)
+	assert.IsType(s.T(), new(TestCheckResponse), response)
 }
 
-func (s *CheckerTestSuite) TestCheckLimitsResponsesToOne() {
+func (s *CheckerTestSuite) TestCheckAdheresToMaxHosts() {
 	target := &Target{
 		Type: "sg",
 		Id:   "sg3",
 	}
 	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	request.MaxHosts = 1
 	assert.NoError(s.T(), err)
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
