@@ -112,8 +112,8 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 	httpResponse := &HttpResponse{}
 	responses := response.GetResponses()
 	assert.NotNil(s.T(), responses)
-	assert.Equal(s.T(), len(responses), 1)
-	assert.Equal(s.T(), responses[0].Response.TypeUrl, "HttpResponse")
+	assert.Len(s.T(), responses, 1)
+	assert.Equal(s.T(), "HttpResponse", responses[0].Response.TypeUrl)
 
 	err = proto.Unmarshal(responses[0].Response.Value, httpResponse)
 	assert.Nil(s.T(), err)
