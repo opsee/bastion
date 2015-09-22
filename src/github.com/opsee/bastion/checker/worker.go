@@ -18,11 +18,14 @@ type Task struct {
 	Target   *Target
 	Request  Request
 	Response *Response
-	Finished chan *Task
 }
 
 type Worker interface {
-	Work()
+	Work(*Task) *Task
 }
 
-type NewWorkerFunc func(workQueue chan *Task) Worker
+type NewWorkerFunc func(chan Worker) Worker
+
+func RegisterWorker(workerType string, newFun NewWorkerFunc) {
+	Recruiters[workerType] = newFun
+}

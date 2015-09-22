@@ -132,7 +132,6 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	ctx = context.WithValue(ctx, "MaxHosts", int(req.MaxHosts))
 
 	responses := c.Runner.RunCheck(ctx, req.Check)
-	defer close(responses)
 
 	testCheckResponse := &TestCheckResponse{
 		Responses: make([]*CheckResponse, req.MaxHosts),
