@@ -25,6 +25,7 @@ var (
 
 func init() {
 	registry["HttpCheck"] = reflect.TypeOf(HttpCheck{})
+	logging.SetLevel("ERROR", "checker")
 }
 
 func UnmarshalAny(any *Any) (interface{}, error) {
