@@ -27,6 +27,13 @@ func (t TestCommonStubs) HTTPCheck() *HttpCheck {
 	}
 }
 
+func (t TestCommonStubs) HTTPRequest() *HTTPRequest {
+	return &HTTPRequest{
+		Method: "GET",
+		URL:    fmt.Sprintf("http://127.0.0.1:%d/", testHTTPServerPort),
+	}
+}
+
 func (t TestCommonStubs) Check() *Check {
 	return &Check{
 		Id:        "string",
@@ -42,6 +49,19 @@ func (t TestCommonStubs) PassingCheck() *Check {
 		Type: "sg",
 		Id:   "sg",
 		Name: "sg",
+	}
+
+	spec, _ := MarshalAny(t.HTTPCheck())
+	check.CheckSpec = spec
+	return check
+}
+
+func (t TestCommonStubs) PassingCheckMultiTarget() *Check {
+	check := t.Check()
+	check.Target = &Target{
+		Type: "sg",
+		Id:   "sg3",
+		Name: "sg3",
 	}
 
 	spec, _ := MarshalAny(t.HTTPCheck())

@@ -14,7 +14,6 @@ type Runner struct {
 
 func NewRunner(resolver Resolver) *Runner {
 	dispatcher := NewDispatcher()
-	dispatcher.Dispatch()
 	return &Runner{
 		dispatcher: dispatcher,
 		resolver:   resolver,
@@ -66,7 +65,6 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan 
 }
 
 func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Target) (chan *Task, error) {
-	finished := make(chan *Task, 1)
 	c, err := UnmarshalAny(check.CheckSpec)
 	if err != nil {
 		logger.Error("dispatch - unable to unmarshal check: %s", err.Error())
@@ -74,60 +72,48 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Targe
 	}
 	logger.Debug("dispatch - check = %s", check)
 
-	go func() {
-		for {
-			select {
-			case target, ok := <-targets:
-				if !ok {
-					logger.Debug("dispatch - targets channel closed")
-					return
+	tg := TaskGroup{}
+
+	for target := range targets {
+		if target != nil {
+			logger.Debug("dispatch - Handling target: %s", *target)
+
+			var request Request
+			switch typedCheck := c.(type) {
+			case *HttpCheck:
+				logger.Debug("dispatch - dispatching for target %s", target.Address)
+				if target.Address == "" {
+					logger.Error("Target missing address: %s", *target)
+					continue
 				}
-				if target != nil {
-					logger.Debug("dispatch - Handling target: %s", *target)
-
-					var request Request
-					switch typedCheck := c.(type) {
-					case *HttpCheck:
-						logger.Debug("dispatch - dispatching for target %s", target.Address)
-						if target.Address == "" {
-							logger.Error("Target missing address: %s", *target)
-							continue
-						}
-						uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
-						request = &HTTPRequest{
-							Method:  typedCheck.Verb,
-							URL:     uri,
-							Headers: typedCheck.Headers,
-							Body:    typedCheck.Body,
-						}
-					default:
-						logger.Error("dispatch - Unknown check type: %s", reflect.TypeOf(c))
-						return
-					}
-
-					logger.Debug("dispatch - Creating task from request: %s", request)
-					t := reflect.TypeOf(request).Elem().Name()
-					logger.Debug("dispatch - Request type: %s", t)
-
-					task := &Task{
-						Target:   target,
-						Type:     t,
-						Request:  request,
-						Finished: finished,
-					}
-
-					logger.Debug("dispatch - Dispatching task: %s", *task)
-
-					r.dispatcher.Tasks <- task
+				uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
+				request = &HTTPRequest{
+					Method:  typedCheck.Verb,
+					URL:     uri,
+					Headers: typedCheck.Headers,
+					Body:    typedCheck.Body,
 				}
-			case <-ctx.Done():
-				logger.Debug("dispatch - %s", ctx.Err())
-				return
+			default:
+				logger.Error("dispatch - Unknown check type: %s", reflect.TypeOf(c))
 			}
-		}
-	}()
 
-	return finished, nil
+			logger.Debug("dispatch - Creating task from request: %s", request)
+			t := reflect.TypeOf(request).Elem().Name()
+			logger.Debug("dispatch - Request type: %s", t)
+
+			task := &Task{
+				Target:  target,
+				Type:    t,
+				Request: request,
+			}
+
+			logger.Debug("dispatch - Dispatching task: %s", *task)
+
+			tg = append(tg, task)
+		}
+	}
+
+	return r.dispatcher.Dispatch(ctx, tg), nil
 }
 
 func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *CheckResponse) {
@@ -140,7 +126,6 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 	}
 
 	finishedTasks, err := r.dispatch(ctx, check, targets)
-	defer close(finishedTasks)
 
 	// If the deadline is exceeded, we may panic because we try to write to
 	// a closed channel. Avoid this by recovering. We want to try to avoid
@@ -160,7 +145,10 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 
 	for {
 		select {
-		case t := <-finishedTasks:
+		case t, ok := <-finishedTasks:
+			if !ok {
+				return
+			}
 			if t != nil {
 				logger.Debug("runCheck - Handling finished task: %s", *t)
 				var responseError string
@@ -193,6 +181,7 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 func (r *Runner) RunCheck(ctx context.Context, check *Check) chan *CheckResponse {
 	responses := make(chan *CheckResponse, 1)
 	go func() {
+		defer close(responses)
 		r.runCheck(ctx, check, responses)
 	}()
 	return responses

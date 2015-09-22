@@ -1,62 +1,79 @@
 package checker
 
+import (
+	"golang.org/x/net/context"
+)
+
 const (
 	MaxRoutinesPerWorkerType = 10
 	MaxQueueDepth            = 10
 )
 
-type WorkerGroup struct {
-	WorkQueue   chan *Task
-	WorkerQueue chan *Worker
-	maxWorkers  int
+type workerGroup struct {
+	WorkerQueue chan Worker
 	workerFunc  NewWorkerFunc
 }
 
-func NewWorkerGroup(workerFunc NewWorkerFunc, maxQueueDepth int, maxWorkers int) *WorkerGroup {
-	m := &WorkerGroup{
-		maxWorkers: maxWorkers,
-		workerFunc: workerFunc,
-		WorkQueue:  make(chan *Task, maxQueueDepth),
+// A TaskGroup is the unit of work for a Dispatcher.
+type TaskGroup []*Task
+
+func newWorkerGroup(workerFunc NewWorkerFunc, maxQueueDepth int, maxWorkers int) *workerGroup {
+	wg := &workerGroup{
+		workerFunc:  workerFunc,
+		WorkerQueue: make(chan Worker, maxWorkers),
 	}
 	for i := 0; i < maxWorkers; i++ {
-		m := workerFunc(m.WorkQueue)
-		go m.Work()
+		wg.WorkerQueue <- workerFunc(wg.WorkerQueue)
 	}
-	return m
-}
-
-func (d *Dispatcher) dispatch(t *Task) {
-	workerGroup := d.workerGroups[t.Type]
-
-	logger.Info("Sending task to worker: ", t)
-	workerGroup.WorkQueue <- t
+	return wg
 }
 
 type Dispatcher struct {
-	Tasks        chan *Task
-	workerGroups map[string]*WorkerGroup
+	workerGroups map[string]*workerGroup
 }
 
+// NewDispatcher returns a dispatcher with populated internal worker groups.
 func NewDispatcher() *Dispatcher {
-	d := &Dispatcher{
-		Tasks: make(chan *Task, MaxQueueDepth),
-	}
+	d := new(Dispatcher)
 
-	workerGroups := make(map[string]*WorkerGroup)
+	workerGroups := make(map[string]*workerGroup)
 	for workerType, newFunc := range Recruiters {
-		workerGroups[workerType] = NewWorkerGroup(newFunc, MaxQueueDepth, MaxRoutinesPerWorkerType)
+		workerGroups[workerType] = newWorkerGroup(newFunc, MaxQueueDepth, MaxRoutinesPerWorkerType)
 	}
 	d.workerGroups = workerGroups
 
 	return d
 }
 
-func (d *Dispatcher) Dispatch() {
+// Dispatch guarantees that every Task in a TaskGroup has a response. A call to
+// Dispatch will return a channel that is closed when all tasks have finished
+// completion. Cancelling the context will cause Dispatch to insert an error as
+// the response that indicates the context was cancelled.
+func (d *Dispatcher) Dispatch(ctx context.Context, tg TaskGroup) chan *Task {
+	finished := make(chan *Task, len(tg))
 	go func() {
-		for task := range d.Tasks {
-			logger.Debug("Dispatching request: task = %s, type = %s", *task, task.Type)
-			workGroup := d.workerGroups[task.Type]
-			workGroup.WorkQueue <- task
+		defer close(finished)
+		cancelled := false
+
+		for _, t := range tg {
+			select {
+			case <-ctx.Done():
+				cancelled = true
+			default:
+			}
+
+			if !cancelled {
+				logger.Debug("Dispatching request: task = %s, type = %s", *t, t.Type)
+				worker := <-d.workerGroups[t.Type].WorkerQueue
+				finished <- worker.Work(t)
+			} else {
+				t.Response = &Response{
+					Error: ctx.Err(),
+				}
+				finished <- t
+			}
 		}
 	}()
+
+	return finished
 }

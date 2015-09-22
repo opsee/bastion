@@ -110,35 +110,34 @@ func (r *HTTPRequest) Do() *Response {
 }
 
 type HTTPWorker struct {
-	WorkQueue chan *Task
+	workerQueue chan Worker
 }
 
-func NewHTTPWorker(workQueue chan *Task) Worker {
+func NewHTTPWorker(queue chan Worker) Worker {
 	return &HTTPWorker{
-		WorkQueue: workQueue,
+		workerQueue: queue,
 	}
 }
 
-func (w *HTTPWorker) Work() {
-	for task := range w.WorkQueue {
-		request, ok := task.Request.(*HTTPRequest)
-		if ok {
-			logger.Debug("request: ", request)
-			if response := request.Do(); response.Error != nil {
-				logger.Error("error processing request: %s", *task)
-				logger.Error("error: %s", response.Error.Error())
-				task.Response = &Response{
-					Error: response.Error,
-				}
-			} else {
-				logger.Debug("response: ", response)
-				task.Response = response
+func (w *HTTPWorker) Work(task *Task) *Task {
+	request, ok := task.Request.(*HTTPRequest)
+	if ok {
+		logger.Debug("request: ", request)
+		if response := request.Do(); response.Error != nil {
+			logger.Error("error processing request: %s", *task)
+			logger.Error("error: %s", response.Error.Error())
+			task.Response = &Response{
+				Error: response.Error,
 			}
 		} else {
-			task.Response = &Response{
-				Error: fmt.Errorf("Unable to process request: %s", task.Request),
-			}
+			logger.Debug("response: ", response)
+			task.Response = response
 		}
-		task.Finished <- task
+	} else {
+		task.Response = &Response{
+			Error: fmt.Errorf("Unable to process request: %s", task.Request),
+		}
 	}
+	w.workerQueue <- w
+	return task
 }
