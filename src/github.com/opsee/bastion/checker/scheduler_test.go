@@ -3,10 +3,10 @@ package checker
 import (
 	"testing"
 
-	// "github.com/op/go-logging"
+	"github.com/opsee/bastion/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	// "golang.org/x/net/context"
+	"golang.org/x/net/context"
 )
 
 // Test the Scheduler
@@ -114,17 +114,16 @@ func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
  * RunCheck() Benchmarks
   ******************************************************************************/
 
-// func (s *SchedulerTestSuite) TestBenchmarkRunCheckParallel(b *testing.B) {
-// 	logging.SetLevel(logging.GetLevel("ERROR"), "checker")
-// 	runner := NewRunner(newTestResolver())
-// 	check := s.Common.PassingCheck()
-// 	b.RunParallel(func(pb *testing.PB) {
-// 		for pb.Next() {
-// 			runner.RunCheck(context.TODO(), check)
-// 		}
-// 	})
-// 	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
-// }
+func BenchmarkRunCheckParallel(b *testing.B) {
+	logging.SetLevel("ERROR", "checker")
+	runner := NewRunner(newTestResolver())
+	check := (&TestCommonStubs{}).PassingCheckMultiTarget()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			runner.RunCheck(context.Background(), check)
+		}
+	})
+}
 
 func TestSchedulerTestSuite(t *testing.T) {
 	suite.Run(t, new(SchedulerTestSuite))

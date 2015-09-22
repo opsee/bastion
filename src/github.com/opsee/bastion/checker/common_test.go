@@ -3,8 +3,9 @@ package checker
 import (
 	"fmt"
 	"net/http"
+	"os"
 
-	"github.com/op/go-logging"
+	"github.com/opsee/bastion/logging"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
 )
@@ -137,7 +138,11 @@ func newTestResolver() *testResolver {
 }
 
 func init() {
-	logging.SetLevel(logging.GetLevel("DEBUG"), "checker")
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "ERROR"
+	}
+	logging.SetLevel(logLevel, "checker")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Debug("Handling request: %s", *r)
