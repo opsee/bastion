@@ -7,6 +7,7 @@ import (
 	"golang.org/x/net/context"
 )
 
+// A Runner is responsible for running checks and
 type Runner struct {
 	resolver   Resolver
 	dispatcher *Dispatcher
@@ -65,6 +66,8 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) (chan 
 }
 
 func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Target) (chan *Task, error) {
+	// If the Check submitted is invalid, RunCheck will return a single
+	// CheckResponse indicating that there was an error with the Check.
 	c, err := UnmarshalAny(check.CheckSpec)
 	if err != nil {
 		logger.Error("dispatch - unable to unmarshal check: %s", err.Error())
@@ -95,6 +98,7 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Targe
 				}
 			default:
 				logger.Error("dispatch - Unknown check type: %s", reflect.TypeOf(c))
+				return nil, fmt.Errorf("Unrecognized check type.")
 			}
 
 			logger.Debug("dispatch - Creating task from request: %s", request)
@@ -117,25 +121,18 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets chan *Targe
 }
 
 func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *CheckResponse) {
+	// If there is an error resolving the target, RunCheck will return a single
+	// CheckResponse indicating that there was a target resolution error.
 	targets, err := r.resolveRequestTargets(ctx, check)
 	if err != nil {
 		responses <- &CheckResponse{
 			Target: check.Target,
 			Error:  err.Error(),
 		}
+		return
 	}
 
 	finishedTasks, err := r.dispatch(ctx, check, targets)
-
-	// If the deadline is exceeded, we may panic because we try to write to
-	// a closed channel. Avoid this by recovering. We want to try to avoid
-	// crashing on bad check data anyway.
-	defer func() {
-		if r := recover(); r != nil {
-			logger.Error("Recovered from panic in runCheck: %v", r)
-		}
-	}()
-
 	if err != nil {
 		responses <- &CheckResponse{
 			Target: check.Target,
@@ -143,41 +140,47 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, responses chan *Che
 		}
 	}
 
-	for {
-		select {
-		case t, ok := <-finishedTasks:
-			if !ok {
-				return
+	for t := range finishedTasks {
+		logger.Debug("runCheck - Handling finished task: %s", *t)
+		var responseError string
+		var responseAny *Any
+		if t.Response.Response != nil {
+			responseAny, err = MarshalAny(t.Response.Response)
+			if err != nil {
+				responseError = err.Error()
 			}
-			if t != nil {
-				logger.Debug("runCheck - Handling finished task: %s", *t)
-				var responseError string
-				var responseAny *Any
-				if t.Response.Response != nil {
-					responseAny, err = MarshalAny(t.Response.Response)
-					if err != nil {
-						responseError = err.Error()
-					}
-				}
-				// Overwrite the error if there is an error on the response.
-				if t.Response.Error != nil {
-					responseError = t.Response.Error.Error()
-				}
-				response := &CheckResponse{
-					Target:   t.Target,
-					Response: responseAny,
-					Error:    responseError,
-				}
-				logger.Debug("runCheck - Emitting CheckResponse: %s", *response)
-				responses <- response
-			}
-		case <-ctx.Done():
-			logger.Debug("runCheck - %s", ctx.Err())
-			return
 		}
+		// Overwrite the error if there is an error on the response.
+		if t.Response.Error != nil {
+			responseError = t.Response.Error.Error()
+		}
+		response := &CheckResponse{
+			Target:   t.Target,
+			Response: responseAny,
+			Error:    responseError,
+		}
+		logger.Debug("runCheck - Emitting CheckResponse: %s", *response)
+		responses <- response
 	}
 }
 
+// RunCheck will resolve all of the targets in a check and trigger execution
+// against each of the targets. A channel is returned over which the caller
+// may receive all of the CheckResponse objects -- 1:1 with the number of
+// resolved targets.
+//
+// If there is an error resolving the target, RunCheck will return a single
+// CheckResponse indicating that there was a target resolution error.
+//
+// If the Check submitted is invalid, RunCheck will return a single
+// CheckResponse indicating that there was an error with the Check.
+//
+// If the Context passed to RunCheck includes a MaxHosts value, at most MaxHosts
+// CheckResponse objects will be returned.
+//
+// If the Context passed to RunCheck is cancelled or its deadline is exceeded,
+// all CheckResponse objects after that event will be passed to the channel
+// with appropriate errors associated with them.
 func (r *Runner) RunCheck(ctx context.Context, check *Check) chan *CheckResponse {
 	responses := make(chan *CheckResponse, 1)
 	go func() {
