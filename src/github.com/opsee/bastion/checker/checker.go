@@ -120,41 +120,41 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*
 	return c.invoke(ctx, "DeleteCheck", req)
 }
 
+// TestCheck will synchronously execute a check.
+//
+// A TestCheckResponse is returned if there are no request errors. If there are
+// request-specific errors, then an error will be returned with no
+// TestCheckResponse.
+//
+// "Request-specific errors" are defined as:
+// - An unresolvable Check target.
+// - An unidentifiable Check type or CheckSpec.
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
 	logger.Debug("Received request: %s", req)
 
 	if req.Deadline == nil {
 		return nil, fmt.Errorf("Deadline required but missing in request. %v", req)
 	}
-
 	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
+	// We add the request deadline here, and the Runner will adhere to that
+	// deadline.
 	ctx, _ = context.WithDeadline(ctx, deadline)
 	ctx = context.WithValue(ctx, "MaxHosts", int(req.MaxHosts))
 
-	responses := c.Runner.RunCheck(ctx, req.Check)
+	responses, err := c.Runner.RunCheck(ctx, req.Check)
+	if err != nil {
+		return nil, err
+	}
 
+	var responseArr []*CheckResponse
+	for response := range responses {
+		responseArr = append(responseArr, response)
+	}
 	testCheckResponse := &TestCheckResponse{
-		Responses: make([]*CheckResponse, req.MaxHosts),
+		Responses: responseArr,
 	}
 
-	for i := 0; i < int(req.MaxHosts); i++ {
-		logger.Debug("Waiting for response %d", i)
-		select {
-		case response := <-responses:
-			if response != nil {
-				logger.Debug("Got response: %s", response)
-				if response.Error != "" {
-					return nil, fmt.Errorf(response.Error)
-				}
-				testCheckResponse.Responses[i] = response
-			}
-		case <-ctx.Done():
-			err := ctx.Err()
-			return testCheckResponse, err
-		}
-	}
-
-	logger.Debug("Results: %v", testCheckResponse)
+	logger.Debug("TestCheck returning: %v", testCheckResponse)
 	return testCheckResponse, nil
 }
 

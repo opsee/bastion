@@ -69,6 +69,20 @@ func (t TestCommonStubs) PassingCheckMultiTarget() *Check {
 	return check
 }
 
+func (t TestCommonStubs) BadCheck() *Check {
+	check := t.Check()
+	check.Target = &Target{
+		Type: "sg",
+		Id:   "unknown",
+		Name: "unknown",
+	}
+	check.CheckSpec = &Any{
+		TypeUrl: "unknown",
+		Value:   []byte{},
+	}
+	return check
+}
+
 type testResolver struct {
 	Targets map[string][]*Target
 }
@@ -78,8 +92,12 @@ func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
 	if tgt.Id == "empty" {
 		return []*Target{}, nil
 	}
+	resolved := t.Targets[tgt.Id]
+	if resolved == nil {
+		return nil, fmt.Errorf("")
+	}
 
-	return t.Targets[tgt.Id], nil
+	return resolved, nil
 }
 
 func newTestResolver() *testResolver {
