@@ -18,19 +18,23 @@ dependencies:
   override:
     - docker info
     - go version
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD quay.io
     - docker pull quay.io/opsee/build-go
     - sudo pip install awscli
     - if [[ ! -e mami/mami.jar ]]; then mkdir mami && aws s3 cp s3://opsee-releases/clj/mami/master/mami-0.1.0-SNAPSHOT-standalone.jar mami/mami.jar; fi
     - git submodule update --init
 test:
   override:
+    - export BASTION_VERSION=`git rev-parse HEAD`
     - docker run -e "TARGETS=linux/amd64" -v `pwd`:/build quay.io/opsee/build-go
-    - docker build -t quay.io/opsee/bastion:latest .
+    - docker build -t quay.io/opsee/bastion:$BASTION_VERSION .
+    - docker push quay.io/opsee/bastion:$BASTION_VERSION
+    - java -jar mami/mami.jar build --bastion-version $BASTION_VERSION build/mami.json
 deployment:
   ami:
     branch: master
     owner: opsee
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD quay.io
+      - docker build -t quay.io/opsee/bastion:latest
       - docker push quay.io/opsee/bastion:latest
-      - java -jar mami/mami.jar build --release stable build/mami.json
+      - java -jar mami/mami.jar build --release stable --bastion-version latest --build-ami build/mami.json
