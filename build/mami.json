@@ -20,15 +20,15 @@
 		},
 		{
 			"type":"systemd",
+			"unit-file":"build/nsqd.service"
+		},
+		{
+			"type":"systemd",
 			"unit-file":"build/connector.service"
 		},
 		{
 			"type":"systemd",
 			"unit-file":"build/bastion-etcd.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/nsqd.service"
 		},
 		{
 			"type":"systemd",
