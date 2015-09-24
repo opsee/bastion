@@ -15,19 +15,12 @@
 			"from":"build/docker_config.json"
 		},
 		{
-			"type":"scp",
-			"from":"build/bastion-env.sh"
-		},
-		{
-			"type":"shell",
-			"instructions":[
-				"sudo mkdir -p /etc/opsee",
-				"sudo mv /tmp/staging/bastion-env.sh /etc/opsee/bastion-env.sh"
-			]
-		},
-		{
 			"type":"shell",
 			"instructions":["mv /tmp/staging/docker_config.json /home/core/.dockercfg"]
+		},
+		{
+			"type":"systemd",
+			"unit-file":"build/nsqd.service"
 		},
 		{
 			"type":"systemd",
@@ -36,10 +29,6 @@
 		{
 			"type":"systemd",
 			"unit-file":"build/bastion-etcd.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/nsqd.service"
 		},
 		{
 			"type":"systemd",
@@ -81,6 +70,10 @@
 		{
 			"type":"waitfor",
 			"test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""
+		},
+		{
+			"type": "shell",
+			"instructions":["sudo rm -f /etc/opsee/bastion-env.sh"]
 		}
 	],
 	"reboot-before-build": false,

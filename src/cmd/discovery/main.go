@@ -31,7 +31,8 @@ func main() {
 
 	for event := range disco.Discover() {
 		if event.Err != nil {
-			fmt.Println("whoops: ", event.Err.Error())
+			//XXX handle aws discovery error
+			fmt.Println("Error: ", event.Error.Error())
 		} else {
 			fmt.Println("yay: ", event.Result)
 		}
