@@ -30,7 +30,7 @@ func main() {
 			&awscan.Config{
 				AccessKeyId: cfg.AccessKeyId,
 				SecretKey:   cfg.SecretKey,
-				Region:      "us-west-1",
+				Region:      cfg.MetaData.Region,
 			},
 		),
 	)
