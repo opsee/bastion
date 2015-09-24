@@ -28,8 +28,8 @@ type eC2ScannerImpl struct {
 
 type Config struct {
 	AccessKeyId string
-	SecretKey string
-	Region string
+	SecretKey   string
+	Region      string
 }
 
 func NewScanner(cfg *Config) EC2Scanner {
