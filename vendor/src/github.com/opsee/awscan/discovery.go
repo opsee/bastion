@@ -14,7 +14,7 @@ type Event struct {
 }
 
 type discoverer struct {
-	wg        *sync.WaitGroup
+	wg        sync.WaitGroup
 	sc        EC2Scanner
 	discoChan chan Event
 }
@@ -22,7 +22,7 @@ type discoverer struct {
 func NewDiscoverer(s EC2Scanner) Discoverer {
 	disco := discoverer{
 		sc:        s,
-		wg:        &sync.WaitGroup{},
+		wg:        sync.WaitGroup{},
 		discoChan: make(chan Event, 128),
 	}
 	return disco
