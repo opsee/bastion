@@ -5,6 +5,7 @@ import (
 	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 const MetadataURL = "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -25,6 +26,7 @@ type InstanceMeta struct {
 	Version          string
 	PrivateIp        string
 	AvailabilityZone string
+	Timestamp        string
 }
 
 type MetadataProvider struct {
@@ -74,6 +76,8 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		}
 		meta := &InstanceMeta{}
 		err = json.Unmarshal(body, meta)
+		meta.Timestamp = time.Now().UTC().Format("StampMilli")
+
 		if err != nil {
 			logger.Error("error parsing instance metadata:", err)
 			return nil, err

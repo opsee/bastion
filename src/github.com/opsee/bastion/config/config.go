@@ -3,9 +3,9 @@ package config
 import (
 	"flag"
 	"fmt"
-	"os"
-
 	"github.com/opsee/bastion/logging"
+	"net/http"
+	"os"
 )
 
 var (
@@ -16,6 +16,7 @@ var (
 type Config struct {
 	AccessKeyId string // AWS Access Key Id
 	SecretKey   string // AWS Secret Key
+	Region      string // AWS Region
 	Opsee       string // Opsee home IP address and port
 	MDFile      string // Path to a file which overrides the instance meta
 	CaPath      string // path to CA
@@ -25,6 +26,7 @@ type Config struct {
 	CustomerId  string // The Customer ID
 	AdminPort   uint   // Port for admin server.
 	LogLevel    string // the log level to use
+	MetaData    *InstanceMeta
 }
 
 func GetConfig() *Config {
@@ -43,6 +45,11 @@ func GetConfig() *Config {
 		flag.UintVar(&config.AdminPort, "admin_port", 4000, "Port for the admin server.")
 		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
 		flag.Parse()
+
+		httpClient := &http.Client{}
+		metap := NewMetadataProvider(httpClient, config)
+		config.MetaData = metap.Get()
+
 		err := logging.SetLevel(config.LogLevel, "bastion")
 		if err != nil {
 			fmt.Printf("%s is not a valid log level")
