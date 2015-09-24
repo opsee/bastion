@@ -16,8 +16,8 @@ const (
 )
 
 var (
-	logger   = logging.GetLogger(moduleName)
-	producer messaging.Producer
+	logger                      = logging.GetLogger(moduleName)
+	producer messaging.Producer = nil
 )
 
 func main() {
@@ -25,6 +25,7 @@ func main() {
 
 	cfg := config.GetConfig()
 
+	println(cfg.MetaData.Timestamp)
 	disco := awscan.NewDiscoverer(
 		awscan.NewScanner(
 			&awscan.Config{
@@ -46,7 +47,7 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 
-	//producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
+	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
 
 	if err != nil {
 		panic(err)
