@@ -18,7 +18,6 @@ const (
 var (
 	logger   = logging.GetLogger(moduleName)
 	producer messaging.Producer
-	wg       *sync.WaitGroup
 )
 
 func main() {
@@ -26,21 +25,29 @@ func main() {
 
 	cfg := config.GetConfig()
 
-	scanner := awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: "us-west-1"})
-	disco := awscan.NewDiscoverer(scanner)
+	disco := awscan.NewDiscoverer(
+		awscan.NewScanner(
+			&awscan.Config{
+				AccessKeyId: cfg.AccessKeyId,
+				SecretKey:   cfg.SecretKey,
+				Region:      "us-west-1",
+			},
+		),
+	)
 
 	for event := range disco.Discover() {
 		if event.Err != nil {
 			//XXX handle aws discovery error
-			fmt.Println("Error: ", event.Error.Error())
+			fmt.Println("Error: ", event.Err.Error())
 		} else {
 			fmt.Println("yay: ", event.Result)
 		}
 	}
 
-	wg = &sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 
-	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
+	//producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
+
 	if err != nil {
 		panic(err)
 	}
@@ -53,11 +60,11 @@ func main() {
 	go heart.Beat()
 
 	for {
-
 		// Wait for the whole scan to finish.
 		wg.Wait()
 
 		// Sleep 2 minutes between scans.
 		time.Sleep(120 * time.Second)
 	}
+
 }

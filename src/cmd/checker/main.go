@@ -36,9 +36,11 @@ func main() {
 	checks.Scheduler = scheduler
 
 	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
+
 	if err != nil {
 		logger.Fatal(err)
 	}
+
 	scheduler.Producer = producer
 	defer checks.Stop()
 
@@ -59,5 +61,9 @@ func main() {
 	defer portmapper.Unregister(moduleName, checks.Port)
 
 	err = <-heart.Beat()
-	panic(err)
+
+	if err != nil {
+		logger.Error(err.Error())
+		panic(err)
+	}
 }
