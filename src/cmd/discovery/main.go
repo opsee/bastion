@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
-	"sync"
-	"time"
 )
 
 const (
