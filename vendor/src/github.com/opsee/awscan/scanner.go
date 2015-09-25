@@ -1,8 +1,7 @@
-package scanner
+package awscan
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,12 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
-	"github.com/opsee/bastion/config"
-	"github.com/opsee/bastion/logging"
-)
-
-var (
-	logger = logging.GetLogger("scanner")
 )
 
 type EC2Scanner interface {
@@ -33,11 +26,13 @@ type eC2ScannerImpl struct {
 	config *aws.Config
 }
 
-func NewScanner(cfg *config.Config) EC2Scanner {
-	httpClient := &http.Client{}
-	metap := config.NewMetadataProvider(httpClient, cfg)
-	metadata := metap.Get()
-	region := metadata.Region
+type Config struct {
+	AccessKeyId string
+	SecretKey   string
+	Region      string
+}
+
+func NewScanner(cfg *Config) EC2Scanner {
 	var creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.StaticProvider{Value: credentials.Value{
@@ -48,7 +43,7 @@ func NewScanner(cfg *config.Config) EC2Scanner {
 			&credentials.EnvProvider{},
 			&ec2rolecreds.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
 		})
-	config := &aws.Config{Credentials: creds, Region: aws.String(region)}
+	config := &aws.Config{Credentials: creds, Region: aws.String(cfg.Region)}
 	scanner := &eC2ScannerImpl{
 		config: config,
 	}
@@ -100,10 +95,7 @@ func (s *eC2ScannerImpl) ScanSecurityGroupInstances(groupId string) ([]*ec2.Rese
 	client := s.getEC2Client()
 	var grs []*string = []*string{&groupId}
 	filters := []*ec2.Filter{&ec2.Filter{Name: aws.String("instance.group-id"), Values: grs}}
-	//[]string{groupId}}}})
 	resp, err := client.DescribeInstances(&ec2.DescribeInstancesInput{Filters: filters})
-	logger.Debug("eC2ScannerImpl.ScanSecurityGroupInstances -- DescribeInstances response: %v", resp)
-
 	if err != nil {
 		return nil, err
 	}

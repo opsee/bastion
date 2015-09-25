@@ -125,12 +125,6 @@
 			"path": "/proto"
 		},
 		{
-			"importpath": "github.com/grpc/grpc-go",
-			"repository": "https://github.com/grpc/grpc-go",
-			"revision": "000aa5623e9149be13c809a707faff26bfc80bbf",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/mreiferson/go-snappystream",
 			"repository": "https://github.com/mreiferson/go-snappystream",
 			"revision": "028eae7ab5c4c9e2d1cb4c4ca1e53259bbe7e504",
@@ -140,6 +134,12 @@
 			"importpath": "github.com/op/go-logging",
 			"repository": "https://github.com/op/go-logging",
 			"revision": "e8d5414f0947014548c2334044a0fac13187dfee",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/opsee/awscan",
+			"repository": "https://github.com/opsee/awscan",
+			"revision": "6c0c59a10db90be33e482c052da8fde0ee92ca1e",
 			"branch": "master"
 		},
 		{
