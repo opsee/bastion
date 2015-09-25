@@ -9,6 +9,7 @@ machine:
     - docker
   environment:
     ci: "true"
+    BASTION_ENV:cba560051ebfb5c63785cb9763989a1be0673c58
 notify:
   webhooks:
     - url: https://hooks.slack.com/services/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
@@ -25,7 +26,6 @@ dependencies:
     - git submodule update --init
 test:
   override:
-    - export BASTION_VERSION=latest
     - docker run -e "TARGETS=linux/amd64" -v `pwd`:/build quay.io/opsee/build-go
     - docker build -t quay.io/opsee/bastion:$BASTION_VERSION .
     - docker push quay.io/opsee/bastion:$BASTION_VERSION
