@@ -1,80 +1,84 @@
 {
-	"regions": "all",
-	"copy-to": "all",
-	"build-region": "us-east-1",
-	"source-ami": "ami-3d73d356",
-	"ami-name": "Opsee-Bastion-{{clean-timestamp}}",
-	"ami-description": "Opsee's Bastion Software",
-	"instance-type":"t2.micro",
-	"ssh-username":"core",
-	"staging":"/tmp/staging",
-	"ami-tags":[["opsee", "bastion"]],
-	"prepare": [
-		{
-			"type":"scp",
-			"from":"build/docker_config.json"
-		},
-		{
-			"type":"shell",
-			"instructions":["mv /tmp/staging/docker_config.json /home/core/.dockercfg"]
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/nsqd.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/connector.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/bastion-etcd.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/register.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/nsqadmin.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/checker.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/monitor.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/discovery.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/runner.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/hacker.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/shovel-discovery.service"
-		},
-		{
-			"type":"systemd",
-			"unit-file":"build/shovel-results.service"
-		},
+    "regions": "all",
+    "copy-to": "all",
+    "build-region": "us-east-1",
+    "source-ami": "ami-3d73d356",
+    "ami-name": "Opsee-Bastion-{{clean-timestamp}}",
+    "ami-description": "Opsee's Bastion Software",
+    "instance-type":"t2.micro",
+    "ssh-username":"core",
+    "staging":"/tmp/staging",
+    "ami-tags":[["opsee", "bastion"]],
+    "prepare": [
+        {
+            "type":"scp",
+            "from":"build/docker_config.json"
+        },
+        {
+            "type":"shell",
+            "instructions":["mv /tmp/staging/docker_config.json /home/core/.dockercfg"]
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/nsqd.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/connector.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/bastion-etcd.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/register.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/nsqadmin.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/checker.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/monitor.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/discovery.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/runner.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/hacker.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/shovel-discovery.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/shovel-results.service"
+        },
 
-		{
-			"type":"waitfor",
-			"test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""
-		},
-	],
-	"reboot-before-build": false,
-	"public": false,
-	"cleanup": true
+        {
+            "type":"waitfor",
+            "test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""
+        },
+        {
+            "type": "shell",
+            "instructions":["sudo rm -f /etc/opsee/bastion-env.sh"]
+        }
+    ],
+    "reboot-before-build": false,
+    "public": false,
+    "cleanup": true
         {{#ci}}
         ,"cleanup-on-error": true
         {{/ci}}
