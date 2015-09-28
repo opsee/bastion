@@ -18,7 +18,7 @@ func main() {
 	logger := logging.GetLogger("hacker")
 	cfg := config.GetConfig()
 
-	sc := awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: "us-west-1"})
+	sc := awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region})
 
 	httpClient := &http.Client{}
 	metap := config.NewMetadataProvider(httpClient, cfg)

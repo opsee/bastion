@@ -26,7 +26,7 @@ type InstanceMeta struct {
 	Version          string
 	PrivateIp        string
 	AvailabilityZone string
-	Timestamp        string
+	Timestamp        int32
 }
 
 type MetadataProvider struct {
@@ -37,17 +37,23 @@ type MetadataProvider struct {
 func NewMetadataProvider(client HttpClient, config *Config) *MetadataProvider {
 	if config != nil && config.MDFile != "" {
 		metad, err := ioutil.ReadFile(config.MDFile)
+
 		if err == nil {
 			meta := &InstanceMeta{}
+			meta.Timestamp = int32(time.Now().Unix())
 			err = json.Unmarshal(metad, meta)
+
 			if err == nil {
 				return &MetadataProvider{
 					client:   client,
 					metadata: meta,
 				}
 			}
+		} else {
+			println(err.Error())
 		}
 	}
+
 	return &MetadataProvider{
 		client: client,
 	}
@@ -68,6 +74,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 			logger.Error("error getting ec2 instance metadata:", err)
 			return nil, err
 		}
+
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -76,7 +83,6 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		}
 		meta := &InstanceMeta{}
 		err = json.Unmarshal(body, meta)
-		meta.Timestamp = time.Now().UTC().Format("StampMilli")
 
 		if err != nil {
 			logger.Error("error parsing instance metadata:", err)
@@ -90,7 +96,10 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		logger.Error("backoff failed:", err)
 		return nil
 	}
+
 	this.metadata = backoff.Result().(*InstanceMeta)
+	this.metadata.Timestamp = int32(time.Now().Unix())
 	this.metadata.Hostname = netutil.GetHostnameDefault("")
+
 	return this.metadata
 }

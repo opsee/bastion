@@ -23,7 +23,6 @@ func main() {
 	var err error
 
 	config := config.GetConfig()
-
 	logger.Info("Starting %s...", moduleName)
 	// XXX: Holy fuck make logging easier.
 	logging.SetLevel(config.LogLevel, moduleName)

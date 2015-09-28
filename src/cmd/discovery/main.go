@@ -1,14 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
-	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
-	"sync"
-	"time"
 )
 
 const (
@@ -16,16 +12,14 @@ const (
 )
 
 var (
-	logger                      = logging.GetLogger(moduleName)
-	producer messaging.Producer = nil
+	logger   = logging.GetLogger(moduleName)
+	producer messaging.Producer
 )
 
 func main() {
 	var err error
-
 	cfg := config.GetConfig()
 
-	println(cfg.MetaData.Timestamp)
 	disco := awscan.NewDiscoverer(
 		awscan.NewScanner(
 			&awscan.Config{
@@ -36,36 +30,23 @@ func main() {
 		),
 	)
 
-	for event := range disco.Discover() {
-		if event.Err != nil {
-			//XXX handle aws discovery error
-			fmt.Println("Error: ", event.Err.Error())
-		} else {
-			fmt.Println("yay: ", event.Result)
-		}
-	}
-
-	wg := &sync.WaitGroup{}
-
 	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
 
 	if err != nil {
 		panic(err)
 	}
 
-	heart, err := heart.NewHeart(moduleName)
-	if err != nil {
-		panic(err)
+	for event := range disco.Discover() {
+		go func() {
+			if event.Err != nil {
+				logger.Error(event.Err.Error())
+			} else {
+				println(event.Result)
+				err := producer.Publish(event.Result)
+				if err != nil {
+					logger.Error(err.Error())
+				}
+			}
+		}()
 	}
-
-	go heart.Beat()
-
-	for {
-		// Wait for the whole scan to finish.
-		wg.Wait()
-
-		// Sleep 2 minutes between scans.
-		time.Sleep(120 * time.Second)
-	}
-
 }

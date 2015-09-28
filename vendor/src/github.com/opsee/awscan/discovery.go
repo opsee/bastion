@@ -37,6 +37,7 @@ func (d *discoverer) Discover() <-chan Event {
 	go d.scanRDS()
 	go d.scanRDSSecurityGroups()
 	go d.scanSecurityGroups()
+	go d.scanAutoScalingGroups()
 
 	go func() {
 		d.wg.Wait()
@@ -107,6 +108,21 @@ func (d *discoverer) scanRDSSecurityGroups() {
 		for _, rdssg := range rdssgs {
 			if rdssg != nil {
 				d.discoChan <- Event{rdssg, nil}
+			}
+		}
+	}
+	d.wg.Done()
+}
+
+// FIXME pages and *DescribeAutoScalingGroupsOutput
+func (d *discoverer) scanAutoScalingGroups() {
+	println("scanning autoscaling groups")
+	if asgs, err := d.sc.ScanAutoScalingGroups(); err != nil {
+		d.discoChan <- Event{nil, err}
+	} else {
+		for _, ag := range asgs {
+			if ag != nil {
+				d.discoChan <- Event{ag, nil}
 			}
 		}
 	}

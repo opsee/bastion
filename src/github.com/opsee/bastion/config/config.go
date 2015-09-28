@@ -8,11 +8,6 @@ import (
 	"os"
 )
 
-var (
-	logger         = logging.GetLogger("config")
-	config *Config = nil
-)
-
 type Config struct {
 	AccessKeyId string // AWS Access Key Id
 	SecretKey   string // AWS Secret Key
@@ -29,9 +24,15 @@ type Config struct {
 	MetaData    *InstanceMeta
 }
 
+var (
+	logger         = logging.GetLogger("config")
+	config *Config = nil
+)
+
 func GetConfig() *Config {
 	if config == nil {
 		config = &Config{}
+
 		flag.StringVar(&config.AccessKeyId, "access_key_id", os.Getenv("AWS_ACCESS_KEY_ID"), "AWS access key ID.")
 		flag.StringVar(&config.SecretKey, "secret_key", os.Getenv("AWS_SECRET_ACCESS_KEY"), "AWS secret key ID.")
 		flag.StringVar(&config.Opsee, "opsee", os.Getenv("BARTNET_HOST"), "Hostname and port to the Opsee server.")
@@ -46,6 +47,7 @@ func GetConfig() *Config {
 		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
 		flag.Parse()
 
+		// get metadata (should be from file if file provided)
 		httpClient := &http.Client{}
 		metap := NewMetadataProvider(httpClient, config)
 		config.MetaData = metap.Get()
@@ -56,5 +58,6 @@ func GetConfig() *Config {
 			os.Exit(1)
 		}
 	}
+
 	return config
 }
