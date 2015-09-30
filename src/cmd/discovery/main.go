@@ -37,16 +37,13 @@ func main() {
 	}
 
 	for event := range disco.Discover() {
-		go func() {
-			if event.Err != nil {
-				logger.Error(event.Err.Error())
-			} else {
-				println(event.Result)
-				err := producer.Publish(event.Result)
-				if err != nil {
-					logger.Error(err.Error())
-				}
+		if event.Err != nil {
+			logger.Error(event.Err.Error())
+		} else {
+			err = producer.Publish(event.Result)
+			if err != nil {
+				logger.Error(err.Error())
 			}
-		}()
+		}
 	}
 }
