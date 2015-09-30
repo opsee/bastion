@@ -26,7 +26,7 @@ type InstanceMeta struct {
 	Version          string
 	PrivateIp        string
 	AvailabilityZone string
-	Timestamp        int32
+	Timestamp        int64
 }
 
 type MetadataProvider struct {
@@ -40,7 +40,7 @@ func NewMetadataProvider(client HttpClient, config *Config) *MetadataProvider {
 
 		if err == nil {
 			meta := &InstanceMeta{}
-			meta.Timestamp = int32(time.Now().Unix())
+			meta.Timestamp = time.Now().Unix()
 			err = json.Unmarshal(metad, meta)
 
 			if err == nil {
@@ -98,7 +98,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 	}
 
 	this.metadata = backoff.Result().(*InstanceMeta)
-	this.metadata.Timestamp = int32(time.Now().Unix())
+	this.metadata.Timestamp = time.Now().Unix()
 	this.metadata.Hostname = netutil.GetHostnameDefault("")
 
 	return this.metadata
