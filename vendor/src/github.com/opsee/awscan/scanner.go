@@ -28,7 +28,6 @@ type eC2ScannerImpl struct {
 	config *aws.Config
 }
 
-<<<<<<< HEAD:vendor/src/github.com/opsee/awscan/scanner.go
 type Config struct {
 	AccessKeyId string
 	SecretKey   string
@@ -36,19 +35,6 @@ type Config struct {
 }
 
 func NewScanner(cfg *Config) EC2Scanner {
-=======
-func NewScanner(cfg *config.Config) EC2Scanner {
-	var region string
-	if cfg.Region != "" {
-		region = cfg.Region
-	} else {
-		httpClient := &http.Client{}
-		metap := config.NewMetadataProvider(httpClient, cfg)
-		metadata := metap.Get()
-		region = metadata.Region
-	}
-
->>>>>>> master:src/github.com/opsee/bastion/scanner/scanner.go
 	var creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.StaticProvider{Value: credentials.Value{
@@ -83,7 +69,6 @@ func (s *eC2ScannerImpl) getRDSClient() *rds.RDS {
 	return rds.New(s.getConfig())
 }
 
-//XXX
 func (s *eC2ScannerImpl) getAutoScalingClient() *autoscaling.AutoScaling {
 	return autoscaling.New(s.getConfig())
 }
@@ -169,7 +154,6 @@ func (s *eC2ScannerImpl) ScanAutoScalingGroups() ([]*autoscaling.Group, error) {
 	client := s.getAutoScalingClient()
 
 	resp, err := client.DescribeAutoScalingGroups(nil)
-	print(resp, err)
 
 	if err != nil {
 		return nil, err
