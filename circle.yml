@@ -35,6 +35,6 @@ deployment:
     branch: master
     owner: opsee
     commands:
-      - docker build -t quay.io/opsee/bastion:latest
+      - docker build -t quay.io/opsee/bastion:latest .
       - docker push quay.io/opsee/bastion:latest
       - java -jar mami/mami.jar build --release stable --bastion-version latest --build-ami build/mami.json
