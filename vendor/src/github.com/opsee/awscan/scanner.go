@@ -28,6 +28,7 @@ type eC2ScannerImpl struct {
 	config *aws.Config
 }
 
+<<<<<<< HEAD:vendor/src/github.com/opsee/awscan/scanner.go
 type Config struct {
 	AccessKeyId string
 	SecretKey   string
@@ -35,6 +36,19 @@ type Config struct {
 }
 
 func NewScanner(cfg *Config) EC2Scanner {
+=======
+func NewScanner(cfg *config.Config) EC2Scanner {
+	var region string
+	if cfg.Region != "" {
+		region = cfg.Region
+	} else {
+		httpClient := &http.Client{}
+		metap := config.NewMetadataProvider(httpClient, cfg)
+		metadata := metap.Get()
+		region = metadata.Region
+	}
+
+>>>>>>> master:src/github.com/opsee/bastion/scanner/scanner.go
 	var creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.StaticProvider{Value: credentials.Value{

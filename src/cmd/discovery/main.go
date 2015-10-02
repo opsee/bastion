@@ -3,8 +3,11 @@ package main
 import (
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/discovery"
+	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
+	"time"
 )
 
 const (
@@ -29,7 +32,6 @@ func main() {
 			},
 		),
 	)
-
 	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
 
 	if err != nil {
