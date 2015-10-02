@@ -34,16 +34,10 @@ type eC2ScannerImpl struct {
 }
 
 func NewScanner(cfg *config.Config) EC2Scanner {
-	var region string
-	if cfg.Region != "" {
-		region = cfg.Region
-	} else {
-		httpClient := &http.Client{}
-		metap := config.NewMetadataProvider(httpClient, cfg)
-		metadata := metap.Get()
-		region = metadata.Region
-	}
-
+	httpClient := &http.Client{}
+	metap := config.NewMetadataProvider(httpClient, cfg)
+	metadata := metap.Get()
+	region := metadata.Region
 	var creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.StaticProvider{Value: credentials.Value{
