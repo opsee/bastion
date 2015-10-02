@@ -2,8 +2,8 @@ package checker
 
 import (
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
-	"github.com/opsee/bastion/scanner"
 )
 
 type Resolver interface {
@@ -13,12 +13,12 @@ type Resolver interface {
 // TODO: The resolver should not query the EC2Scanner directly, but
 // should go through the instance/group cache instead.
 type AWSResolver struct {
-	sc scanner.EC2Scanner
+	sc awscan.EC2Scanner
 }
 
 func NewResolver(cfg *config.Config) Resolver {
 	resolver := &AWSResolver{
-		sc: scanner.NewScanner(cfg),
+		sc: awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region}),
 	}
 	return resolver
 }

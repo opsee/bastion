@@ -9,20 +9,22 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/logging"
-	"github.com/opsee/bastion/scanner"
 )
 
 func main() {
 	logger := logging.GetLogger("hacker")
 	cfg := config.GetConfig()
-	sc := scanner.NewScanner(cfg)
+
+	sc := awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region})
 
 	httpClient := &http.Client{}
 	metap := config.NewMetadataProvider(httpClient, cfg)
 	metadata := metap.Get()
 	region := metadata.Region
+
 	var creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.StaticProvider{Value: credentials.Value{
@@ -33,6 +35,7 @@ func main() {
 			&credentials.EnvProvider{},
 			&ec2rolecreds.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
 		})
+
 	awsConfig := &aws.Config{Credentials: creds, Region: aws.String(region)}
 
 	ec2Client := ec2.New(awsConfig)

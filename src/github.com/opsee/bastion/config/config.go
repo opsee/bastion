@@ -3,14 +3,9 @@ package config
 import (
 	"flag"
 	"fmt"
-	"os"
-
 	"github.com/opsee/bastion/logging"
-)
-
-var (
-	logger         = logging.GetLogger("config")
-	config *Config = nil
+	"net/http"
+	"os"
 )
 
 type Config struct {
@@ -25,11 +20,18 @@ type Config struct {
 	CustomerId  string // The Customer ID
 	AdminPort   uint   // Port for admin server.
 	LogLevel    string // the log level to use
+	MetaData    *InstanceMeta
 }
+
+var (
+	logger         = logging.GetLogger("config")
+	config *Config = nil
+)
 
 func GetConfig() *Config {
 	if config == nil {
 		config = &Config{}
+
 		flag.StringVar(&config.AccessKeyId, "access_key_id", os.Getenv("AWS_ACCESS_KEY_ID"), "AWS access key ID.")
 		flag.StringVar(&config.SecretKey, "secret_key", os.Getenv("AWS_SECRET_ACCESS_KEY"), "AWS secret key ID.")
 		flag.StringVar(&config.Opsee, "opsee", os.Getenv("BARTNET_HOST"), "Hostname and port to the Opsee server.")
@@ -43,11 +45,18 @@ func GetConfig() *Config {
 		flag.UintVar(&config.AdminPort, "admin_port", 4000, "Port for the admin server.")
 		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
 		flag.Parse()
+
+		// get metadata (should be from file if file provided)
+		httpClient := &http.Client{}
+		metap := NewMetadataProvider(httpClient, config)
+		config.MetaData = metap.Get()
+
 		err := logging.SetLevel(config.LogLevel, "bastion")
 		if err != nil {
 			fmt.Printf("%s is not a valid log level")
 			os.Exit(1)
 		}
 	}
+
 	return config
 }

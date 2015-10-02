@@ -5,6 +5,7 @@ import (
 	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 const MetadataURL = "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -25,6 +26,7 @@ type InstanceMeta struct {
 	Version          string
 	PrivateIp        string
 	AvailabilityZone string
+	Timestamp        int64
 }
 
 type MetadataProvider struct {
@@ -35,17 +37,23 @@ type MetadataProvider struct {
 func NewMetadataProvider(client HttpClient, config *Config) *MetadataProvider {
 	if config != nil && config.MDFile != "" {
 		metad, err := ioutil.ReadFile(config.MDFile)
+
 		if err == nil {
 			meta := &InstanceMeta{}
+			meta.Timestamp = time.Now().Unix()
 			err = json.Unmarshal(metad, meta)
+
 			if err == nil {
 				return &MetadataProvider{
 					client:   client,
 					metadata: meta,
 				}
 			}
+		} else {
+			println(err.Error())
 		}
 	}
+
 	return &MetadataProvider{
 		client: client,
 	}
@@ -66,6 +74,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 			logger.Error("error getting ec2 instance metadata:", err)
 			return nil, err
 		}
+
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -74,6 +83,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		}
 		meta := &InstanceMeta{}
 		err = json.Unmarshal(body, meta)
+
 		if err != nil {
 			logger.Error("error parsing instance metadata:", err)
 			return nil, err
@@ -86,7 +96,10 @@ func (this MetadataProvider) Get() *InstanceMeta {
 		logger.Error("backoff failed:", err)
 		return nil
 	}
+
 	this.metadata = backoff.Result().(*InstanceMeta)
+	this.metadata.Timestamp = time.Now().Unix()
 	this.metadata.Hostname = netutil.GetHostnameDefault("")
+
 	return this.metadata
 }

@@ -65,6 +65,13 @@
 			"path": "/internal/signer/v4"
 		},
 		{
+			"importpath": "github.com/aws/aws-sdk-go/service/autoscaling",
+			"repository": "https://github.com/aws/aws-sdk-go",
+			"revision": "2778c8354eae199e75678754615f5beb46a77989",
+			"branch": "master",
+			"path": "/service/autoscaling"
+		},
+		{
 			"importpath": "github.com/aws/aws-sdk-go/service/ec2",
 			"repository": "https://github.com/aws/aws-sdk-go",
 			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
@@ -125,12 +132,6 @@
 			"path": "/proto"
 		},
 		{
-			"importpath": "github.com/grpc/grpc-go",
-			"repository": "https://github.com/grpc/grpc-go",
-			"revision": "000aa5623e9149be13c809a707faff26bfc80bbf",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/mreiferson/go-snappystream",
 			"repository": "https://github.com/mreiferson/go-snappystream",
 			"revision": "028eae7ab5c4c9e2d1cb4c4ca1e53259bbe7e504",
@@ -140,6 +141,12 @@
 			"importpath": "github.com/op/go-logging",
 			"repository": "https://github.com/op/go-logging",
 			"revision": "e8d5414f0947014548c2334044a0fac13187dfee",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/opsee/awscan",
+			"repository": "https://github.com/opsee/awscan",
+			"revision": "fbc1059fb2e4a8ec5e6bb0942aba8863b571c636",
 			"branch": "master"
 		},
 		{
