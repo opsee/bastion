@@ -57,7 +57,6 @@ func main() {
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 
-	// Add this service to the registration queue
 	portmapper.Register(moduleName, checks.Port)
 	defer portmapper.Unregister(moduleName, checks.Port)
 	err = <-heart.Beat()

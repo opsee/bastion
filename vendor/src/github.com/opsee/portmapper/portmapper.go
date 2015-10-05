@@ -3,6 +3,7 @@ package portmapper
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/go-etcd/etcd"
 	"os"
 	"sync"
@@ -17,8 +18,6 @@ var (
 	// Default: http://127.0.0.1:2379
 	EtcdHost   string
 	etcdClient *etcd.Client
-	ServiceMap map[string]*ServiceRegistration
-	once       sync.Once
 )
 
 func init() {
@@ -34,12 +33,6 @@ type Service struct {
 	Name     string `json:"name"`
 	Port     int    `json:"port"`
 	Hostname string `json:"hostname,omitempty"`
-}
-
-type ServiceRegistration struct {
-	Service   *Service
-	Timestamp int64
-	err       error
 }
 
 func (s *Service) validate() error {
@@ -93,49 +86,79 @@ func Unregister(name string, port int) error {
 	return nil
 }
 
-// Loops over each service type in the map and attempt to register
-func RegisterServices() {
-	for {
-		wg := &sync.WaitGroup{}
-		for service_name := range ServiceMap {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				println("registering: " + service_name)
-				etcdClient = etcd.NewClient([]string{EtcdHost})
-				svc := ServiceMap[service_name].Service
-				ServiceMap[service_name].Timestamp = time.Now().Unix()
-				ServiceMap[service_name].err = nil
-
-				if err := svc.validate(); err != nil {
-					ServiceMap[service_name].err = err
-				}
-
-				bytes, err := svc.Marshal()
-				if err != nil {
-					ServiceMap[service_name].err = err
-				}
-
-				if _, err = etcdClient.Set(svc.path(), string(bytes), 0); err != nil {
-					ServiceMap[service_name].err = err
-				}
-			}()
-		}
-
-		// Wait for all services to be registered
-		wg.Wait()
-		time.Sleep(60 * time.Second)
-	}
+// legacy register
+// Register a (service, port) tuple.
+func Register(name string, port int) error {
+	return RegisterService(name, port, 11) // about 4 seconds
 }
 
 // Register a (service, port) tuple.
-func Register(name string, port int) error {
+func RegisterService(name string, port int, retries int) error {
 	svc := &Service{name, port, os.Getenv("HOSTNAME")}
-	ServiceMap[name] = &ServiceRegistration{Service: svc, Timestamp: 0, err: nil}
 
-	//XXX I assume that this will not exit ever
-	once.Do(RegisterServices)
-	return nil
+	var regerr error
+
+	for try := 1; try < retries; try++ {
+		wg := &sync.WaitGroup{}
+		wg.Add(1)
+
+		// Attempt to register the service
+		go func() {
+			defer wg.Done()
+			etcdClient = etcd.NewClient([]string{EtcdHost})
+
+			if err := svc.validate(); err != nil {
+				log.WithFields(log.Fields{
+					"action":  "set",
+					"service": name,
+					"port":    svc.Port,
+					"errstr":  err.Error(),
+				}).Warn("Failed to register service with etcd")
+				regerr = err
+				return
+			}
+			bytes, err := svc.Marshal()
+			if err != nil {
+				log.WithFields(log.Fields{
+					"action":  "set",
+					"service": name,
+					"port":    svc.Port,
+					"errstr":  err.Error(),
+				}).Warn("Failed to register service with etcd")
+				regerr = err
+				return
+			}
+			if _, err = etcdClient.Set(svc.path(), string(bytes), 0); err != nil {
+				log.WithFields(log.Fields{
+					"action":  "set",
+					"service": name,
+					"port":    svc.Port,
+					"errstr":  err.Error(),
+				}).Warn("Failed to register service with etcd")
+				regerr = err
+				return
+			} else {
+				log.WithFields(log.Fields{
+					"action":  "set",
+					"service": name,
+					"port":    svc.Port,
+				}).Info("Successfully registered service with etcd")
+			}
+		}()
+
+		wg.Wait()
+
+		// indicate that the service was registered by returning no error
+		if regerr == nil {
+			return nil
+		}
+
+		// elsewise do an exponential backoff and try again
+		time.Sleep(2 << uint(try) * time.Millisecond)
+	}
+
+	// the service couldn't be registered, the service will panic and restart
+	return regerr
 }
 
 // Services returns an array of Service pointers detailing the service name and
@@ -157,6 +180,7 @@ func Services() ([]*Service, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		services[i] = svc
 	}
 

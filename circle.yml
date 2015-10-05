@@ -25,11 +25,10 @@ dependencies:
     - git submodule update --init
 test:
   override:
-    - export BASTION_VERSION=`git rev-parse HEAD`
     - docker run -e "TARGETS=linux/amd64" -v `pwd`:/build quay.io/opsee/build-go
-    - docker build -t quay.io/opsee/bastion:$BASTION_VERSION .
-    - docker push quay.io/opsee/bastion:$BASTION_VERSION
-    - java -jar mami/mami.jar build --bastion-version $BASTION_VERSION build/mami.json
+    - docker build -t quay.io/opsee/bastion:$CIRCLE_SHA1 .
+    - docker push quay.io/opsee/bastion:$CIRCLE_SHA1
+    - java -jar mami/mami.jar build --bastion-version $CIRCLE_SHA1 build/mami.json
 deployment:
   ami:
     branch: master

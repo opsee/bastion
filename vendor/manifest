@@ -9,6 +9,12 @@
 			"path": "/proto"
 		},
 		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "46358df2442a21333613e0036fe7078e9a90ea63",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/aws/aws-sdk-go/aws",
 			"repository": "https://github.com/aws/aws-sdk-go",
 			"revision": "69142c71761512d894b028dc5c8cc312758372dd",

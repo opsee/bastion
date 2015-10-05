@@ -1,9 +1,11 @@
 package main
 
 import (
+	"time"
+
+	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
-	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
 
@@ -12,37 +14,65 @@ const (
 )
 
 var (
-	logger   = logging.GetLogger(moduleName)
 	producer messaging.Producer
 )
 
 func main() {
-	var err error
 	cfg := config.GetConfig()
+	var err error
 
-	disco := awscan.NewDiscoverer(
-		awscan.NewScanner(
-			&awscan.Config{
-				AccessKeyId: cfg.AccessKeyId,
-				SecretKey:   cfg.SecretKey,
-				Region:      cfg.MetaData.Region,
-			},
-		),
-	)
 	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
 
 	if err != nil {
+		log.WithFields(log.Fields{
+			"action":  "create CustomerProducer",
+			"service": "discovery",
+			"errstr":  err.Error(),
+		}).Error("Failed to register service with etcd")
+
 		panic(err)
 	}
 
-	for event := range disco.Discover() {
-		if event.Err != nil {
-			logger.Error(event.Err.Error())
-		} else {
-			err = producer.Publish(event.Result)
-			if err != nil {
-				logger.Error(err.Error())
+	for {
+		disco := awscan.NewDiscoverer(
+			awscan.NewScanner(
+				&awscan.Config{
+					AccessKeyId: cfg.AccessKeyId,
+					SecretKey:   cfg.SecretKey,
+					Region:      cfg.MetaData.Region,
+				},
+			),
+		)
+
+		log.WithFields(log.Fields{
+			"action":  "scan",
+			"service": "discovery",
+		}).Info("Scanning")
+
+		for event := range disco.Discover() {
+			if event.Err != nil {
+				log.WithFields(log.Fields{
+					"action":  "scan",
+					"service": "discovery",
+					"errstr":  event.Err.Error(),
+				}).Error("Discovery Error")
+			} else {
+				err = producer.Publish(event.Result)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"action":  "scan",
+						"service": "discovery",
+						"errstr":  event.Err.Error(),
+					}).Error("Failed to publish discovery event")
+				}
 			}
 		}
+
+		log.WithFields(log.Fields{
+			"action":  "sleep",
+			"service": "discovery",
+		}).Info("Sleeping")
+
+		time.Sleep(120 * time.Second)
 	}
 }
