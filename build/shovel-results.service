@@ -1,7 +1,7 @@
 [Unit]
 Description=NSQ Shovel: Results
-After=docker.service nsqd.service connector.service
-Requires=docker.service nsqd.service connector.service
+After=user-config.target docker.service nsqd.service connector.service
+Requires=user-config.target docker.service nsqd.service connector.service
 PartOf=connector.service
 
 [Service]
