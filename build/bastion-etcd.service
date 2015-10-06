@@ -1,7 +1,7 @@
 [Unit]
 Description=Bastion Etcd
-After=docker.service
-Requires=docker.service
+After=user-config.target docker.service
+Requires=user-config.target docker.service
 
 [Service]
 Restart=always
