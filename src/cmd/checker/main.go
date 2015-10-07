@@ -56,9 +56,9 @@ func main() {
 	}
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
+
 	portmapper.Register(moduleName, checks.Port)
 	defer portmapper.Unregister(moduleName, checks.Port)
-
 	err = <-heart.Beat()
 
 	if err != nil {
