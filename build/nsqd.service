@@ -1,7 +1,7 @@
 [Unit]
 Description=nsqd
 After=user-config.target docker.service
-Requires=user-config.target docker.service
+Requires=docker.service
 
 [Service]
 Restart=always
