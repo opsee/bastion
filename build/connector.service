@@ -1,7 +1,10 @@
 [Unit]
 Description=Bastion - Connector
-After=env-lock.service docker.service
-Requires=docker.service
+After=env-lock.service docker.service bastion-etcd.service
+
+# We don't require etcd because if etcd isn't up, the box is in a shitty state and we'll 
+# want it to connect back to opsee if possible
+Requires=env-lock.service docker.service
 
 [Service]
 EnvironmentFile=/etc/opsee/bastion-env.sh

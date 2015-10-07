@@ -2,26 +2,22 @@ package main
 
 import (
 	"fmt"
-	"golang.org/x/net/context"
 	"os"
 	"os/signal"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"github.com/opsee/bastion/logging"
+	"golang.org/x/net/context"
 )
 
 const (
 	moduleName          = "runner"
 	maxConcurrentChecks = 10
-)
-
-var (
-	logger = logging.GetLogger(moduleName)
 )
 
 func main() {
@@ -31,32 +27,27 @@ func main() {
 	nsqdHost := os.Getenv("NSQD_HOST")
 	customerID := os.Getenv("CUSTOMER_ID")
 
-	logger.Info("Starting %s...", moduleName)
-	// XXX: Holy fuck make logging easier.
-	logging.SetLevel(config.LogLevel, moduleName)
-	logging.SetLevel(config.LogLevel, "messaging")
-	logging.SetLevel(config.LogLevel, "scanner")
-
+	log.Info("Starting %s...", moduleName)
 	runner := checker.NewRunner(checker.NewResolver(config))
 
 	nsqConfig := nsq.NewConfig()
 	consumer, err := nsq.NewConsumer("checks", "runner", nsqConfig)
 	if err != nil {
-		logger.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	if err := consumer.ConnectToNSQD(nsqdHost); err != nil {
-		logger.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	producer, err := nsq.NewProducer(nsqdHost, nsqConfig)
 	if err != nil {
-		logger.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	heart, err := heart.NewHeart(moduleName)
 	if err != nil {
-		logger.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
@@ -106,7 +97,7 @@ func main() {
 	}), maxConcurrentChecks)
 
 	if err := consumer.ConnectToNSQD(nsqdHost); err != nil {
-		logger.Fatal(err)
+		log.Error(err)
 	}
 
 	sigs := make(chan os.Signal, 1)
@@ -115,13 +106,13 @@ func main() {
 	for {
 		select {
 		case s := <-sigs:
-			logger.Info("Received signal %s. Stopping...", s)
+			log.Info("Received signal %s. Stopping...", s)
 			consumer.Stop()
 			<-consumer.StopChan
 			producer.Stop()
 			os.Exit(0)
 		case err := <-heart.Beat():
-			logger.Error(err.Error())
+			log.Error(err.Error())
 		}
 	}
 

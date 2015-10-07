@@ -1,8 +1,10 @@
 [Unit]
 Description=Triggered after generation of env file
-After=docker.service
 
 [Service]
 Type=oneshot
+ExecStart=/bin/sh -c "echo Bastion Env Ready"
 RemainAfterExit=yes
-ExecStart=echo "env file found"
+
+[Install]
+WantedBy=multi-user.target

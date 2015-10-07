@@ -1,7 +1,7 @@
 [Unit]
 Description=Bastion - Checker
 After=env-lock.service docker.service nsqd.service connector.service
-Requires=docker.service nsqd.service connector.service
+Requires=env-lock.service docker.service nsqd.service connector.service
 PartOf=connector.service
 
 [Service]

@@ -1,5 +1,5 @@
 [Unit]
-Description=Bastion - Connector
+Description=Bastion - PathLock
 
 [Path]
-PathExistsGlob=/etc/opsee/bastion-env.sh
+PathExists=/etc/opsee/bastion-env.sh
