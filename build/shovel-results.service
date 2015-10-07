@@ -1,6 +1,6 @@
 [Unit]
 Description=NSQ Shovel: Results
-After=user-config.target docker.service nsqd.service connector.service
+After=env-lock.service docker.service nsqd.service connector.service
 Requires=docker.service nsqd.service connector.service
 PartOf=connector.service
 

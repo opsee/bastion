@@ -1,6 +1,6 @@
 [Unit]
 Description=nsqd
-After=user-config.target docker.service
+After=env-lock.service docker.service
 Requires=docker.service
 
 [Service]
