@@ -1,5 +1,0 @@
-[Unit]
-Description=Bastion - Connector
-
-[Path]
-PathExistsGlob=/etc/opsee/bastion-env.sh

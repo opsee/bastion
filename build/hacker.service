@@ -1,6 +1,6 @@
 [Unit]
 Description=Bastion - Security Group Hack
-After=env-lock.service docker.service
+After=user-config.target docker.service
 Requires=docker.service
 
 [Service]

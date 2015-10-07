@@ -1,6 +1,6 @@
 [Unit]
 Description=Bastion - Check Runner
-After=env-lock.service docker.service nsqd.service
+After=user-config.target docker.service nsqd.service
 Requires=docker.service nsqd.service
 
 [Service]

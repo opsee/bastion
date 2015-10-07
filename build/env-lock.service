@@ -1,8 +1,0 @@
-[Unit]
-Description=Triggered after generation of env file
-After=docker.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=echo "env file found"
