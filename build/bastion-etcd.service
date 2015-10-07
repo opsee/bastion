@@ -1,6 +1,6 @@
 [Unit]
 Description=Bastion Etcd
-After=user-config.target docker.service
+After=bastion-lock.service docker.service
 Requires=docker.service
 
 [Service]
