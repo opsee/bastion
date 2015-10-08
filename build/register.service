@@ -1,7 +1,7 @@
 [Unit]
 Description=Bastion - Registration
-After=user-config.target docker.service connector.service
-Requires=docker.service connector.service
+After=env-lock.service docker.service connector.service
+Requires=env-lock.service docker.service connector.service
 PartOf=connector.service
 
 [Service]

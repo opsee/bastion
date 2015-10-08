@@ -1,7 +1,7 @@
 [Unit]
 Description=nsqadmin
-After=user-config.target docker.service nsqd.service
-Requires=docker.service nsqd.service
+After=env-lock.service docker.service nsqd.service
+Requires=env-lock.service docker.service nsqd.service
 
 [Service]
 Restart=always

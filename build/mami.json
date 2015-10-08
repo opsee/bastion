@@ -20,6 +20,14 @@
         },
         {
             "type":"systemd",
+            "unit-file":"build/env-lock.path"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/env-lock.service"
+        },
+        {
+            "type":"systemd",
             "unit-file":"build/nsqd.service"
         },
         {
@@ -66,7 +74,6 @@
             "type":"systemd",
             "unit-file":"build/shovel-results.service"
         },
-
         {
             "type":"waitfor",
             "test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""

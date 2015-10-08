@@ -1,0 +1,10 @@
+[Unit]
+Description=Triggered after generation of env file
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "echo Bastion Env Ready"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
