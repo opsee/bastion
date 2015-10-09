@@ -36,10 +36,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	if err := consumer.ConnectToNSQD(nsqdHost); err != nil {
-		log.Fatal(err.Error())
-	}
-
+	log.Info("Creating NSQD Producer")
 	producer, err := nsq.NewProducer(nsqdHost, nsqConfig)
 	if err != nil {
 		log.Fatal(err.Error())
