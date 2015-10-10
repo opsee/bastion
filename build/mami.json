@@ -1,8 +1,8 @@
 {
     "regions": "all",
     "copy-to": "all",
-    "build-region": "us-west-1",
-    "source-ami": "ami-41bc7d05",
+    "build-region": "us-east-1",
+    "source-ami": "ami-3f733b5a",
     "ami-name": "Opsee-Bastion-{{clean-timestamp}}",
     "ami-description": "Opsee's Bastion Software",
     "instance-type":"t2.micro",
@@ -66,7 +66,7 @@
             "type":"systemd",
             "unit-file":"build/hacker.service"
         },
-        {
+         {
             "type":"systemd",
             "unit-file":"build/shovel-discovery.service"
         },
@@ -79,14 +79,14 @@
             "test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""
         },
         {
-            "type": "shell",
-            "instructions":["sudo rm -f /etc/opsee/bastion-env.sh"]
+            "type":"systemd",
+            "unit-file":"build/unhacker.service"
         }
     ],
     "reboot-before-build": false,
     "public": false,
-    "cleanup": true
+    "cleanup": false
         {{#ci}}
-        ,"cleanup-on-error": true
+        ,"cleanup-on-error": false
         {{/ci}}
 }
