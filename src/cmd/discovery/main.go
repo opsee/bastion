@@ -1,6 +1,13 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"time"
+
+	"github.com/opsee/bastion/heart"
+
+	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/logging"
@@ -35,14 +42,31 @@ func main() {
 		panic(err)
 	}
 
-	for event := range disco.Discover() {
-		if event.Err != nil {
-			logger.Error(event.Err.Error())
-		} else {
-			err = producer.Publish(event.Result)
-			if err != nil {
-				logger.Error(err.Error())
+	heart, err := heart.NewHeart(moduleName)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt, os.Kill)
+	for {
+		for event := range disco.Discover() {
+			if event.Err != nil {
+				logger.Error(event.Err.Error())
+			} else {
+				err = producer.Publish(event.Result)
+				if err != nil {
+					logger.Error(err.Error())
+				}
 			}
 		}
+		select {
+		case s := <-sigs:
+			log.Info("Received signal %s.  Stopping...", s)
+			os.Exit(0)
+		case err := <-heart.Beat():
+			log.Error(err.Error())
+		}
+		time.Sleep(120 * time.Second)
 	}
 }
