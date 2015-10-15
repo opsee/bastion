@@ -5,6 +5,7 @@ Requires=env-lock.service docker.service connector.service
 
 [Service]
 User=core
+Restart=on-failure
 EnvironmentFile=/etc/opsee/bastion-env.sh
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p
