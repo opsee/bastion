@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"regexp"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -144,8 +145,12 @@ func hack(unhack bool, sgid string) {
 			}
 		}
 
-		// Add ourselves to the security group, we're not in it yet
-		if !unhack && !found {
+		// don't hack these (avoid hack unhack race condition among bastions)
+		r, _ := regexp.Compile("^mami-sg.+")
+		isBastion := r.MatchString(*sg.GroupName)
+
+		// Add ourselves to the security group, we're not in it yet and it's not a bastion
+		if !unhack && !found && !isBastion {
 			_, err := ec2Client.AuthorizeSecurityGroupIngress(&ec2.AuthorizeSecurityGroupIngressInput{
 				GroupId:       sg.GroupId,
 				IpPermissions: ippermission,
