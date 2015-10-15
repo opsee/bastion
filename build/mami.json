@@ -2,7 +2,7 @@
     "regions": "all",
     "copy-to": "all",
     "build-region": "us-east-1",
-    "source-ami": "ami-3f733b5a",
+    "source-ami": "ami-05783d60",
     "ami-name": "Opsee-Bastion-{{clean-timestamp}}",
     "ami-description": "Opsee's Bastion Software",
     "instance-type":"t2.micro",
@@ -56,15 +56,16 @@
         },
         {
             "type":"systemd",
+            "unit-file":"build/hacker.service"
+        },
+ 
+        {
+            "type":"systemd",
             "unit-file":"build/discovery.service"
         },
         {
             "type":"systemd",
             "unit-file":"build/runner.service"
-        },
-        {
-            "type":"systemd",
-            "unit-file":"build/hacker.service"
         },
          {
             "type":"systemd",
@@ -74,7 +75,7 @@
             "type":"systemd",
             "unit-file":"build/shovel-results.service"
         },
-        {
+       {
             "type":"waitfor",
             "test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""
         },

@@ -4,7 +4,6 @@ After=env-lock.service docker.service connector.service
 Requires=env-lock.service docker.service connector.service
 
 [Service]
-Type=oneshot
 User=core
 EnvironmentFile=/etc/opsee/bastion-env.sh
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
