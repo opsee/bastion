@@ -75,19 +75,19 @@
             "type":"systemd",
             "unit-file":"build/shovel-results.service"
         },
-       {
+        {
             "type":"waitfor",
             "test":"-n \"$(curl -s --retry 10 --retry-delay 5 http://localhost:4001/health_check)\""
         },
         {
-            "type":"systemd",
-            "unit-file":"build/unhacker.service"
+            "type": "shell",
+            "instructions":["sudo rm -f /etc/opsee/bastion-env.sh"]
         }
     ],
     "reboot-before-build": false,
     "public": false,
-    "cleanup": false
+    "cleanup": true
         {{#ci}}
-        ,"cleanup-on-error": false
+        ,"cleanup-on-error": true
         {{/ci}}
 }

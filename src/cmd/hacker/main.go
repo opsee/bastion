@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -23,7 +24,7 @@ var (
 	unhackFlagPtr = flag.Bool("unhack", false, "detach from security groups")
 	sgidFlagStr   = flag.String("sgid", "none", "id of the security group")
 	bastionSgId   = aws.String("none")
-	sigs          = make(chan os.Signal, 1)
+	sigs          = make(chan os.Signal, 2)
 	httpClient    = &http.Client{}
 	ec2Client     = &ec2.EC2{}
 	heartbeat     = &heart.Heart{}
@@ -31,7 +32,12 @@ var (
 )
 
 func main() {
-	signal.Notify(sigs, os.Interrupt, os.Kill)
+	signal.Notify(sigs, syscall.SIGTERM, os.Interrupt)
+
+	// check to see if we're supposed to be adding ingress
+	if os.Getenv("ENABLE_BASTION_INGRESS") == "false" {
+		os.Exit(0)
+	}
 
 	cfg := config.GetConfig()
 	sc = awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region})
@@ -56,10 +62,10 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	// loop until sigkill
+	// loop until signal
 	for {
 		// get the bastion's security group
-		aws.String(*sgidFlagStr)
+		bastionSgId = aws.String(*sgidFlagStr)
 
 		// if no security group was passed in, get one
 		if *bastionSgId == "none" {
@@ -98,6 +104,7 @@ func main() {
 		// either hack or unhack
 		hack(*unhackFlagPtr, *bastionSgId)
 
+		// if we were unhacking then exit
 		if *unhackFlagPtr {
 			break
 		}
@@ -106,6 +113,12 @@ func main() {
 		select {
 		case s := <-sigs:
 			log.Info("Received signal %s.  Stopping...", s)
+
+			// if we're hacking and get a signal then unhack
+			if !*unhackFlagPtr {
+				log.Info("Unhacking")
+				hack(true, *bastionSgId)
+			}
 			os.Exit(0)
 		case <-time.After(25 * time.Minute):
 			continue
@@ -175,7 +188,14 @@ func hack(unhack bool, sgid string) {
 		select {
 		case s := <-sigs:
 			log.Info("Received signal %s.  Stopping...", s)
-			os.Exit(0)
+			// if we're hacking, run unhack then exit
+			if !unhack {
+				log.Info("Unhacking")
+				hack(true, sgid)
+				os.Exit(0)
+			} else {
+				continue
+			}
 		case <-time.After(500 * time.Millisecond):
 			continue
 		}
