@@ -22,6 +22,7 @@ var (
 func main() {
 	cfg := config.GetConfig()
 	listenAddress := fmt.Sprintf(":%d", cfg.AdminPort)
+
 	mon, err := monitor.NewMonitor()
 	if err != nil {
 		logger.Fatal(err.Error())

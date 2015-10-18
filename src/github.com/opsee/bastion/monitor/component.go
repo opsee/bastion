@@ -3,6 +3,7 @@ package monitor
 import (
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/bastion/heart"
 )
 
@@ -23,6 +24,7 @@ type Component struct {
 	ticker           *time.Ticker
 	State            *State
 	HeartBeatChannel chan *heart.HeartBeat
+	Name             string
 }
 
 func NewComponent(name string) *Component {
@@ -30,32 +32,44 @@ func NewComponent(name string) *Component {
 		ticker:           time.NewTicker(HeartBeatCheckInterval),
 		State:            &State{},
 		HeartBeatChannel: make(chan *heart.HeartBeat, 1),
+		Name:             name,
 	}
 
 	go c.loop()
+	log.Info("Started component ticker loop")
 
 	return c
 }
 
 func (c *Component) Send(hb *heart.HeartBeat) {
+	log.WithFields(log.Fields{"component": c.Name, "heartbeat": hb}).Info("component send heartbeat to heartbeatchannel")
 	c.HeartBeatChannel <- hb
 }
 
 func (c *Component) loop() {
 	for {
 		select {
+
 		case t := <-c.ticker.C:
+			// if c.State.HeartBeat was an error (not from HeartBeatChannel)
 			if c.State.HeartBeat != nil {
+
+				// create a timestamp form
 				timeoutTime := time.Unix(0, c.State.HeartBeat.Timestamp).Add(HeartBeatTimeout)
+
+				log.WithFields(log.Fields{"component": c.Name, "heartbeat": c.State.HeartBeat, "timoutTime": timeoutTime}).Warning("component state bad before timeout.")
 				if t.After(timeoutTime) {
 					c.State.OK = false
+					log.WithFields(log.Fields{"component": c.Name, "heartbeat": nil, "timoutTime": timeoutTime, "state OK": c.State.OK}).Warning("component timed out.")
 				}
 			} else {
 				c.State.OK = false
+				log.WithFields(log.Fields{"component": c.Name, "heartbeat": nil, "state OK": c.State.OK}).Warning("component nil heartbeat.")
 			}
 		case hb := <-c.HeartBeatChannel:
 			c.State.HeartBeat = hb
 			c.State.OK = true
+			log.WithFields(log.Fields{"component": c.Name, "heartbeat": c.State.HeartBeat, "state OK": c.State.OK}).Info("component in good state")
 		}
 	}
 }
