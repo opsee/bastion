@@ -1,6 +1,8 @@
 package checker
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
@@ -101,7 +103,19 @@ func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 	case "sg":
 		return r.resolveSecurityGroup(target.Id)
 	case "elb":
-		return r.resolveELB(target.Name)
+		// TODO(greg): We should probably handle this kind of thing better. This
+		// came to pass, because ELBs don't have IDs, they only have names.
+		// HOWEVER, somewhere along the line, the ELB Name is saved as its ID.
+		// Because on the Opsee side, every resource needs an ID. So, when the
+		// request is made to create the check, lo and behold, the ELB Target object
+		// ends up with an ID and no Name. So we account for that here.
+		if target.Name != "" {
+			return r.resolveELB(target.Name)
+		}
+		if target.Id != "" {
+			return r.resolveELB(target.Id)
+		}
+		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
 		return r.resolveInstance(target.Id)
 	}
