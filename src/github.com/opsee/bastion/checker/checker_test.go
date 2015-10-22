@@ -130,8 +130,8 @@ func (s *CheckerTestSuite) TestCheckResolverFailure() {
 	assert.NoError(s.T(), err)
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.Error(s.T(), err)
-	assert.Nil(s.T(), response)
+	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.NotNil(s.T(), response.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckResolverEmpty() {
@@ -144,8 +144,9 @@ func (s *CheckerTestSuite) TestCheckResolverEmpty() {
 	assert.NoError(s.T(), err)
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.Error(s.T(), err)
-	assert.Nil(s.T(), response)
+	assert.NoError(s.T(), err)
+	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.NotNil(s.T(), response.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckTimeout() {
