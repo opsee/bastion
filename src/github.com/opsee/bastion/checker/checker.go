@@ -1,11 +1,13 @@
 package checker
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"reflect"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/golang/protobuf/proto"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
@@ -40,6 +42,40 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 	logger.Debug("unmarshaled Any to: %s", instance)
 
 	return instance, nil
+}
+
+// This is admittedly janky, but at the very least it gives us some reasonable
+// and fast insight into what's going on.
+//
+// TODO(greg): This should really be handled in a more elegant manner--the number
+// of possible error scenarios explodes as the number of components increases.
+// So why not strictly define a small set of error types and then categorize all
+// errors accordingly? Probably some simple exception classes for the bastion
+// that those interacting with the bastion can code around. Until then, just
+// fucking slap some shit together.
+func handleError(err error) string {
+	errMap := map[string]string{}
+	switch e := err.(type) {
+	default:
+		errMap["type"] = "error"
+		errMap["error"] = err.Error()
+	case awserr.Error:
+		errMap["type"] = "aws"
+		errMap["code"] = e.Code()
+		errMap["error"] = e.Error()
+	case awserr.RequestFailure:
+		errMap["type"] = "aws"
+		errMap["code"] = e.Code()
+		errMap["error"] = e.Message()
+		errMap["requestId"] = e.RequestID()
+	}
+
+	errStr, mErr := json.Marshal(errMap)
+	if mErr != nil {
+		return `{"type": "error", "error": "cannot determine error"}`
+	}
+
+	return string(errStr)
 }
 
 func MarshalAny(i interface{}) (*Any, error) {
@@ -142,18 +178,19 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	ctx, _ = context.WithDeadline(ctx, deadline)
 	ctx = context.WithValue(ctx, "MaxHosts", int(req.MaxHosts))
 
+	testCheckResponse := &TestCheckResponse{}
+
 	responses, err := c.Runner.RunCheck(ctx, req.Check)
 	if err != nil {
-		return nil, err
+		testCheckResponse.Error = handleError(err)
+		return testCheckResponse, nil
 	}
 
 	var responseArr []*CheckResponse
 	for response := range responses {
 		responseArr = append(responseArr, response)
 	}
-	testCheckResponse := &TestCheckResponse{
-		Responses: responseArr,
-	}
+	testCheckResponse.Responses = responseArr
 
 	logger.Debug("TestCheck returning: %v", testCheckResponse)
 	return testCheckResponse, nil
