@@ -121,6 +121,8 @@ func NewChecker() *Checker {
 // TODO: One way or another, all CRUD requests should be transactional.
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
+	logger.Info("Handling request: %s", req)
+
 	responses := make([]*CheckResourceResponse, len(req.Checks))
 	response := &ResourceResponse{
 		Responses: responses,
@@ -138,6 +140,7 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 			Check: checkResponse,
 		}
 	}
+	logger.Info("Response: %s", response)
 	return response, nil
 }
 
@@ -166,8 +169,11 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*
 // "Request-specific errors" are defined as:
 // - An unresolvable Check target.
 // - An unidentifiable Check type or CheckSpec.
+//
+// TODO(greg): Get this into the invoke() fold so that we can do a "middleware"
+// ish pattern. to logging, instrumentation, etc.
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
-	logger.Debug("Received request: %s", req)
+	logger.Info("Handling request: %s", req)
 
 	if req.Deadline == nil {
 		return nil, fmt.Errorf("Deadline required but missing in request. %v", req)
@@ -192,7 +198,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	}
 	testCheckResponse.Responses = responseArr
 
-	logger.Debug("TestCheck returning: %v", testCheckResponse)
+	logger.Info("Response: %v", testCheckResponse)
 	return testCheckResponse, nil
 }
 

@@ -48,9 +48,11 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Ta
 		maxHosts int
 		ok       bool
 	)
-
 	maxHosts, ok = ctx.Value("MaxHosts").(int)
 	if !ok {
+		maxHosts = len(targets)
+	}
+	if maxHosts > len(targets) {
 		maxHosts = len(targets)
 	}
 
