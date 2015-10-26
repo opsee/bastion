@@ -1,9 +1,12 @@
 package checker
 
 import (
+	"os"
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/nsqio/go-nsq"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
@@ -118,5 +121,94 @@ func (s *RunnerTestSuite) TestRunCheckBadCheckReturnsError() {
 }
 
 func TestRunnerTestSuite(t *testing.T) {
+	setupTestEnv()
 	suite.Run(t, new(RunnerTestSuite))
+}
+
+/*******************************************************************************
+ * NSQ Runner
+ ******************************************************************************/
+
+type NSQRunnerTestSuite struct {
+	suite.Suite
+	Common   TestCommonStubs
+	Runner   *NSQRunner
+	Context  context.Context
+	Resolver *testResolver
+	Consumer *nsq.Consumer
+	Producer *nsq.Producer
+	MsgChan  chan *nsq.Message
+	Config   *NSQRunnerConfig
+}
+
+func (s *NSQRunnerTestSuite) SetupSuite() {
+	s.Resolver = newTestResolver()
+	s.Common = TestCommonStubs{}
+	s.Context = context.Background()
+	s.MsgChan = make(chan *nsq.Message, 1)
+	cfg := &NSQRunnerConfig{
+		ConsumerQueueName:   "test-runner",
+		ProducerQueueName:   "test-results",
+		ConsumerChannelName: "test-runner",
+		NSQDHost:            os.Getenv("NSQD_HOST"),
+		CustomerID:          "test",
+		MaxHandlers:         1,
+	}
+
+	// Connect our consumer to the producer channel for the NSQRunner.
+	consumer, _ := nsq.NewConsumer(cfg.ProducerQueueName, "test-runner-results", nsq.NewConfig())
+	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
+		s.MsgChan <- m
+		return nil
+	}), cfg.MaxHandlers)
+	err := consumer.ConnectToNSQD(cfg.NSQDHost)
+	if err != nil {
+		panic(err)
+	}
+	s.Consumer = consumer
+	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
+	if err != nil {
+		panic(err)
+	}
+	s.Producer = producer
+	s.Config = cfg
+}
+
+func (s *NSQRunnerTestSuite) SetupTest() {
+	runner, err := NewNSQRunner(NewRunner(s.Resolver), s.Config)
+	if err != nil {
+		panic(err)
+	}
+	s.Runner = runner
+}
+
+func (s *NSQRunnerTestSuite) TearDownTest() {
+	s.Runner.Stop()
+}
+
+func (s *NSQRunnerTestSuite) TearDownSuite() {
+	s.Consumer.Stop()
+	<-s.Consumer.StopChan
+	s.Producer.Stop()
+	close(s.MsgChan)
+}
+
+func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
+	check := s.Common.PassingCheck()
+	msg, _ := proto.Marshal(check)
+	s.Producer.Publish(s.Config.ConsumerQueueName, msg)
+	select {
+	case m := <-s.MsgChan:
+		result := &CheckResult{}
+		err := proto.Unmarshal(m.Body, result)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), check.Id, result.CheckId)
+	case <-time.After(10 * time.Second):
+		assert.Fail(s.T(), "Timed out waiting on response from runner.")
+	}
+}
+
+func TestNSQRunnerTestSuite(t *testing.T) {
+	setupTestEnv()
+	suite.Run(t, new(NSQRunnerTestSuite))
 }

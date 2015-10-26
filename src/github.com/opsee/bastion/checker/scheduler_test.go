@@ -126,5 +126,6 @@ func BenchmarkRunCheckParallel(b *testing.B) {
 }
 
 func TestSchedulerTestSuite(t *testing.T) {
+	setupTestEnv()
 	suite.Run(t, new(SchedulerTestSuite))
 }
