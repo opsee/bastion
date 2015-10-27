@@ -19,50 +19,79 @@ import (
 )
 
 var (
-	moduleName   = "hacker"
-	posixSignals = make(chan os.Signal, 1)
-	bastionSgId  = aws.String("none")
-	sigs         = make(chan os.Signal, 2)
-	httpClient   = &http.Client{}
-	ec2Client    = &ec2.EC2{}
-	heartbeat    = &heart.Heart{}
-	sc           awscan.EC2Scanner
+	moduleName     = "hacker"
+	signalsChannel = make(chan os.Signal, 1)
+	bastionSgId    = aws.String("none")
+	httpClient     = &http.Client{}
+	ec2Client      = &ec2.EC2{}
+	heartbeat      = &heart.Heart{}
+	sc             awscan.EC2Scanner
 )
 
-// signal is a POSIX portable int to add context for state transitions
-type Signal struct {
-	ID  string
-	VAL int
-}
+type SecurityGroupID string
+
+// posible exit codes a hacker's states can have
+type StateExitCode int
+
+const (
+	StateExitSuccess StateExitCode = 0
+	StateExitError   StateExitCode = 1
+)
+
+// When a handler handles a signal, it returns one of these codes to the state
+// the state reacts accordingly
+type StateHandlerCode int
+
+const (
+	HANDLE_CONTINUE StateHandlerCode = 0
+	HANDLE_EXIT     StateHandlerCode = 1
+	HANDLE_RESTART  StateHandlerCode = 2
+)
+
+// possible states that a hacker can be in
+type StateID string
+
+const (
+	STATE_HACK         StateID = "HACK"
+	STATE_UNHACK       StateID = "UNHACK"
+	STATE_WAIT         StateID = "WAIT"
+	STATE_STARTUP      StateID = "STARTUP"
+	STATE_EXIT_ERROR   StateID = "STATE_EXIT_ERROR"
+	STATE_EXIT_SUCCESS StateID = "STATE_EXIT_SUCCESS"
+)
 
 // discrete state consists of ID and a function behavior
 type State struct {
-	ID       string
-	Behavior func(fsm *fsm)
+	ID       StateID
+	Behavior func(fsm *fsm) *StateExitInfo
+}
+
+// desired next state and exit code
+// all states return this
+type StateExitInfo struct {
+	NextState StateID
+	ExitCode  StateExitCode
 }
 
 // abstract finite state machine's state and behavior
+// - a collection of states (which contain behaviors)
+// - a current state
+// TODO - an input channel for events from OS and other FSMs
+// TODO - an output channel for publishing events about self to other FSMs
 type fsm struct {
-	Signals map[string]*Signal
-	States  map[string]*State
-	STATE   *State
+	States map[StateID]*State
+	STATE  *State
 }
 
 // Operations on an abstract finite state machine
 type FSM interface {
-	GetSignals() map[string]*Signal
-	GetStates() map[string]*State
-	GetState() *State
-	Transition(state *State, signal *Signal) *State // a special state.
-	Execute(state *State)
-}
+	GetStates() map[StateID]*State // return map of states
+	GetCurrentState() *State       // return current state
+	GetState(StateID) *State       // return state by StateID
+	SetState(*State)               // set current state
 
-// execute a state and set fsm's state to that state
-func (fsm *fsm) Execute(state *State) {
-	log.WithFields(log.Fields{"state": fsm.GetState().ID}).Info("execution complete.")
-	fsm.SetState(state)
-	log.WithFields(log.Fields{"state": fsm.GetState().ID}).Info("executing.")
-	state.Behavior(fsm)
+	// an FSM can transition on a signal, or when a state exits
+	HandleSignal(state *State, signal os.Signal) StateHandlerCode
 }
 
 // set the fsm's state
@@ -71,33 +100,23 @@ func (fsm *fsm) SetState(state *State) {
 }
 
 // returns pointer to current state
-func (fsm *fsm) GetState() *State {
+func (fsm *fsm) GetCurrentState() *State {
 	return fsm.STATE
 }
 
 // returns pointer to current state
-func (fsm *fsm) GetStates() map[string]*State {
+func (fsm *fsm) GetStates() map[StateID]*State {
 	return fsm.States
 }
 
-// returns pointer to current state
-func (fsm *fsm) GetSignal(ID string) *Signal {
-	return fsm.Signals[ID]
-}
-
-// returns pointer to current state
-func (fsm *fsm) GetSignals() map[string]*Signal {
-	return fsm.Signals
+// returns a state by it's const StateID
+// TODO handle state not found
+func (fsm *fsm) GetState(stateID StateID) *State {
+	return fsm.States[stateID]
 }
 
 // Initial State, Check Flags, Setup Vars
-func Startup(fsm *fsm) {
-	// check to see if we're supposed to be adding ingress
-	if os.Getenv("ENABLE_BASTION_INGRESS") == "false" {
-		log.WithFields(log.Fields{"service": "monitor"}).Info("ENABLE_BASTION_INGRESS set false.  exiting.")
-		os.Exit(0)
-	}
-
+func Startup(fsm *fsm) *StateExitInfo {
 	// get config, initialize AWSCAN
 	cfg := config.GetConfig()
 	sc = awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region})
@@ -118,16 +137,16 @@ func Startup(fsm *fsm) {
 
 	resp, err := httpClient.Get("http://169.254.169.254/latest/meta-data/security-groups/")
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Fatal("Unable to get security group from meta data service")
-		os.Exit(1)
+		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("Unable to get security group from meta data service")
+		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
 	defer resp.Body.Close()
 	secGroupName, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err.Error())
-		log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Fatal("Error reading response body while getting security group name")
-		os.Exit(1)
+		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("Error reading response body while getting security group name")
+		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
 	output, err := ec2Client.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{
@@ -141,63 +160,24 @@ func Startup(fsm *fsm) {
 		},
 	})
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Fatal("ec2 client error getting security groups input")
-		os.Exit(1)
+		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("ec2 client error getting security groups input")
+		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
 	if len(output.SecurityGroups) != 1 {
-		log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Fatal("bad number of groups found")
-		os.Exit(1)
+		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("bad number of groups found")
+		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
 	bastionSgId = output.SecurityGroups[0].GroupId
-}
 
-// concrete transition function
-func (fsm *fsm) Transition(state *State, signal *Signal) *State {
-	/*
-	* STATE Startup
-	* LOOPA := STATE Hack->STATE Wait->STATE Hack->STATE Wait...
-	* LOOPA until SIGNAL == SIGTERM | SIGKILL | SIGINT | SIQUIT
-	* STATE UnHack
-	* END
-	 */
-	switch state.ID {
-	case "STARTUP":
-		switch signal.ID {
-		case "SIGTERM", "SIGKILL", "SIGINT", "SIGQUIT":
-			os.Exit(1)
-		case "_SIGNOSIGNAL":
-			return fsm.GetStates()["HACK"]
-		}
-	case "HACK":
-		switch signal.ID {
-		case "SIGTERM", "SIGKILL", "SIGINT", "SIGQUIT":
-			return fsm.GetStates()["UNHACK"]
-		case "_SIGNOSIGNAL":
-			return fsm.GetStates()["WAIT"]
-		}
-	case "WAIT":
-		switch signal.ID {
-		case "SIGTERM", "SIGKILL", "SIGINT", "SIGQUIT":
-			// always attempt to unhack before dying
-			return fsm.GetStates()["UNHACK"]
-		case "_SIGNOSIGNAL":
-			return fsm.GetStates()["HACK"]
-		}
-	case "UNHACK":
-		switch signal.ID {
-		case "SIGTERM", "SIGKILL", "SIGINT", "SIGQUIT":
-			os.Exit(1)
-		case "_SIGNOSIGNAL":
-			os.Exit(0)
-		}
-	}
-	return nil
+	// state's behavior executed successfully
+	return &StateExitInfo{NextState: STATE_HACK, ExitCode: StateExitSuccess}
 }
 
 // remove self from security groups
-func UnHack(fsm *fsm) {
+// don't handle signals here, we always want to finish unhacking if we can
+func UnHack(fsm *fsm) *StateExitInfo {
 	ippermission := []*ec2.IpPermission{
 		&ec2.IpPermission{
 			IpProtocol: aws.String("-1"),
@@ -213,52 +193,46 @@ func UnHack(fsm *fsm) {
 	sgs, err := sc.ScanSecurityGroups()
 
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Error("security group discovery error")
+		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("security group discovery error")
 	}
 
+	// remove self from indexed security groups
 	for _, sg := range sgs {
 		_, err := ec2Client.AuthorizeSecurityGroupIngress(&ec2.AuthorizeSecurityGroupIngressInput{
 			GroupId:       sg.GroupId,
 			IpPermissions: ippermission,
 		})
 		if err != nil {
-			log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", sg.GroupId)
+			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", sg.GroupId)
 		} else {
-			log.WithFields(log.Fields{"state": fsm.GetState().ID}).Info("bastion pwned: ", sg.GroupId)
-		}
-
-		// XXX
-		select {
-		case s := <-posixSignals:
-			switch s {
-			case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGQUIT:
-				fsm.Execute(fsm.Transition(fsm.GetState(), fsm.GetSignals()["SIGTERM"]))
-			}
-		case <-time.After(1 * time.Second):
-			return // break to next state
+			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", sg.GroupId)
 		}
 	}
+
+	return &StateExitInfo{NextState: STATE_HACK, ExitCode: StateExitSuccess}
 }
 
-func Wait(fsm *fsm) {
+// wait state, wants to return to hacker
+func Wait(fsm *fsm) *StateExitInfo {
 	for {
 		select {
-
-		// XXX
-		case s := <-posixSignals:
-			switch s {
-			case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGQUIT:
-				fsm.Execute(fsm.Transition(fsm.GetState(), fsm.GetSignals()["SIGTERM"]))
-			default:
-				fsm.Execute(fsm.Transition(fsm.GetState(), fsm.GetSignals()["_SIGNOSIGNAL"]))
+		case s := <-signalsChannel:
+			switch fsm.HandleSignal(fsm.GetCurrentState(), s) {
+			case HANDLE_CONTINUE:
+				continue // handler tells us to continue
+			case HANDLE_EXIT:
+				return &StateExitInfo{NextState: STATE_UNHACK, ExitCode: StateExitSuccess} // handler tells us to exit
+			case HANDLE_RESTART:
+				return &StateExitInfo{NextState: STATE_WAIT, ExitCode: StateExitSuccess}
 			}
 		case <-time.After(25 * time.Minute):
-			return // break to next state
+			return &StateExitInfo{NextState: STATE_HACK, ExitCode: StateExitSuccess} // we're done, go back to hacking
 		}
 	}
 }
 
-func Hack(fsm *fsm) {
+// hack state, add ingress rules
+func Hack(fsm *fsm) *StateExitInfo {
 	ippermission := []*ec2.IpPermission{
 		&ec2.IpPermission{
 			IpProtocol: aws.String("-1"),
@@ -274,7 +248,7 @@ func Hack(fsm *fsm) {
 	sgs, err := sc.ScanSecurityGroups()
 
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Error("security group discovery error")
+		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("security group discovery error")
 	}
 
 	for _, sg := range sgs {
@@ -294,54 +268,64 @@ func Hack(fsm *fsm) {
 				IpPermissions: ippermission,
 			})
 			if err != nil {
-				log.WithFields(log.Fields{"state": fsm.GetState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", sg.GroupId)
+				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", sg.GroupId)
 			} else {
-				log.WithFields(log.Fields{"state": fsm.GetState().ID}).Info("bastion pwned: ", sg.GroupId)
+				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", sg.GroupId)
 			}
 		}
 
-		// XXX
+		// see if we've gotten any signals
 		select {
-		case s := <-posixSignals:
-			switch s {
-			case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGQUIT:
-				fsm.Execute(fsm.Transition(fsm.GetState(), fsm.GetSignals()["SIGTERM"]))
+		case s := <-signalsChannel:
+			switch fsm.HandleSignal(fsm.GetCurrentState(), s) {
+			case HANDLE_CONTINUE:
+				continue // handler tells us to continue
+			case HANDLE_EXIT:
+				return &StateExitInfo{NextState: STATE_UNHACK, ExitCode: StateExitSuccess} // handler tells us to exit
 			}
 		case <-time.After(1 * time.Second):
-			return // break to next state
+			continue // continue to next SG
 		}
 	}
+
+	// finally, go to STATE_WAIT
+	return &StateExitInfo{NextState: STATE_WAIT, ExitCode: StateExitSuccess}
+}
+
+// exit error
+func ExitSuccess(fsm *fsm) *StateExitInfo {
+	return &StateExitInfo{NextState: "", ExitCode: StateExitSuccess}
+}
+
+// exit error
+func ExitError(fsm *fsm) *StateExitInfo {
+	return &StateExitInfo{NextState: "", ExitCode: StateExitError}
 }
 
 func main() {
-	signal.Notify(posixSignals,
-		syscall.SIGHUP,
+	if os.Getenv("ENABLE_BASTION_INGRESS") == "false" {
+		log.WithFields(log.Fields{"service": "monitor"}).Info("ENABLE_BASTION_INGRESS set false.  exiting.")
+		os.Exit(0)
+	}
+
+	// handle the following signals
+	signal.Notify(signalsChannel,
 		syscall.SIGINT,
 		syscall.SIGTERM,
 		syscall.SIGQUIT)
 
-	// POSIX Signals and one special _SIGNOSIGNAL
-	// _SIGNOSIGNAL also represents unknown signals
-	signals := map[string]*Signal{
-		"SIGHUP":       &Signal{ID: "SIGHUP", VAL: 1},
-		"SIGINT":       &Signal{ID: "SIGINT", VAL: 2},
-		"SIGQUIT":      &Signal{ID: "SIGQUIT", VAL: 3},
-		"SIGTERM":      &Signal{ID: "SIGTERM", VAL: 15},
-		"SIGABRT":      &Signal{ID: "SIGABRT", VAL: 6},
-		"SIGKILL":      &Signal{ID: "SIGKILL", VAL: 9},
-		"_SIGNOSIGNAL": &Signal{ID: "_SIGNOSIGNAL", VAL: 0},
-	}
-
 	// dahacker's states
-	states := map[string]*State{
-		"HACK":    &State{ID: "HACK", Behavior: Hack},
-		"UNHACK":  &State{ID: "UNHACK", Behavior: UnHack},
-		"WAIT":    &State{ID: "WAIT", Behavior: Wait},
-		"STARTUP": &State{ID: "STARTUP", Behavior: Startup},
+	states := map[StateID]*State{
+		STATE_HACK:         &State{ID: STATE_HACK, Behavior: Hack},
+		STATE_UNHACK:       &State{ID: STATE_UNHACK, Behavior: UnHack},
+		STATE_WAIT:         &State{ID: STATE_WAIT, Behavior: Wait},
+		STATE_STARTUP:      &State{ID: STATE_STARTUP, Behavior: Startup},
+		STATE_EXIT_ERROR:   &State{ID: STATE_EXIT_ERROR, Behavior: ExitError},
+		STATE_EXIT_SUCCESS: &State{ID: STATE_EXIT_ERROR, Behavior: ExitSuccess},
 	}
 
 	// initialize dahacker fsm
-	dahacker := &fsm{Signals: signals, States: states, STATE: states["STARTUP"]}
+	dahacker := &fsm{States: states, STATE: states[STATE_STARTUP]}
 	var dafsm FSM
 	dafsm = dahacker
 
@@ -355,6 +339,36 @@ func main() {
 
 	// run the state machine
 	for {
-		dafsm.Execute(dafsm.Transition(dafsm.GetState(), dafsm.GetSignals()["_SIGNOSIGNAL"]))
+		exitinfo := dafsm.GetCurrentState().Behavior(dahacker) // run and get next state info
+		dafsm.SetState(dafsm.GetState(exitinfo.NextState))     // set next state based on info
 	}
+}
+
+// Handle Signal in various states
+func (fsm *fsm) HandleSignal(state *State, signal os.Signal) StateHandlerCode {
+	/*
+	* STATE Startup
+	* LOOPA := STATE Hack->STATE Wait->STATE Hack->STATE Wait...
+	* LOOPA until signal == SIGTERM | SIGINT | SIQUIT
+	* STATE UnHack
+	* END
+	 */
+	switch state.ID {
+	case STATE_STARTUP:
+		switch signal {
+		case syscall.SIGTERM, syscall.SIGINT: // recv shutdown signal
+			os.Exit(1) // exit before we start hacking
+		}
+	case STATE_HACK:
+		switch signal {
+		case syscall.SIGTERM, syscall.SIGINT: // recv shutdown signal
+			return HANDLE_EXIT
+		}
+	case STATE_WAIT:
+		switch signal {
+		case syscall.SIGTERM, syscall.SIGINT: // recv shutdown signal
+			return HANDLE_EXIT
+		}
+	}
+	return HANDLE_CONTINUE
 }
