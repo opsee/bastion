@@ -79,6 +79,7 @@ type StateExitInfo struct {
 // TODO - an input channel for events from OS and other FSMs
 // TODO - an output channel for publishing events about self to other FSMs
 type fsm struct {
+	ID     string
 	States map[StateID]*State
 	STATE  *State
 }
@@ -89,6 +90,7 @@ type FSM interface {
 	GetCurrentState() *State       // return current state
 	GetState(StateID) *State       // return state by StateID
 	SetState(*State)               // set current state
+	ExecuteCurrentState() *StateExitInfo
 
 	// an FSM can transition on a signal, or when a state exits
 	HandleSignal(state *State, signal os.Signal) StateHandlerCode
@@ -112,7 +114,17 @@ func (fsm *fsm) GetStates() map[StateID]*State {
 // returns a state by it's const StateID
 // TODO handle state not found
 func (fsm *fsm) GetState(stateID StateID) *State {
-	return fsm.States[stateID]
+	if state, ok := fsm.States[stateID]; ok {
+		return state
+	} else {
+		log.WithFields(log.Fields{"fsm": fsm.ID, "State": stateID}).Fatal("Couldn't find state!")
+		return nil
+	}
+}
+
+func (fsm *fsm) ExecuteCurrentState() *StateExitInfo {
+	log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("Executing")
+	return fsm.GetCurrentState().Behavior(fsm)
 }
 
 // Initial State, Check Flags, Setup Vars
@@ -209,7 +221,7 @@ func UnHack(fsm *fsm) *StateExitInfo {
 		}
 	}
 
-	return &StateExitInfo{NextState: STATE_HACK, ExitCode: StateExitSuccess}
+	return &StateExitInfo{NextState: STATE_EXIT_SUCCESS, ExitCode: StateExitSuccess}
 }
 
 // wait state, wants to return to hacker
@@ -225,7 +237,7 @@ func Wait(fsm *fsm) *StateExitInfo {
 			case HANDLE_RESTART:
 				return &StateExitInfo{NextState: STATE_WAIT, ExitCode: StateExitSuccess}
 			}
-		case <-time.After(25 * time.Minute):
+		case <-time.After(1 * time.Minute):
 			return &StateExitInfo{NextState: STATE_HACK, ExitCode: StateExitSuccess} // we're done, go back to hacking
 		}
 	}
@@ -292,19 +304,9 @@ func Hack(fsm *fsm) *StateExitInfo {
 	return &StateExitInfo{NextState: STATE_WAIT, ExitCode: StateExitSuccess}
 }
 
-// exit error
-func ExitSuccess(fsm *fsm) *StateExitInfo {
-	return &StateExitInfo{NextState: "", ExitCode: StateExitSuccess}
-}
-
-// exit error
-func ExitError(fsm *fsm) *StateExitInfo {
-	return &StateExitInfo{NextState: "", ExitCode: StateExitError}
-}
-
 func main() {
 	if os.Getenv("ENABLE_BASTION_INGRESS") == "false" {
-		log.WithFields(log.Fields{"service": "monitor"}).Info("ENABLE_BASTION_INGRESS set false.  exiting.")
+		log.WithFields(log.Fields{"service": "hacker"}).Info("ENABLE_BASTION_INGRESS set false.  exiting.")
 		os.Exit(0)
 	}
 
@@ -316,16 +318,14 @@ func main() {
 
 	// dahacker's states
 	states := map[StateID]*State{
-		STATE_HACK:         &State{ID: STATE_HACK, Behavior: Hack},
-		STATE_UNHACK:       &State{ID: STATE_UNHACK, Behavior: UnHack},
-		STATE_WAIT:         &State{ID: STATE_WAIT, Behavior: Wait},
-		STATE_STARTUP:      &State{ID: STATE_STARTUP, Behavior: Startup},
-		STATE_EXIT_ERROR:   &State{ID: STATE_EXIT_ERROR, Behavior: ExitError},
-		STATE_EXIT_SUCCESS: &State{ID: STATE_EXIT_ERROR, Behavior: ExitSuccess},
+		STATE_HACK:    &State{ID: STATE_HACK, Behavior: Hack},
+		STATE_UNHACK:  &State{ID: STATE_UNHACK, Behavior: UnHack},
+		STATE_WAIT:    &State{ID: STATE_WAIT, Behavior: Wait},
+		STATE_STARTUP: &State{ID: STATE_STARTUP, Behavior: Startup},
 	}
 
 	// initialize dahacker fsm
-	dahacker := &fsm{States: states, STATE: states[STATE_STARTUP]}
+	dahacker := &fsm{ID: "hackerunhacker", States: states, STATE: states[STATE_STARTUP]}
 	var dafsm FSM
 	dafsm = dahacker
 
@@ -339,8 +339,19 @@ func main() {
 
 	// run the state machine
 	for {
-		exitinfo := dafsm.GetCurrentState().Behavior(dahacker) // run and get next state info
-		dafsm.SetState(dafsm.GetState(exitinfo.NextState))     // set next state based on info
+		exitinfo := dafsm.ExecuteCurrentState() // run and get next state info
+		if exitinfo.NextState == STATE_EXIT_SUCCESS {
+			os.Exit(0)
+		} else if exitinfo.NextState == STATE_EXIT_ERROR {
+			os.Exit(1)
+		} else {
+			if nextstate := dafsm.GetState(exitinfo.NextState); nextstate != nil {
+				dafsm.SetState(nextstate) // set next state based on info
+			} else {
+				log.Fatal("exiting")
+				os.Exit(1)
+			}
+		}
 	}
 }
 
