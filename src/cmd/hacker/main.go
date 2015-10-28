@@ -215,9 +215,9 @@ func UnHack(fsm *fsm) *StateExitInfo {
 			IpPermissions: ippermission,
 		})
 		if err != nil {
-			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to UNpwn: ", sg.GroupId)
+			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to UNpwn: ", *sg.GroupId)
 		} else {
-			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", sg.GroupId)
+			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", *sg.GroupId)
 		}
 	}
 
@@ -280,9 +280,9 @@ func Hack(fsm *fsm) *StateExitInfo {
 				IpPermissions: ippermission,
 			})
 			if err != nil {
-				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", sg.GroupId)
+				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", *sg.GroupId)
 			} else {
-				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", sg.GroupId)
+				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", *sg.GroupId)
 			}
 		}
 
