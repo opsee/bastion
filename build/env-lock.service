@@ -1,9 +1,11 @@
 [Unit]
 Description=Triggered after generation of env file
-ConditionFileNotEmpty=/etc/opsee/bastion.env
+ConditionFileNotEmpty=/etc/opsee/bastion-env.sh
+ConditionPathIsReadWrite=/etc/opsee/bastion-env.sh
 
 [Service]
-Type=oneshot
+Restart=always
+RestartSec=1s
 ExecStart=/bin/sh -c "echo Bastion Env Ready"
 RemainAfterExit=yes
 

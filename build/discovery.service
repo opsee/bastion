@@ -6,8 +6,8 @@ Requires=env-lock.service docker.service nsqd.service hacker.service
 [Service]
 Restart=always
 User=core
-TimeoutStartSec=5s
 RestartSec=5s
+TimeoutStartSec=0
 EnvironmentFile=/etc/opsee/bastion-env.sh
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p
