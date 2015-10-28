@@ -9,7 +9,6 @@ Restart=always
 EnvironmentFile=/etc/opsee/bastion-env.sh
 User=core
 TimeoutStartSec=0
-StartLimitInterval=0
 RestartSec=5s
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p

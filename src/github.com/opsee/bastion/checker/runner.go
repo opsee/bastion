@@ -3,9 +3,129 @@ package checker
 import (
 	"fmt"
 	"reflect"
+	"time"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/nsqio/go-nsq"
 	"golang.org/x/net/context"
 )
+
+type NSQRunnerConfig struct {
+	ConsumerQueueName   string
+	ProducerQueueName   string
+	ConsumerChannelName string
+	NSQDHost            string
+	CustomerID          string
+	MaxHandlers         int
+}
+
+type NSQRunner struct {
+	runner   *Runner
+	config   *NSQRunnerConfig
+	producer *nsq.Producer
+	consumer *nsq.Consumer
+}
+
+func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
+	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, nsq.NewConfig())
+	if err != nil {
+		return nil, err
+	}
+	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
+	if err != nil {
+		return nil, err
+	}
+
+	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
+		// Message is a Check
+		// We emit a CheckResult
+		check := &Check{}
+		if err := proto.Unmarshal(m.Body, check); err != nil {
+			return err
+		}
+		logger.Debug("Entering NSQRunner handler. Check: %s", check.String())
+
+		timestamp := &Timestamp{
+			Seconds: int64(time.Now().Second()),
+		}
+
+		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
+		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
+		responseChan, err := runner.RunCheck(ctx, check)
+		if err != nil {
+			logger.Error(err.Error())
+			cancel()
+			result := &CheckResult{
+				CustomerId: cfg.CustomerID,
+				CheckId:    check.Id,
+				Timestamp:  timestamp,
+				Responses: []*CheckResponse{&CheckResponse{
+					Target: check.Target,
+					Error:  handleError(err),
+				}},
+			}
+
+			msg, err := proto.Marshal(result)
+			if err != nil {
+				logger.Error(err.Error())
+				return err
+			}
+			if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
+				logger.Error(err.Error())
+				return err
+			}
+			return nil
+		}
+
+		// TODO(greg): We're currently ignoring the deadline we _just_ set on this
+		// this.
+		var responses []*CheckResponse
+		for response := range responseChan {
+			responses = append(responses, response)
+		}
+
+		result := &CheckResult{
+			CustomerId: cfg.CustomerID,
+			CheckId:    check.Id,
+			Timestamp:  timestamp,
+			Responses:  responses,
+		}
+
+		msg, err := proto.Marshal(result)
+		if err != nil {
+			logger.Error(err.Error())
+			cancel()
+			return err
+		}
+
+		logger.Debug("NSQRunner handler publishing result: %s", result.String())
+		if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
+			logger.Error(err.Error())
+			cancel()
+			return err
+		}
+
+		return nil
+	}), cfg.MaxHandlers)
+
+	err = consumer.ConnectToNSQD(cfg.NSQDHost)
+	if err != nil {
+		return nil, err
+	}
+
+	return &NSQRunner{
+		config:   cfg,
+		runner:   runner,
+		producer: producer,
+		consumer: consumer,
+	}, nil
+}
+
+func (r *NSQRunner) Stop() {
+	r.consumer.Stop()
+	<-r.consumer.StopChan
+	r.producer.Stop()
+}
 
 // A Runner is responsible for running checks. Given a request for a check
 // (see: RunCheck), it will execute that check within a context, returning
@@ -31,6 +151,10 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Ta
 		targets []*Target
 		err     error
 	)
+
+	if check.Target == nil {
+		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
+	}
 
 	if check.Target.Type != "instance" {
 		targets, err = r.resolver.Resolve(check.Target)

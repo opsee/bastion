@@ -116,5 +116,6 @@ func (s *DispatcherTestSuite) TestDispatchWithCancelledContext() {
 }
 
 func TestDispatcherTestSuite(t *testing.T) {
+	setupTestEnv()
 	suite.Run(t, new(DispatcherTestSuite))
 }

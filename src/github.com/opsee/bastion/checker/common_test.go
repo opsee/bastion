@@ -37,7 +37,7 @@ func (t TestCommonStubs) HTTPRequest() *HTTPRequest {
 
 func (t TestCommonStubs) Check() *Check {
 	return &Check{
-		Id:        "string",
+		Id:        "stub-check-id",
 		Interval:  60,
 		Target:    &Target{},
 		CheckSpec: &Any{},
@@ -137,7 +137,13 @@ func newTestResolver() *testResolver {
 	}
 }
 
-func init() {
+var testEnvReady bool = false
+
+func setupTestEnv() {
+	if testEnvReady {
+		return
+	}
+
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
 		logLevel = "ERROR"
@@ -155,4 +161,6 @@ func init() {
 	go func() {
 		errChan <- http.ListenAndServe(fmt.Sprintf(":%d", testHTTPServerPort), nil)
 	}()
+
+	testEnvReady = true
 }

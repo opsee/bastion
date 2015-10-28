@@ -6,7 +6,7 @@ Requires=env-lock.service docker.service nsqd.service connector.service
 [Service]
 Restart=always
 User=core
-TimeoutStartSec=5s
+TimeoutStartSec=0
 RestartSec=5s
 Environment="NSQD_HOST=127.0.0.1:4150"
 EnvironmentFile=/etc/opsee/bastion-env.sh
