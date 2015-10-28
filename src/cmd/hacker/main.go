@@ -210,14 +210,14 @@ func UnHack(fsm *fsm) *StateExitInfo {
 
 	// remove self from indexed security groups
 	for _, sg := range sgs {
-		_, err := ec2Client.AuthorizeSecurityGroupIngress(&ec2.AuthorizeSecurityGroupIngressInput{
+		_, err := ec2Client.RevokeSecurityGroupIngress(&ec2.RevokeSecurityGroupIngressInput{
 			GroupId:       sg.GroupId,
 			IpPermissions: ippermission,
 		})
 		if err != nil {
-			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", sg.GroupId)
+			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to UNpwn: ", sg.GroupId)
 		} else {
-			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", sg.GroupId)
+			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", sg.GroupId)
 		}
 	}
 
@@ -237,7 +237,7 @@ func Wait(fsm *fsm) *StateExitInfo {
 			case HANDLE_RESTART:
 				return &StateExitInfo{NextState: STATE_WAIT, ExitCode: StateExitSuccess}
 			}
-		case <-time.After(1 * time.Minute):
+		case <-time.After(25 * time.Minute):
 			return &StateExitInfo{NextState: STATE_HACK, ExitCode: StateExitSuccess} // we're done, go back to hacking
 		}
 	}
