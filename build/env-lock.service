@@ -1,5 +1,6 @@
 [Unit]
 Description=Triggered after generation of env file
+ConditionFileNotEmpty=/etc/opsee/bastion.env
 
 [Service]
 Type=oneshot
