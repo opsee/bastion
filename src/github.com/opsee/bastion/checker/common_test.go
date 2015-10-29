@@ -146,7 +146,7 @@ func setupTestEnv() {
 
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
-		logLevel = "ERROR"
+		logLevel = "INFO"
 	}
 	logging.SetLevel(logLevel, "checker")
 

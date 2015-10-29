@@ -175,22 +175,32 @@ func (r *RemoteRunner) withLock(f func()) {
 
 func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, error) {
 	logger.Info("Running check: %s", chk.String())
-	id, err := uuid.NewV4()
-	if err != nil {
-		return nil, err
+
+	var (
+		id  string
+		err error
+	)
+	if chk.Id == "" {
+		uid, err := uuid.NewV4()
+		if err != nil {
+			return nil, err
+		}
+		id = uid.String()
+		chk.Id = id
+	} else {
+		id = chk.Id
 	}
-	chk.Id = id.String()
 
 	respChan := make(chan *CheckResult, 1)
 
 	r.withLock(func() {
-		r.requestMap[id.String()] = respChan
-		logger.Debug("RemoteRunner.RunCheck: Set response channel for request: %s", id.String())
+		r.requestMap[id] = respChan
+		logger.Debug("RemoteRunner.RunCheck: Set response channel for request: %s", id)
 	})
 
 	defer func() {
 		r.withLock(func() {
-			delete(r.requestMap, id.String())
+			delete(r.requestMap, id)
 			logger.Debug("Deleted response channel.")
 		})
 	}()

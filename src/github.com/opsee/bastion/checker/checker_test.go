@@ -6,6 +6,7 @@ package checker
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -101,32 +102,74 @@ func (s *CheckerTestSuite) SetupTest() {
 	}
 
 	s.Publisher = &testPublisher{}
+	s.resetNsq()
+}
+
+func (s *CheckerTestSuite) resetNsq() {
+	ip := strings.Split(s.RunnerConfig.NSQDHost, ":")[0]
+
+	makeRequest := func(u *url.URL) error {
+		client := &http.Client{}
+		r := &http.Request{
+			Method: "POST",
+			URL:    u,
+		}
+		logger.Info("Making request to NSQD: %s", r.URL)
+		resp, err := client.Do(r)
+		defer resp.Body.Close()
+		body, _ := ioutil.ReadAll(resp.Body)
+		logger.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
+		return err
+	}
+
+	emptyTopic := func(t string) error {
+		u, _ := url.Parse(fmt.Sprintf("http://%s:4151/topic/empty", ip))
+		u.RawQuery = fmt.Sprintf("topic=%s", t)
+		return makeRequest(u)
+	}
+
+	emptyChannel := func(t, c string) error {
+		u, _ := url.Parse(fmt.Sprintf("http://%s:4151/channel/empty", ip))
+		u.RawQuery = fmt.Sprintf("topic=%s&channel=%s", t, c)
+		return makeRequest(u)
+	}
+
+	if err := emptyTopic(s.RunnerConfig.ConsumerQueueName); err != nil {
+		panic(err)
+	}
+
+	if err := emptyTopic(s.RunnerConfig.ProducerQueueName); err != nil {
+		panic(err)
+	}
+
+	if err := emptyChannel(s.RunnerConfig.ConsumerQueueName, s.RunnerConfig.ConsumerChannelName); err != nil {
+		panic(err)
+	}
+
+	if err := emptyChannel(s.RunnerConfig.ProducerQueueName, "test-check-results"); err != nil {
+		panic(err)
+	}
 }
 
 func (s *CheckerTestSuite) TearDownTest() {
 	s.CheckerClient.Close()
 	s.Checker.Stop()
 	// Reset NSQ state every time so that we don't end up reading stale garbage.
-	ip := strings.Split(s.RunnerConfig.NSQDHost, ":")[0]
-	resp, err := http.PostForm(fmt.Sprintf("http://%s:4151/topic/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName}})
-	logger.Debug("Received response from NSQD: %s", resp)
-	if err != nil {
-		panic(err)
+	s.resetNsq()
+}
+
+/*******************************************************************************
+ * CreateCheck()
+ ******************************************************************************/
+
+func (s *CheckerTestSuite) TestGoodCreateCheckRequest() {
+	req := &CheckResourceRequest{
+		Checks: []*Check{s.Common.PassingCheck()},
 	}
-	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/topic/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName}})
-	if err != nil {
-		panic(err)
-	}
-	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/channel/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName},
-		"channel": {s.RunnerConfig.ConsumerChannelName}})
-	if err != nil {
-		panic(err)
-	}
-	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/channel/empty", ip), url.Values{"topic": {s.RunnerConfig.ProducerQueueName},
-		"channel": {"test-check-results"}})
-	if err != nil {
-		panic(err)
-	}
+	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
+	assert.NoError(s.T(), err)
+	assert.NotNil(s.T(), resp)
+	assert.Equal(s.T(), s.Common.PassingCheck().Id, resp.Responses[0].Check.Id)
 }
 
 /*******************************************************************************
