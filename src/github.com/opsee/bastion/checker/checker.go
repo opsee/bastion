@@ -255,7 +255,7 @@ func NewChecker() *Checker {
 // because its timestamp is older than the one sent by bartnet at t(3).
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
-	logger.Info("Handling request: %s", req)
+	logger.Info("Handling %s request: %s", cmd, req)
 
 	responses := make([]*CheckResourceResponse, len(req.Checks))
 	response := &ResourceResponse{
@@ -264,14 +264,17 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 	for i, check := range req.Checks {
 		in := []reflect.Value{reflect.ValueOf(check)}
 		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
-		checkResponse := out[0].Interface().(*Check)
-		err := out[1].Interface().(error)
-		if err != nil {
-			responses[i] = &CheckResourceResponse{Error: err.Error()}
-		}
-		responses[i] = &CheckResourceResponse{
-			Id:    check.Id,
-			Check: checkResponse,
+		checkResponse, ok := out[0].Interface().(*Check)
+		if !ok {
+			err := out[1].Interface().(error)
+			if err != nil {
+				responses[i] = &CheckResourceResponse{Error: err.Error()}
+			}
+		} else {
+			responses[i] = &CheckResourceResponse{
+				Id:    check.Id,
+				Check: checkResponse,
+			}
 		}
 	}
 	logger.Info("Response: %s", response)
