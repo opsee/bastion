@@ -2,7 +2,9 @@ package checker
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/opsee/bastion/logging"
@@ -137,6 +139,59 @@ func newTestResolver() *testResolver {
 	}
 }
 
+type NsqTopic struct {
+	Topic string
+}
+type NsqChannel struct {
+	Topic   string
+	Channel string
+}
+
+type resetNsqConfig struct {
+	Topics   []NsqTopic
+	Channels []NsqChannel
+}
+
+func resetNsq(host string, qmap resetNsqConfig) {
+	makeRequest := func(u *url.URL) error {
+		client := &http.Client{}
+		r := &http.Request{
+			Method: "POST",
+			URL:    u,
+		}
+		logger.Info("Making request to NSQD: %s", r.URL)
+		resp, err := client.Do(r)
+		defer resp.Body.Close()
+		body, _ := ioutil.ReadAll(resp.Body)
+		logger.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
+		return err
+	}
+
+	emptyTopic := func(t string) error {
+		u, _ := url.Parse(fmt.Sprintf("http://%s:4151/topic/empty", host))
+		u.RawQuery = fmt.Sprintf("topic=%s", t)
+		return makeRequest(u)
+	}
+
+	emptyChannel := func(t, c string) error {
+		u, _ := url.Parse(fmt.Sprintf("http://%s:4151/channel/empty", host))
+		u.RawQuery = fmt.Sprintf("topic=%s&channel=%s", t, c)
+		return makeRequest(u)
+	}
+
+	for _, topic := range qmap.Topics {
+		if err := emptyTopic(topic.Topic); err != nil {
+			panic(err)
+		}
+	}
+
+	for _, channel := range qmap.Channels {
+		if err := emptyChannel(channel.Topic, channel.Channel); err != nil {
+			panic(err)
+		}
+	}
+}
+
 var testEnvReady bool = false
 
 func setupTestEnv() {
@@ -146,7 +201,7 @@ func setupTestEnv() {
 
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
-		logLevel = "INFO"
+		logLevel = "ERROR"
 	}
 	logging.SetLevel(logLevel, "checker")
 

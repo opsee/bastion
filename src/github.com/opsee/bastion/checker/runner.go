@@ -104,6 +104,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			cancel()
 			return err
 		}
+		logger.Debug("NSQRunner handler finished publishing result.")
 
 		return nil
 	}), cfg.MaxHandlers)

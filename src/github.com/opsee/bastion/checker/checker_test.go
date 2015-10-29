@@ -5,10 +5,6 @@ package checker
 // worth testing.
 
 import (
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -43,6 +39,7 @@ type CheckerTestSuite struct {
 	Publisher        Publisher
 	NSQRunner        *NSQRunner
 	RunnerConfig     *NSQRunnerConfig
+	ResetNsqConfig   resetNsqConfig
 }
 
 func (s *CheckerTestSuite) SetupSuite() {
@@ -61,9 +58,20 @@ func (s *CheckerTestSuite) SetupSuite() {
 
 	s.NSQRunner = runner
 	s.RunnerConfig = cfg
+	s.ResetNsqConfig = resetNsqConfig{
+		Topics: []NsqTopic{
+			NsqTopic{s.RunnerConfig.ProducerQueueName},
+			NsqTopic{s.RunnerConfig.ConsumerQueueName},
+		},
+		Channels: []NsqChannel{
+			NsqChannel{s.RunnerConfig.ProducerQueueName, "test-check-results"},
+			NsqChannel{s.RunnerConfig.ConsumerQueueName, s.RunnerConfig.ConsumerChannelName},
+		},
+	}
 }
 
 func (s *CheckerTestSuite) SetupTest() {
+	resetNsq(strings.Split(s.RunnerConfig.NSQDHost, ":")[0], s.ResetNsqConfig)
 	var err error
 
 	checker := NewChecker()
@@ -102,60 +110,13 @@ func (s *CheckerTestSuite) SetupTest() {
 	}
 
 	s.Publisher = &testPublisher{}
-	s.resetNsq()
-}
-
-func (s *CheckerTestSuite) resetNsq() {
-	ip := strings.Split(s.RunnerConfig.NSQDHost, ":")[0]
-
-	makeRequest := func(u *url.URL) error {
-		client := &http.Client{}
-		r := &http.Request{
-			Method: "POST",
-			URL:    u,
-		}
-		logger.Info("Making request to NSQD: %s", r.URL)
-		resp, err := client.Do(r)
-		defer resp.Body.Close()
-		body, _ := ioutil.ReadAll(resp.Body)
-		logger.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
-		return err
-	}
-
-	emptyTopic := func(t string) error {
-		u, _ := url.Parse(fmt.Sprintf("http://%s:4151/topic/empty", ip))
-		u.RawQuery = fmt.Sprintf("topic=%s", t)
-		return makeRequest(u)
-	}
-
-	emptyChannel := func(t, c string) error {
-		u, _ := url.Parse(fmt.Sprintf("http://%s:4151/channel/empty", ip))
-		u.RawQuery = fmt.Sprintf("topic=%s&channel=%s", t, c)
-		return makeRequest(u)
-	}
-
-	if err := emptyTopic(s.RunnerConfig.ConsumerQueueName); err != nil {
-		panic(err)
-	}
-
-	if err := emptyTopic(s.RunnerConfig.ProducerQueueName); err != nil {
-		panic(err)
-	}
-
-	if err := emptyChannel(s.RunnerConfig.ConsumerQueueName, s.RunnerConfig.ConsumerChannelName); err != nil {
-		panic(err)
-	}
-
-	if err := emptyChannel(s.RunnerConfig.ProducerQueueName, "test-check-results"); err != nil {
-		panic(err)
-	}
 }
 
 func (s *CheckerTestSuite) TearDownTest() {
 	s.CheckerClient.Close()
 	s.Checker.Stop()
 	// Reset NSQ state every time so that we don't end up reading stale garbage.
-	s.resetNsq()
+	resetNsq(strings.Split(s.RunnerConfig.NSQDHost, ":")[0], s.ResetNsqConfig)
 }
 
 /*******************************************************************************
