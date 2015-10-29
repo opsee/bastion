@@ -136,6 +136,41 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/coreos/etcd/Godeps/_workspace/src/github.com/ugorji/go/codec",
+			"repository": "https://github.com/coreos/etcd",
+			"revision": "2840260b3becbf108688ad865fe470a58eadaef5",
+			"branch": "master",
+			"path": "/Godeps/_workspace/src/github.com/ugorji/go/codec"
+		},
+		{
+			"importpath": "github.com/coreos/etcd/Godeps/_workspace/src/golang.org/x/net/context",
+			"repository": "https://github.com/coreos/etcd",
+			"revision": "2840260b3becbf108688ad865fe470a58eadaef5",
+			"branch": "master",
+			"path": "/Godeps/_workspace/src/golang.org/x/net/context"
+		},
+		{
+			"importpath": "github.com/coreos/etcd/client",
+			"repository": "https://github.com/coreos/etcd",
+			"revision": "2840260b3becbf108688ad865fe470a58eadaef5",
+			"branch": "master",
+			"path": "/client"
+		},
+		{
+			"importpath": "github.com/coreos/etcd/pkg/pathutil",
+			"repository": "https://github.com/coreos/etcd",
+			"revision": "2840260b3becbf108688ad865fe470a58eadaef5",
+			"branch": "master",
+			"path": "/pkg/pathutil"
+		},
+		{
+			"importpath": "github.com/coreos/etcd/pkg/types",
+			"repository": "https://github.com/coreos/etcd",
+			"revision": "2840260b3becbf108688ad865fe470a58eadaef5",
+			"branch": "master",
+			"path": "/pkg/types"
+		},
+		{
 			"importpath": "github.com/coreos/go-etcd/etcd",
 			"repository": "https://github.com/coreos/go-etcd",
 			"revision": "126041ef7b24a28359a12f8bf7f6a7db6756113d",
@@ -176,7 +211,7 @@
 		{
 			"importpath": "github.com/opsee/portmapper",
 			"repository": "https://github.com/opsee/portmapper",
-			"revision": "b4877de1ed51c3d59be85fee5c6d0638ee9dd569",
+			"revision": "c88b5d2605f9fe537bda28cdc49005592f1c0811",
 			"branch": "master"
 		},
 		{
