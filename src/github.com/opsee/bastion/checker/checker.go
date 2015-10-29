@@ -238,7 +238,21 @@ func NewChecker() *Checker {
 	}
 }
 
-// TODO: One way or another, all CRUD requests should be transactional.
+// TODO(greg): One way or another, all CRUD requests should be transactional.
+// At the moment it is very much last-write-wins, but consider the following
+// scenario:
+//
+// t(0) -> Checker startup
+// t(1) -> Checker initializes configuration sync with opsee
+// t(2) -> User updates check id 1 and this gets saved in Bartnet
+// t(3) -> Bartnet creates check id 1 on the bastion
+// t(4) -> The configuration sync finishes and overwrites check id 1 with
+// the previously saved verison.
+//
+// Now we have dirty writes. So we have to have a way of fixing that. @dan-compton
+// suggested timestamps to version check objects. I think that's a good idea. In
+// that case, at t(4) above, the old version of check id 1 would be ignored,
+// because its timestamp is older than the one sent by bartnet at t(3).
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
 	logger.Info("Handling request: %s", req)
