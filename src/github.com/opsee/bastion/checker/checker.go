@@ -266,9 +266,11 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
 		checkResponse, ok := out[0].Interface().(*Check)
 		if !ok {
-			err := out[1].Interface().(error)
-			if err != nil {
-				responses[i] = &CheckResourceResponse{Error: err.Error()}
+			err, ok := out[1].Interface().(error)
+			if ok {
+				if err != nil {
+					responses[i] = &CheckResourceResponse{Error: err.Error()}
+				}
 			}
 		} else {
 			responses[i] = &CheckResourceResponse{
