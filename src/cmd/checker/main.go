@@ -55,6 +55,7 @@ func main() {
 
 	scheduler.Producer = producer
 	defer checks.Stop()
+	scheduler.Start()
 
 	checks.Port = 4000
 	if err = checks.Start(); err != nil {
