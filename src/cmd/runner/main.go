@@ -1,18 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"os"
 	"os/signal"
-	"time"
+	"syscall"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
-	"github.com/nsqio/go-nsq"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -23,21 +20,18 @@ const (
 func main() {
 	var err error
 
+	runnerConfig := &checker.NSQRunnerConfig{}
+	flag.StringVar(&runnerConfig.ProducerQueueName, "results", "results", "Result queue name.")
+	flag.StringVar(&runnerConfig.ConsumerQueueName, "requests", "runner", "Requests queue name.")
+	flag.StringVar(&runnerConfig.ConsumerChannelName, "channel", "runner", "Consumer channel name.")
+	flag.IntVar(&runnerConfig.MaxHandlers, "max_checks", 10, "Maximum concurrently executing checks.")
 	config := config.GetConfig()
-	nsqdHost := os.Getenv("NSQD_HOST")
-	customerID := os.Getenv("CUSTOMER_ID")
+
+	runnerConfig.NSQDHost = os.Getenv("NSQD_HOST")
+	runnerConfig.CustomerID = os.Getenv("CUSTOMER_ID")
 
 	log.Info("Starting %s...", moduleName)
-	runner := checker.NewRunner(checker.NewResolver(config))
-
-	nsqConfig := nsq.NewConfig()
-	consumer, err := nsq.NewConsumer("checks", "runner", nsqConfig)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	log.Info("Creating NSQD Producer")
-	producer, err := nsq.NewProducer(nsqdHost, nsqConfig)
+	runner, err := checker.NewNSQRunner(checker.NewRunner(checker.NewResolver(config)), runnerConfig)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -47,70 +41,17 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
-		// Message is a Check
-		// We emit a CheckResult
-		check := &checker.Check{}
-		if err := proto.Unmarshal(m.Body, check); err != nil {
-			return err
-		}
-
-		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
-		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
-		responseChan, err := runner.RunCheck(ctx, check)
-		if err != nil {
-			cancel()
-			return err
-		}
-
-		var responses []*checker.CheckResponse
-
-		for response := range responseChan {
-			responses = append(responses, response)
-		}
-
-		timestamp := &checker.Timestamp{
-			Seconds: int64(time.Now().Second()),
-		}
-		result := &checker.CheckResult{
-			CustomerId: customerID,
-			CheckId:    check.Id,
-			Timestamp:  timestamp,
-			Responses:  responses,
-		}
-
-		msg, err := proto.Marshal(result)
-		if err != nil {
-			cancel()
-			return err
-		}
-
-		if err := producer.Publish("results", msg); err != nil {
-			cancel()
-			return err
-		}
-
-		return nil
-	}), maxConcurrentChecks)
-
-	if err := consumer.ConnectToNSQD(nsqdHost); err != nil {
-		log.Error(err)
-	}
-
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, os.Kill)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
 
 	for {
 		select {
 		case s := <-sigs:
 			log.Info("Received signal %s. Stopping...", s)
-			consumer.Stop()
-			<-consumer.StopChan
-			producer.Stop()
+			runner.Stop()
 			os.Exit(0)
 		case err := <-heart.Beat():
 			log.Error(err.Error())
 		}
 	}
-
 }

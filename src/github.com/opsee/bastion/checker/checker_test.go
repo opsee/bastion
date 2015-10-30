@@ -5,6 +5,11 @@ package checker
 // worth testing.
 
 import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -35,15 +40,44 @@ type CheckerTestSuite struct {
 	Context          context.Context
 	TestCheckRequest *TestCheckRequest
 	Publisher        Publisher
+	NSQRunner        *NSQRunner
+	RunnerConfig     *NSQRunnerConfig
+}
+
+func (s *CheckerTestSuite) SetupSuite() {
+	cfg := &NSQRunnerConfig{
+		NSQDHost:            os.Getenv("NSQD_HOST"),
+		ConsumerQueueName:   "test-runner",
+		ProducerQueueName:   "test-results",
+		ConsumerChannelName: "test-runner",
+		MaxHandlers:         1,
+		CustomerID:          "test",
+	}
+	runner, err := NewNSQRunner(NewRunner(newTestResolver()), cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	s.NSQRunner = runner
+	s.RunnerConfig = cfg
 }
 
 func (s *CheckerTestSuite) SetupTest() {
 	var err error
 
-	// Reset the channel for every test, so we don't accidentally read stale
-	// barbage from a previous test
 	checker := NewChecker()
-	testRunner := NewRunner(newTestResolver())
+	testRunner, err := NewRemoteRunner(&NSQRunnerConfig{
+		NSQDHost:            s.RunnerConfig.NSQDHost,
+		ConsumerQueueName:   s.RunnerConfig.ProducerQueueName,
+		ConsumerChannelName: "test-check-results",
+		ProducerQueueName:   s.RunnerConfig.ConsumerQueueName,
+		MaxHandlers:         1,
+		CustomerID:          s.RunnerConfig.CustomerID,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	checker.Scheduler = NewScheduler()
 	checker.Scheduler.Producer = &testPublisher{make(chan []byte, 1)}
 	checker.Runner = testRunner
@@ -53,16 +87,17 @@ func (s *CheckerTestSuite) SetupTest() {
 	s.Checker = checker
 
 	checkerClient, err := NewRpcClient("127.0.0.1", 4000)
-	assert.Nil(s.T(), err)
+	if err != nil {
+		panic(err)
+	}
+
 	s.CheckerClient = checkerClient
 	s.Context = context.Background()
 	s.Common = TestCommonStubs{}
 	s.TestCheckRequest = &TestCheckRequest{
 		MaxHosts: 1,
-		Deadline: &Timestamp{
-			Nanos: time.Now().Add(30 * time.Minute).UnixNano(),
-		},
-		Check: nil,
+		Deadline: nil,
+		Check:    nil,
 	}
 
 	s.Publisher = &testPublisher{}
@@ -71,6 +106,27 @@ func (s *CheckerTestSuite) SetupTest() {
 func (s *CheckerTestSuite) TearDownTest() {
 	s.CheckerClient.Close()
 	s.Checker.Stop()
+	// Reset NSQ state every time so that we don't end up reading stale garbage.
+	ip := strings.Split(s.RunnerConfig.NSQDHost, ":")[0]
+	resp, err := http.PostForm(fmt.Sprintf("http://%s:4151/topic/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName}})
+	logger.Debug("Received response from NSQD: %s", resp)
+	if err != nil {
+		panic(err)
+	}
+	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/topic/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName}})
+	if err != nil {
+		panic(err)
+	}
+	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/channel/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName},
+		"channel": {s.RunnerConfig.ConsumerChannelName}})
+	if err != nil {
+		panic(err)
+	}
+	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/channel/empty", ip), url.Values{"topic": {s.RunnerConfig.ProducerQueueName},
+		"channel": {"test-check-results"}})
+	if err != nil {
+		panic(err)
+	}
 }
 
 /*******************************************************************************
@@ -94,6 +150,9 @@ func (s *CheckerTestSuite) buildTestCheckRequest(check *HttpCheck, target *Targe
 	c.Target = target
 
 	request.Check = c
+	request.Deadline = &Timestamp{
+		Nanos: time.Now().Add(3 * time.Second).UnixNano(),
+	}
 	return request, nil
 }
 
@@ -130,8 +189,8 @@ func (s *CheckerTestSuite) TestCheckResolverFailure() {
 	assert.NoError(s.T(), err)
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.Error(s.T(), err)
-	assert.Nil(s.T(), response)
+	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.NotNil(s.T(), response.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckResolverEmpty() {
@@ -144,8 +203,9 @@ func (s *CheckerTestSuite) TestCheckResolverEmpty() {
 	assert.NoError(s.T(), err)
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.Error(s.T(), err)
-	assert.Nil(s.T(), response)
+	assert.NoError(s.T(), err)
+	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.NotNil(s.T(), response.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckTimeout() {
@@ -171,6 +231,7 @@ func (s *CheckerTestSuite) TestCheckAdheresToMaxHosts() {
 	target := &Target{
 		Type: "sg",
 		Id:   "sg3",
+		Name: "sg3",
 	}
 	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
 	request.MaxHosts = 1
@@ -188,5 +249,6 @@ func (s *CheckerTestSuite) TestUpdateCheck() {
 }
 
 func TestCheckerTestSuite(t *testing.T) {
+	setupTestEnv()
 	suite.Run(t, new(CheckerTestSuite))
 }
