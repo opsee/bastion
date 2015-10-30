@@ -36,6 +36,7 @@ func main() {
 			},
 		),
 	)
+
 	producer, err = messaging.NewCustomerProducer(cfg.CustomerId, "discovery")
 
 	if err != nil {
@@ -49,6 +50,7 @@ func main() {
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, os.Interrupt, os.Kill)
+
 	for {
 		for event := range disco.Discover() {
 			if event.Err != nil {
