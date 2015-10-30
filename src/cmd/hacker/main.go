@@ -329,13 +329,19 @@ func main() {
 	var dafsm FSM
 	dafsm = dahacker
 
-	// initialize a heartbeat
 	heartbeat, err := heart.NewHeart(moduleName)
 	if err != nil {
 		log.WithFields(log.Fields{"service": "hacker", "err": err.Error()}).Fatal("Error getting heartbeat")
-	} else {
-		<-heartbeat.Beat()
 	}
+
+	// initialize a heartbeat
+	go func() {
+		for {
+			if err := <-heartbeat.Beat(); err != nil {
+				log.WithFields(log.Fields{"service": "hacker", "err": err.Error()}).Error("Heartbeat error")
+			}
+		}
+	}()
 
 	// run the state machine
 	for {
