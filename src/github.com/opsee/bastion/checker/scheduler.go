@@ -85,7 +85,7 @@ type scheduleMap struct {
 func newScheduleMap() *scheduleMap {
 	return &scheduleMap{
 		checks:  make(map[string]*checkWithTicker),
-		runChan: make(chan *Check, 1),
+		runChan: make(chan *Check, 10),
 	}
 }
 
@@ -225,6 +225,8 @@ func (s *Scheduler) Start() error {
 				} else {
 					if err := s.Producer.Publish("checks", msg); err != nil {
 						logger.Error(err.Error())
+					} else {
+						logger.Info("Scheduled check for execution: %s", check.Id)
 					}
 				}
 			}
