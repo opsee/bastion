@@ -175,22 +175,32 @@ func (r *RemoteRunner) withLock(f func()) {
 
 func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, error) {
 	logger.Info("Running check: %s", chk.String())
-	id, err := uuid.NewV4()
-	if err != nil {
-		return nil, err
+
+	var (
+		id  string
+		err error
+	)
+	if chk.Id == "" {
+		uid, err := uuid.NewV4()
+		if err != nil {
+			return nil, err
+		}
+		id = uid.String()
+		chk.Id = id
+	} else {
+		id = chk.Id
 	}
-	chk.Id = id.String()
 
 	respChan := make(chan *CheckResult, 1)
 
 	r.withLock(func() {
-		r.requestMap[id.String()] = respChan
-		logger.Debug("RemoteRunner.RunCheck: Set response channel for request: %s", id.String())
+		r.requestMap[id] = respChan
+		logger.Debug("RemoteRunner.RunCheck: Set response channel for request: %s", id)
 	})
 
 	defer func() {
 		r.withLock(func() {
-			delete(r.requestMap, id.String())
+			delete(r.requestMap, id)
 			logger.Debug("Deleted response channel.")
 		})
 	}()
@@ -238,10 +248,24 @@ func NewChecker() *Checker {
 	}
 }
 
-// TODO: One way or another, all CRUD requests should be transactional.
+// TODO(greg): One way or another, all CRUD requests should be transactional.
+// At the moment it is very much last-write-wins, but consider the following
+// scenario:
+//
+// t(0) -> Checker startup
+// t(1) -> Checker initializes configuration sync with opsee
+// t(2) -> User updates check id 1 and this gets saved in Bartnet
+// t(3) -> Bartnet creates check id 1 on the bastion
+// t(4) -> The configuration sync finishes and overwrites check id 1 with
+// the previously saved verison.
+//
+// Now we have dirty writes. So we have to have a way of fixing that. @dan-compton
+// suggested timestamps to version check objects. I think that's a good idea. In
+// that case, at t(4) above, the old version of check id 1 would be ignored,
+// because its timestamp is older than the one sent by bartnet at t(3).
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
-	logger.Info("Handling request: %s", req)
+	logger.Info("Handling %s request: %s", cmd, req)
 
 	responses := make([]*CheckResourceResponse, len(req.Checks))
 	response := &ResourceResponse{
@@ -250,14 +274,19 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 	for i, check := range req.Checks {
 		in := []reflect.Value{reflect.ValueOf(check)}
 		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
-		checkResponse := out[0].Interface().(*Check)
-		err := out[1].Interface().(error)
-		if err != nil {
-			responses[i] = &CheckResourceResponse{Error: err.Error()}
-		}
-		responses[i] = &CheckResourceResponse{
-			Id:    check.Id,
-			Check: checkResponse,
+		checkResponse, ok := out[0].Interface().(*Check)
+		if !ok {
+			err, ok := out[1].Interface().(error)
+			if ok {
+				if err != nil {
+					responses[i] = &CheckResourceResponse{Error: err.Error()}
+				}
+			}
+		} else {
+			responses[i] = &CheckResourceResponse{
+				Id:    check.Id,
+				Check: checkResponse,
+			}
 		}
 	}
 	logger.Info("Response: %s", response)

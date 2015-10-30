@@ -5,9 +5,6 @@ package checker
 // worth testing.
 
 import (
-	"fmt"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -42,6 +39,7 @@ type CheckerTestSuite struct {
 	Publisher        Publisher
 	NSQRunner        *NSQRunner
 	RunnerConfig     *NSQRunnerConfig
+	ResetNsqConfig   resetNsqConfig
 }
 
 func (s *CheckerTestSuite) SetupSuite() {
@@ -60,9 +58,20 @@ func (s *CheckerTestSuite) SetupSuite() {
 
 	s.NSQRunner = runner
 	s.RunnerConfig = cfg
+	s.ResetNsqConfig = resetNsqConfig{
+		Topics: []NsqTopic{
+			NsqTopic{s.RunnerConfig.ProducerQueueName},
+			NsqTopic{s.RunnerConfig.ConsumerQueueName},
+		},
+		Channels: []NsqChannel{
+			NsqChannel{s.RunnerConfig.ProducerQueueName, "test-check-results"},
+			NsqChannel{s.RunnerConfig.ConsumerQueueName, s.RunnerConfig.ConsumerChannelName},
+		},
+	}
 }
 
 func (s *CheckerTestSuite) SetupTest() {
+	resetNsq(strings.Split(s.RunnerConfig.NSQDHost, ":")[0], s.ResetNsqConfig)
 	var err error
 
 	checker := NewChecker()
@@ -107,26 +116,21 @@ func (s *CheckerTestSuite) TearDownTest() {
 	s.CheckerClient.Close()
 	s.Checker.Stop()
 	// Reset NSQ state every time so that we don't end up reading stale garbage.
-	ip := strings.Split(s.RunnerConfig.NSQDHost, ":")[0]
-	resp, err := http.PostForm(fmt.Sprintf("http://%s:4151/topic/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName}})
-	logger.Debug("Received response from NSQD: %s", resp)
-	if err != nil {
-		panic(err)
+	resetNsq(strings.Split(s.RunnerConfig.NSQDHost, ":")[0], s.ResetNsqConfig)
+}
+
+/*******************************************************************************
+ * CreateCheck()
+ ******************************************************************************/
+
+func (s *CheckerTestSuite) TestGoodCreateCheckRequest() {
+	req := &CheckResourceRequest{
+		Checks: []*Check{s.Common.PassingCheck()},
 	}
-	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/topic/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName}})
-	if err != nil {
-		panic(err)
-	}
-	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/channel/empty", ip), url.Values{"topic": {s.RunnerConfig.ConsumerQueueName},
-		"channel": {s.RunnerConfig.ConsumerChannelName}})
-	if err != nil {
-		panic(err)
-	}
-	_, err = http.PostForm(fmt.Sprintf("http://%s:4151/channel/empty", ip), url.Values{"topic": {s.RunnerConfig.ProducerQueueName},
-		"channel": {"test-check-results"}})
-	if err != nil {
-		panic(err)
-	}
+	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
+	assert.NoError(s.T(), err)
+	assert.NotNil(s.T(), resp)
+	assert.Equal(s.T(), s.Common.PassingCheck().Id, resp.Responses[0].Check.Id)
 }
 
 /*******************************************************************************
