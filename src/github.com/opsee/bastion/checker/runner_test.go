@@ -2,6 +2,7 @@ package checker
 
 import (
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -131,21 +132,21 @@ func TestRunnerTestSuite(t *testing.T) {
 
 type NSQRunnerTestSuite struct {
 	suite.Suite
-	Common   TestCommonStubs
-	Runner   *NSQRunner
-	Context  context.Context
-	Resolver *testResolver
-	Consumer *nsq.Consumer
-	Producer *nsq.Producer
-	MsgChan  chan *nsq.Message
-	Config   *NSQRunnerConfig
+	Common         TestCommonStubs
+	Runner         *NSQRunner
+	Context        context.Context
+	Resolver       *testResolver
+	Consumer       *nsq.Consumer
+	Producer       *nsq.Producer
+	MsgChan        chan *nsq.Message
+	Config         *NSQRunnerConfig
+	ResetNsqConfig resetNsqConfig
 }
 
 func (s *NSQRunnerTestSuite) SetupSuite() {
 	s.Resolver = newTestResolver()
 	s.Common = TestCommonStubs{}
 	s.Context = context.Background()
-	s.MsgChan = make(chan *nsq.Message, 1)
 	cfg := &NSQRunnerConfig{
 		ConsumerQueueName:   "test-runner",
 		ProducerQueueName:   "test-results",
@@ -154,43 +155,61 @@ func (s *NSQRunnerTestSuite) SetupSuite() {
 		CustomerID:          "test",
 		MaxHandlers:         1,
 	}
+	s.Config = cfg
+
+	s.ResetNsqConfig = resetNsqConfig{
+		Topics: []NsqTopic{
+			NsqTopic{s.Config.ConsumerQueueName},
+			NsqTopic{s.Config.ProducerQueueName},
+		},
+		Channels: []NsqChannel{
+			NsqChannel{s.Config.ConsumerQueueName, s.Config.ConsumerChannelName},
+			NsqChannel{s.Config.ProducerQueueName, "test-runner-results"},
+		},
+	}
+}
+
+func (s *NSQRunnerTestSuite) SetupTest() {
+	resetNsq(strings.Split(s.Config.NSQDHost, ":")[0], s.ResetNsqConfig)
+	s.MsgChan = make(chan *nsq.Message, 1)
 
 	// Connect our consumer to the producer channel for the NSQRunner.
-	consumer, _ := nsq.NewConsumer(cfg.ProducerQueueName, "test-runner-results", nsq.NewConfig())
+	consumer, err := nsq.NewConsumer(s.Config.ProducerQueueName, "test-runner-results", nsq.NewConfig())
+	if err != nil {
+		panic(err)
+	}
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
+		logger.Debug("Test consumer handling message: %s", m.Body)
 		s.MsgChan <- m
+		logger.Debug("Test consumer sent message on message channel.")
 		return nil
-	}), cfg.MaxHandlers)
-	err := consumer.ConnectToNSQD(cfg.NSQDHost)
+	}), s.Config.MaxHandlers)
+	err = consumer.ConnectToNSQD(s.Config.NSQDHost)
 	if err != nil {
 		panic(err)
 	}
 	s.Consumer = consumer
-	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
+	producer, err := nsq.NewProducer(s.Config.NSQDHost, nsq.NewConfig())
 	if err != nil {
 		panic(err)
 	}
 	s.Producer = producer
-	s.Config = cfg
-}
 
-func (s *NSQRunnerTestSuite) SetupTest() {
 	runner, err := NewNSQRunner(NewRunner(s.Resolver), s.Config)
 	if err != nil {
 		panic(err)
 	}
 	s.Runner = runner
+
 }
 
 func (s *NSQRunnerTestSuite) TearDownTest() {
 	s.Runner.Stop()
-}
-
-func (s *NSQRunnerTestSuite) TearDownSuite() {
 	s.Consumer.Stop()
 	<-s.Consumer.StopChan
 	s.Producer.Stop()
 	close(s.MsgChan)
+	resetNsq(strings.Split(s.Config.NSQDHost, ":")[0], s.ResetNsqConfig)
 }
 
 func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
@@ -199,6 +218,7 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg)
 	select {
 	case m := <-s.MsgChan:
+		logger.Debug("TestHandlerDoesItsThing: Received message.")
 		result := &CheckResult{}
 		err := proto.Unmarshal(m.Body, result)
 		assert.NoError(s.T(), err)
