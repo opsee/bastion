@@ -211,7 +211,7 @@
 		{
 			"importpath": "github.com/opsee/portmapper",
 			"repository": "https://github.com/opsee/portmapper",
-			"revision": "c88b5d2605f9fe537bda28cdc49005592f1c0811",
+			"revision": "4b1e8d1cf4a6d187e6ba87fbe68ba4119afbecd1",
 			"branch": "master"
 		},
 		{
