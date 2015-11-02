@@ -9,6 +9,9 @@ machine:
     - docker
   environment:
     ci: "true"
+    VPN_REMOTE: "bastion.opsee.com"
+    DNS_SERVER: 169.254.169.253
+    NSQD_HOST: nsqd.in.opsee.com
 notify:
   webhooks:
     - url: https://hooks.slack.com/services/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
