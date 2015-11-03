@@ -42,4 +42,5 @@ deployment:
       - docker build -t quay.io/opsee/bastion:latest .
       - docker push quay.io/opsee/bastion:latest
       - docker tag -f quay.io/opsee/bastion:$CIRCLE_SHA1 quay.io/opsee/bastion:stable
+      - docker push quay.io/opsee/bastion:stable
       - java -jar mami/mami.jar build --release stable --bastion-version stable --build-ami build/mami.json
