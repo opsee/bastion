@@ -3,11 +3,7 @@ package checker
 import (
 	"encoding/json"
 	"fmt"
-	"net"
-	"reflect"
-	"sync"
-	"time"
-
+	"github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
@@ -15,6 +11,13 @@ import (
 	"github.com/opsee/bastion/logging"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"os"
+	"reflect"
+	"sync"
+	"time"
 )
 
 const (
@@ -355,6 +358,41 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	logger.Info("Response: %v", testCheckResponse)
 	return testCheckResponse, nil
+}
+
+func (c *Checker) GetExistingChecks() (*CheckResourceRequest, error) {
+	ba := &BastionAuthCache{tokenMap: make(map[BastionAuthTokenType]*BastionAuthToken)}
+	var checks = &CheckResourceRequest{}
+
+	authType := ba.resolveAuthType(os.Getenv("BASTION_AUTH_TYPE"))
+	endpoint := os.Getenv("BARTNET_ENDPOINT") + "/checks"
+
+	if token, err := ba.getToken(authType, endpoint); err != nil || token == nil {
+		logrus.WithFields(logrus.Fields{"service": "checker", "Error": err.Error()}).Fatal("Error initializing BastionAuth")
+		return nil, err
+	} else {
+		logrus.WithFields(logrus.Fields{"service": "checker", "Auth header:": "Authorization: " + (string)(token.Type) + " " + (string)(token.Token)}).Info("Synchronizing checks")
+
+		req, err := http.NewRequest("GET", endpoint, nil)
+		req.Header.Set("Accept", "application/x-protobuf")
+		req.Header.Set("Authorization", (string)(token.Type)+" "+(string)(token.Token))
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
+			return nil, err
+
+		} else {
+			defer resp.Body.Close()
+			body, _ := ioutil.ReadAll(resp.Body)
+			logrus.WithFields(logrus.Fields{"service": "checker", "event": "got checks", "body": string(body[:])}).Info("Recieved some checks")
+			proto.Unmarshal(body, checks)
+
+		}
+	}
+
+	return checks, nil
 }
 
 func (c *Checker) Start() error {
