@@ -57,9 +57,8 @@ func main() {
 	defer checks.Stop()
 
 	checks.Port = 4000
-	if err = checks.Start(); err != nil {
-		logger.Error(err.Error())
-		panic(err)
+	if err := checks.Start(); err != nil {
+		logger.Fatal(err.Error())
 	}
 
 	heart, err := heart.NewHeart(moduleName)

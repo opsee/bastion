@@ -221,9 +221,12 @@ func (s *Scheduler) Start() error {
 			case check := <-s.scheduleMap.RunChan():
 				if msg, err := proto.Marshal(check); err != nil {
 					logger.Error(err.Error())
-
 				} else {
-					if err := s.Producer.Publish("checks", msg); err != nil {
+					// TODO(greg): All of the channel configuration stuff, really needs to
+					// be centralized and easily managed. It can just be a static file or
+					// something that every microservice refers to--just to make sure
+					// they're all on the same page.
+					if err := s.Producer.Publish("runner", msg); err != nil {
 						logger.Error(err.Error())
 					} else {
 						logger.Info("Scheduled check for execution: %s", check.Id)
