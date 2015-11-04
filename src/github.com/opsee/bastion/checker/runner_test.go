@@ -61,6 +61,20 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 	assert.Equal(s.T(), 1, count)
 }
 
+func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
+	ctx := context.WithValue(s.Context, "MaxHosts", 3)
+	check := s.Common.PassingCheckInstanceTarget()
+	responses, err := s.Runner.RunCheck(ctx, check)
+	assert.NoError(s.T(), err)
+	count := 0
+	for response := range responses {
+		count++
+		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.NotNil(s.T(), response.Response)
+	}
+	assert.Equal(s.T(), 1, count)
+}
+
 func (s *RunnerTestSuite) TestRunCheckClosesChannel() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(s.Context, check)
