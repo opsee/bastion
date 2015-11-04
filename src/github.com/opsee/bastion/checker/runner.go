@@ -160,16 +160,12 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Ta
 		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
 	}
 
-	if check.Target.Type != "instance" {
-		targets, err = r.resolver.Resolve(check.Target)
-		if err != nil {
-			return nil, err
-		}
-		if len(targets) == 0 {
-			return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
-		}
-	} else {
-		targets = []*Target{check.Target}
+	targets, err = r.resolver.Resolve(check.Target)
+	if err != nil {
+		return nil, err
+	}
+	if len(targets) == 0 {
+		return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
 	}
 
 	var (

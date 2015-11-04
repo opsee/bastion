@@ -59,6 +59,19 @@ func (t TestCommonStubs) PassingCheck() *Check {
 	return check
 }
 
+func (t TestCommonStubs) PassingCheckInstanceTarget() *Check {
+	check := t.Check()
+	check.Target = &Target{
+		Type: "instance",
+		Id:   "instance",
+		Name: "instance",
+	}
+
+	spec, _ := MarshalAny(t.HTTPCheck())
+	check.CheckSpec = spec
+	return check
+}
+
 func (t TestCommonStubs) PassingCheckMultiTarget() *Check {
 	check := t.Check()
 	check.Target = &Target{
@@ -128,6 +141,14 @@ func newTestResolver() *testResolver {
 					Type:    "instance",
 					Address: addr,
 				},
+				&Target{
+					Id:      "id",
+					Name:    "id",
+					Type:    "instance",
+					Address: addr,
+				},
+			},
+			"instance": []*Target{
 				&Target{
 					Id:      "id",
 					Name:    "id",
