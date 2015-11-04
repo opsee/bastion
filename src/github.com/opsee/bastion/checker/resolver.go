@@ -120,5 +120,5 @@ func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 		return r.resolveInstance(target.Id)
 	}
 
-	return []*Target{}, nil
+	return nil, fmt.Errorf("Unable to resolve target: %s", target)
 }
