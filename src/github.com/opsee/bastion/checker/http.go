@@ -2,8 +2,8 @@ package checker
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
-	"math"
 	"net"
 	"net/http"
 	"strings"
@@ -76,14 +76,19 @@ func (r *HTTPRequest) Do() *Response {
 
 	rdr := bufio.NewReader(resp.Body)
 	var contentLength int64
-	if resp.ContentLength > 0 {
+
+	if resp.ContentLength >= 0 && resp.ContentLength < 4096 {
 		contentLength = resp.ContentLength
 	} else {
 		contentLength = 4096
 	}
-	length := math.Min(4096, float64(contentLength))
-	body := make([]byte, int64(length))
-	rdr.Read(body)
+
+	body := make([]byte, int64(contentLength))
+	if contentLength > 0 {
+		rdr.Read(body)
+		body = bytes.Trim(body, "\x00")
+		body = bytes.Trim(body, "\n")
+	}
 
 	httpResponse := &HttpResponse{
 		Code: int32(resp.StatusCode),
