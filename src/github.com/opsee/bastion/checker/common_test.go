@@ -150,8 +150,8 @@ func newTestResolver() *testResolver {
 			},
 			"instance": []*Target{
 				&Target{
-					Id:      "id",
-					Name:    "id",
+					Id:      "instance",
+					Name:    "instance",
 					Type:    "instance",
 					Address: addr,
 				},
