@@ -247,6 +247,22 @@ func (s *CheckerTestSuite) TestCheckAdheresToMaxHosts() {
 	assert.Len(s.T(), response.GetResponses(), 1)
 }
 
+func (s *CheckerTestSuite) TestCheckSupportsInstances() {
+	target := &Target{
+		Type: "instance",
+		Id:   "instance",
+		Name: "instance",
+	}
+	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
+	request.MaxHosts = 3
+	assert.NoError(s.T(), err)
+
+	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.NoError(s.T(), err)
+	assert.NotNil(s.T(), response)
+	assert.Len(s.T(), response.GetResponses(), 1)
+}
+
 func (s *CheckerTestSuite) TestUpdateCheck() {
 	_, err := s.Checker.UpdateCheck(nil, nil)
 	assert.Error(s.T(), err)
