@@ -46,7 +46,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		logger.Debug("Entering NSQRunner handler. Check: %s", check.String())
 
 		timestamp := &Timestamp{
-			Seconds: int64(time.Now().Second()),
+			Seconds: int64(time.Now().Unix()),
 		}
 
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
