@@ -58,6 +58,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			result := &CheckResult{
 				CustomerId: cfg.CustomerID,
 				CheckId:    check.Id,
+				Target:     check.Target,
 				Timestamp:  timestamp,
 				Responses: []*CheckResponse{&CheckResponse{
 					Target: check.Target,
@@ -90,6 +91,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		result := &CheckResult{
 			CustomerId: cfg.CustomerID,
 			CheckId:    check.Id,
+			Target:     check.Target,
 			Timestamp:  timestamp,
 			Responses:  responses,
 		}
