@@ -57,6 +57,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			cancel()
 			result := &CheckResult{
 				CustomerId: cfg.CustomerID,
+				Target:     check.Target,
 				CheckId:    check.Id,
 				Target:     check.Target,
 				Timestamp:  timestamp,
