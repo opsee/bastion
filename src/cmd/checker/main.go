@@ -4,20 +4,16 @@ import (
 	"flag"
 	"os"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"github.com/opsee/bastion/logging"
 	"github.com/opsee/portmapper"
 )
 
 const (
 	moduleName = "checker"
-)
-
-var (
-	logger = logging.GetLogger(moduleName)
 )
 
 func main() {
@@ -31,17 +27,12 @@ func main() {
 	runnerConfig.NSQDHost = os.Getenv("NSQD_HOST")
 	runnerConfig.CustomerID = os.Getenv("CUSTOMER_ID")
 	config := config.GetConfig()
-
-	logger.Info("Starting %s...", moduleName)
-	// XXX: Holy fuck make logging easier.
-	logging.SetLevel(config.LogLevel, moduleName)
-	logging.SetLevel(config.LogLevel, "messaging")
-	logging.SetLevel(config.LogLevel, "scanner")
+	log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId}).Info("starting up")
 
 	checks := checker.NewChecker()
 	runner, err := checker.NewRemoteRunner(runnerConfig)
 	if err != nil {
-		logger.Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
 	checks.Runner = runner
 	scheduler := checker.NewScheduler()
@@ -50,7 +41,7 @@ func main() {
 	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
 
 	if err != nil {
-		logger.Fatal(err)
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create create producer", "error": "couldn't create producer"}).Fatal(err.Error())
 	}
 
 	scheduler.Producer = producer
@@ -58,12 +49,13 @@ func main() {
 
 	checks.Port = 4000
 	if err := checks.Start(); err != nil {
-		logger.Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	heart, err := heart.NewHeart(moduleName)
 	if err != nil {
-		logger.Error(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start heartbeat", "error": "error on beat"}).Fatal(err.Error())
 		panic(err)
 	}
 
@@ -74,7 +66,7 @@ func main() {
 	err = <-heart.Beat()
 
 	if err != nil {
-		logger.Error(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "heartbeat", "error": "error on hearbeat"}).Fatal(err.Error())
 		panic(err)
 	}
 }
