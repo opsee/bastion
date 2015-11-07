@@ -11,7 +11,7 @@
 		{
 			"importpath": "github.com/Sirupsen/logrus",
 			"repository": "https://github.com/Sirupsen/logrus",
-			"revision": "23521f1364a267387df2b99234134003e0a4486d",
+			"revision": "fe6f2b03125e4fcafb21406381010e363a072c80",
 			"branch": "master"
 		},
 		{
@@ -209,6 +209,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/opsee/logrus-papertrail-hook",
+			"repository": "https://github.com/opsee/logrus-papertrail-hook",
+			"revision": "6341f844c9b3e6d5b21e8fe57a7cd81babbe4bf7",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/opsee/portmapper",
 			"repository": "https://github.com/opsee/portmapper",
 			"revision": "4b1e8d1cf4a6d187e6ba87fbe68ba4119afbecd1",
@@ -218,6 +224,12 @@
 			"importpath": "github.com/satori/go.uuid",
 			"repository": "https://github.com/satori/go.uuid",
 			"revision": "6b8e5b55d20d01ad47ecfe98e5171688397c61e9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/sirupsen/logrus",
+			"repository": "https://github.com/sirupsen/logrus",
+			"revision": "fe6f2b03125e4fcafb21406381010e363a072c80",
 			"branch": "master"
 		},
 		{
