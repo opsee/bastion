@@ -215,6 +215,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/parnurzeal/gorequest",
+			"repository": "https://github.com/parnurzeal/gorequest",
+			"revision": "8fe8e16b3c50b6cc37399ee385b15f62a20bf584",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/satori/go.uuid",
 			"repository": "https://github.com/satori/go.uuid",
 			"revision": "6b8e5b55d20d01ad47ecfe98e5171688397c61e9",
@@ -270,6 +276,13 @@
 			"revision": "4a71d182556e05375344f3da665304f3d5784ab4",
 			"branch": "master",
 			"path": "/internal/timeseries"
+		},
+		{
+			"importpath": "golang.org/x/net/publicsuffix",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b4e17d61b15679caf2335da776c614169a1b4643",
+			"branch": "master",
+			"path": "/publicsuffix"
 		},
 		{
 			"importpath": "golang.org/x/net/trace",
