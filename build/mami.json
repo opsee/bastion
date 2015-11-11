@@ -89,7 +89,7 @@
         }
     ],
     "reboot-before-build": false,
-    "public": false,
+    "public": true,
     "cleanup": true
         {{#ci}}
         ,"cleanup-on-error": true
