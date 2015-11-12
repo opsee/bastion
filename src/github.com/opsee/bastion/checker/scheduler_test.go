@@ -67,7 +67,7 @@ func (s *SchedulerTestSuite) TestCreateCheckStoresCheck() {
 	check := s.Common.Check()
 	id := check.Id
 	scheduler.CreateCheck(check)
-	c, err := scheduler.RetrieveCheck(id)
+	c, err := scheduler.RetrieveCheck(check)
 	assert.NoError(s.T(), err, "Scheduler.RetrieveCheck return unexpected error.", err)
 	assert.IsType(s.T(), new(Check), c, "Scheduler.RetrieveCheck returned incorrect object type.")
 	assert.Equal(s.T(), id, c.Id, "Scheduler.RetrieveCheck returned ID does not match.")
@@ -93,8 +93,8 @@ func (s *SchedulerTestSuite) TestCreateCheckStoresCheck() {
 
 func (s *SchedulerTestSuite) TestRetrieveNonexistentCheckReturnsError() {
 	scheduler := s.Scheduler
-
-	c, err := scheduler.RetrieveCheck("id string")
+	check := &Check{Id: "id string"}
+	c, err := scheduler.RetrieveCheck(check)
 	assert.Nil(s.T(), c)
 	assert.Error(s.T(), err, "Scheduler.RetrieveCheck did not return error for non-existent check.")
 }
@@ -105,9 +105,10 @@ func (s *SchedulerTestSuite) TestRetrieveNonexistentCheckReturnsError() {
 
 func (s *SchedulerTestSuite) TestDeleteNonexistentCheckReturnsError() {
 	scheduler := s.Scheduler
+	check := &Check{Id: "id string"}
 
-	c, err := scheduler.DeleteCheck("id string")
-	scheduler.DeleteCheck("id string")
+	c, err := scheduler.DeleteCheck(check)
+	scheduler.DeleteCheck(check)
 	assert.Nil(s.T(), c)
 	assert.Error(s.T(), err, "Scheduler.DeleteCheck did not return error for non-existent check.")
 }
@@ -118,7 +119,7 @@ func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
 	scheduler.CreateCheck(check)
 
 	scheduler.CreateCheck(check)
-	c, err := scheduler.DeleteCheck(check.Id)
+	c, err := scheduler.DeleteCheck(check)
 	assert.NoError(s.T(), err, "DeleteCheck returned unexpected error.", err)
 	assert.IsType(s.T(), new(Check), c, "DeleteCheck returned object of incorrect type.")
 	assert.Equal(s.T(), check.Id, c.Id, "DeleteCheck returned incorrect check ID.")

@@ -174,31 +174,31 @@ func (s *Scheduler) CreateCheck(check *Check) (*Check, error) {
 // Retrieve a Check by ID. If a check associated with the ID exists, then it
 // will be returned. Otherwise, it will return nil and an error indicating the
 // check does not exist.
-func (s *Scheduler) RetrieveCheck(id string) (*Check, error) {
+func (s *Scheduler) RetrieveCheck(check *Check) (*Check, error) {
 	var (
 		ct  *checkWithTicker
 		err error
 	)
 
-	ct = s.scheduleMap.Get(id)
+	ct = s.scheduleMap.Get(check.Id)
 
 	if ct == nil {
-		err = fmt.Errorf("Non-existent check: %s", id)
+		err = fmt.Errorf("Non-existent check: %s", check.Id)
 		return nil, err
 	}
 
 	return ct.Check, err
 }
 
-func (s *Scheduler) DeleteCheck(id string) (*Check, error) {
+func (s *Scheduler) DeleteCheck(check *Check) (*Check, error) {
 	var (
 		c   *checkWithTicker
 		err error
 	)
-	c = s.scheduleMap.Delete(id)
+	c = s.scheduleMap.Delete(check.Id)
 
 	if c == nil {
-		err = fmt.Errorf("Non-existent check: %s", id)
+		err = fmt.Errorf("Non-existent check: %s", check.Id)
 		return nil, err
 	}
 	c.Stop()
