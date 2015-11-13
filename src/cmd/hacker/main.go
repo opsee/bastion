@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
@@ -25,6 +25,8 @@ var (
 	httpClient     = &http.Client{}
 	ec2Client      = &ec2.EC2{}
 	heartbeat      = &heart.Heart{}
+	hacked         = make(chan string, 180) // the limit is 100 SGs per VPC, 180s to unhack => 180 groups max
+	log            = logrus.New()
 	sc             awscan.EC2Scanner
 )
 
@@ -117,13 +119,13 @@ func (fsm *fsm) GetState(stateID StateID) *State {
 	if state, ok := fsm.States[stateID]; ok {
 		return state
 	} else {
-		log.WithFields(log.Fields{"fsm": fsm.ID, "State": stateID}).Fatal("Couldn't find state!")
+		log.WithFields(logrus.Fields{"fsm": fsm.ID, "State": stateID}).Fatal("Couldn't find state!")
 		return nil
 	}
 }
 
 func (fsm *fsm) ExecuteCurrentState() *StateExitInfo {
-	log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("Executing")
+	log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("Executing")
 	return fsm.GetCurrentState().Behavior(fsm)
 }
 
@@ -149,7 +151,7 @@ func Startup(fsm *fsm) *StateExitInfo {
 
 	resp, err := httpClient.Get("http://169.254.169.254/latest/meta-data/security-groups/")
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("Unable to get security group from meta data service")
+		log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("Unable to get security group from meta data service")
 		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
@@ -157,7 +159,7 @@ func Startup(fsm *fsm) *StateExitInfo {
 	secGroupName, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err.Error())
-		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("Error reading response body while getting security group name")
+		log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("Error reading response body while getting security group name")
 		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
@@ -172,12 +174,12 @@ func Startup(fsm *fsm) *StateExitInfo {
 		},
 	})
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("ec2 client error getting security groups input")
+		log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("ec2 client error getting security groups input")
 		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
 	if len(output.SecurityGroups) != 1 {
-		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("bad number of groups found")
+		log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Fatal("bad number of groups found")
 		return &StateExitInfo{NextState: STATE_EXIT_ERROR, ExitCode: StateExitError}
 	}
 
@@ -202,22 +204,23 @@ func UnHack(fsm *fsm) *StateExitInfo {
 			},
 		}}
 
-	sgs, err := sc.ScanSecurityGroups()
-
-	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("security group discovery error")
-	}
-
 	// remove self from indexed security groups
-	for _, sg := range sgs {
-		_, err := ec2Client.RevokeSecurityGroupIngress(&ec2.RevokeSecurityGroupIngressInput{
-			GroupId:       sg.GroupId,
-			IpPermissions: ippermission,
-		})
-		if err != nil {
-			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to UNpwn: ", *sg.GroupId)
+	for {
+		sg, more := <-hacked
+
+		if more {
+			_, err := ec2Client.RevokeSecurityGroupIngress(&ec2.RevokeSecurityGroupIngressInput{
+				GroupId:       aws.String(sg),
+				IpPermissions: ippermission,
+			})
+			if err != nil {
+				hacked <- sg // write back to hacked channel to try again
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Warn("Retrying. bastion failed to UNpwn: ", sg)
+			} else {
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", sg)
+			}
 		} else {
-			log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", *sg.GroupId)
+			break
 		}
 	}
 
@@ -260,7 +263,7 @@ func Hack(fsm *fsm) *StateExitInfo {
 	sgs, err := sc.ScanSecurityGroups()
 
 	if err != nil {
-		log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("security group discovery error")
+		log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("security group discovery error")
 	}
 
 	for _, sg := range sgs {
@@ -280,9 +283,15 @@ func Hack(fsm *fsm) *StateExitInfo {
 				IpPermissions: ippermission,
 			})
 			if err != nil {
-				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", *sg.GroupId)
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", *sg.GroupId)
 			} else {
-				log.WithFields(log.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", *sg.GroupId)
+				// cover the extremely unlikely case where there are more than 512 security groups (VPC max is 100).
+				select {
+				case hacked <- *sg.GroupId:
+					log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", *sg.GroupId)
+				default:
+					log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Error("We've hit the security group limit! Hacked but won't unhack: ", *sg.GroupId)
+				}
 			}
 		}
 
@@ -306,7 +315,7 @@ func Hack(fsm *fsm) *StateExitInfo {
 
 func main() {
 	if os.Getenv("ENABLE_BASTION_INGRESS") == "false" {
-		log.WithFields(log.Fields{"service": "hacker"}).Info("ENABLE_BASTION_INGRESS set false.  exiting.")
+		log.WithFields(logrus.Fields{"service": "hacker"}).Info("ENABLE_BASTION_INGRESS set false.  exiting.")
 		os.Exit(0)
 	}
 
@@ -331,14 +340,14 @@ func main() {
 
 	heartbeat, err := heart.NewHeart(moduleName)
 	if err != nil {
-		log.WithFields(log.Fields{"service": "hacker", "err": err.Error()}).Fatal("Error getting heartbeat")
+		log.WithFields(logrus.Fields{"service": "hacker", "err": err.Error()}).Fatal("Error getting heartbeat")
 	}
 
 	// initialize a heartbeat
 	go func() {
 		for {
 			if err := <-heartbeat.Beat(); err != nil {
-				log.WithFields(log.Fields{"service": "hacker", "err": err.Error()}).Error("Heartbeat error")
+				log.WithFields(logrus.Fields{"service": "hacker", "err": err.Error()}).Error("Heartbeat error")
 			}
 		}
 	}()
