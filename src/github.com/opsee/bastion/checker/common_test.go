@@ -14,7 +14,7 @@ import (
 
 const (
 	testHTTPResponseString = "OK"
-	testHTTPServerPort     = 40000
+	testHTTPServerPort     = 8000
 )
 
 type TestCommonStubs struct {
@@ -41,6 +41,7 @@ func (t TestCommonStubs) Check() *Check {
 	return &Check{
 		Id:        "stub-check-id",
 		Interval:  60,
+		Name:      "fuck off",
 		Target:    &Target{},
 		CheckSpec: &Any{},
 	}

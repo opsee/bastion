@@ -48,7 +48,7 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 		log.WithFields(logrus.Fields{"service": "checker", "event": "unmarshall returned error", "error": "couldn't unmarshall *Any"}).Error(err.Error())
 		return nil, err
 	}
-	log.WithFields(logrus.Fields{"service": "checker", "event": "unmarshall returned error"}).Info("unmarshaled Any to: ", instance)
+	log.WithFields(logrus.Fields{"service": "checker", "event": "unmarshal successful"}).Info("unmarshaled Any to: ", instance)
 
 	return instance, nil
 }
@@ -83,7 +83,7 @@ func handleError(err error) string {
 	if mErr != nil {
 		return `{"type": "error", "error": "cannot determine error"}`
 	}
-	log.WithFields(logrus.Fields{"service": "checker", "event": "handleError() error"}).Error(errStr)
+	log.WithFields(logrus.Fields{"service": "checker", "event": "handleError() error", "error": err}).Info(errStr)
 
 	return string(errStr)
 }

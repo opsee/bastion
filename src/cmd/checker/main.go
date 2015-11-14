@@ -66,13 +66,21 @@ func main() {
 
 	req, err := checks.GetExistingChecks()
 	if err != nil {
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "synchronize checks", "error": err.Error()}).Error("failed to synchronized checks")
+	} else {
 		ctx := context.Background()
-		resp, err := checks.CreateCheck(ctx, req)
-
+		checkerClient, err := checker.NewRpcClient("127.0.0.1", 4000)
 		if err != nil {
-			log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "synchronize checks", "error": err.Error()}).Warn("Couldn't synchronize checks")
+			log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "synchronize check", "error": err}).Warn("couldn't synch checks")
 		} else {
-			log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "synchronize checks", "response": resp}).Info("synchronized checks")
+			for i := 0; i < len(req.Checks); i++ {
+				resp, err := checkerClient.Client.CreateCheck(ctx, &checker.CheckResourceRequest{Checks: []*checker.Check{req.Checks[i]}})
+				if err != nil {
+					log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "synchronize check", "error": err}).Warn("couldn't synch checks")
+				} else {
+					log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "synchronize check", "resp": resp}).Info("synchronized checks")
+				}
+			}
 		}
 	}
 
