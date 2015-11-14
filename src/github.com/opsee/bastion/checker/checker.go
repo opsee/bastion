@@ -3,17 +3,18 @@ package checker
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Sirupsen/logrus"
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/golang/protobuf/proto"
+	"github.com/nsqio/go-nsq"
+	"github.com/nu7hatch/gouuid"
+	"github.com/opsee/bastion/logging"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 	"net"
 	"reflect"
 	"sync"
 	"time"
-
-	"github.com/Sirupsen/logrus"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/golang/protobuf/proto"
-	"github.com/opsee/bastion/logging"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 )
 
 const (
