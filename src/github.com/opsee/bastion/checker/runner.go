@@ -41,6 +41,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		// We emit a CheckResult
 		check := &Check{}
 		if err := proto.Unmarshal(m.Body, check); err != nil {
+			logger.Debug("Body: %s", string(m.Body[:]))
 			return err
 		}
 		logger.Debug("Entering NSQRunner handler. Check: %s", check.String())
@@ -93,6 +94,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			CustomerId: cfg.CustomerID,
 			CheckId:    check.Id,
 			Target:     check.Target,
+			CheckName:  check.Name,
 			Timestamp:  timestamp,
 			Responses:  responses,
 		}
