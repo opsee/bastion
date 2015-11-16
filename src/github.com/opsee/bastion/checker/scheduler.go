@@ -102,6 +102,8 @@ func (m *scheduleMap) Set(key string, check *Check) (*checkWithTicker, error) {
 	}
 	m.checks[key] = ct
 
+	m.runChan <- ct.Check
+
 	return ct, nil
 }
 
