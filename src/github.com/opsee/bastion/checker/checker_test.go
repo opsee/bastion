@@ -120,6 +120,20 @@ func (s *CheckerTestSuite) TearDownTest() {
 }
 
 /*******************************************************************************
+ * SynchronizeChecks()
+ ******************************************************************************/
+func (s *CheckerTestSuite) TestSynchronizeChecks() {
+	req, err := s.Checker.GetExistingChecks()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), len(req.Checks), 2)
+	assert.NotNil(s.T(), req)
+
+	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
+	assert.NoError(s.T(), err)
+	assert.NotNil(s.T(), resp)
+}
+
+/*******************************************************************************
  * CreateCheck()
  ******************************************************************************/
 

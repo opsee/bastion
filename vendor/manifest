@@ -11,7 +11,7 @@
 		{
 			"importpath": "github.com/Sirupsen/logrus",
 			"repository": "https://github.com/Sirupsen/logrus",
-			"revision": "23521f1364a267387df2b99234134003e0a4486d",
+			"revision": "6f383a9b2998dd6f401704269c3e6e192f6175ad",
 			"branch": "master"
 		},
 		{
@@ -171,13 +171,6 @@
 			"path": "/pkg/types"
 		},
 		{
-			"importpath": "github.com/coreos/go-etcd/etcd",
-			"repository": "https://github.com/coreos/go-etcd",
-			"revision": "126041ef7b24a28359a12f8bf7f6a7db6756113d",
-			"branch": "master",
-			"path": "/etcd"
-		},
-		{
 			"importpath": "github.com/golang/glog",
 			"repository": "https://github.com/golang/glog",
 			"revision": "fca8c8854093a154ff1eb580aae10276ad6b1b5f",
@@ -206,6 +199,12 @@
 			"importpath": "github.com/opsee/awscan",
 			"repository": "https://github.com/opsee/awscan",
 			"revision": "183b843c09ad635d51eb8926fc2d33f63f119baa",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/opsee/logrus-papertrail-hook",
+			"repository": "https://github.com/opsee/logrus-papertrail-hook",
+			"revision": "6341f844c9b3e6d5b21e8fe57a7cd81babbe4bf7",
 			"branch": "master"
 		},
 		{
@@ -270,6 +269,13 @@
 			"revision": "4a71d182556e05375344f3da665304f3d5784ab4",
 			"branch": "master",
 			"path": "/internal/timeseries"
+		},
+		{
+			"importpath": "golang.org/x/net/publicsuffix",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "b4e17d61b15679caf2335da776c614169a1b4643",
+			"branch": "master",
+			"path": "/publicsuffix"
 		},
 		{
 			"importpath": "golang.org/x/net/trace",
