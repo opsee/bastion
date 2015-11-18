@@ -30,7 +30,7 @@ dependencies:
     - git submodule update --init
 test:
   override:
-    - docker run -e "TARGETS=linux/amd64" --link nsqd -e "NSQD_HOST=nsqd:4150" -v `pwd`:/build quay.io/opsee/build-go
+    - docker run -e "TARGETS=linux/amd64" --link nsqd -e "NSQD_HOST=nsqd:4150" -e CUSTOMER_ID -e CUSTOMER_EMAIL -e BARTNET_ENDPOINT -e BASTION_AUTH_TYPE -e CUSTOMER_PASSWORD -e BASTION_AUTH_ENDPOINT -v `pwd`:/build quay.io/opsee/build-go
     - docker build -t quay.io/opsee/bastion:$CIRCLE_SHA1 .
     - docker push quay.io/opsee/bastion:$CIRCLE_SHA1
     - java -jar mami/mami.jar build --bastion-version $CIRCLE_SHA1 build/mami.json

@@ -93,6 +93,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			CustomerId: cfg.CustomerID,
 			CheckId:    check.Id,
 			Target:     check.Target,
+			CheckName:  check.Name,
 			Timestamp:  timestamp,
 			Responses:  responses,
 		}

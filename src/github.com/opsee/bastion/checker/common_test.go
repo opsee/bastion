@@ -8,6 +8,8 @@ import (
 	"os"
 
 	"github.com/opsee/bastion/logging"
+
+	"github.com/golang/protobuf/proto"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
 )
@@ -41,6 +43,7 @@ func (t TestCommonStubs) Check() *Check {
 	return &Check{
 		Id:        "stub-check-id",
 		Interval:  60,
+		Name:      "fuck off",
 		Target:    &Target{},
 		CheckSpec: &Any{},
 	}
@@ -213,6 +216,57 @@ func resetNsq(host string, qmap resetNsqConfig) {
 	}
 }
 
+func setupBartnetEmulator() {
+	// dead stupid bartnet api emulator with 2 hardcoded checks
+	checka := &Check{
+		Id:       "stub-check-id",
+		Interval: 60,
+		Name:     "fuck off",
+		Target: &Target{
+			Type: "sg",
+			Id:   "sg3",
+			Name: "sg3",
+		},
+		CheckSpec: &Any{},
+	}
+	checkb := &Check{
+		Id:       "stub-check-id",
+		Interval: 60,
+		Name:     "fuck off",
+		Target: &Target{
+			Type: "sg",
+			Id:   "sg3",
+			Name: "sg3",
+		},
+		CheckSpec: &Any{},
+	}
+	checkspec := &HttpCheck{
+		Name:     "test check",
+		Path:     "/",
+		Protocol: "http",
+		Port:     testHTTPServerPort,
+		Verb:     "GET",
+	}
+	spec, _ := MarshalAny(checkspec)
+
+	checka.CheckSpec = spec
+	checkb.CheckSpec = spec
+
+	req := &CheckResourceRequest{
+		Checks: []*Check{checka, checkb},
+	}
+	data, err := proto.Marshal(req)
+	if err != nil {
+		panic("couldn't set up bartnet endpoint emulator!")
+	}
+
+	http.HandleFunc("/checks", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, string(data), r.URL.Path)
+	})
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
 var testEnvReady bool = false
 
 func setupTestEnv() {
@@ -236,6 +290,10 @@ func setupTestEnv() {
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- http.ListenAndServe(fmt.Sprintf(":%d", testHTTPServerPort), nil)
+	}()
+
+	go func() {
+		setupBartnetEmulator()
 	}()
 
 	testEnvReady = true
