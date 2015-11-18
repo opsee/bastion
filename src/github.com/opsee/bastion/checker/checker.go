@@ -390,7 +390,7 @@ func (c *Checker) GetExistingChecks() (*CheckResourceRequest, error) {
 		CustomerEmail:    os.Getenv("CUSTOMER_EMAIL"),
 		CustomerPassword: os.Getenv("CUSTOMER_PASSWORD"),
 		CustomerID:       os.Getenv("CUSTOMER_ID"),
-		TargetEndpoint:   os.Getenv("BARTNET_ENDPOINT"),
+		TargetEndpoint:   os.Getenv("BARTNET_ENDPOINT") + "/checks",
 		AuthEndpoint:     os.Getenv("BASTION_AUTH_ENDPOINT"),
 	}
 
