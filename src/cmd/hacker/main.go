@@ -206,9 +206,8 @@ func UnHack(fsm *fsm) *StateExitInfo {
 
 	// remove self from indexed security groups
 	for {
-		sg, more := <-hacked
-
-		if more {
+		select {
+		case sg := <-hacked:
 			_, err := ec2Client.RevokeSecurityGroupIngress(&ec2.RevokeSecurityGroupIngressInput{
 				GroupId:       aws.String(sg),
 				IpPermissions: ippermission,
@@ -219,12 +218,11 @@ func UnHack(fsm *fsm) *StateExitInfo {
 			} else {
 				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", sg)
 			}
-		} else {
-			break
+		default:
+			log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion finished unhacking")
+			return &StateExitInfo{NextState: STATE_EXIT_SUCCESS, ExitCode: StateExitSuccess}
 		}
 	}
-
-	return &StateExitInfo{NextState: STATE_EXIT_SUCCESS, ExitCode: StateExitSuccess}
 }
 
 // wait state, wants to return to hacker
@@ -268,9 +266,12 @@ func Hack(fsm *fsm) *StateExitInfo {
 
 	for _, sg := range sgs {
 		ingressRuleFound := false
+		if *sg.GroupId == *bastionSgId {
+			continue
+		}
 		for _, perm := range sg.IpPermissions {
-			for _, ipr := range perm.IpRanges {
-				if ipr.CidrIp == bastionSgId {
+			for _, pr := range perm.UserIdGroupPairs {
+				if *pr.GroupId == *bastionSgId {
 					ingressRuleFound = true
 				}
 			}
@@ -356,14 +357,16 @@ func main() {
 	for {
 		exitinfo := dafsm.ExecuteCurrentState() // run and get next state info
 		if exitinfo.NextState == STATE_EXIT_SUCCESS {
+			log.Info("exiting with state: ", exitinfo.NextState)
 			os.Exit(0)
 		} else if exitinfo.NextState == STATE_EXIT_ERROR {
+			log.Fatal("exiting with state: ", exitinfo.NextState)
 			os.Exit(1)
 		} else {
 			if nextstate := dafsm.GetState(exitinfo.NextState); nextstate != nil {
 				dafsm.SetState(nextstate) // set next state based on info
 			} else {
-				log.Fatal("exiting")
+				log.Fatal("exiting with state: ", exitinfo.NextState)
 				os.Exit(1)
 			}
 		}
