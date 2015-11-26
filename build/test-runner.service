@@ -1,7 +1,7 @@
 [Unit]
 Description=Bastion - TestCheck Runner
-After=env-lock.service docker.service nsqd.service
-Requires=env-lock.service docker.service nsqd.service
+After=nsqd.service
+BindsTo=nsqd.service
 
 [Service]
 Restart=always

@@ -1,7 +1,7 @@
 [Unit]
 Description=nsqadmin
-After=env-lock.service docker.service nsqd.service
-Requires=env-lock.service docker.service nsqd.service
+After=connector.service
+BindsTo=connector.service
 
 [Service]
 Restart=always
