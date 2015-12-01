@@ -1,7 +1,8 @@
 [Unit]
 Description=Bastion - Security Group Hack
-After=env-lock.service docker.service connector.service
-Requires=env-lock.service docker.service connector.service
+After=nsqd.service
+Requires=nsqd.service
+# we don't bind to nsqd because we hope it will come back alive (avoid unhack)
 
 [Service]
 User=core

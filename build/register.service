@@ -1,8 +1,7 @@
 [Unit]
 Description=Bastion - Registration
-After=env-lock.service docker.service connector.service
-Requires=env-lock.service docker.service connector.service
-PartOf=connector.service
+After=connector.service
+BindsTo=connector.service
 
 [Service]
 Restart=always

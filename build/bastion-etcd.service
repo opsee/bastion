@@ -1,6 +1,7 @@
 [Unit]
 Description=Bastion Etcd
 After=env-lock.service docker.service
+Before=connector.service
 Requires=env-lock.service docker.service
 
 [Service]

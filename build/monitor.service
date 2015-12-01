@@ -1,7 +1,7 @@
 [Unit]
 Description=Bastion - Monitor
-After=env-lock.service docker.service nsqd.service connector.service
-Requires=env-lock.service docker.service nsqd.service connector.service
+After=connector.service
+BindsTo=connector.service
 
 [Service]
 Restart=always
