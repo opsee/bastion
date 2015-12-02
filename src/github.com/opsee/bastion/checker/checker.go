@@ -316,8 +316,9 @@ func (c *Checker) RetrieveCheck(ctx context.Context, req *CheckResourceRequest) 
 	return c.invoke(ctx, "RetrieveCheck", req)
 }
 
-func (c *Checker) UpdateCheck(_ context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
-	return nil, fmt.Errorf("Not Implemented")
+func (c *Checker) UpdateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+	c.invoke(ctx, "DeleteCheck", req)
+	return c.invoke(ctx, "CreateCheck", req)
 }
 
 func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
