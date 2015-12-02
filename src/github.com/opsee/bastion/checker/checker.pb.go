@@ -1,1 +1,1 @@
-../../../../../proto/checker.pb.go
+/Users../../../../../proto/checker.pb.go

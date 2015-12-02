@@ -278,8 +278,14 @@ func (s *CheckerTestSuite) TestCheckSupportsInstances() {
 }
 
 func (s *CheckerTestSuite) TestUpdateCheck() {
-	_, err := s.Checker.UpdateCheck(nil, nil)
-	assert.Error(s.T(), err)
+	req := &CheckResourceRequest{
+		Checks: []*Check{s.Common.PassingCheck()},
+	}
+	resp, err := s.CheckerClient.Client.UpdateCheck(s.Context, req)
+	assert.NoError(s.T(), err)
+	assert.NotNil(s.T(), resp)
+	assert.Equal(s.T(), s.Common.PassingCheck().Id, resp.Responses[0].Check.Id)
+
 }
 
 func TestCheckerTestSuite(t *testing.T) {
