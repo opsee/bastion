@@ -58,7 +58,6 @@
             "type":"systemd",
             "unit-file":"build/hacker.service"
         },
- 
         {
             "type":"systemd",
             "unit-file":"build/discovery.service"
@@ -78,6 +77,10 @@
         {
             "type":"systemd",
             "unit-file":"build/shovel-results.service"
+        },
+        {
+            "type":"systemd",
+            "unit-file":"build/logspout.service"
         },
         {
             "type":"waitfor",
