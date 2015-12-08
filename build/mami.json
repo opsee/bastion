@@ -80,6 +80,10 @@
         },
         {
             "type":"systemd",
+            "unit-file":"build/aws-command.service"
+        },
+        {
+            "type":"systemd",
             "unit-file":"build/logspout.service"
         },
         {
