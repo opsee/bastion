@@ -62,7 +62,7 @@ func (p *NsqProducer) Publish(message interface{}) error {
 
 	eBytes, _ := json.Marshal(event)
 
-	//logger.Info("Publishing event: %s", string(eBytes))
+	logger.Info("Publishing event: %s", string(eBytes))
 	return p.nsqProducer.Publish(p.Topic, eBytes)
 }
 
