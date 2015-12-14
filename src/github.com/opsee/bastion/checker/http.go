@@ -3,6 +3,7 @@ package checker
 import (
 	"bufio"
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"net/http"
@@ -30,6 +31,9 @@ var (
 func init() {
 	client = &http.Client{
 		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
 			ResponseHeaderTimeout: 30 * time.Second,
 			Dial: (&net.Dialer{
 				Timeout: 15 * time.Second,
