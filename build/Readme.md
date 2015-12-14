@@ -1,3 +1,7 @@
+# NOTES
+
+* we are adopting [this](https://github.com/heatseeknyc/relay/commit/552517843322917cfdc278380d9d1e374d17a8fa) pattern to fix docker issue [#6791](https://github.com/docker/docker/issues/6791#issuecomment-72338100)
+
 # Bastion Systemd Dependency Graph Overview
 
 ![Dependency Graph](./dependency_subgraph.png)
@@ -30,3 +34,4 @@
 * register.service _BindsTo_ connector.service because it shares a volume with it
 * shovel-discovery.service _BindsTo_ connector.service because it shares its nework stack
 * shovel-results.service _BindsTo_ connector.service because it shares its network stack
+* aws-command.service _BindsTo_ connector.service because it shares its network stack
