@@ -7,29 +7,31 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
+	"github.com/aws/aws-sdk-go/aws/ec2metadata"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/opsee/bastion/config"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"net"
-	"time"
 )
 
 var (
 	cfg   = config.GetConfig()
 	creds = credentials.NewChainCredentials(
 		[]credentials.Provider{
-			&credentials.StaticProvider{Value: credentials.Value{
-				AccessKeyID:     cfg.AccessKeyId,
-				SecretAccessKey: cfg.SecretKey,
-				SessionToken:    "",
-			}},
+			&ec2rolecreds.EC2RoleProvider{
+				Client: ec2metadata.New(session.New()),
+			},
 			&credentials.EnvProvider{},
-			&ec2rolecreds.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
-		})
-
-	awsConfig    = &aws.Config{Credentials: creds, Region: aws.String(cfg.MetaData.Region)}
-	awsEc2Client = ec2.New(awsConfig)
+		},
+	)
+	sess = session.New(&aws.Config{
+		Credentials: creds,
+		Region:      aws.String(cfg.MetaData.Region),
+		MaxRetries:  aws.Int(11),
+	})
+	awsEc2Client = ec2.New(sess)
 )
 
 type AWSCommander struct {

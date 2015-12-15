@@ -2,7 +2,6 @@
     "regions": "all",
     "copy-to": "all",
     "build-region": "us-east-1",
-    "source-ami": "ami-05783d60",
     "ami-name": "Opsee-Bastion-{{clean-timestamp}}",
     "ami-description": "Opsee's Bastion Software",
     "instance-type":"t2.micro",

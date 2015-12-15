@@ -12,6 +12,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
+	"github.com/aws/aws-sdk-go/aws/ec2metadata"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
@@ -133,21 +135,24 @@ func (fsm *fsm) ExecuteCurrentState() *StateExitInfo {
 func Startup(fsm *fsm) *StateExitInfo {
 	// get config, initialize AWSCAN
 	cfg := config.GetConfig()
-	sc = awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region})
-
-	var creds = credentials.NewChainCredentials(
+	creds := credentials.NewChainCredentials(
 		[]credentials.Provider{
-			&credentials.StaticProvider{Value: credentials.Value{
-				AccessKeyID:     cfg.AccessKeyId,
-				SecretAccessKey: cfg.SecretKey,
-				SessionToken:    "",
-			}},
+			&ec2rolecreds.EC2RoleProvider{
+				Client: ec2metadata.New(session.New()),
+			},
 			&credentials.EnvProvider{},
-			&ec2rolecreds.EC2RoleProvider{ExpiryWindow: 5 * time.Minute},
-		})
+		},
+	)
 
-	awsConfig := &aws.Config{Credentials: creds, Region: aws.String(cfg.MetaData.Region)}
-	ec2Client = ec2.New(awsConfig)
+	sess := session.New(&aws.Config{
+		Credentials: creds,
+		Region:      aws.String(cfg.MetaData.Region),
+		MaxRetries:  aws.Int(11),
+	})
+
+	sc = awscan.NewScanner(sess, cfg.MetaData.VPCID)
+
+	ec2Client = ec2.New(sess)
 
 	resp, err := httpClient.Get("http://169.254.169.254/latest/meta-data/security-groups/")
 	if err != nil {

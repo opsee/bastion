@@ -39,12 +39,13 @@ import (
 	"io"
 	"math"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/bradfitz/http2"
-	"github.com/bradfitz/http2/hpack"
 	"golang.org/x/net/context"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/hpack"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
@@ -55,8 +56,9 @@ import (
 type http2Client struct {
 	target    string // server name/addr
 	userAgent string
-	conn      net.Conn // underlying communication channel
-	nextID    uint32   // the next stream ID to be used
+	conn      net.Conn             // underlying communication channel
+	authInfo  credentials.AuthInfo // auth info about the connection
+	nextID    uint32               // the next stream ID to be used
 
 	// writableChan synchronizes write access to the transport.
 	// A writer acquires the write lock by sending a value on writableChan
@@ -114,6 +116,7 @@ func newHTTP2Client(addr string, opts *ConnectOptions) (_ ClientTransport, err e
 	if connErr != nil {
 		return nil, ConnectionErrorf("transport: %v", connErr)
 	}
+	var authInfo credentials.AuthInfo
 	for _, c := range opts.AuthOptions {
 		if ccreds, ok := c.(credentials.TransportAuthenticator); ok {
 			scheme = "https"
@@ -124,7 +127,7 @@ func newHTTP2Client(addr string, opts *ConnectOptions) (_ ClientTransport, err e
 			if timeout > 0 {
 				timeout -= time.Since(startT)
 			}
-			conn, connErr = ccreds.ClientHandshake(addr, conn, timeout)
+			conn, authInfo, connErr = ccreds.ClientHandshake(addr, conn, timeout)
 			break
 		}
 	}
@@ -168,6 +171,7 @@ func newHTTP2Client(addr string, opts *ConnectOptions) (_ ClientTransport, err e
 		target:    addr,
 		userAgent: ua,
 		conn:      conn,
+		authInfo:  authInfo,
 		// The client initiated stream id is odd starting from 1.
 		nextID:          1,
 		writableChan:    make(chan int, 1),
@@ -234,9 +238,26 @@ func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (_ *Strea
 			return nil, ContextErr(context.DeadlineExceeded)
 		}
 	}
+	// Attach Auth info if there is any.
+	if t.authInfo != nil {
+		ctx = credentials.NewContext(ctx, t.authInfo)
+	}
 	authData := make(map[string]string)
 	for _, c := range t.authCreds {
-		data, err := c.GetRequestMetadata(ctx)
+		// Construct URI required to get auth request metadata.
+		var port string
+		if pos := strings.LastIndex(t.target, ":"); pos != -1 {
+			// Omit port if it is the default one.
+			if t.target[pos+1:] != "443" {
+				port = ":" + t.target[pos+1:]
+			}
+		}
+		pos := strings.LastIndex(callHdr.Method, "/")
+		if pos == -1 {
+			return nil, StreamErrorf(codes.InvalidArgument, "transport: malformed method name: %q", callHdr.Method)
+		}
+		audience := "https://" + callHdr.Host + port + callHdr.Method[:pos]
+		data, err := c.GetRequestMetadata(ctx, audience)
 		if err != nil {
 			return nil, StreamErrorf(codes.InvalidArgument, "transport: %v", err)
 		}
@@ -266,9 +287,24 @@ func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (_ *Strea
 		return nil, err
 	}
 	t.mu.Lock()
+	if t.state != reachable {
+		t.mu.Unlock()
+		return nil, ErrConnClosing
+	}
 	s := t.newStream(ctx, callHdr)
 	t.activeStreams[s.id] = s
+
+	// This stream is not counted when applySetings(...) initialize t.streamsQuota.
+	// Reset t.streamsQuota to the right value.
+	var reset bool
+	if !checkStreamsQuota && t.streamsQuota != nil {
+		reset = true
+	}
 	t.mu.Unlock()
+	if reset {
+		t.streamsQuota.reset(-1)
+	}
+
 	// HPACK encodes various headers. Note that once WriteField(...) is
 	// called, the corresponding headers/continuation frame has to be sent
 	// because hpack.Encoder is stateful.
@@ -294,7 +330,9 @@ func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (_ *Strea
 	if md, ok := metadata.FromContext(ctx); ok {
 		hasMD = true
 		for k, v := range md {
-			t.hEnc.WriteField(hpack.HeaderField{Name: k, Value: v})
+			for _, entry := range v {
+				t.hEnc.WriteField(hpack.HeaderField{Name: k, Value: entry})
+			}
 		}
 	}
 	first := true
@@ -345,6 +383,11 @@ func (t *http2Client) CloseStream(s *Stream, err error) {
 	if updateStreams {
 		t.streamsQuota.add(1)
 	}
+	// In case stream sending and receiving are invoked in separate
+	// goroutines (e.g., bi-directional streaming), the caller needs
+	// to call cancel on the stream to interrupt the blocking on
+	// other goroutines.
+	s.cancel()
 	s.mu.Lock()
 	if q := s.fc.restoreConn(); q > 0 {
 		t.controlBuf.put(&windowUpdate{0, q})
@@ -359,11 +402,6 @@ func (t *http2Client) CloseStream(s *Stream, err error) {
 	}
 	s.state = streamDone
 	s.mu.Unlock()
-	// In case stream sending and receiving are invoked in separate
-	// goroutines (e.g., bi-directional streaming), the caller needs
-	// to call cancel on the stream to interrupt the blocking on
-	// other goroutines.
-	s.cancel()
 	if _, ok := err.(StreamError); ok {
 		t.controlBuf.put(&resetStream{s.id, http2.ErrCodeCancel})
 	}
@@ -608,7 +646,9 @@ func (t *http2Client) handleSettings(f *http2.SettingsFrame) {
 }
 
 func (t *http2Client) handlePing(f *http2.PingFrame) {
-	t.controlBuf.put(&ping{true})
+	pingAck := &ping{ack: true}
+	copy(pingAck.data[:], f.Data[:])
+	t.controlBuf.put(pingAck)
 }
 
 func (t *http2Client) handleGoAway(f *http2.GoAwayFrame) {
@@ -713,7 +753,7 @@ func (t *http2Client) reader() {
 			endStream := frame.Header().Flags.Has(http2.FlagHeadersEndStream)
 			curStream = t.operateHeaders(hDec, curStream, frame, endStream)
 		case *http2.ContinuationFrame:
-			curStream = t.operateHeaders(hDec, curStream, frame, false)
+			curStream = t.operateHeaders(hDec, curStream, frame, frame.HeadersEnded())
 		case *http2.DataFrame:
 			t.handleData(frame)
 		case *http2.RSTStreamFrame:
@@ -789,9 +829,7 @@ func (t *http2Client) controller() {
 				case *flushIO:
 					t.framer.flushWrite()
 				case *ping:
-					// TODO(zhaoq): Ack with all-0 data now. will change to some
-					// meaningful content when this is actually in use.
-					t.framer.writePing(true, i.ack, [8]byte{})
+					t.framer.writePing(true, i.ack, i.data)
 				default:
 					grpclog.Printf("transport: http2Client.controller got unexpected item type %v\n", i)
 				}

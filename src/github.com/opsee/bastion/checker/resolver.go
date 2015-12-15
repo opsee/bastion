@@ -3,6 +3,11 @@ package checker
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
+	"github.com/aws/aws-sdk-go/aws/ec2metadata"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
@@ -19,8 +24,23 @@ type AWSResolver struct {
 }
 
 func NewResolver(cfg *config.Config) Resolver {
+	creds := credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&ec2rolecreds.EC2RoleProvider{
+				Client: ec2metadata.New(session.New()),
+			},
+			&credentials.EnvProvider{},
+		},
+	)
+
+	sess := session.New(&aws.Config{
+		Credentials: creds,
+		Region:      aws.String(cfg.MetaData.Region),
+		MaxRetries:  aws.Int(11),
+	})
+
 	resolver := &AWSResolver{
-		sc: awscan.NewScanner(&awscan.Config{AccessKeyId: cfg.AccessKeyId, SecretKey: cfg.SecretKey, Region: cfg.MetaData.Region}),
+		sc: awscan.NewScanner(sess, cfg.MetaData.VPCID),
 	}
 	return resolver
 }
