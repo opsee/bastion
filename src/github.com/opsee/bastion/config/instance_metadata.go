@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/opsee/bastion/netutil"
 	"io/ioutil"
 	"net/http"
@@ -126,6 +127,7 @@ func (this MetadataProvider) getVPC() string {
 		macs := bytes.Split(ifsbody, []byte("\n"))
 		if len(macs) == 0 {
 			logger.Error("error reading ec2 interfaces: none found")
+			return "", fmt.Errorf("no interfaces found")
 		}
 
 		vpcres, err := this.client.Get(fmt.Sprintf("%s%svpc-id", InterfaceURL, string(macs[0])))
