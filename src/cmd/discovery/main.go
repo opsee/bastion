@@ -66,6 +66,19 @@ func main() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, os.Interrupt, os.Kill)
 
+	go func() {
+		for {
+			select {
+			case s := <-sigs:
+				log.Info("Received signal %s.  Stopping...", s)
+				os.Exit(0)
+
+			case err := <-heart.Beat():
+				log.Error(err.Error())
+			}
+		}
+	}()
+
 	for {
 		for event := range disco.Discover() {
 			if event.Err != nil {
@@ -77,13 +90,7 @@ func main() {
 				}
 			}
 		}
-		select {
-		case s := <-sigs:
-			log.Info("Received signal %s.  Stopping...", s)
-			os.Exit(0)
-		case err := <-heart.Beat():
-			log.Error(err.Error())
-		}
+
 		time.Sleep(120 * time.Second)
 	}
 }
