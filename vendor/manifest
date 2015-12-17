@@ -15,106 +15,9 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/aws/aws-sdk-go/aws",
+			"importpath": "github.com/aws/aws-sdk-go",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/aws"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/aws/credentials",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/aws/credentials"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/internal/endpoints",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/internal/endpoints"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/ec2query",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/internal/protocol/ec2query"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/query",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/internal/protocol/query"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/rest",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/internal/protocol/rest"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/internal/protocol/xml/xmlutil",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/internal/protocol/xml/xmlutil"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/internal/signer/v4",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/internal/signer/v4"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/service/autoscaling",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "2778c8354eae199e75678754615f5beb46a77989",
-			"branch": "master",
-			"path": "/service/autoscaling"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/service/ec2",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/service/ec2"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/service/elb",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/service/elb"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/service/rds",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/service/rds"
-		},
-		{
-			"importpath": "github.com/aws/aws-sdk-go/service/sts",
-			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "69142c71761512d894b028dc5c8cc312758372dd",
-			"branch": "master",
-			"path": "/service/sts"
-		},
-		{
-			"importpath": "github.com/bitly/go-nsq",
-			"repository": "https://github.com/bitly/go-nsq",
-			"revision": "a3aee1d8e104a99d8fedffe2c45832df6a96d735",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/bradfitz/http2",
-			"repository": "https://github.com/bradfitz/http2",
-			"revision": "f8202bc903bda493ebba4aa54922d78430c2c42f",
+			"revision": "999b1591218c36d5050d1ba7266eba956e65965f",
 			"branch": "master"
 		},
 		{
@@ -171,6 +74,12 @@
 			"path": "/pkg/types"
 		},
 		{
+			"importpath": "github.com/go-ini/ini",
+			"repository": "https://github.com/go-ini/ini",
+			"revision": "a4e5487f4a695680ed4a5444b9a094df8eaf48cb",
+			"branch": "v1"
+		},
+		{
 			"importpath": "github.com/golang/glog",
 			"repository": "https://github.com/golang/glog",
 			"revision": "fca8c8854093a154ff1eb580aae10276ad6b1b5f",
@@ -179,14 +88,39 @@
 		{
 			"importpath": "github.com/golang/protobuf/proto",
 			"repository": "https://github.com/golang/protobuf",
-			"revision": "73aaaa9eb61d74fbf7e256ca586a3a565b308eea",
+			"revision": "68415e7123da32b07eab49c96d2c4d6158360e9b",
 			"branch": "master",
 			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/protoc-gen-go",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "68415e7123da32b07eab49c96d2c4d6158360e9b",
+			"branch": "master",
+			"path": "/protoc-gen-go"
+		},
+		{
+			"importpath": "github.com/jmespath/go-jmespath",
+			"repository": "https://github.com/jmespath/go-jmespath",
+			"revision": "c01cf91b011868172fdcd9f41838e80c9d716264",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/lsegal/gucumber",
+			"repository": "https://github.com/lsegal/gucumber",
+			"revision": "e8116c9c66e641e9f81fc0a79fac923dfc646378",
+			"branch": "master"
 		},
 		{
 			"importpath": "github.com/mreiferson/go-snappystream",
 			"repository": "https://github.com/mreiferson/go-snappystream",
 			"revision": "028eae7ab5c4c9e2d1cb4c4ca1e53259bbe7e504",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nsqio/go-nsq",
+			"repository": "https://github.com/nsqio/go-nsq",
+			"revision": "2118015c120962edc5d03325c680daf3163a8b5f",
 			"branch": "master"
 		},
 		{
@@ -198,13 +132,7 @@
 		{
 			"importpath": "github.com/opsee/awscan",
 			"repository": "https://github.com/opsee/awscan",
-			"revision": "528d736c43012d6434547094ffc8722cc9f49c8a",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/opsee/logrus-papertrail-hook",
-			"repository": "https://github.com/opsee/logrus-papertrail-hook",
-			"revision": "6341f844c9b3e6d5b21e8fe57a7cd81babbe4bf7",
+			"revision": "3e8875046466e0feaedb1e20548a54ba80591412",
 			"branch": "master"
 		},
 		{
@@ -217,6 +145,12 @@
 			"importpath": "github.com/satori/go.uuid",
 			"repository": "https://github.com/satori/go.uuid",
 			"revision": "6b8e5b55d20d01ad47ecfe98e5171688397c61e9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/shiena/ansicolor",
+			"repository": "https://github.com/shiena/ansicolor",
+			"revision": "a422bbe96644373c5753384a59d678f7d261ff10",
 			"branch": "master"
 		},
 		{
@@ -245,16 +179,11 @@
 			"path": "/codec"
 		},
 		{
-			"importpath": "github.com/vaughan0/go-ini",
-			"repository": "https://github.com/vaughan0/go-ini",
-			"revision": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1",
-			"branch": "master"
-		},
-		{
-			"importpath": "go.pedge.io/google-protobuf",
-			"repository": "https://github.com/peter-edge/go-google-protobuf",
-			"revision": "5da1cb8231f05f166fda3e2d638e19a4e3a936e0",
-			"branch": "master"
+			"importpath": "golang.org/x/crypto/ssh/terminal",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "f18420efc3b4f8e9f3d51f6bd2476e92c46260e9",
+			"branch": "master",
+			"path": "/ssh/terminal"
 		},
 		{
 			"importpath": "golang.org/x/net/context",
@@ -262,6 +191,13 @@
 			"revision": "4a71d182556e05375344f3da665304f3d5784ab4",
 			"branch": "master",
 			"path": "/context"
+		},
+		{
+			"importpath": "golang.org/x/net/http2",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "74bd44bb0584f94b166dd892ff9817d4264d359c",
+			"branch": "master",
+			"path": "/http2"
 		},
 		{
 			"importpath": "golang.org/x/net/internal/timeseries",
@@ -291,6 +227,41 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "golang.org/x/tools/go/ast/astutil",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "1cdaff4a02c554c9fb39dda0b56241c5f0949d91",
+			"branch": "master",
+			"path": "/go/ast/astutil"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/buildutil",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "1cdaff4a02c554c9fb39dda0b56241c5f0949d91",
+			"branch": "master",
+			"path": "/go/buildutil"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/exact",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "1cdaff4a02c554c9fb39dda0b56241c5f0949d91",
+			"branch": "master",
+			"path": "/go/exact"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/loader",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "1cdaff4a02c554c9fb39dda0b56241c5f0949d91",
+			"branch": "master",
+			"path": "/go/loader"
+		},
+		{
+			"importpath": "golang.org/x/tools/go/types",
+			"repository": "https://go.googlesource.com/tools",
+			"revision": "1cdaff4a02c554c9fb39dda0b56241c5f0949d91",
+			"branch": "master",
+			"path": "/go/types"
+		},
+		{
 			"importpath": "google.golang.org/cloud/compute/metadata",
 			"repository": "https://code.googlesource.com/gocloud",
 			"revision": "e34a32f9b0ecbc0784865fb2d47f3818c09521d4",
@@ -307,7 +278,7 @@
 		{
 			"importpath": "google.golang.org/grpc",
 			"repository": "https://github.com/grpc/grpc-go",
-			"revision": "000aa5623e9149be13c809a707faff26bfc80bbf",
+			"revision": "2d76f2fb90f1df85dd7bc8380b5c52ff3c2259d6",
 			"branch": "master"
 		},
 		{

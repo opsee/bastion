@@ -1,7 +1,6 @@
 [Unit]
 Description=Bastion - Logging
 After=env-lock.service docker.service
-BindsTo=connector.service
 
 [Service]
 Restart=always

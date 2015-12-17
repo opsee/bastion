@@ -14,7 +14,7 @@ type CheckerRpcClient struct {
 func NewRpcClient(host string, port int) (*CheckerRpcClient, error) {
 	client := &CheckerRpcClient{}
 
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", host, port))
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", host, port), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

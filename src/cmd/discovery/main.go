@@ -5,11 +5,15 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/opsee/bastion/heart"
-
 	log "github.com/Sirupsen/logrus"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
+	"github.com/aws/aws-sdk-go/aws/ec2metadata"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
@@ -26,14 +30,25 @@ var (
 func main() {
 	var err error
 	cfg := config.GetConfig()
+	creds := credentials.NewChainCredentials(
+		[]credentials.Provider{
+			&ec2rolecreds.EC2RoleProvider{
+				Client: ec2metadata.New(session.New()),
+			},
+			&credentials.EnvProvider{},
+		},
+	)
+
+	sess := session.New(&aws.Config{
+		Credentials: creds,
+		Region:      aws.String(cfg.MetaData.Region),
+		MaxRetries:  aws.Int(11),
+	})
 
 	disco := awscan.NewDiscoverer(
 		awscan.NewScanner(
-			&awscan.Config{
-				AccessKeyId: cfg.AccessKeyId,
-				SecretKey:   cfg.SecretKey,
-				Region:      cfg.MetaData.Region,
-			},
+			sess,
+			cfg.MetaData.VPCID,
 		),
 	)
 

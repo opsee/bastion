@@ -50,6 +50,7 @@ func GetConfig() *Config {
 		httpClient := &http.Client{}
 		metap := NewMetadataProvider(httpClient, config)
 		config.MetaData = metap.Get()
+		config.MetaData.VPCID = metap.GetVPC()
 
 		err := logging.SetLevel(config.LogLevel, "bastion")
 		if err != nil {

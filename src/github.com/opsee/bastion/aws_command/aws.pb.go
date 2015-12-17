@@ -1,1 +1,1 @@
-/Users../../../../../proto/aws.pb.go
+../../../../../proto/aws.pb.go
