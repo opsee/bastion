@@ -52,6 +52,13 @@ func (r *HTTPRequest) Do() *Response {
 
 	for _, header := range r.Headers {
 		key := header.Name
+
+		// we have to special case the host header, since the go client
+		// wants that in req.Host
+		if strings.ToLower(key) == "host" && len(header.Values) > 0 {
+			req.Host = header.Values[0]
+		}
+
 		for _, value := range header.Values {
 			req.Header.Add(key, value)
 		}
