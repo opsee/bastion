@@ -22,7 +22,9 @@ import (
 )
 
 const (
-	// The
+	// MaxTestTargets is the maximum number of test-check targets returned
+	// from the resolver that we use.
+
 	MaxTestTargets = 5
 )
 
@@ -36,6 +38,8 @@ func init() {
 	registry["HttpCheck"] = reflect.TypeOf(HttpCheck{})
 	logging.SetLevel("ERROR", "checker")
 }
+
+// UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
 
 func UnmarshalAny(any *Any) (interface{}, error) {
 	class := any.TypeUrl
@@ -61,6 +65,7 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 // errors accordingly? Probably some simple exception classes for the bastion
 // that those interacting with the bastion can code around. Until then, just
 // fucking slap some shit together.
+
 func handleError(err error) string {
 	errMap := map[string]string{}
 	switch e := err.(type) {
@@ -87,6 +92,9 @@ func handleError(err error) string {
 	return string(errStr)
 }
 
+// MarshalAny uses reflection to marshal an interface{} into an Any object and
+// sets up its TypeUrl type hint.
+
 func MarshalAny(i interface{}) (*Any, error) {
 	msg, ok := i.(proto.Message)
 	if !ok {
@@ -107,7 +115,11 @@ func MarshalAny(i interface{}) (*Any, error) {
 	}, nil
 }
 
+// Interval is the frequency of check execution.
+
 type Interval time.Duration
+
+// RemoteRunner allows you to control a Runner process via NSQ and behaves similarly to the Runner.
 
 type RemoteRunner struct {
 	consumer   *nsq.Consumer
@@ -116,6 +128,8 @@ type RemoteRunner struct {
 	requestMap map[string]chan *CheckResult // TODO(greg): I really want NBHM for Golang. :(
 	sync.RWMutex
 }
+
+// NewRemoteRunner configures the Runner and sets up the NSQ message handler.
 
 func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, nsq.NewConfig())
@@ -186,6 +200,9 @@ func (r *RemoteRunner) withLock(f func()) {
 	log.Debug("Releasing lock on RemoteRunner.")
 }
 
+// RunCheck asynchronously executes the check and blocks waiting on the result. It's important to set a
+// context deadline unless you want this to block forever.
+
 func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, error) {
 	log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("Running check")
 
@@ -196,7 +213,7 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 	if chk.Id == "" {
 		uid, err := uuid.NewV4()
 		if err != nil {
-			log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Error("Check Id empty")
+			log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String(), "error": err.Error()}).Error("Error creating UUID")
 			return nil, err
 		}
 		id = uid.String()
@@ -238,6 +255,8 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 	}
 }
 
+// Stop blocks until the NSQ consumer and producer are stopped.
+
 func (r *RemoteRunner) Stop() {
 	r.consumer.Stop()
 	<-r.consumer.StopChan
@@ -257,27 +276,13 @@ type Checker struct {
 	Runner     *RemoteRunner
 }
 
+// NewChecker sets up the GRPC server for a Checker.
+
 func NewChecker() *Checker {
 	return &Checker{
 		grpcServer: grpc.NewServer(),
 	}
 }
-
-// TODO(greg): One way or another, all CRUD requests should be transactional.
-// At the moment it is very much last-write-wins, but consider the following
-// scenario:
-//
-// t(0) -> Checker startup
-// t(1) -> Checker initializes configuration sync with opsee
-// t(2) -> User updates check id 1 and this gets saved in Bartnet
-// t(3) -> Bartnet creates check id 1 on the bastion
-// t(4) -> The configuration sync finishes and overwrites check id 1 with
-// the previously saved verison.
-//
-// Now we have dirty writes. So we have to have a way of fixing that. @dan-compton
-// suggested timestamps to version check objects. I think that's a good idea. In
-// that case, at t(4) above, the old version of check id 1 would be ignored,
-// because its timestamp is older than the one sent by bartnet at t(3).
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
 	log.WithFields(logrus.Fields{"service": "checker", "event": "invoke", "command": cmd}).Info("handling request")
@@ -308,18 +313,30 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 	return response, nil
 }
 
+// CreateCheck creates a check within a request context. It will return an error if there is any difficulty
+// creating the check.
+
 func (c *Checker) CreateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
 	return c.invoke(ctx, "CreateCheck", req)
 }
+
+// RetrieveCheck retrieves an existing check within a request context. It will return an error if the check
+// does not exist.
 
 func (c *Checker) RetrieveCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
 	return c.invoke(ctx, "RetrieveCheck", req)
 }
 
+// UpdateCheck deletes and then recreates a check within a request context. It will return an error if there is
+// a problem deleting or creating a check.
+
 func (c *Checker) UpdateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
 	c.invoke(ctx, "DeleteCheck", req)
 	return c.invoke(ctx, "CreateCheck", req)
 }
+
+// DeleteCheck deletes a check within a request context. It will return an error if there is a problem
+// deleting the check.
 
 func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
 	return c.invoke(ctx, "DeleteCheck", req)
@@ -337,6 +354,7 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*
 //
 // TODO(greg): Get this into the invoke() fold so that we can do a "middleware"
 // ish pattern. to logging, instrumentation, etc.
+
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
 	log.WithFields(logrus.Fields{"service": "checker", "event": "TestCheck"}).Info("Handling request: %v", req)
 
@@ -376,7 +394,11 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 	return testCheckResponse, nil
 }
 
-func (c *Checker) GetExistingChecks() (*CheckResourceRequest, error) {
+// GetExistingChecks will query the backend to retrieve all of the checks for
+// this customer's bastion. It authenticates before retrieving the
+// configuration.
+
+func (c *Checker) GetExistingChecks() ([]*Check, error) {
 	cache := &auth.BastionAuthCache{Tokens: make(map[string]*auth.BastionAuthToken)}
 
 	var checks = &CheckResourceRequest{}
@@ -419,8 +441,10 @@ func (c *Checker) GetExistingChecks() (*CheckResourceRequest, error) {
 		}
 	}
 
-	return checks, nil
+	return checks.Checks, nil
 }
+
+// Start all of the checker loops, grpc server, etc.
 
 func (c *Checker) Start() error {
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", c.Port))
@@ -437,6 +461,7 @@ func (c *Checker) Start() error {
 	return nil
 }
 
+// Stop all of the checker loops, grpc server, etc.
 func (c *Checker) Stop() {
 	c.Runner.Stop()
 	c.grpcServer.Stop()
