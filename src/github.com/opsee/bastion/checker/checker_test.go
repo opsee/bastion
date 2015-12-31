@@ -123,14 +123,10 @@ func (s *CheckerTestSuite) TearDownTest() {
  * SynchronizeChecks()
  ******************************************************************************/
 func (s *CheckerTestSuite) TestSynchronizeChecks() {
-	req, err := s.Checker.GetExistingChecks()
+	checks, err := s.Checker.GetExistingChecks()
 	assert.NoError(s.T(), err)
-	assert.Equal(s.T(), len(req.Checks), 2)
-	assert.NotNil(s.T(), req)
-
-	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
-	assert.NoError(s.T(), err)
-	assert.NotNil(s.T(), resp)
+	assert.NotNil(s.T(), checks)
+	assert.Equal(s.T(), len(checks), 2)
 }
 
 /*******************************************************************************
@@ -281,11 +277,21 @@ func (s *CheckerTestSuite) TestUpdateCheck() {
 	req := &CheckResourceRequest{
 		Checks: []*Check{s.Common.PassingCheck()},
 	}
-	resp, err := s.CheckerClient.Client.UpdateCheck(s.Context, req)
+	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
 	assert.NoError(s.T(), err)
 	assert.NotNil(s.T(), resp)
 	assert.Equal(s.T(), s.Common.PassingCheck().Id, resp.Responses[0].Check.Id)
 
+	check := resp.Responses[0].Check
+	newInterval := int32(30)
+	check.Interval = newInterval
+
+	req = &CheckResourceRequest{
+		Checks: []*Check{check},
+	}
+	resp, err = s.CheckerClient.Client.UpdateCheck(s.Context, req)
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), newInterval, resp.Responses[0].Check.Interval)
 }
 
 func TestCheckerTestSuite(t *testing.T) {

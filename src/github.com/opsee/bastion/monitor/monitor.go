@@ -14,7 +14,8 @@ const (
 
 var (
 	components = []string{
-		"connector",
+		"runner",
+		"aws_command",
 		"checker",
 		"discovery",
 	}

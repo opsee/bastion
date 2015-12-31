@@ -57,7 +57,6 @@ func (c *Component) loop() {
 				// create a timestamp form
 				timeoutTime := time.Unix(0, c.State.HeartBeat.Timestamp).Add(HeartBeatTimeout)
 
-				log.WithFields(log.Fields{"component": c.Name, "heartbeat": c.State.HeartBeat, "timoutTime": timeoutTime}).Warning("component state bad before timeout.")
 				if t.After(timeoutTime) {
 					c.State.OK = false
 					log.WithFields(log.Fields{"component": c.Name, "heartbeat": nil, "timoutTime": timeoutTime, "state OK": c.State.OK}).Warning("component timed out.")

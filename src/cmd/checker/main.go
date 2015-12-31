@@ -10,7 +10,6 @@ import (
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/portmapper"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -30,14 +29,14 @@ func main() {
 	config := config.GetConfig()
 	log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId}).Info("starting up")
 
-	checks := checker.NewChecker()
+	newChecker := checker.NewChecker()
 	runner, err := checker.NewRemoteRunner(runnerConfig)
 	if err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
-	checks.Runner = runner
+	newChecker.Runner = runner
 	scheduler := checker.NewScheduler()
-	checks.Scheduler = scheduler
+	newChecker.Scheduler = scheduler
 
 	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
 
@@ -46,10 +45,24 @@ func main() {
 	}
 
 	scheduler.Producer = producer
-	defer checks.Stop()
+	defer newChecker.Stop()
 
-	checks.Port = 4000
-	if err := checks.Start(); err != nil {
+	newChecker.Port = 4000
+
+	// This must be done prior to starting the GRPC server -- otherwise, a
+	// GRPC client could screw us up.
+
+	existingChecks, err := newChecker.GetExistingChecks()
+	if err != nil {
+		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "sync checks", "error": err}).Error("failed to sync checks")
+	}
+	for _, check := range existingChecks {
+		scheduler.CreateCheck(check)
+	}
+
+	// Now it's safe to start GRPC.
+
+	if err := newChecker.Start(); err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
 		log.Fatal(err.Error())
 	}
@@ -61,28 +74,8 @@ func main() {
 	}
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
-	portmapper.Register(moduleName, checks.Port)
-	defer portmapper.Unregister(moduleName, checks.Port)
-
-	req, err := checks.GetExistingChecks()
-	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "sync checks", "error": err}).Error("failed to syncd checks")
-	} else {
-		ctx := context.Background()
-		checkerClient, err := checker.NewRpcClient("127.0.0.1", 4000)
-		if err != nil {
-			log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "sync check", "error": err}).Warn("couldn't sync checks. failed to create grpc client.")
-		} else {
-			for _, check := range req.Checks {
-				resp, err := checkerClient.Client.CreateCheck(ctx, &checker.CheckResourceRequest{Checks: []*checker.Check{check}})
-				if err != nil {
-					log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "sync check", "check": check, "error": err}).Warn("couldn't sync check.")
-				} else {
-					log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "sync check", "check": check, "previous check": resp}).Info("syncd check.")
-				}
-			}
-		}
-	}
+	portmapper.Register(moduleName, newChecker.Port)
+	defer portmapper.Unregister(moduleName, newChecker.Port)
 
 	err = <-heart.Beat()
 
