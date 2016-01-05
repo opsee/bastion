@@ -12,10 +12,12 @@ machine:
     VPN_REMOTE: "bastion.opsee.com"
     DNS_SERVER: 169.254.169.253
     NSQD_HOST: nsqd.in.opsee.com
+experimental:
+  notify:
+    branches:
+      only:
+        - master
 notify:
-  branches:
-    only:
-      - master
   webhooks:
     - url: https://hooks.slack.com/services/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
 dependencies:
