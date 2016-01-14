@@ -3,6 +3,14 @@ package checker
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"os"
+	"reflect"
+	"sync"
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/golang/protobuf/proto"
@@ -12,20 +20,14 @@ import (
 	"github.com/opsee/bastion/logging"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"io/ioutil"
-	"net"
-	"net/http"
-	"os"
-	"reflect"
-	"sync"
-	"time"
 )
 
 const (
 	// MaxTestTargets is the maximum number of test-check targets returned
 	// from the resolver that we use.
 
-	MaxTestTargets = 5
+	MaxTestTargets      = 5
+	NumCheckSyncRetries = 11
 )
 
 var (
@@ -398,7 +400,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 // this customer's bastion. It authenticates before retrieving the
 // configuration.
 
-func (c *Checker) GetExistingChecks() ([]*Check, error) {
+func (c *Checker) GetExistingChecks(tries int) ([]*Check, error) {
 	cache := &auth.BastionAuthCache{Tokens: make(map[string]*auth.BastionAuthToken)}
 
 	var checks = &CheckResourceRequest{}
@@ -418,26 +420,43 @@ func (c *Checker) GetExistingChecks() ([]*Check, error) {
 	}
 
 	if token, err := cache.GetToken(request); err != nil || token == nil {
-		logrus.WithFields(logrus.Fields{"service": "checker", "Error": err.Error()}).Fatal("Error initializing BastionAuth")
+		log.WithFields(logrus.Fields{"service": "checker", "Error": err.Error()}).Fatal("Error initializing BastionAuth")
 		return nil, err
 	} else {
 		theauth, header := token.AuthHeader()
-		logrus.WithFields(logrus.Fields{"service": "checker", "Auth header:": theauth + " " + header}).Info("Synchronizing checks")
+		log.WithFields(logrus.Fields{"service": "checker", "Auth header:": theauth + " " + header}).Info("Synchronizing checks")
+		success := false
 
-		req, err := http.NewRequest("GET", request.TargetEndpoint, nil)
-		req.Header.Set("Accept", "application/x-protobuf")
-		req.Header.Set(theauth, header)
+		for i := 0; i < tries; i++ {
+			req, err := http.NewRequest("GET", request.TargetEndpoint, nil)
+			if err != nil {
+				log.WithFields(logrus.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to synch checks.")
+				continue
+			}
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			logrus.WithFields(logrus.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
-			return nil, err
+			req.Header.Set("Accept", "application/x-protobuf")
+			req.Header.Set(theauth, header)
 
-		} else {
-			defer resp.Body.Close()
-			body, _ := ioutil.ReadAll(resp.Body)
-			proto.Unmarshal(body, checks)
+			timeout := time.Duration(10 * time.Second)
+			client := &http.Client{
+				Timeout: timeout,
+			}
+			resp, err := client.Do(req)
+			if err != nil {
+				log.WithFields(logrus.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
+				continue
+			} else {
+				defer resp.Body.Close()
+				body, _ := ioutil.ReadAll(resp.Body)
+				proto.Unmarshal(body, checks)
+				success = true
+				break
+			}
+
+			time.Sleep((1 << uint(i+1)) * time.Millisecond * 10)
+		}
+		if !success {
+			return nil, fmt.Errorf("Couldn't synchronize checks with bartnet.")
 		}
 	}
 
@@ -445,19 +464,30 @@ func (c *Checker) GetExistingChecks() ([]*Check, error) {
 }
 
 // Start all of the checker loops, grpc server, etc.
-
 func (c *Checker) Start() error {
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", c.Port))
 	if err != nil {
 		return err
 	}
 
-	RegisterCheckerServer(c.grpcServer, c)
-	go c.grpcServer.Serve(listen)
+	// Start the scheduler so that we immediately begin consuming from the run chan
+	// otherwise we could fill up that chan and block
 	if err := c.Scheduler.Start(); err != nil {
 		return err
 	}
 
+	// Now Get existing checks from bartnet
+	existingChecks, err := c.GetExistingChecks(NumCheckSyncRetries)
+	if err != nil {
+		log.WithFields(logrus.Fields{"service": "checker", "event": "sync checks", "error": err}).Error("failed to sync checks")
+	}
+	for _, check := range existingChecks {
+		c.Scheduler.CreateCheck(check)
+	}
+
+	// Now start and register the GRPC server and allow users to create/edit/etc checks
+	go c.grpcServer.Serve(listen)
+	RegisterCheckerServer(c.grpcServer, c)
 	return nil
 }
 

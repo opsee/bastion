@@ -123,7 +123,7 @@ func (s *CheckerTestSuite) TearDownTest() {
  * SynchronizeChecks()
  ******************************************************************************/
 func (s *CheckerTestSuite) TestSynchronizeChecks() {
-	checks, err := s.Checker.GetExistingChecks()
+	checks, err := s.Checker.GetExistingChecks(3)
 	assert.NoError(s.T(), err)
 	assert.NotNil(s.T(), checks)
 	assert.Equal(s.T(), len(checks), 2)
