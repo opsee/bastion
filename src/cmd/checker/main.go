@@ -48,20 +48,6 @@ func main() {
 	defer newChecker.Stop()
 
 	newChecker.Port = 4000
-
-	// This must be done prior to starting the GRPC server -- otherwise, a
-	// GRPC client could screw us up.
-
-	existingChecks, err := newChecker.GetExistingChecks()
-	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "sync checks", "error": err}).Error("failed to sync checks")
-	}
-	for _, check := range existingChecks {
-		scheduler.CreateCheck(check)
-	}
-
-	// Now it's safe to start GRPC.
-
 	if err := newChecker.Start(); err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
 		log.Fatal(err.Error())
