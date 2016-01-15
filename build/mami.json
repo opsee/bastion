@@ -18,6 +18,10 @@
             "instructions":["mv /tmp/staging/docker_config.json /home/core/.dockercfg"]
         },
         {
+            "type": "systemd",
+            "unit-file":"build/docker-wipe.service"
+        },
+        {
             "type":"systemd",
             "unit-file":"build/env-lock.path"
         },
