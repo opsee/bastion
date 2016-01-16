@@ -2,9 +2,11 @@ package checker
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"golang.org/x/net/context"
@@ -43,7 +45,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		if err := proto.Unmarshal(m.Body, check); err != nil {
 			return err
 		}
-		logger.Debug("Entering NSQRunner handler. Check: %s", check.String())
+		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
 
 		timestamp := &Timestamp{
 			Seconds: int64(time.Now().Unix()),
@@ -53,7 +55,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
 		responseChan, err := runner.RunCheck(ctx, check)
 		if err != nil {
-			logger.Error(err.Error())
+			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
 			result := &CheckResult{
 				CustomerId: cfg.CustomerID,
@@ -69,18 +71,18 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 
 			msg, err := proto.Marshal(result)
 			if err != nil {
-				logger.Error(err.Error())
+				log.WithError(err).Error("Error marshaling CheckResult")
 				return err
 			}
 			if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
-				logger.Error(err.Error())
+				log.WithError(err).Error("Error publishing CheckResult")
 				return err
 			}
 			return nil
 		}
 		// At this point we have successfully run/are running the check. Indicate
 		// as such.
-		logger.Info("Runnng check: %s", check.Id)
+		log.WithFields(log.Fields{"check_id": check.Id}).Info("Runnng check.")
 
 		// TODO(greg): We're currently ignoring the deadline we _just_ set on this
 		// this.
@@ -100,18 +102,18 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 
 		msg, err := proto.Marshal(result)
 		if err != nil {
-			logger.Error(err.Error())
+			log.WithError(err).Error("Error marshaling CheckResult")
 			cancel()
 			return err
 		}
 
 		logger.Debug("NSQRunner handler publishing result: %s", result.String())
 		if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
-			logger.Error(err.Error())
+			log.WithError(err).Error("Error publishing CheckResult")
 			cancel()
 			return err
 		}
-		logger.Info("Published result for check: %s", check.Id)
+		log.WithFields(log.Fields{"check_id": check.Id}).Info("Published result for check")
 
 		return nil
 	}), cfg.MaxHandlers)
@@ -141,16 +143,20 @@ func (r *NSQRunner) Stop() {
 // concurrent use. It provides an asynchronous API for submitting jobs and
 // manages its own concurrency.
 type Runner struct {
-	resolver   Resolver
-	dispatcher *Dispatcher
+	resolver    Resolver
+	dispatcher  *Dispatcher
+	slateClient *SlateClient
 }
 
 // NewRunner returns a runner associated with a particular resolver.
 func NewRunner(resolver Resolver) *Runner {
 	dispatcher := NewDispatcher()
+
+	slateUrl := fmt.Sprintf("http://%s/check", os.Getenv("SLATE_HOST"))
 	return &Runner{
-		dispatcher: dispatcher,
-		resolver:   resolver,
+		dispatcher:  dispatcher,
+		resolver:    resolver,
+		slateClient: NewSlateClient(slateUrl),
 	}
 }
 
@@ -192,22 +198,22 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 	// CheckResponse indicating that there was an error with the Check.
 	c, err := UnmarshalAny(check.CheckSpec)
 	if err != nil {
-		logger.Error("dispatch - unable to unmarshal check: %s", err.Error())
+		log.WithError(err).Error("dispatch - unable to unmarshal check")
 		return nil, err
 	}
-	logger.Debug("dispatch - check = %s", check)
+	log.WithFields(log.Fields{"check": check}).Debug("dispatch check")
 
 	tg := TaskGroup{}
 
 	for _, target := range targets {
-		logger.Debug("dispatch - Handling target: %s", *target)
+		log.WithFields(log.Fields{"target": target}).Debug("dispatch - Handling target.")
 
 		var request Request
 		switch typedCheck := c.(type) {
 		case *HttpCheck:
-			logger.Debug("dispatch - dispatching for target %s", target.Address)
+			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
 			if target.Address == "" {
-				logger.Error("Target missing address: %s", *target)
+				log.WithFields(log.Fields{"target": target}).Error("Target missing address.")
 				continue
 			}
 			uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
@@ -218,13 +224,12 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 				Body:    typedCheck.Body,
 			}
 		default:
-			logger.Error("dispatch - Unknown check type: %s", reflect.TypeOf(c))
+			log.WithFields(log.Fields{"type": reflect.TypeOf(c)}).Error("dispatch - Unknown check type.")
 			return nil, fmt.Errorf("Unrecognized check type.")
 		}
 
-		logger.Debug("dispatch - Creating task from request: %s", request)
 		t := reflect.TypeOf(request).Elem().Name()
-		logger.Debug("dispatch - Request type: %s", t)
+		log.WithFields(log.Fields{"request": request, "type": t}).Debug("dispatch - Creating task from request.")
 
 		task := &Task{
 			Target:  target,
@@ -242,12 +247,15 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 
 func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, responses chan *CheckResponse) {
 	for t := range tasks {
-		logger.Debug("runCheck - Handling finished task: %s", *t)
+		log.WithFields(log.Fields{"task": *t}).Debug("runCheck - Handling finished task.")
 		var (
 			responseError string
 			responseAny   *Any
 			err           error
+			passing       bool
 		)
+		passing = false
+
 		if t.Response.Response != nil {
 			responseAny, err = MarshalAny(t.Response.Response)
 			if err != nil {
@@ -258,12 +266,23 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, r
 		if t.Response.Error != nil {
 			responseError = t.Response.Error.Error()
 		}
+
 		response := &CheckResponse{
 			Target:   t.Target,
 			Response: responseAny,
 			Error:    responseError,
 		}
-		logger.Debug("runCheck - Emitting CheckResponse: %s", *response)
+
+		// If we have a responseError, then don't both sending it to slate.
+		if response.Error == "" {
+			passing, err = r.slateClient.CheckAssertions(check, t.Response.Response)
+			if err != nil {
+				log.WithError(err).Error("Could not contact slate.")
+			}
+		}
+		log.WithFields(log.Fields{"response": *response}).Debug("runCheck - Emitting CheckResponse.")
+
+		response.Passing = passing
 		responses <- response
 	}
 }

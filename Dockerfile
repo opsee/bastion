@@ -2,6 +2,7 @@ FROM gliderlabs/alpine:3.2
 
 ENV BARTNET_HOST="https://bartnet.in.opsee.com"
 ENV NSQD_HOST="nsqd:4150"
+ENV SLATE_HOST="slate:7000"
 ENV CA_PATH="ca.pem"
 ENV CERT_PATH="cert.pem"
 ENV KEY_PATH="key.pem"

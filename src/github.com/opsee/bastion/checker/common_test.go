@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
-	"github.com/opsee/bastion/logging"
-
+	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
@@ -41,11 +41,12 @@ func (t TestCommonStubs) HTTPRequest() *HTTPRequest {
 
 func (t TestCommonStubs) Check() *Check {
 	return &Check{
-		Id:        "stub-check-id",
-		Interval:  60,
-		Name:      "fuck off",
-		Target:    &Target{},
-		CheckSpec: &Any{},
+		Id:         "stub-check-id",
+		Interval:   60,
+		Name:       "fuck off",
+		Target:     &Target{},
+		CheckSpec:  &Any{},
+		Assertions: []*Assertion{},
 	}
 }
 
@@ -274,11 +275,16 @@ func setupTestEnv() {
 		return
 	}
 
-	logLevel := os.Getenv("LOG_LEVEL")
-	if logLevel == "" {
-		logLevel = "ERROR"
+	envLevel := strings.ToLower(os.Getenv("LOG_LEVEL"))
+	if envLevel == "" {
+		envLevel = "error"
 	}
-	logging.SetLevel(logLevel, "checker")
+
+	logLevel, err := log.ParseLevel(envLevel)
+	if err != nil {
+		panic(err)
+	}
+	log.SetLevel(logLevel)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Debug("Handling request: %s", *r)
