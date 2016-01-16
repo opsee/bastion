@@ -87,8 +87,12 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		// TODO(greg): We're currently ignoring the deadline we _just_ set on this
 		// this.
 		var responses []*CheckResponse
+		passing := true
 		for response := range responseChan {
 			responses = append(responses, response)
+			if !response.Passing {
+				passing = false
+			}
 		}
 
 		result := &CheckResult{
@@ -98,6 +102,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			CheckName:  check.Name,
 			Timestamp:  timestamp,
 			Responses:  responses,
+			Passing:    passing,
 		}
 
 		msg, err := proto.Marshal(result)

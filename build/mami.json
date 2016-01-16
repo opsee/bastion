@@ -44,7 +44,7 @@
         {
             "type":"systemd",
             "unit-file":"build/slate.service"
-        }
+        },
         {
             "type":"systemd",
             "unit-file":"build/register.service"
