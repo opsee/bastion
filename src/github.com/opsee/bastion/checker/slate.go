@@ -9,6 +9,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"golang.org/x/net/context"
 )
 
 // SlateClient -- for clienting slates.
@@ -46,7 +47,7 @@ func NewSlateClient(slateUrl string) *SlateClient {
 
 // CheckAssertions issues a request to Slate to determine if a check response
 // is passing or failing.
-func (s *SlateClient) CheckAssertions(check *Check, checkResponse interface{}) (bool, error) {
+func (s *SlateClient) CheckAssertions(ctx context.Context, check *Check, checkResponse interface{}) (bool, error) {
 	var (
 		body        []byte
 		success     bool
@@ -105,6 +106,10 @@ func (s *SlateClient) CheckAssertions(check *Check, checkResponse interface{}) (
 	ERROR:
 		if clientError != nil {
 			log.WithFields(log.Fields{"namespace": "slate", "function": "CheckAssertions", "request": string(reqBody)}).WithError(clientError).Error("Issuing POST request to Slate.")
+			// Check to see if the context was cancelled/deadline was exceeded.
+			if ctx.Err() != nil {
+				return success, ctx.Err()
+			}
 			time.Sleep((1 << uint(i+1)) * time.Millisecond * 10)
 			bodyReader.Seek(0, 0)
 			continue

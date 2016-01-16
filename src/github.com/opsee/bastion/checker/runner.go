@@ -275,7 +275,7 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, r
 
 		// If we have a responseError, then don't both sending it to slate.
 		if response.Error == "" {
-			passing, err = r.slateClient.CheckAssertions(check, t.Response.Response)
+			passing, err = r.slateClient.CheckAssertions(ctx, check, t.Response.Response)
 			if err != nil {
 				log.WithError(err).Error("Could not contact slate.")
 			}

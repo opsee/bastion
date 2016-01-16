@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/net/context"
 )
 
 func getSlateHost() string {
@@ -40,7 +41,7 @@ func TestPassingSlateIntegration(t *testing.T) {
 	check := testingSlateCheck()
 	response := testingSlateResponse()
 	client := NewSlateClient(getSlateHost())
-	passing, err := client.CheckAssertions(check, response)
+	passing, err := client.CheckAssertions(context.Background(), check, response)
 	assert.NoError(t, err)
 	if err != nil {
 		t.Fatal(err)
@@ -57,7 +58,7 @@ func TestFailingSlateIntegration(t *testing.T) {
 	response := testingSlateResponse()
 	response.Code = int32(400)
 	client := NewSlateClient(getSlateHost())
-	passing, err := client.CheckAssertions(check, response)
+	passing, err := client.CheckAssertions(context.Background(), check, response)
 	assert.NoError(t, err)
 	if err != nil {
 		t.Fatal(err)
