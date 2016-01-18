@@ -27,7 +27,7 @@ var (
 	httpClient     = &http.Client{}
 	ec2Client      = &ec2.EC2{}
 	heartbeat      = &heart.Heart{}
-	hacked         = make(chan string, 180) // the limit is 100 SGs per VPC, 180s to unhack => 180 groups max
+	hacked         = make(map[string]bool)
 	log            = logrus.New()
 	sc             awscan.EC2Scanner
 )
@@ -209,22 +209,20 @@ func UnHack(fsm *fsm) *StateExitInfo {
 			},
 		}}
 
-	// remove self from indexed security groups
 	for {
-		select {
-		case sg := <-hacked:
+		for sgid, _ := range hacked {
 			_, err := ec2Client.RevokeSecurityGroupIngress(&ec2.RevokeSecurityGroupIngressInput{
-				GroupId:       aws.String(sg),
+				GroupId:       aws.String(sgid),
 				IpPermissions: ippermission,
 			})
 			if err != nil {
-				hacked <- sg // write back to hacked channel to try again
-				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Warn("Retrying. bastion failed to UNpwn: ", sg)
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Warn("Retrying. bastion failed to UNpwn: ", sgid)
 			} else {
-				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", sg)
+				delete(hacked, sgid)
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion UNpwned: ", sgid)
 			}
-		default:
-			log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion finished unhacking")
+		}
+		if len(hacked) == 0 {
 			return &StateExitInfo{NextState: STATE_EXIT_SUCCESS, ExitCode: StateExitSuccess}
 		}
 	}
@@ -264,44 +262,43 @@ func Hack(fsm *fsm) *StateExitInfo {
 		}}
 
 	sgs, err := sc.ScanSecurityGroups()
-
 	if err != nil {
 		log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("security group discovery error")
 	}
 
 	for _, sg := range sgs {
 		ingressRuleFound := false
-		if *sg.GroupId == *bastionSgId {
+		if sg.GroupId == nil || *sg.GroupId == *bastionSgId {
 			continue
 		}
+
 		for _, perm := range sg.IpPermissions {
 			for _, pr := range perm.UserIdGroupPairs {
 				if *pr.GroupId == *bastionSgId {
 					ingressRuleFound = true
+					break
 				}
 			}
 		}
 
-		// if a rule doesn't yet exist for our bastion, create one
 		if !ingressRuleFound {
 			_, err := ec2Client.AuthorizeSecurityGroupIngress(&ec2.AuthorizeSecurityGroupIngressInput{
 				GroupId:       sg.GroupId,
 				IpPermissions: ippermission,
 			})
-			if err != nil {
-				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID, "err": err.Error()}).Error("bastion failed to pwn: ", *sg.GroupId)
-			} else {
-				// cover the extremely unlikely case where there are more than 512 security groups (VPC max is 100).
-				select {
-				case hacked <- *sg.GroupId:
-					log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("bastion pwned: ", *sg.GroupId)
-				default:
-					log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Error("We've hit the security group limit! Hacked but won't unhack: ", *sg.GroupId)
-				}
+
+			if err == nil {
+				hacked[*sg.GroupId] = true
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("Bastion pwned: ", *sg.GroupId)
+			}
+
+		} else {
+			if _, ok := hacked[*sg.GroupId]; !ok {
+				hacked[*sg.GroupId] = true
+				log.WithFields(logrus.Fields{"state": fsm.GetCurrentState().ID}).Info("Recovered state: bastion previously pwned: ", *sg.GroupId)
 			}
 		}
 
-		// see if we've gotten any signals
 		select {
 		case s := <-signalsChannel:
 			switch fsm.HandleSignal(fsm.GetCurrentState(), s) {
