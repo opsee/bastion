@@ -5,10 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 
-	"github.com/opsee/bastion/logging"
-
+	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
@@ -41,11 +39,12 @@ func (t TestCommonStubs) HTTPRequest() *HTTPRequest {
 
 func (t TestCommonStubs) Check() *Check {
 	return &Check{
-		Id:        "stub-check-id",
-		Interval:  60,
-		Name:      "fuck off",
-		Target:    &Target{},
-		CheckSpec: &Any{},
+		Id:         "stub-check-id",
+		Interval:   60,
+		Name:       "fuck off",
+		Target:     &Target{},
+		CheckSpec:  &Any{},
+		Assertions: []*Assertion{},
 	}
 }
 
@@ -107,7 +106,7 @@ type testResolver struct {
 }
 
 func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
-	logger.Debug("Resolving target: %s", tgt)
+	log.Debug("Resolving target: %s", tgt)
 	if tgt.Id == "empty" {
 		return []*Target{}, nil
 	}
@@ -183,11 +182,11 @@ func resetNsq(host string, qmap resetNsqConfig) {
 			Method: "POST",
 			URL:    u,
 		}
-		logger.Info("Making request to NSQD: %s", r.URL)
+		log.Info("Making request to NSQD: %s", r.URL)
 		resp, err := client.Do(r)
 		defer resp.Body.Close()
 		body, _ := ioutil.ReadAll(resp.Body)
-		logger.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
+		log.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
 		return err
 	}
 
@@ -274,14 +273,8 @@ func setupTestEnv() {
 		return
 	}
 
-	logLevel := os.Getenv("LOG_LEVEL")
-	if logLevel == "" {
-		logLevel = "ERROR"
-	}
-	logging.SetLevel(logLevel, "checker")
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		logger.Debug("Handling request: %s", *r)
+		log.Debug("Handling request: %s", *r)
 		headerMap := w.Header()
 		headerMap["header"] = []string{"ok"}
 		w.WriteHeader(200)

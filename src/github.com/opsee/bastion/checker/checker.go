@@ -8,16 +8,16 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/nu7hatch/gouuid"
 	"github.com/opsee/bastion/auth"
-	"github.com/opsee/bastion/logging"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -25,20 +25,32 @@ import (
 const (
 	// MaxTestTargets is the maximum number of test-check targets returned
 	// from the resolver that we use.
-
 	MaxTestTargets      = 5
 	NumCheckSyncRetries = 11
+
+	// BastionProtoVersion is used for feature flagging fields in various Bastion
+	// message types that specify a version number.
+	BastionProtoVersion = 1
 )
 
 var (
-	logger   = logging.GetLogger("checker")
 	registry = make(map[string]reflect.Type)
-	log      = logrus.New()
 )
 
 func init() {
+	// Check types for Any recomposition go here.
 	registry["HttpCheck"] = reflect.TypeOf(HttpCheck{})
-	logging.SetLevel("ERROR", "checker")
+
+	envLevel := strings.ToLower(os.Getenv("LOG_LEVEL"))
+	if envLevel == "" {
+		envLevel = "error"
+	}
+
+	logLevel, err := log.ParseLevel(envLevel)
+	if err != nil {
+		panic(err)
+	}
+	log.SetLevel(logLevel)
 }
 
 // UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
@@ -50,10 +62,10 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 	instance := reflect.New(registry[class]).Interface()
 	err := proto.Unmarshal(bytes, instance.(proto.Message))
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "unmarshall returned error", "error": "couldn't unmarshall *Any"}).Error(err.Error())
+		log.WithFields(log.Fields{"service": "checker", "event": "unmarshall returned error", "error": "couldn't unmarshall *Any"}).Error(err.Error())
 		return nil, err
 	}
-	log.WithFields(logrus.Fields{"service": "checker", "event": "unmarshal successful"}).Info("unmarshaled Any to: ", instance)
+	log.WithFields(log.Fields{"service": "checker", "event": "unmarshal successful"}).Info("unmarshaled Any to: ", instance)
 
 	return instance, nil
 }
@@ -89,7 +101,7 @@ func handleError(err error) string {
 	if mErr != nil {
 		return `{"type": "error", "error": "cannot determine error"}`
 	}
-	log.WithFields(logrus.Fields{"service": "checker", "event": "handleError() error", "error": err}).Warn(errStr)
+	log.WithFields(log.Fields{"service": "checker", "event": "handleError() error", "error": err}).Warn(string(errStr))
 
 	return string(errStr)
 }
@@ -101,13 +113,13 @@ func MarshalAny(i interface{}) (*Any, error) {
 	msg, ok := i.(proto.Message)
 	if !ok {
 		err := fmt.Errorf("Unable to convert to proto.Message: %v", i)
-		log.WithFields(logrus.Fields{"service": "checker", "event": "marshalling error"}).Error(err.Error())
+		log.WithFields(log.Fields{"service": "checker", "event": "marshalling error"}).Error(err.Error())
 		return nil, err
 	}
 	bytes, err := proto.Marshal(msg)
 
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "marshalling error"}).Error(err.Error())
+		log.WithFields(log.Fields{"service": "checker", "event": "marshalling error"}).Error(err.Error())
 		return nil, err
 	}
 
@@ -136,12 +148,12 @@ type RemoteRunner struct {
 func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, nsq.NewConfig())
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't create new consumer")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't create new consumer")
 		return nil, err
 	}
 	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't create new producer")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't create new producer")
 		return nil, err
 	}
 
@@ -155,21 +167,21 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 		chk := &CheckResult{}
 		err := proto.Unmarshal(m.Body, chk)
 		if err != nil {
-			log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't add handler function")
+			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't add handler function")
 			return err
 		}
 
-		log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("handling check")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("handling check")
 
 		var respChan chan *CheckResult
 
 		r.withLock(func() {
 			respChan = r.requestMap[chk.CheckId]
-			log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("got response channel ", respChan)
+			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("got response channel ", respChan)
 		})
 
 		if respChan == nil {
-			log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Warn("got unexpected results")
+			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Warn("got unexpected results")
 			return nil
 		}
 
@@ -180,14 +192,14 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 		// nice to really understand what the cost of this approach is, but I don't
 		// think it's particularly important. -greg
 		respChan <- chk
-		log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("RemoteRunner handler sent results to channel")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("RemoteRunner handler sent results to channel")
 		close(respChan)
 		return nil
 	}), cfg.MaxHandlers)
 
 	err = consumer.ConnectToNSQD(cfg.NSQDHost)
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("error connecting to nsqd")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("error connecting to nsqd")
 		return nil, err
 	}
 
@@ -206,7 +218,7 @@ func (r *RemoteRunner) withLock(f func()) {
 // context deadline unless you want this to block forever.
 
 func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, error) {
-	log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("Running check")
+	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("Running check")
 
 	var (
 		id  string
@@ -215,7 +227,7 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 	if chk.Id == "" {
 		uid, err := uuid.NewV4()
 		if err != nil {
-			log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String(), "error": err.Error()}).Error("Error creating UUID")
+			log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String(), "error": err.Error()}).Error("Error creating UUID")
 			return nil, err
 		}
 		id = uid.String()
@@ -228,31 +240,31 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 
 	r.withLock(func() {
 		r.requestMap[id] = respChan
-		log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: Set response channel for request: ", id)
+		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: Set response channel for request: ", id)
 	})
 
 	defer func() {
 		r.withLock(func() {
 			delete(r.requestMap, id)
-			log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("deleted response channel for request: ", id)
+			log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("deleted response channel for request: ", id)
 		})
 	}()
 
 	msg, err := proto.Marshal(chk)
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "error": err.Error()}).Error("error marshalling")
+		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "error": err.Error()}).Error("error marshalling")
 		return nil, err
 	}
 
-	log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: publishing request to run check")
+	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: publishing request to run check")
 	r.producer.Publish(r.config.ProducerQueueName, msg)
 
 	select {
 	case result := <-respChan:
-		log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: Got result from resopnse channel: %s", result.String())
+		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: Got result from resopnse channel: %s", result.String())
 		return result, nil
 	case <-ctx.Done():
-		log.WithFields(logrus.Fields{"service": "checker", "event": "RunCheck", "error": ctx.Err()}).Error("context error")
+		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "error": ctx.Err()}).Error("context error")
 		return nil, ctx.Err()
 	}
 }
@@ -287,7 +299,7 @@ func NewChecker() *Checker {
 }
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
-	log.WithFields(logrus.Fields{"service": "checker", "event": "invoke", "command": cmd}).Info("handling request")
+	log.WithFields(log.Fields{"service": "checker", "event": "invoke", "command": cmd}).Info("handling request")
 
 	responses := make([]*CheckResourceResponse, len(req.Checks))
 	response := &ResourceResponse{
@@ -311,7 +323,7 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 			}
 		}
 	}
-	log.WithFields(logrus.Fields{"service": "checker", "event": "invoke"}).Info("Response: ", response)
+	log.WithFields(log.Fields{"service": "checker", "event": "invoke"}).Info("Response: ", response)
 	return response, nil
 }
 
@@ -358,16 +370,16 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*
 // ish pattern. to logging, instrumentation, etc.
 
 func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
-	log.WithFields(logrus.Fields{"service": "checker", "event": "TestCheck"}).Info("Handling request: %v", req)
+	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Info("Handling request: %v", req)
 
 	if req.Deadline == nil {
 		err := fmt.Errorf("Deadline required but missing in request. %v", req)
-		log.WithFields(logrus.Fields{"service": "checker", "event": "TestCheck", "error": err.Error()}).Info("Missing deadline in request!")
+		log.WithFields(log.Fields{"service": "checker", "event": "TestCheck", "error": err.Error()}).Info("Missing deadline in request!")
 		return nil, err
 	}
 
 	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
-	log.WithFields(logrus.Fields{"service": "checker", "event": "TestCheck"}).Info("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
+	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Info("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
 	// We add the request deadline here, and the Runner will adhere to that
 	// deadline.
 	ctx, _ = context.WithDeadline(ctx, deadline)
@@ -420,17 +432,17 @@ func (c *Checker) GetExistingChecks(tries int) ([]*Check, error) {
 	}
 
 	if token, err := cache.GetToken(request); err != nil || token == nil {
-		log.WithFields(logrus.Fields{"service": "checker", "Error": err.Error()}).Fatal("Error initializing BastionAuth")
+		log.WithFields(log.Fields{"service": "checker", "Error": err.Error()}).Fatal("Error initializing BastionAuth")
 		return nil, err
 	} else {
 		theauth, header := token.AuthHeader()
-		log.WithFields(logrus.Fields{"service": "checker", "Auth header:": theauth + " " + header}).Info("Synchronizing checks")
+		log.WithFields(log.Fields{"service": "checker", "Auth header:": theauth + " " + header}).Info("Synchronizing checks")
 		success := false
 
 		for i := 0; i < tries; i++ {
 			req, err := http.NewRequest("GET", request.TargetEndpoint, nil)
 			if err != nil {
-				log.WithFields(logrus.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to synch checks.")
+				log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to synch checks.")
 				continue
 			}
 
@@ -443,7 +455,7 @@ func (c *Checker) GetExistingChecks(tries int) ([]*Check, error) {
 			}
 			resp, err := client.Do(req)
 			if err != nil {
-				log.WithFields(logrus.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
+				log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
 				continue
 			} else {
 				defer resp.Body.Close()
@@ -479,7 +491,7 @@ func (c *Checker) Start() error {
 	// Now Get existing checks from bartnet
 	existingChecks, err := c.GetExistingChecks(NumCheckSyncRetries)
 	if err != nil {
-		log.WithFields(logrus.Fields{"service": "checker", "event": "sync checks", "error": err}).Error("failed to sync checks")
+		log.WithFields(log.Fields{"service": "checker", "event": "sync checks", "error": err}).Error("failed to sync checks")
 	}
 	for _, check := range existingChecks {
 		c.Scheduler.CreateCheck(check)

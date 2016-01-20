@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 const httpWorkerTaskType = "HTTPRequest"
@@ -72,7 +74,7 @@ func (r *HTTPRequest) Do() *Response {
 
 	defer resp.Body.Close()
 
-	logger.Debug("Attempting to read body of response...")
+	log.Debug("Attempting to read body of response...")
 	// WARNING: You cannot do this.
 	//
 	// 	body, err := ioutil.ReadAll(resp.Body)
@@ -138,15 +140,15 @@ func NewHTTPWorker(queue chan Worker) Worker {
 func (w *HTTPWorker) Work(task *Task) *Task {
 	request, ok := task.Request.(*HTTPRequest)
 	if ok {
-		logger.Debug("request: ", request)
+		log.Debug("request: ", request)
 		if response := request.Do(); response.Error != nil {
-			logger.Error("error processing request: %s", *task)
-			logger.Error("error: %s", response.Error.Error())
+			log.Error("error processing request: %s", *task)
+			log.Error("error: %s", response.Error.Error())
 			task.Response = &Response{
 				Error: response.Error,
 			}
 		} else {
-			logger.Debug("response: ", response)
+			log.Debug("response: ", response)
 			task.Response = response
 		}
 	} else {

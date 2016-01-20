@@ -1,0 +1,99 @@
+etcd:
+  image: quay.io/coreos/etcd:v2.0.8
+  command: -name bastion_etcd -advertise-client-urls http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 -initial-advertise-peer-urls http://127.0.0.1:2380 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token opsee -initial-cluster bastion_etcd=http://127.0.0.1:2380 -initial-cluster-state new
+  expose:
+    - 2379
+connector:
+  image: quay.io/opsee/gozer
+  command: client
+  environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
+    - BASTION_ID=61f25e94-4f6e-11e5-a99f-4771161a3517
+    - VPN_PASSWORD=2YuVKIF+IsYMbrXT/TaOR9ZG
+  cap_add:
+    - NET_ADMIN
+  devices:
+    - "/dev/net/tun"
+  ports:
+    - 4171:4171
+    - 4000:4000
+    - 4001:4001
+  volumes:
+    - /gozer/state
+  links:
+    - nsqd:nsqd
+    - etcd:etcd
+register:
+  image: quay.io/opsee/zuul
+  command: register
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+  volumes_from:
+    - connector
+  environment:
+    - BASTION_ID=61f25e94-4f6e-11e5-a99f-4771161a3517
+    - CUSTOMER_ID=cliff
+    - AWS_INSTANCE_ID=i-greg
+    - ETCD_HOST=http://etcd:2379
+    - NSQD_HOST=nsqd.opsy.co:4150
+nsqd:
+  image: nsqio/nsq:v0.3.5
+  command: /nsqd
+  expose:
+    - 4150
+    - 4151
+nsqadmin:
+  image: nsqio/nsq:v0.3.5
+  command: /nsqadmin -nsqd-http-address=nsqd:4151
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+shoveldiscovery:
+  image: nsqio/nsq:v0.3.5
+  command: /nsq_to_nsq --topic=discovery --channel=shovel-discovery --nsqd-tcp-address=nsqd:4150 --destination-nsqd-tcp-address=nsqd.opsy.co:4150 --destination-topic=_.discovery
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+shovelresults:
+  image: nsqio/nsq:v0.3.5
+  command: /nsq_to_nsq --topic=results --channel=shovel-results --nsqd-tcp-address=nsqd:4150 --destination-nsqd-tcp-address=nsqd.opsy.co:4150 --destination-topic=_.results
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+monitor:
+  image: quay.io/opsee/bastion
+  command: /monitor -level debug -admin_port=4001
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+  environment:
+    - NSQD_HOST=nsqd:4150
+    - ETCD_HOST=http://etcd:2379
+checker:
+  image: quay.io/opsee/bastion
+  command: /checker -metadata /metadata.json -level debug
+  volumes:
+    - metadata.json:/metadata.json
+  environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
+    - NSQD_HOST=nsqd:4150
+    - ETCD_HOST=http://etcd:2379
+  net: "container:connector"
+  devices:
+    - "/dev/net/tun"
+discovery:
+  image: quay.io/opsee/bastion
+  command: /discovery -metadata /metadata.json -level debug
+  volumes:
+    - metadata.json:/metadata.json
+  environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_DEFAULT_REGION
+    - AWS_SECRET_ACCESS_KEY
+  links:
+    - "nsqd:nsqd"

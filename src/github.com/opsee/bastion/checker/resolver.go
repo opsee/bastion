@@ -11,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 type Resolver interface {
@@ -65,7 +67,7 @@ func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*Target, error) {
 		return nil, err
 	}
 
-	logger.Debug("reservations: %v", reservations)
+	log.Debug("reservations: %v", reservations)
 
 	var targets []*Target
 	for _, reservation := range reservations {
@@ -117,7 +119,7 @@ func (r *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
 }
 
 func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
-	logger.Debug("Resolving target: %v", *target)
+	log.Debug("Resolving target: %v", *target)
 
 	switch target.Type {
 	case "sg":

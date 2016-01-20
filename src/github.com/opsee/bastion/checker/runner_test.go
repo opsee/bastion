@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/stretchr/testify/assert"
@@ -193,9 +194,9 @@ func (s *NSQRunnerTestSuite) SetupTest() {
 		panic(err)
 	}
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
-		logger.Debug("Test consumer handling message: %s", m.Body)
+		log.Debug("Test consumer handling message: %s", m.Body)
 		s.MsgChan <- m
-		logger.Debug("Test consumer sent message on message channel.")
+		log.Debug("Test consumer sent message on message channel.")
 		return nil
 	}), s.Config.MaxHandlers)
 	err = consumer.ConnectToNSQD(s.Config.NSQDHost)
@@ -232,7 +233,7 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg)
 	select {
 	case m := <-s.MsgChan:
-		logger.Debug("TestHandlerDoesItsThing: Received message.")
+		log.Debug("TestHandlerDoesItsThing: Received message.")
 		result := &CheckResult{}
 		err := proto.Unmarshal(m.Body, result)
 		assert.NoError(s.T(), err)
