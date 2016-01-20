@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/nsqio/go-nsq"
 	"github.com/nu7hatch/gouuid"
 	"github.com/opsee/bastion/auth"
-	"github.com/opsee/bastion/logging"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -25,19 +25,32 @@ import (
 const (
 	// MaxTestTargets is the maximum number of test-check targets returned
 	// from the resolver that we use.
-
 	MaxTestTargets      = 5
 	NumCheckSyncRetries = 11
+
+	// BastionProtoVersion is used for feature flagging fields in various Bastion
+	// message types that specify a version number.
+	BastionProtoVersion = 1
 )
 
 var (
-	logger   = logging.GetLogger("checker")
 	registry = make(map[string]reflect.Type)
 )
 
 func init() {
+	// Check types for Any recomposition go here.
 	registry["HttpCheck"] = reflect.TypeOf(HttpCheck{})
-	logging.SetLevel("ERROR", "checker")
+
+	envLevel := strings.ToLower(os.Getenv("LOG_LEVEL"))
+	if envLevel == "" {
+		envLevel = "error"
+	}
+
+	logLevel, err := log.ParseLevel(envLevel)
+	if err != nil {
+		panic(err)
+	}
+	log.SetLevel(logLevel)
 }
 
 // UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.

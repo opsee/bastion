@@ -1,6 +1,7 @@
 package checker
 
 import (
+	log "github.com/Sirupsen/logrus"
 	"golang.org/x/net/context"
 )
 
@@ -63,7 +64,7 @@ func (d *Dispatcher) Dispatch(ctx context.Context, tg TaskGroup) chan *Task {
 			}
 
 			if !cancelled {
-				logger.Debug("Dispatching request: task = %s, type = %s", *t, t.Type)
+				log.Debug("Dispatching request: task = %s, type = %s", *t, t.Type)
 				worker := <-d.workerGroups[t.Type].WorkerQueue
 				finished <- worker.Work(t)
 			} else {

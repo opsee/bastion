@@ -67,6 +67,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 					Target: check.Target,
 					Error:  handleError(err),
 				}},
+				Version: BastionProtoVersion,
 			}
 
 			msg, err := proto.Marshal(result)
@@ -103,6 +104,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			Timestamp:  timestamp,
 			Responses:  responses,
 			Passing:    passing,
+			Version:    BastionProtoVersion,
 		}
 
 		msg, err := proto.Marshal(result)
@@ -112,7 +114,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			return err
 		}
 
-		logger.Debug("NSQRunner handler publishing result: %s", result.String())
+		log.Debug("NSQRunner handler publishing result: %s", result.String())
 		if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
 			log.WithError(err).Error("Error publishing CheckResult")
 			cancel()
@@ -242,7 +244,7 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 			Request: request,
 		}
 
-		logger.Debug("dispatch - Dispatching task: %s", *task)
+		log.Debug("dispatch - Dispatching task: %s", *task)
 
 		tg = append(tg, task)
 	}

@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
@@ -108,7 +106,7 @@ type testResolver struct {
 }
 
 func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
-	logger.Debug("Resolving target: %s", tgt)
+	log.Debug("Resolving target: %s", tgt)
 	if tgt.Id == "empty" {
 		return []*Target{}, nil
 	}
@@ -184,11 +182,11 @@ func resetNsq(host string, qmap resetNsqConfig) {
 			Method: "POST",
 			URL:    u,
 		}
-		logger.Info("Making request to NSQD: %s", r.URL)
+		log.Info("Making request to NSQD: %s", r.URL)
 		resp, err := client.Do(r)
 		defer resp.Body.Close()
 		body, _ := ioutil.ReadAll(resp.Body)
-		logger.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
+		log.Info("Response from NSQD: Code=%d Body=%s", resp.Status, body)
 		return err
 	}
 
@@ -275,19 +273,8 @@ func setupTestEnv() {
 		return
 	}
 
-	envLevel := strings.ToLower(os.Getenv("LOG_LEVEL"))
-	if envLevel == "" {
-		envLevel = "error"
-	}
-
-	logLevel, err := log.ParseLevel(envLevel)
-	if err != nil {
-		panic(err)
-	}
-	log.SetLevel(logLevel)
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		logger.Debug("Handling request: %s", *r)
+		log.Debug("Handling request: %s", *r)
 		headerMap := w.Header()
 		headerMap["header"] = []string{"ok"}
 		w.WriteHeader(200)

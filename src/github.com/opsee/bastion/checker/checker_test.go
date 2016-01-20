@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -151,7 +152,7 @@ func (s *CheckerTestSuite) buildTestCheckRequest(check *HttpCheck, target *Targe
 	request := s.TestCheckRequest
 	checkBytes, err := proto.Marshal(check)
 	if err != nil {
-		logger.Fatalf("Unable to marshal HttpCheck: %v", err)
+		log.Fatalf("Unable to marshal HttpCheck: %v", err)
 		return nil, err
 	}
 	checkAny := &Any{
