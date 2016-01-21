@@ -443,29 +443,27 @@ func (c *Checker) GetExistingChecks(tries int) ([]*Check, error) {
 			req, err := http.NewRequest("GET", request.TargetEndpoint, nil)
 			if err != nil {
 				log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to synch checks.")
-				continue
-			}
-
-			req.Header.Set("Accept", "application/x-protobuf")
-			req.Header.Set(theauth, header)
-
-			timeout := time.Duration(10 * time.Second)
-			client := &http.Client{
-				Timeout: timeout,
-			}
-			resp, err := client.Do(req)
-			if err != nil {
-				log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
-				continue
 			} else {
-				defer resp.Body.Close()
-				body, _ := ioutil.ReadAll(resp.Body)
-				proto.Unmarshal(body, checks)
-				success = true
-				break
-			}
+				req.Header.Set("Accept", "application/x-protobuf")
+				req.Header.Set(theauth, header)
 
-			time.Sleep((1 << uint(i+1)) * time.Millisecond * 10)
+				timeout := time.Duration(10 * time.Second)
+				client := &http.Client{
+					Timeout: timeout,
+				}
+				resp, err := client.Do(req)
+				if err != nil {
+					log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
+				} else {
+					defer resp.Body.Close()
+					body, _ := ioutil.ReadAll(resp.Body)
+					proto.Unmarshal(body, checks)
+					log.Info("Got existing checks ", checks)
+					success = true
+					break
+				}
+			}
+			time.Sleep((1 << uint(i)) * time.Millisecond * 10)
 		}
 		if !success {
 			return nil, fmt.Errorf("Couldn't synchronize checks with bartnet.")
@@ -488,6 +486,7 @@ func (c *Checker) Start() error {
 		return err
 	}
 
+	log.Info("Getting existing checks")
 	// Now Get existing checks from bartnet
 	existingChecks, err := c.GetExistingChecks(NumCheckSyncRetries)
 	if err != nil {
