@@ -14,7 +14,6 @@ import (
 	"github.com/opsee/awscan"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"github.com/opsee/bastion/logging"
 	"github.com/opsee/bastion/messaging"
 )
 
@@ -23,7 +22,6 @@ const (
 )
 
 var (
-	logger   = logging.GetLogger(moduleName)
 	producer messaging.Producer
 )
 
@@ -82,11 +80,11 @@ func main() {
 	for {
 		for event := range disco.Discover() {
 			if event.Err != nil {
-				logger.Error(event.Err.Error())
+				log.Error(event.Err.Error())
 			} else {
 				err = producer.Publish(event.Result)
 				if err != nil {
-					logger.Error(err.Error())
+					log.Error(err.Error())
 				}
 			}
 		}

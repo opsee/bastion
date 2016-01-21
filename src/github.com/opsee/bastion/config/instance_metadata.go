@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -73,21 +75,21 @@ func (this MetadataProvider) Get() *InstanceMeta {
 	backoff := netutil.NewBackoffRetrier(func() (interface{}, error) {
 		resp, err := this.client.Get(MetadataURL)
 		if err != nil {
-			logger.Error("error getting ec2 instance metadata:", err)
+			log.Error("error getting ec2 instance metadata:", err)
 			return nil, err
 		}
 
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			logger.Error("error reading ec2 metadata:", err)
+			log.Error("error reading ec2 metadata:", err)
 			return nil, err
 		}
 		meta := &InstanceMeta{}
 		err = json.Unmarshal(body, meta)
 
 		if err != nil {
-			logger.Error("error parsing instance metadata:", err)
+			log.Error("error parsing instance metadata:", err)
 			return nil, err
 		}
 
@@ -96,7 +98,7 @@ func (this MetadataProvider) Get() *InstanceMeta {
 
 	err := backoff.Run()
 	if err != nil {
-		logger.Error("backoff failed:", err)
+		log.Error("backoff failed:", err)
 		return nil
 	}
 
@@ -115,32 +117,32 @@ func (this MetadataProvider) GetVPC() string {
 	backoff := netutil.NewBackoffRetrier(func() (interface{}, error) {
 		ifs, err := this.client.Get(InterfaceURL)
 		if err != nil {
-			logger.Error("error getting ec2 interface data:", err)
+			log.Error("error getting ec2 interface data:", err)
 			return "", err
 		}
 
 		defer ifs.Body.Close()
 		ifsbody, err := ioutil.ReadAll(ifs.Body)
 		if err != nil {
-			logger.Error("error reading ec2 interfaces:", err)
+			log.Error("error reading ec2 interfaces:", err)
 			return "", err
 		}
 
 		macs := bytes.Split(ifsbody, []byte("\n"))
 		if len(macs) == 0 {
-			logger.Error("error reading ec2 interfaces: none found")
+			log.Error("error reading ec2 interfaces: none found")
 		}
 
 		vpcres, err := this.client.Get(fmt.Sprintf("%s%svpc-id", InterfaceURL, string(macs[0])))
 		if err != nil {
-			logger.Error("error getting ec2 vpc id:", err)
+			log.Error("error getting ec2 vpc id:", err)
 			return "", err
 		}
 
 		defer vpcres.Body.Close()
 		vpc, err := ioutil.ReadAll(vpcres.Body)
 		if err != nil {
-			logger.Error("error reading ec2 vpc id:", err)
+			log.Error("error reading ec2 vpc id:", err)
 			return "", err
 		}
 
@@ -149,7 +151,7 @@ func (this MetadataProvider) GetVPC() string {
 
 	err := backoff.Run()
 	if err != nil {
-		logger.Error("backoff failed:", err)
+		log.Error("backoff failed:", err)
 		return ""
 	}
 

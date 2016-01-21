@@ -6,28 +6,24 @@ import (
 	"net"
 	"os"
 
-	"github.com/opsee/bastion/logging"
-)
-
-var (
-	logger = logging.GetLogger("netutil")
+	log "github.com/Sirupsen/logrus"
 )
 
 func GetHostname() (hostname string, err error) {
-	logger.Info("GetHostname()")
+	log.Debug("GetHostname()")
 	if oshostname, err := os.Hostname(); err == nil {
 		hostname = oshostname
 	} else {
-		logger.Error("os.Hostname(): %s", err)
+		log.Error("os.Hostname(): %s", err)
 	}
 	if localIP, err := getLocalIP(); err == nil {
 		if hostnames, err := net.LookupAddr(localIP.String()); err == nil {
 			hostname = hostnames[0]
 		} else {
-			logger.Error("LookupAddr(): %s", err)
+			log.Error("LookupAddr(): %s", err)
 		}
 	} else {
-		logger.Error("getLocalIP: %s", err)
+		log.Error("getLocalIP: %s", err)
 	}
 	return
 }

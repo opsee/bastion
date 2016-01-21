@@ -4,6 +4,8 @@ import (
 	"errors"
 	"math/rand"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 type BackOff interface {
@@ -184,10 +186,10 @@ func (b *backoffRetrier) Run() (err error) {
 	for {
 		if b.result, err = b.fun(); err != nil {
 			if duration := b.NextBackOff(); duration == StopBackoff {
-				logger.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
+				log.Debug("backoff time limit (%ds) expired", b.MaxElapsedTime.Seconds())
 				return ErrBackOffTimeLimitExpired
 			} else {
-				logger.Debug("backoff: sleeping for %.1fms", duration.Seconds())
+				log.Debug("backoff: sleeping for %.1fms", duration.Seconds())
 				time.Sleep(duration)
 			}
 		} else {

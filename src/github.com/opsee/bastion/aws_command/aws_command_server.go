@@ -133,7 +133,7 @@ func (s *AWSCommander) RebootInstances(ctx context.Context, in *RebootInstancesR
 
 	resp, err := awsEc2Client.RebootInstances(input)
 
-	log.Info(resp)
+	log.Debug(resp)
 	rebootInstancesResult := &RebootInstancesResult{Err: ""}
 
 	if err != nil {

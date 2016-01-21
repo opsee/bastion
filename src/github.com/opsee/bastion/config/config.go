@@ -2,8 +2,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
-	"github.com/opsee/bastion/logging"
 	"net/http"
 	"os"
 )
@@ -24,7 +22,6 @@ type Config struct {
 }
 
 var (
-	logger         = logging.GetLogger("config")
 	config *Config = nil
 )
 
@@ -51,12 +48,6 @@ func GetConfig() *Config {
 		metap := NewMetadataProvider(httpClient, config)
 		config.MetaData = metap.Get()
 		config.MetaData.VPCID = metap.GetVPC()
-
-		err := logging.SetLevel(config.LogLevel, "bastion")
-		if err != nil {
-			fmt.Printf("%s is not a valid log level")
-			os.Exit(1)
-		}
 	}
 
 	return config

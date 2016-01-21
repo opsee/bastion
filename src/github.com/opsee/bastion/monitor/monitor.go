@@ -52,14 +52,14 @@ func NewMonitor() (*Monitor, error) {
 
 func (m *Monitor) monitorState() {
 	for event := range m.consumer.Channel() {
-		log.WithFields(log.Fields{"service": "monitor"}).Info("monitor event received")
+		log.WithFields(log.Fields{"service": "monitor"}).Debug("monitor event received")
 
 		heartBeat := new(heart.HeartBeat)
 
 		if err := json.Unmarshal([]byte(event.Body()), heartBeat); err != nil {
-			log.WithFields(log.Fields{"service": "monitor"}).Info("monitor failed to unmarshall event")
+			log.WithFields(log.Fields{"service": "monitor"}).Error("monitor failed to unmarshall event")
 		} else {
-			log.WithFields(log.Fields{"service": "monitor", "component": heartBeat.Process, "heartbeat timestamp": heartBeat.Timestamp}).Info("monitor unmarshalled event")
+			log.WithFields(log.Fields{"service": "monitor", "component": heartBeat.Process, "heartbeat timestamp": heartBeat.Timestamp}).Debug("monitor unmarshalled event")
 
 			// ensure we are monitoring this component
 			if component, ok := m.components[heartBeat.Process]; ok {
@@ -74,11 +74,11 @@ func (m *Monitor) monitorState() {
 }
 
 func (m *Monitor) SerializeState() ([]byte, error) {
-	log.Info("SerializeState")
+	log.Debug("SerializeState")
 	jsonBytes, err := json.Marshal(m.statemap)
 	if err != nil {
 		return nil, err
 	}
-	log.Info("Serialize Monitor State Map: ", jsonBytes)
+	log.Debug("Serialize Monitor State Map: ", jsonBytes)
 	return jsonBytes, nil
 }

@@ -3,7 +3,7 @@ package checker
 import (
 	"testing"
 
-	"github.com/opsee/bastion/logging"
+	log "github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
@@ -130,7 +130,11 @@ func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
   ******************************************************************************/
 
 func BenchmarkRunCheckParallel(b *testing.B) {
-	logging.SetLevel("ERROR", "checker")
+	logLevel, err := log.ParseLevel("error")
+	if err != nil {
+		panic(err)
+	}
+	log.SetLevel(logLevel)
 	runner := NewRunner(newTestResolver())
 	check := (&TestCommonStubs{}).PassingCheckMultiTarget()
 	b.RunParallel(func(pb *testing.PB) {

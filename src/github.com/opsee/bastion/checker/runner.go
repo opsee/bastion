@@ -83,7 +83,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		}
 		// At this point we have successfully run/are running the check. Indicate
 		// as such.
-		log.WithFields(log.Fields{"check_id": check.Id}).Info("Runnng check.")
+		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Runnng check.")
 
 		// TODO(greg): We're currently ignoring the deadline we _just_ set on this
 		// this.
@@ -120,7 +120,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			cancel()
 			return err
 		}
-		log.WithFields(log.Fields{"check_id": check.Id}).Info("Published result for check")
+		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Published result for check")
 
 		return nil
 	}), cfg.MaxHandlers)
