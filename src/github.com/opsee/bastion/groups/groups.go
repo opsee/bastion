@@ -3,13 +3,9 @@ package groups
 import (
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/opsee/bastion/logging"
 	"github.com/streamrail/concurrent-map"
-)
-
-var (
-	logger = logging.GetLogger("groups")
 )
 
 type DynGroup interface {
@@ -30,7 +26,7 @@ func newExpiringInstance(ttl time.Duration, instance *ec2.Instance, fn remove) *
 	go func() {
 		for {
 			<-timer.C
-			logger.Debug("Expiring from group %+v", instance)
+			log.Debug("Expiring from group %+v", instance)
 			fn()
 		}
 	}()

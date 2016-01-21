@@ -36,13 +36,13 @@ func NewComponent(name string) *Component {
 	}
 
 	go c.loop()
-	log.Info("Started component ticker loop")
+	log.WithFields(log.Fields{"component": name}).Info("Started component ticker loop")
 
 	return c
 }
 
 func (c *Component) Send(hb *heart.HeartBeat) {
-	log.WithFields(log.Fields{"component": c.Name, "heartbeat": hb}).Info("component send heartbeat to heartbeatchannel")
+	log.WithFields(log.Fields{"component": c.Name, "heartbeat": hb}).Debug("component send heartbeat to heartbeatchannel")
 	c.HeartBeatChannel <- hb
 }
 
@@ -68,7 +68,7 @@ func (c *Component) loop() {
 		case hb := <-c.HeartBeatChannel:
 			c.State.HeartBeat = hb
 			c.State.OK = true
-			log.WithFields(log.Fields{"component": c.Name, "heartbeat": c.State.HeartBeat, "state OK": c.State.OK}).Info("component in good state")
+			log.WithFields(log.Fields{"component": c.Name, "heartbeat": c.State.HeartBeat, "state OK": c.State.OK}).Debug("component in good state")
 		}
 	}
 }

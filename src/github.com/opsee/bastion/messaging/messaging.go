@@ -13,8 +13,8 @@ import (
 	"os"
 	"reflect"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/bitly/go-nsq"
-	"github.com/opsee/bastion/logging"
 )
 
 const (
@@ -23,7 +23,6 @@ const (
 )
 
 var (
-	logger                      = logging.GetLogger("messaging")
 	replyProducer *nsq.Producer = nil
 )
 
@@ -100,7 +99,7 @@ func (e *Event) Reply(reply interface{}) {
 	e.message.Finish()
 	event, err := NewEvent(reply)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
 	event.ReplyTo = e.MessageId

@@ -65,7 +65,7 @@ func UnmarshalAny(any *Any) (interface{}, error) {
 		log.WithFields(log.Fields{"service": "checker", "event": "unmarshall returned error", "error": "couldn't unmarshall *Any"}).Error(err.Error())
 		return nil, err
 	}
-	log.WithFields(log.Fields{"service": "checker", "event": "unmarshal successful"}).Info("unmarshaled Any to: ", instance)
+	log.WithFields(log.Fields{"service": "checker", "event": "unmarshal successful"}).Debug("unmarshaled Any to: ", instance)
 
 	return instance, nil
 }
@@ -171,13 +171,13 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 			return err
 		}
 
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("handling check")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("handling check")
 
 		var respChan chan *CheckResult
 
 		r.withLock(func() {
 			respChan = r.requestMap[chk.CheckId]
-			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("got response channel ", respChan)
+			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("got response channel ", respChan)
 		})
 
 		if respChan == nil {
@@ -192,7 +192,7 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 		// nice to really understand what the cost of this approach is, but I don't
 		// think it's particularly important. -greg
 		respChan <- chk
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Info("RemoteRunner handler sent results to channel")
+		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("RemoteRunner handler sent results to channel")
 		close(respChan)
 		return nil
 	}), cfg.MaxHandlers)
@@ -218,7 +218,7 @@ func (r *RemoteRunner) withLock(f func()) {
 // context deadline unless you want this to block forever.
 
 func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, error) {
-	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("Running check")
+	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("Running check")
 
 	var (
 		id  string
@@ -240,13 +240,13 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 
 	r.withLock(func() {
 		r.requestMap[id] = respChan
-		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: Set response channel for request: ", id)
+		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("RemoteRunner.RunCheck: Set response channel for request: ", id)
 	})
 
 	defer func() {
 		r.withLock(func() {
 			delete(r.requestMap, id)
-			log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("deleted response channel for request: ", id)
+			log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("deleted response channel for request: ", id)
 		})
 	}()
 
@@ -256,12 +256,12 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 		return nil, err
 	}
 
-	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: publishing request to run check")
+	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("RemoteRunner.RunCheck: publishing request to run check")
 	r.producer.Publish(r.config.ProducerQueueName, msg)
 
 	select {
 	case result := <-respChan:
-		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Info("RemoteRunner.RunCheck: Got result from resopnse channel: %s", result.String())
+		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("RemoteRunner.RunCheck: Got result from resopnse channel: %s", result.String())
 		return result, nil
 	case <-ctx.Done():
 		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "error": ctx.Err()}).Error("context error")
@@ -374,12 +374,12 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	if req.Deadline == nil {
 		err := fmt.Errorf("Deadline required but missing in request. %v", req)
-		log.WithFields(log.Fields{"service": "checker", "event": "TestCheck", "error": err.Error()}).Info("Missing deadline in request!")
+		log.WithFields(log.Fields{"service": "checker", "event": "TestCheck", "error": err.Error()}).Error("Missing deadline in request!")
 		return nil, err
 	}
 
 	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
-	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Info("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
+	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Debug("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
 	// We add the request deadline here, and the Runner will adhere to that
 	// deadline.
 	ctx, _ = context.WithDeadline(ctx, deadline)
@@ -404,7 +404,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 
 	testCheckResponse.Responses = responses[:maxHosts]
 
-	log.Info("Response: %v", testCheckResponse)
+	log.Debug("Response: %v", testCheckResponse)
 	return testCheckResponse, nil
 }
 
@@ -458,7 +458,7 @@ func (c *Checker) GetExistingChecks(tries int) ([]*Check, error) {
 					defer resp.Body.Close()
 					body, _ := ioutil.ReadAll(resp.Body)
 					proto.Unmarshal(body, checks)
-					log.Info("Got existing checks ", checks)
+					log.Debug("Got existing checks ", checks)
 					success = true
 					break
 				}

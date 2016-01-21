@@ -257,7 +257,7 @@ func (s *Scheduler) Start() error {
 					if err := s.Producer.Publish("runner", msg); err != nil {
 						log.Error(err.Error())
 					} else {
-						log.Info("Scheduled check for execution: %s", check.Id)
+						log.Debug("Scheduled check for execution: %s", check.Id)
 					}
 				}
 			}

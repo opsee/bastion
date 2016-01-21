@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/bitly/go-nsq"
 )
 
@@ -55,14 +56,14 @@ func NewCustomerProducer(customerId, topicName string) (Producer, error) {
 func (p *NsqProducer) Publish(message interface{}) error {
 	event, err := NewEvent(message)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Error(err.Error())
 	}
 
 	event.CustomerId = p.CustomerId
 
 	eBytes, _ := json.Marshal(event)
 
-	logger.Info("Publishing event: %s", string(eBytes))
+	log.Debug("Publishing event: %s", string(eBytes))
 	return p.nsqProducer.Publish(p.Topic, eBytes)
 }
 
