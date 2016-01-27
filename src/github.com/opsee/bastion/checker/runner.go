@@ -159,12 +159,17 @@ type Runner struct {
 func NewRunner(resolver Resolver) *Runner {
 	dispatcher := NewDispatcher()
 
-	slateUrl := fmt.Sprintf("http://%s/check", os.Getenv("SLATE_HOST"))
-	return &Runner{
-		dispatcher:  dispatcher,
-		resolver:    resolver,
-		slateClient: NewSlateClient(slateUrl),
+	r := &Runner{
+		dispatcher: dispatcher,
+		resolver:   resolver,
 	}
+
+	slateUrl := fmt.Sprintf("http://%s/check", os.Getenv("SLATE_HOST"))
+	if slateUrl != "" {
+		r.slateClient = NewSlateClient(slateUrl)
+	}
+
+	return r
 }
 
 func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Target, error) {
@@ -280,8 +285,7 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, r
 			Error:    responseError,
 		}
 
-		// If we have a responseError, then don't both sending it to slate.
-		if response.Error == "" {
+		if response.Error == "" && len(check.Assertions) > 0 && r.slateClient != nil {
 			passing, err = r.slateClient.CheckAssertions(ctx, check, t.Response.Response)
 			if err != nil {
 				log.WithError(err).Error("Could not contact slate.")
