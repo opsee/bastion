@@ -45,9 +45,9 @@ import (
 
 type testWatcher struct {
 	// the channel to receives name resolution updates
-	update   chan *naming.Update
+	update chan *naming.Update
 	// the side channel to get to know how many updates in a batch
-	side     chan int
+	side chan int
 	// the channel to notifiy update injector that the update reading is done
 	readDone chan int
 }
@@ -110,7 +110,9 @@ func startServers(t *testing.T, numServers, port int, maxStreams uint32) ([]*ser
 	}
 	// Point to server1
 	addr := "127.0.0.1:" + servers[0].port
-	return servers, &testNameResolver{addr: addr}
+	return servers, &testNameResolver{
+		addr: addr,
+	}
 }
 
 func TestNameDiscovery(t *testing.T) {
@@ -173,9 +175,13 @@ func TestEmptyAddrs(t *testing.T) {
 		Addr: "127.0.0.1:" + servers[0].port,
 	})
 	r.w.inject(updates)
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Millisecond)
-	if err := Invoke(ctx, "/foo/bar", &expectedRequest, &reply, cc); err == nil {
-		t.Errorf("grpc.Invoke(_, _, _, _, _) = %v, want non-<nil>", err)
+	// Loop until the above updates apply.
+	for {
+		time.Sleep(10 * time.Millisecond)
+		ctx, _ := context.WithTimeout(context.Background(), 10*time.Millisecond)
+		if err := Invoke(ctx, "/foo/bar", &expectedRequest, &reply, cc); err != nil {
+			break
+		}
 	}
 	cc.Close()
 	servers[0].stop()

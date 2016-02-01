@@ -88,14 +88,14 @@
 		{
 			"importpath": "github.com/golang/protobuf/proto",
 			"repository": "https://github.com/golang/protobuf",
-			"revision": "68415e7123da32b07eab49c96d2c4d6158360e9b",
+			"revision": "45bba206dd5270d96bac4942dcfe515726613249",
 			"branch": "master",
 			"path": "/proto"
 		},
 		{
 			"importpath": "github.com/golang/protobuf/protoc-gen-go",
 			"repository": "https://github.com/golang/protobuf",
-			"revision": "68415e7123da32b07eab49c96d2c4d6158360e9b",
+			"revision": "45bba206dd5270d96bac4942dcfe515726613249",
 			"branch": "master",
 			"path": "/protoc-gen-go"
 		},
@@ -278,7 +278,7 @@
 		{
 			"importpath": "google.golang.org/grpc",
 			"repository": "https://github.com/grpc/grpc-go",
-			"revision": "2d76f2fb90f1df85dd7bc8380b5c52ff3c2259d6",
+			"revision": "a0f854fec276bf9ba66f968f160f4b6e8222ee0d",
 			"branch": "master"
 		},
 		{

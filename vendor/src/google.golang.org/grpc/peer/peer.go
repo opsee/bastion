@@ -31,43 +31,35 @@
  *
  */
 
-package main
+// Package peer defines various peer information associated with RPCs and
+// corresponding utils.
+package peer
 
 import (
-	"flag"
 	"net"
-	"strconv"
 
-	"google.golang.org/grpc"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/grpclog"
-	"google.golang.org/grpc/interop"
-	testpb "google.golang.org/grpc/interop/grpc_testing"
 )
 
-var (
-	useTLS   = flag.Bool("use_tls", false, "Connection uses TLS if true, else plain TCP")
-	certFile = flag.String("tls_cert_file", "testdata/server1.pem", "The TLS cert file")
-	keyFile  = flag.String("tls_key_file", "testdata/server1.key", "The TLS key file")
-	port     = flag.Int("port", 10000, "The server port")
-)
+// Peer contains the information of the peer for an RPC.
+type Peer struct {
+	// Addr is the peer address.
+	Addr net.Addr
+	// AuthInfo is the authentication information of the transport.
+	// It is nil if there is no transport security being used.
+	AuthInfo credentials.AuthInfo
+}
 
-func main() {
-	flag.Parse()
-	p := strconv.Itoa(*port)
-	lis, err := net.Listen("tcp", ":"+p)
-	if err != nil {
-		grpclog.Fatalf("failed to listen: %v", err)
-	}
-	var opts []grpc.ServerOption
-	if *useTLS {
-		creds, err := credentials.NewServerTLSFromFile(*certFile, *keyFile)
-		if err != nil {
-			grpclog.Fatalf("Failed to generate credentials %v", err)
-		}
-		opts = []grpc.ServerOption{grpc.Creds(creds)}
-	}
-	server := grpc.NewServer(opts...)
-	testpb.RegisterTestServiceServer(server, interop.NewTestServer())
-	server.Serve(lis)
+type peerKey struct{}
+
+// NewContext creates a new context with peer information attached.
+func NewContext(ctx context.Context, p *Peer) context.Context {
+	return context.WithValue(ctx, peerKey{}, p)
+}
+
+// FromContext returns the peer information in ctx if it exists.
+func FromContext(ctx context.Context) (p *Peer, ok bool) {
+	p, ok = ctx.Value(peerKey{}).(*Peer)
+	return
 }
