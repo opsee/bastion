@@ -29,6 +29,30 @@ func (s *RunnerTestSuite) SetupTest() {
 	s.Context = context.Background()
 }
 
+func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
+	check := s.Common.PassingCheckMultiTarget()
+	slate_host := os.Getenv("SLATE_HOST")
+	os.Setenv("SLATE_HOST", "")
+	assert.Equal(s.T(), "", os.Getenv("SLATE_HOST"))
+	runner := NewRunner(s.Resolver)
+	responses, err := runner.RunCheck(s.Context, check)
+	assert.NoError(s.T(), err)
+	targets, err := s.Resolver.Resolve(&Target{
+		Id: "sg3",
+	})
+	assert.NoError(s.T(), err)
+	assert.Len(s.T(), targets, 3)
+
+	count := 0
+	for response := range responses {
+		count++
+		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.NotNil(s.T(), response.Response)
+	}
+	assert.Equal(s.T(), 3, count)
+	os.Setenv("SLATE_HOST", slate_host)
+}
+
 func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(s.Context, check)
