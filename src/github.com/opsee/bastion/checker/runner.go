@@ -164,8 +164,9 @@ func NewRunner(resolver Resolver) *Runner {
 		resolver:   resolver,
 	}
 
-	slateUrl := fmt.Sprintf("http://%s/check", os.Getenv("SLATE_HOST"))
-	if slateUrl != "" {
+	slateHost := os.Getenv("SLATE_HOST")
+	if slateHost != "" {
+		slateUrl := fmt.Sprintf("http://%s/check", slateHost)
 		r.slateClient = NewSlateClient(slateUrl)
 	}
 
