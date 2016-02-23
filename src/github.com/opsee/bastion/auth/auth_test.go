@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"github.com/Sirupsen/logrus"
 	"os"
 	"testing"
+
+	"github.com/Sirupsen/logrus"
 )
 
 func TestGetBasicToken(t *testing.T) {
