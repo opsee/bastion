@@ -1,7 +1,7 @@
 [Unit]
 Description=Bastion - Connector
-After=env-lock.service docker.service bastion-etcd.service nsqd.service bastion-etcd.service
-Requires=nsqd.service bastion-etcd.service
+After=opsee-network.service
+Requires=opsee-network.service
 
 [Service]
 EnvironmentFile=/etc/opsee/bastion-env.sh
@@ -13,7 +13,7 @@ EnvironmentFile=/etc/opsee/bastion-env.sh
 ExecStartPre=-/usr/bin/docker stop -t 5 %p
 ExecStartPre=-/usr/bin/docker rm %p
 ExecStartPre=/usr/bin/docker pull quay.io/opsee/gozer:latest
-ExecStart=/usr/bin/docker run --rm --cgroup-parent=systemd -p 4171:4171 -p 4000:4000 -p 4001:4001 -p 4002:4002 --name=%p --env-file=/etc/opsee/bastion-env.sh --cap-add=NET_ADMIN --device=/dev/net/tun --volume /var/run/opsee:/gozer/state --link bastion-etcd:etcd --link nsqd:nsqd --dns=${DNS_SERVER} quay.io/opsee/gozer:latest client
+ExecStart=/usr/bin/docker run --rm --cgroup-parent=systemd --name=%p --net=container:opsee-network --env-file=/etc/opsee/bastion-env.sh --cap-add=NET_ADMIN --device=/dev/net/tun --volume /var/run/opsee:/gozer/state quay.io/opsee/gozer:latest client
 ExecStop=/usr/bin/docker stop -t 5 %p
 
 [Install]
