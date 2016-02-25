@@ -74,6 +74,12 @@
 			"path": "/pkg/types"
 		},
 		{
+			"importpath": "github.com/crewjam/go-cloudformation",
+			"repository": "https://github.com/crewjam/go-cloudformation",
+			"revision": "6db83c1d6b36a37230d96a30c5c7a480e23c5577",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/go-ini/ini",
 			"repository": "https://github.com/go-ini/ini",
 			"revision": "a4e5487f4a695680ed4a5444b9a094df8eaf48cb",
