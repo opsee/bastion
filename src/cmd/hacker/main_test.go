@@ -1,5 +1,16 @@
 package main
 
+import "testing"
+
+func TestHackerValidateFail(t *testing.T) {
+	hacker := &Hacker{}
+	err := hacker.Validate()
+	if err == nil {
+		t.FailNow()
+	}
+	t.Log(err)
+}
+
 /*
 func TestHackerCanGetSecurityGroups(t *testing.T) {
 	hacker, err := NewHacker()
@@ -26,7 +37,6 @@ func TestHackerCanGetStackTemplateBody(t *testing.T) {
 	}
 	logrus.Info(*body)
 }
-
 func TestHackerCanCreateStack(t *testing.T) {
 	hacker, err := NewHacker()
 	if err != nil {

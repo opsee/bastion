@@ -20,26 +20,24 @@ import (
 )
 
 type Hacker struct {
-	HostSecurityGroupId   string
-	HostSecurityGroupName string
-	BastionId             string
-	ingressStackName      string
-	bastionStackName      string
-	waitTime              time.Duration
-	stackTimeoutMinutes   int64
-	ec2metadataClient     *ec2metadata.EC2Metadata
-	ec2Client             *ec2.EC2
-	cloudformationClient  *cloudformation.CloudFormation
+	BastionId                   string
+	HostSecurityGroupPhysicalId string
+	ingressStackPhysicalId      string
+	bastionStackPhysicalId      string
+	waitTime                    time.Duration
+	stackTimeoutMinutes         int64
+	ec2metadataClient           *ec2metadata.EC2Metadata
+	ec2Client                   *ec2.EC2
+	cloudformationClient        *cloudformation.CloudFormation
 }
 
 func NewHacker() (*Hacker, error) {
 	bastionId := os.Getenv("BASTION_ID")
 	hacker := &Hacker{
-		BastionId:           bastionId,
-		ingressStackName:    fmt.Sprintf("opsee-ingress-%s", bastionId),
-		bastionStackName:    fmt.Sprintf("opsee-bastion-%s", bastionId),
-		waitTime:            time.Duration(time.Minute * 2),
-		stackTimeoutMinutes: int64(2),
+		BastionId:              bastionId,
+		bastionStackPhysicalId: fmt.Sprintf("opsee-bastion-%s", bastionId),
+		waitTime:               time.Duration(time.Minute * 2),
+		stackTimeoutMinutes:    int64(2),
 	}
 
 	creds := credentials.NewChainCredentials(
@@ -59,44 +57,48 @@ func NewHacker() (*Hacker, error) {
 	hacker.ec2metadataClient = ec2metadata.New(sess)
 	hacker.cloudformationClient = cloudformation.New(sess)
 
-	if hacker.ec2metadataClient.Available() {
-		sgName, err := hacker.ec2metadataClient.GetMetadata("security-groups")
-		if err != nil {
-			log.WithError(err).Fatal("Couldn't get security group metadata.")
-		}
-		hacker.HostSecurityGroupName = sgName
-		output, err := hacker.ec2Client.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{
-			Filters: []*ec2.Filter{
-				&ec2.Filter{
-					Name: aws.String("group-name"),
-					Values: []*string{
-						aws.String(hacker.HostSecurityGroupName),
-					},
-				},
-			},
-		})
-		if len(output.SecurityGroups) != 1 {
-			log.WithError(fmt.Errorf("Bad number of sgs found")).Fatal("bad number of groups found")
-		}
-		hacker.HostSecurityGroupId = *output.SecurityGroups[0].GroupId
-	} else {
-		// get security group id, group name, and region from cloudformation stack
-		params := &cloudformation.DescribeStackResourcesInput{
-			StackName: aws.String(hacker.bastionStackName),
-		}
-		resp, err := hacker.cloudformationClient.DescribeStackResources(params)
-		if err != nil {
-			log.WithError(err).Fatal("Couldn't get stack resources.")
-		}
-		for _, resource := range resp.StackResources {
-			if *resource.ResourceType == "AWS::EC2::SecurityGroup" {
-				hacker.HostSecurityGroupId = *resource.PhysicalResourceId
-				hacker.HostSecurityGroupName = *resource.LogicalResourceId
-			}
+	// get security group id, group name, from bastion cloudformation stack
+	params := &cloudformation.DescribeStackResourcesInput{
+		StackName: aws.String(hacker.bastionStackPhysicalId),
+	}
+	resp, err := hacker.cloudformationClient.DescribeStackResources(params)
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't get stack resources.")
+	}
+
+	for _, resource := range resp.StackResources {
+		switch *resource.LogicalResourceId {
+		case "OpseeSecurityGroup":
+			hacker.HostSecurityGroupPhysicalId = *resource.PhysicalResourceId
+		case "OpseeBastionIngressStack":
+			hacker.ingressStackPhysicalId = *resource.PhysicalResourceId
 		}
 	}
 
-	return hacker, nil
+	return hacker, hacker.Validate()
+}
+
+// Ensures hacker has required fields retrieved from cfn and env.
+func (this *Hacker) Validate() error {
+	missing := []string{}
+	if this.BastionId == "" {
+		missing = append(missing, "BastionId")
+	}
+	if this.HostSecurityGroupPhysicalId == "" {
+		missing = append(missing, "HostSecurityGroupPhysicalId")
+	}
+	if this.ingressStackPhysicalId == "" {
+		missing = append(missing, "ingressStackPhysicalId")
+	}
+	if this.bastionStackPhysicalId == "" {
+		missing = append(missing, "bastionStackPhysicalId")
+	}
+
+	if len(missing) > 0 {
+		return fmt.Errorf("Struct missing, %s", strings.Join(missing, ", "))
+	}
+
+	return nil
 }
 
 // Returns a list of security groups for the hacker's instances vpc
@@ -212,7 +214,7 @@ func (this *Hacker) Hack() (*string, error) {
 	parameters := []*cloudformation.Parameter{
 		&cloudformation.Parameter{
 			ParameterKey:   aws.String("BastionSecurityGroupId"),
-			ParameterValue: aws.String(this.HostSecurityGroupId),
+			ParameterValue: aws.String(this.HostSecurityGroupPhysicalId),
 		},
 	}
 
@@ -234,7 +236,7 @@ func (this *Hacker) Hack() (*string, error) {
 		return nil, err
 	}
 
-	stackName, err := this.CreateOrUpdateStack(this.ingressStackName, parameters, string(templateBody))
+	stackName, err := this.CreateOrUpdateStack(this.ingressStackPhysicalId, parameters, string(templateBody))
 	if err != nil {
 		log.WithError(err).Error("Failed to create or update stack.")
 		return nil, err
@@ -255,6 +257,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Fatal("Error starting hacker.")
 	}
+
 	log.Info("Started hacker.")
 	for {
 		t := time.Now()
