@@ -17,6 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cf "github.com/crewjam/go-cloudformation"
+	"github.com/opsee/bastion/config"
 )
 
 type Hacker struct {
@@ -32,6 +33,7 @@ type Hacker struct {
 }
 
 func NewHacker() (*Hacker, error) {
+	cfg := config.GetConfig()
 	bastionId := os.Getenv("BASTION_ID")
 	hacker := &Hacker{
 		BastionId:              bastionId,
@@ -51,6 +53,7 @@ func NewHacker() (*Hacker, error) {
 
 	sess := session.New(&aws.Config{
 		Credentials: creds,
+		Region:      aws.String(cfg.MetaData.Region),
 	})
 
 	hacker.ec2Client = ec2.New(sess)
