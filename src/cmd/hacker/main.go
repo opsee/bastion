@@ -37,7 +37,7 @@ func NewHacker() (*Hacker, error) {
 	bastionId := os.Getenv("BASTION_ID")
 	hacker := &Hacker{
 		BastionId:              bastionId,
-		bastionStackPhysicalId: fmt.Sprintf("opsee-bastion-%s", bastionId),
+		bastionStackPhysicalId: fmt.Sprintf("opsee-stack-%s", bastionId),
 		waitTime:               time.Duration(time.Minute * 2),
 		stackTimeoutMinutes:    int64(2),
 	}
