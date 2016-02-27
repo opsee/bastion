@@ -21,7 +21,7 @@ import (
 )
 
 type Hacker struct {
-	BastionId                   string
+	CustomerId                  string
 	HostSecurityGroupPhysicalId string
 	ingressStackPhysicalId      string
 	bastionStackPhysicalId      string
@@ -34,10 +34,10 @@ type Hacker struct {
 
 func NewHacker() (*Hacker, error) {
 	cfg := config.GetConfig()
-	bastionId := os.Getenv("BASTION_ID")
+	customerId := os.Getenv("CUSTOMER_ID")
 	hacker := &Hacker{
-		BastionId:              bastionId,
-		bastionStackPhysicalId: fmt.Sprintf("opsee-stack-%s", bastionId),
+		CustomerId:             customerId,
+		bastionStackPhysicalId: fmt.Sprintf("opsee-stack-%s", customerId),
 		waitTime:               time.Duration(time.Minute * 2),
 		stackTimeoutMinutes:    int64(2),
 	}
@@ -84,8 +84,8 @@ func NewHacker() (*Hacker, error) {
 // Ensures hacker has required fields retrieved from cfn and env.
 func (this *Hacker) Validate() error {
 	missing := []string{}
-	if this.BastionId == "" {
-		missing = append(missing, "BastionId")
+	if this.CustomerId == "" {
+		missing = append(missing, "CustomerId")
 	}
 	if this.HostSecurityGroupPhysicalId == "" {
 		missing = append(missing, "HostSecurityGroupPhysicalId")
