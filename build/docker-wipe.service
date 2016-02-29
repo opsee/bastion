@@ -1,7 +1,8 @@
 [Unit]
 Description=Clear out /var/lib/docker after a reboot
+DefaultDependencies=no
 After=local-fs.target
-Before=sysinit.target
+Before=early-docker.service
 ConditionPathIsReadWrite=/var/lib
 
 [Service]
