@@ -46,7 +46,7 @@ func main() {
 	disco := awscan.NewDiscoverer(
 		awscan.NewScanner(
 			sess,
-			cfg.MetaData.VPCID,
+			cfg.MetaData.VpcId,
 		),
 	)
 

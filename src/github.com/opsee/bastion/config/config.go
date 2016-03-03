@@ -2,8 +2,13 @@ package config
 
 import (
 	"flag"
-	"net/http"
 	"os"
+
+	log "github.com/Sirupsen/logrus"
+)
+
+var (
+	config *Config = nil
 )
 
 type Config struct {
@@ -20,10 +25,6 @@ type Config struct {
 	LogLevel    string // the log level to use
 	MetaData    *InstanceMeta
 }
-
-var (
-	config *Config = nil
-)
 
 func GetConfig() *Config {
 	if config == nil {
@@ -43,11 +44,11 @@ func GetConfig() *Config {
 		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
 		flag.Parse()
 
-		// get metadata (should be from file if file provided)
-		httpClient := &http.Client{}
-		metap := NewMetadataProvider(httpClient, config)
-		config.MetaData = metap.Get()
-		config.MetaData.VPCID = metap.GetVPC()
+		config.MetaData = &InstanceMeta{}
+		err := config.MetaData.Update()
+		if err != nil {
+			log.WithError(err).Warn("Couldn't get metadata from metadata service")
+		}
 	}
 
 	return config

@@ -42,7 +42,7 @@ func NewResolver(cfg *config.Config) Resolver {
 	})
 
 	resolver := &AWSResolver{
-		sc: awscan.NewScanner(sess, cfg.MetaData.VPCID),
+		sc: awscan.NewScanner(sess, cfg.MetaData.VpcId),
 	}
 	return resolver
 }
