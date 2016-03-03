@@ -1,15 +1,22 @@
 package heart
 
 import (
-	"runtime"
+	"bytes"
+	"encoding/json"
+	"os"
 	"time"
 
 	"github.com/opsee/bastion/messaging"
+	metrics "github.com/rcrowley/go-metrics"
 )
 
 const (
 	Topic     = "heartbeat"
 	heartRate = 15 * time.Second
+)
+
+var (
+	metricsRegistry = metrics.NewRegistry()
 )
 
 type Heart struct {
@@ -20,9 +27,11 @@ type Heart struct {
 }
 
 type HeartBeat struct {
-	Process   string            `json:"process_name"`
-	Timestamp int64             `json:"timestamp"`
-	Metrics   map[string]uint64 `json:"metrics"`
+	Process    string                 `json:"process_name"`
+	Timestamp  int64                  `json:"timestamp"`
+	Metrics    map[string]interface{} `json:"metrics"`
+	CustomerId string                 `json:"customer_id"`
+	BastionId  string                 `json:"bastion_id"`
 }
 
 func NewHeart(name string) (*Heart, error) {
@@ -37,53 +46,56 @@ func NewHeart(name string) (*Heart, error) {
 		ticker:      time.NewTicker(heartRate),
 	}
 
+	metrics.RegisterRuntimeMemStats(metricsRegistry)
+
 	return heart, nil
 }
 
-func getMetrics() map[string]uint64 {
-	metrics := make(map[string]uint64)
-	memStats := new(runtime.MemStats)
-	runtime.ReadMemStats(memStats)
+func Metrics() (map[string]interface{}, error) {
+	// NOTE(dan)
+	// runtime.ReadMemStats calls the C functions runtime·semacquire(&runtime·worldsema) and runtime·stoptheworld()
+	metrics.CaptureRuntimeMemStatsOnce(metricsRegistry)
+	b := &bytes.Buffer{}
+	metrics.WriteJSONOnce(metricsRegistry, b)
+	heartMetrics := make(map[string]interface{})
 
-	metrics["num_goroutines"] = uint64(runtime.NumGoroutine())
-	metrics["alloc"] = memStats.Alloc
-	metrics["total_alloc"] = memStats.TotalAlloc
-	metrics["sys"] = memStats.Sys
-	metrics["lookups"] = memStats.Lookups
-	metrics["mallocs"] = memStats.Mallocs
-	metrics["frees"] = memStats.Frees
-	metrics["heap_alloc"] = memStats.HeapAlloc
-	metrics["heap_sys"] = memStats.HeapSys
-	metrics["heap_idle"] = memStats.HeapIdle
-	metrics["heap_inuse"] = memStats.HeapInuse
-	metrics["heap_released"] = memStats.HeapReleased
-	metrics["heap_objects"] = memStats.HeapObjects
-	return metrics
+	if err := json.Unmarshal(b.Bytes(), &heartMetrics); err != nil {
+		return nil, err
+	}
+	return heartMetrics, nil
 }
 
-func (h *Heart) Beat() chan error {
+func (this *Heart) Beat() chan error {
 	errChan := make(chan error)
-
-	go func() {
+	customerId := os.Getenv("BASTION_ID")
+	bastionId := os.Getenv("CUSTOMER_ID")
+	go func(customerId string, bastionId string) {
 	BeatLoop:
 		for {
 			select {
-			case t := <-h.ticker.C:
-				hb := &HeartBeat{
-					Process:   h.ProcessName,
-					Timestamp: t.UTC().UnixNano(),
-					Metrics:   getMetrics(),
-				}
-
-				if err := h.producer.Publish(hb); err != nil {
+			case t := <-this.ticker.C:
+				metrics, err := Metrics()
+				if err != nil {
 					errChan <- err
 				}
-			case <-h.StopChan:
-				h.ticker.Stop()
+
+				hb := &HeartBeat{
+					Process:    this.ProcessName,
+					Timestamp:  t.UTC().UnixNano(),
+					Metrics:    metrics,
+					CustomerId: customerId,
+					BastionId:  bastionId,
+				}
+
+				if err := this.producer.Publish(hb); err != nil {
+					errChan <- err
+				}
+			case <-this.StopChan:
+				this.ticker.Stop()
 				break BeatLoop
 			}
 		}
-	}()
+	}(customerId, bastionId)
 
 	return errChan
 }

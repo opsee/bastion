@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"os"
+	"os/signal"
+	"syscall"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
@@ -15,6 +17,14 @@ import (
 const (
 	moduleName = "checker"
 )
+
+var (
+	signalsChannel = make(chan os.Signal, 1)
+)
+
+func init() {
+	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+}
 
 func main() {
 	var err error
@@ -50,23 +60,27 @@ func main() {
 	newChecker.Port = 4000
 	if err := newChecker.Start(); err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
-		log.Fatal(err.Error())
-	}
-
-	heart, err := heart.NewHeart(moduleName)
-	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start heartbeat", "error": "error on beat"}).Fatal(err.Error())
-		panic(err)
 	}
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 	portmapper.Register(moduleName, newChecker.Port)
 	defer portmapper.Unregister(moduleName, newChecker.Port)
 
-	err = <-heart.Beat()
-
+	heart, err := heart.NewHeart(moduleName)
 	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "heartbeat", "error": "error on hearbeat"}).Fatal(err.Error())
-		panic(err)
+		log.WithError(err).Fatal("Couldn't initialize heartbeat.")
+	}
+	beatChan := heart.Beat()
+
+	for {
+		select {
+		case s := <-signalsChannel:
+			switch s {
+			case syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT:
+				os.Exit(0)
+			}
+		case beatErr := <-beatChan:
+			log.WithError(beatErr).Error("Heartbeat error.")
+		}
 	}
 }

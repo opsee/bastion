@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/bastion/config"
@@ -14,6 +16,14 @@ import (
 const (
 	moduleName = "monitor"
 )
+
+var (
+	signalsChannel = make(chan os.Signal, 1)
+)
+
+func init() {
+	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+}
 
 func main() {
 	cfg := config.GetConfig()
@@ -36,5 +46,21 @@ func main() {
 	portmapper.Register(moduleName, int(cfg.AdminPort))
 	defer portmapper.Unregister(moduleName, int(cfg.AdminPort))
 
-	log.Error(http.ListenAndServe(listenAddress, nil).Error())
+	// serve http forever
+	go func() {
+		for {
+			log.WithError(http.ListenAndServe(listenAddress, nil)).Fatal("Http server error. Restarting.")
+		}
+	}()
+
+	for {
+		select {
+		case s := <-signalsChannel:
+			switch s {
+			case syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT:
+				log.Info("Received signal ", s, ". Stopping.")
+				os.Exit(0)
+			}
+		}
+	}
 }
