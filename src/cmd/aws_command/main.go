@@ -3,14 +3,14 @@ package main
 import (
 	"os"
 
+	"os/signal"
+	"syscall"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/bastion/aws_command"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/portmapper"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 const (
@@ -21,34 +21,19 @@ var (
 	signalsChannel = make(chan os.Signal, 1)
 )
 
+func init() {
+	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+}
+
 func main() {
 
 	config := config.GetConfig()
-	signal.Notify(signalsChannel, syscall.SIGTERM, syscall.SIGINT)
 	commander := aws_command.NewAWSCommander()
 	commander.Port = 4002
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 	portmapper.Register(moduleName, commander.Port)
 	defer portmapper.Unregister(moduleName, commander.Port)
-
-	go func() {
-		heart, err := heart.NewHeart(moduleName)
-		if err != nil {
-			log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start heartbeat", "error": "error on beat"}).Fatal(err.Error())
-			panic(err)
-		}
-
-		for {
-			err = <-heart.Beat()
-
-			if err != nil {
-				log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "heartbeat", "error": "error on hearbeat"}).Fatal(err.Error())
-				panic(err)
-			}
-			time.Sleep(15 * time.Second)
-		}
-	}()
 
 	log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "startup"}).Info("startng up aws commander")
 	if err := commander.Start(); err != nil {
@@ -58,13 +43,22 @@ func main() {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "grpc server started"}).Info("started up aws commander")
 	}
 
+	heart, err := heart.NewHeart(moduleName)
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't initialize heartbeat!")
+	}
+	beatChan := heart.Beat()
+
 	for {
 		select {
 		case s := <-signalsChannel:
 			switch s {
-			case syscall.SIGTERM, syscall.SIGINT:
-				os.Exit(1)
+			case syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
+				log.Info("Received signal ", s, ". Stopping.")
+				os.Exit(0)
 			}
+		case beatErr := <-beatChan:
+			log.WithError(beatErr)
 		}
 	}
 }

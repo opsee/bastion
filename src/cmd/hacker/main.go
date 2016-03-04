@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -18,7 +20,20 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cf "github.com/crewjam/go-cloudformation"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/heart"
 )
+
+const (
+	moduleName = "hacker"
+)
+
+var (
+	signalsChannel = make(chan os.Signal, 1)
+)
+
+func init() {
+	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+}
 
 type Hacker struct {
 	CustomerId                  string
@@ -261,17 +276,39 @@ func main() {
 		log.WithError(err).Fatal("Error starting hacker.")
 	}
 
-	log.Info("Started hacker.")
-	for {
-		t := time.Now()
-		log.Info("Hacking")
-		_, err := hacker.Hack()
-		if err != nil {
-			log.WithError(err).Error("Couldn't update the stack.")
+	heart, err := heart.NewHeart(moduleName)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	beatChan := heart.Beat()
+
+	// hack forever
+	go func() {
+		log.Info("Started hacker.")
+		for {
+			t := time.Now()
+			log.Info("Hacking")
+			_, err := hacker.Hack()
+			if err != nil {
+				log.WithError(err).Error("Couldn't update the stack.")
+			}
+			if wait := hacker.waitTime - time.Since(t); wait > time.Millisecond {
+				log.Info("Waiting ", wait)
+				time.Sleep(wait)
+			}
 		}
-		if wait := hacker.waitTime - time.Since(t); wait > time.Millisecond {
-			log.Info("Waiting ", wait)
-			time.Sleep(wait)
+	}()
+
+	for {
+		select {
+		case s := <-signalsChannel:
+			switch s {
+			case syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT:
+				log.Info("Received signal ", s, ". Stopping.")
+				os.Exit(0)
+			}
+		case beatErr := <-beatChan:
+			log.WithError(beatErr).Error("Heartbeat error.")
 		}
 	}
 }

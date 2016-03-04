@@ -15,6 +15,8 @@ const (
 var (
 	components = []string{
 		"runner",
+		"test_runner",
+		"hacker",
 		"aws_command",
 		"checker",
 		"discovery",

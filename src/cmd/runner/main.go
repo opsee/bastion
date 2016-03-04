@@ -17,6 +17,14 @@ const (
 	maxConcurrentChecks = 10
 )
 
+var (
+	signalsChannel = make(chan os.Signal, 1)
+)
+
+func init() {
+	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+}
+
 func main() {
 	var err error
 
@@ -40,18 +48,19 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+	beatChan := heart.Beat()
 
 	for {
 		select {
-		case s := <-sigs:
-			log.Info("Received signal %s. Stopping...", s)
-			runner.Stop()
-			os.Exit(0)
-		case err := <-heart.Beat():
-			log.Error(err.Error())
+		case s := <-signalsChannel:
+			switch s {
+			case syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT:
+				log.Info("Received signal ", s, ". Stopping.")
+				runner.Stop()
+				os.Exit(0)
+			}
+		case beatErr := <-beatChan:
+			log.WithError(beatErr).Error("Heartbeat error.")
 		}
 	}
 }

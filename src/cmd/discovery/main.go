@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -18,12 +19,18 @@ import (
 )
 
 const (
-	moduleName = "discovery"
+	moduleName      = "discovery"
+	discoveryPeriod = time.Second * 120
 )
 
 var (
-	producer messaging.Producer
+	producer       messaging.Producer
+	signalsChannel = make(chan os.Signal, 1)
 )
+
+func init() {
+	signal.Notify(signalsChannel, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+}
 
 func main() {
 	var err error
@@ -58,37 +65,37 @@ func main() {
 
 	heart, err := heart.NewHeart(moduleName)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.WithError(err).Fatal("Couldn't initialize heartbeat!")
 	}
+	beatChan := heart.Beat()
 
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, os.Kill)
-
+	// Do discovery
 	go func() {
 		for {
-			select {
-			case s := <-sigs:
-				log.Info("Received signal %s.  Stopping...", s)
-				os.Exit(0)
-
-			case err := <-heart.Beat():
-				log.Error(err.Error())
+			for event := range disco.Discover() {
+				if event.Err != nil {
+					log.WithError(err).Error("Event error during discovery.")
+				} else {
+					err = producer.Publish(event.Result)
+					if err != nil {
+						log.WithError(err).Error("Error publishing event during discovery.")
+					}
+				}
 			}
+			time.Sleep(discoveryPeriod)
 		}
 	}()
 
 	for {
-		for event := range disco.Discover() {
-			if event.Err != nil {
-				log.Error(event.Err.Error())
-			} else {
-				err = producer.Publish(event.Result)
-				if err != nil {
-					log.Error(err.Error())
-				}
+		select {
+		case s := <-signalsChannel:
+			switch s {
+			case syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
+				log.Info("Received signal ", s, ". Stopping.")
+				os.Exit(0)
 			}
+		case beatErr := <-beatChan:
+			log.WithError(beatErr)
 		}
-
-		time.Sleep(120 * time.Second)
 	}
 }
