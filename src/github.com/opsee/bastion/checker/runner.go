@@ -224,17 +224,26 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 		var request Request
 		switch typedCheck := c.(type) {
 		case *HttpCheck:
+			var host string
+
 			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
 			if target.Address == "" {
 				log.WithFields(log.Fields{"target": target}).Error("Target missing address.")
 				continue
 			}
-			uri := fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path)
+
+			// special case host targets so that we may explicitly set host name in http requests
+			switch target.Type {
+			case "host":
+				host = target.Id
+			}
+
 			request = &HTTPRequest{
 				Method:  typedCheck.Verb,
-				URL:     uri,
+				URL:     fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path),
 				Headers: typedCheck.Headers,
 				Body:    typedCheck.Body,
+				Host:    host,
 			}
 		default:
 			log.WithFields(log.Fields{"type": reflect.TypeOf(c)}).Error("dispatch - Unknown check type.")

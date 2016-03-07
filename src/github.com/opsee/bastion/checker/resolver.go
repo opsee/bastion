@@ -2,6 +2,7 @@ package checker
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -118,6 +119,27 @@ func (r *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
 	return target, nil
 }
 
+func (r *AWSResolver) resolveHost(host string) ([]*Target, error) {
+	log.Debugf("resolving host: %s", host)
+
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		log.WithError(err).Errorf("error resolving host: %s", host)
+		return nil, err
+	}
+
+	target := make([]*Target, len(ips))
+	for i, ip := range ips {
+		target[i] = &Target{
+			Type:    "host",
+			Id:      host,
+			Address: ip.String(),
+		}
+	}
+
+	return target, nil
+}
+
 func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 	log.Debug("Resolving target: %v", *target)
 
@@ -140,6 +162,8 @@ func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
 		return r.resolveInstance(target.Id)
+	case "host":
+		return r.resolveHost(target.Id)
 	}
 
 	return nil, fmt.Errorf("Unable to resolve target: %s", target)

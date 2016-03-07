@@ -20,6 +20,7 @@ const httpWorkerTaskType = "HTTPRequest"
 
 type HTTPRequest struct {
 	Method  string    `json:"method"`
+	Host    string    `json:"host"`
 	URL     string    `json:"url"`
 	Headers []*Header `json:"headers"`
 	Body    string    `json:"body"`
@@ -64,6 +65,12 @@ func (r *HTTPRequest) Do() *Response {
 		for _, value := range header.Values {
 			req.Header.Add(key, value)
 		}
+	}
+
+	// if we have set the host explicity, override any user-provided host
+	if r.Host != "" {
+		req.Host = r.Host
+		req.Header.Set("Host", r.Host)
 	}
 
 	t0 := time.Now()
