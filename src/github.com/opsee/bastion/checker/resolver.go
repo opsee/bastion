@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/opsee/awscan"
+	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/opsee/bastion/config"
 
 	log "github.com/Sirupsen/logrus"
@@ -23,7 +23,9 @@ type Resolver interface {
 // TODO: The resolver should not query the EC2Scanner directly, but
 // should go through the instance/group cache instead.
 type AWSResolver struct {
-	sc awscan.EC2Scanner
+	ec2Client *ec2.EC2
+	elbClient *elb.ELB
+	VpcId     string
 }
 
 func NewResolver(cfg *config.Config) Resolver {
@@ -39,31 +41,42 @@ func NewResolver(cfg *config.Config) Resolver {
 	sess := session.New(&aws.Config{
 		Credentials: creds,
 		Region:      aws.String(cfg.MetaData.Region),
-		MaxRetries:  aws.Int(11),
 	})
 
 	resolver := &AWSResolver{
-		sc: awscan.NewScanner(sess, cfg.MetaData.VpcId),
+		ec2Client: ec2.New(sess),
+		elbClient: elb.New(sess),
+		VpcId:     cfg.MetaData.VpcId,
 	}
+
 	return resolver
 }
 
-// TODO: In some cases this won't be so easy.
-// TODO: Also, god help us if a reservation contains more than one
-// instance
-func getAddrFromInstance(instance *ec2.Instance) string {
-	var addr *string
-	if instance.PrivateIpAddress != nil {
-		addr = instance.PrivateIpAddress
-	} else if instance.PublicIpAddress != nil {
-		addr = instance.PublicIpAddress
+func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*Target, error) {
+	var grs []*string = []*string{aws.String(sgId)}
+	var reservations []*ec2.Reservation
+
+	filters := []*ec2.Filter{
+		{
+			Name:   aws.String("vpc-id"),
+			Values: []*string{aws.String(this.VpcId)},
+		},
+		{
+			Name:   aws.String("instance.group-id"),
+			Values: grs,
+		},
 	}
 
-	return *addr
-}
+	err := this.ec2Client.DescribeInstancesPages(&ec2.DescribeInstancesInput{Filters: filters}, func(resp *ec2.DescribeInstancesOutput, lastPage bool) bool {
+		for _, res := range resp.Reservations {
+			reservations = append(reservations, res)
+		}
+		if lastPage {
+			return false
+		}
+		return true
+	})
 
-func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*Target, error) {
-	reservations, err := r.sc.ScanSecurityGroupInstances(sgid)
 	if err != nil {
 		return nil, err
 	}
@@ -83,15 +96,24 @@ func (r *AWSResolver) resolveSecurityGroup(sgid string) ([]*Target, error) {
 	return targets, nil
 }
 
-func (r *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
-	elb, err := r.sc.GetLoadBalancer(elbId)
+func (this *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
+	input := &elb.DescribeLoadBalancersInput{
+		LoadBalancerNames: []*string{aws.String(elbId)},
+	}
+
+	resp, err := this.elbClient.DescribeLoadBalancers(input)
 	if err != nil {
 		return nil, err
 	}
 
+	elb := resp.LoadBalancerDescriptions[0]
+	if aws.StringValue(elb.VPCId) != this.VpcId {
+		return nil, fmt.Errorf("LoadBalancer not found with vpc id = %s", this.VpcId)
+	}
+
 	targets := make([]*Target, len(elb.Instances))
 	for i, elbInstance := range elb.Instances {
-		t, err := r.resolveInstance(*elbInstance.InstanceId)
+		t, err := this.resolveInstance(*elbInstance.InstanceId)
 		if err != nil {
 			return nil, err
 		}
@@ -101,11 +123,26 @@ func (r *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
 	return targets, nil
 }
 
-func (r *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
-	reservation, err := r.sc.GetInstance(instanceId)
+func (this *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
+	resp, err := this.ec2Client.DescribeInstances(&ec2.DescribeInstancesInput{
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("vpc-id"),
+				Values: []*string{aws.String(this.VpcId)},
+			},
+		},
+		InstanceIds: []*string{&instanceId},
+	})
+
 	if err != nil {
+		if len(resp.Reservations) > 1 {
+			return nil, fmt.Errorf("Received multiple reservations for instance id: %v, %v", instanceId, resp)
+		}
 		return nil, err
 	}
+
+	// InstanceId to Reservation mappings are 1-to-1
+	reservation := resp.Reservations[0]
 
 	target := make([]*Target, len(reservation.Instances))
 	for i, instance := range reservation.Instances {
@@ -119,7 +156,7 @@ func (r *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
 	return target, nil
 }
 
-func (r *AWSResolver) resolveHost(host string) ([]*Target, error) {
+func (this *AWSResolver) resolveHost(host string) ([]*Target, error) {
 	log.Debugf("resolving host: %s", host)
 
 	ips, err := net.LookupIP(host)
@@ -140,12 +177,12 @@ func (r *AWSResolver) resolveHost(host string) ([]*Target, error) {
 	return target, nil
 }
 
-func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
+func (this *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 	log.Debug("Resolving target: %v", *target)
 
 	switch target.Type {
 	case "sg":
-		return r.resolveSecurityGroup(target.Id)
+		return this.resolveSecurityGroup(target.Id)
 	case "elb":
 		// TODO(greg): We should probably handle this kind of thing better. This
 		// came to pass, because ELBs don't have IDs, they only have names.
@@ -154,17 +191,31 @@ func (r *AWSResolver) Resolve(target *Target) ([]*Target, error) {
 		// request is made to create the check, lo and behold, the ELB Target object
 		// ends up with an ID and no Name. So we account for that here.
 		if target.Name != "" {
-			return r.resolveELB(target.Name)
+			return this.resolveELB(target.Name)
 		}
 		if target.Id != "" {
-			return r.resolveELB(target.Id)
+			return this.resolveELB(target.Id)
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
-		return r.resolveInstance(target.Id)
+		return this.resolveInstance(target.Id)
 	case "host":
-		return r.resolveHost(target.Id)
+		return this.resolveHost(target.Id)
 	}
 
 	return nil, fmt.Errorf("Unable to resolve target: %s", target)
+}
+
+// TODO: In some cases this won't be so easy.
+// TODO: Also, god help us if a reservation contains more than one
+// instance
+func getAddrFromInstance(instance *ec2.Instance) string {
+	var addr *string
+	if instance.PrivateIpAddress != nil {
+		addr = instance.PrivateIpAddress
+	} else if instance.PublicIpAddress != nil {
+		addr = instance.PublicIpAddress
+	}
+
+	return *addr
 }
