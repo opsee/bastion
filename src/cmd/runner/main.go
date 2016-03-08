@@ -21,6 +21,7 @@ func main() {
 	var err error
 
 	runnerConfig := &checker.NSQRunnerConfig{}
+	flag.StringVar(&runnerConfig.Id, "id", moduleName, "Runner identifier.")
 	flag.StringVar(&runnerConfig.ProducerQueueName, "results", "results", "Result queue name.")
 	flag.StringVar(&runnerConfig.ConsumerQueueName, "requests", "runner", "Requests queue name.")
 	flag.StringVar(&runnerConfig.ConsumerChannelName, "channel", "runner", "Consumer channel name.")
@@ -36,7 +37,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(runnerConfig.Id)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

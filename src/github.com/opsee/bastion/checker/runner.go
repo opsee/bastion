@@ -13,6 +13,7 @@ import (
 )
 
 type NSQRunnerConfig struct {
+	Id                  string
 	ConsumerQueueName   string
 	ProducerQueueName   string
 	ConsumerChannelName string
