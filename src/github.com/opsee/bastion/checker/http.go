@@ -11,6 +11,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/opsee/basic/schema"
 )
 
 const httpWorkerTaskType = "HTTPRequest"
@@ -19,11 +20,11 @@ const httpWorkerTaskType = "HTTPRequest"
 // easier for now. As soon as we move away from JSON, these should be []byte.
 
 type HTTPRequest struct {
-	Method  string    `json:"method"`
-	Host    string    `json:"host"`
-	URL     string    `json:"url"`
-	Headers []*Header `json:"headers"`
-	Body    string    `json:"body"`
+	Method  string           `json:"method"`
+	Host    string           `json:"host"`
+	URL     string           `json:"url"`
+	Headers []*schema.Header `json:"headers"`
+	Body    string           `json:"body"`
 }
 
 var (
@@ -110,20 +111,20 @@ func (r *HTTPRequest) Do() *Response {
 		body = bytes.Trim(body, "\n")
 	}
 
-	httpResponse := &HttpResponse{
+	httpResponse := &schema.HttpResponse{
 		Code: int32(resp.StatusCode),
 		Body: string(body),
-		Metrics: []*Metric{
-			&Metric{
+		Metrics: []*schema.Metric{
+			&schema.Metric{
 				Name:  "request_latency_ms",
 				Value: time.Since(t0).Seconds() * 1000,
 			},
 		},
-		Headers: []*Header{},
+		Headers: []*schema.Header{},
 	}
 
 	for k, v := range resp.Header {
-		header := &Header{}
+		header := &schema.Header{}
 		header.Name = k
 		header.Values = v
 		httpResponse.Headers = append(httpResponse.Headers, header)

@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
@@ -13,15 +14,15 @@ func getSlateHost() string {
 	return fmt.Sprintf("http://%s/check", os.Getenv("SLATE_HOST"))
 }
 
-func testingSlateCheck() *Check {
-	return &Check{
-		Assertions: []*Assertion{
-			&Assertion{
+func testingSlateCheck() *schema.Check {
+	return &schema.Check{
+		Assertions: []*schema.Assertion{
+			&schema.Assertion{
 				Key:          "code",
 				Relationship: "equal",
 				Operand:      "200",
 			},
-			&Assertion{
+			&schema.Assertion{
 				Key:          "body",
 				Relationship: "equal",
 				Operand:      "A Ok",
@@ -30,8 +31,8 @@ func testingSlateCheck() *Check {
 	}
 }
 
-func testingSlateResponse() *HttpResponse {
-	return &HttpResponse{
+func testingSlateResponse() *schema.HttpResponse {
+	return &schema.HttpResponse{
 		Code: int32(200),
 		Body: "A Ok",
 	}

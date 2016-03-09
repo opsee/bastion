@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +30,7 @@ func TestResponseEmpty(t *testing.T) {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "Error": "request error"}).Fatal(err)
 	}
 
-	if resp, ok := resp.Response.(*HttpResponse); ok {
+	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "response": resp.Body}).Info("received response")
 		assert.Equal(t, testResponse, resp.Body, "response must match predefined test response (the empty string)")
 	} else {
@@ -57,7 +58,7 @@ func TestResponseNormal(t *testing.T) {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "Error": "request error"}).Fatal(err)
 	}
 
-	if resp, ok := resp.Response.(*HttpResponse); ok {
+	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TesResponseNormal", "response": resp.Body}).Info("received response")
 		assert.Equal(t, testResponse, resp.Body, "response must match predefined test response (the empty string)")
 	} else {
@@ -85,7 +86,7 @@ func TestResponseTruncate(t *testing.T) {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "Error": "request error"}).Fatal(err)
 	}
 
-	if resp, ok := resp.Response.(*HttpResponse); ok {
+	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": resp.Body}).Info("received response")
 		assert.Equal(t, 4096, len(resp.Body), "body should be trucated to 4096 bytes")
 	} else {

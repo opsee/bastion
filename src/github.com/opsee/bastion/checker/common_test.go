@@ -7,7 +7,12 @@ import (
 	"net/url"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
+
+	"github.com/gogo/protobuf/proto"
+	"github.com/opsee/basic/schema"
+	opsee "github.com/opsee/basic/service"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
+
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
 )
@@ -20,8 +25,8 @@ const (
 type TestCommonStubs struct {
 }
 
-func (t TestCommonStubs) HTTPCheck() *HttpCheck {
-	return &HttpCheck{
+func (t TestCommonStubs) HTTPCheck() *schema.HttpCheck {
+	return &schema.HttpCheck{
 		Name:     "test check",
 		Path:     "/",
 		Protocol: "http",
@@ -37,20 +42,20 @@ func (t TestCommonStubs) HTTPRequest() *HTTPRequest {
 	}
 }
 
-func (t TestCommonStubs) Check() *Check {
-	return &Check{
+func (t TestCommonStubs) Check() *schema.Check {
+	return &schema.Check{
 		Id:         "stub-check-id",
 		Interval:   60,
 		Name:       "fuck off",
-		Target:     &Target{},
-		CheckSpec:  &Any{},
-		Assertions: []*Assertion{},
+		Target:     &schema.Target{},
+		CheckSpec:  &opsee_types.Any{},
+		Assertions: []*schema.Assertion{},
 	}
 }
 
-func (t TestCommonStubs) PassingCheck() *Check {
+func (t TestCommonStubs) PassingCheck() *schema.Check {
 	check := t.Check()
-	check.Target = &Target{
+	check.Target = &schema.Target{
 		Type: "sg",
 		Id:   "sg",
 		Name: "sg",
@@ -61,9 +66,9 @@ func (t TestCommonStubs) PassingCheck() *Check {
 	return check
 }
 
-func (t TestCommonStubs) PassingCheckInstanceTarget() *Check {
+func (t TestCommonStubs) PassingCheckInstanceTarget() *schema.Check {
 	check := t.Check()
-	check.Target = &Target{
+	check.Target = &schema.Target{
 		Type: "instance",
 		Id:   "instance",
 		Name: "instance",
@@ -74,9 +79,9 @@ func (t TestCommonStubs) PassingCheckInstanceTarget() *Check {
 	return check
 }
 
-func (t TestCommonStubs) PassingCheckMultiTarget() *Check {
+func (t TestCommonStubs) PassingCheckMultiTarget() *schema.Check {
 	check := t.Check()
-	check.Target = &Target{
+	check.Target = &schema.Target{
 		Type: "sg",
 		Id:   "sg3",
 		Name: "sg3",
@@ -87,14 +92,14 @@ func (t TestCommonStubs) PassingCheckMultiTarget() *Check {
 	return check
 }
 
-func (t TestCommonStubs) BadCheck() *Check {
+func (t TestCommonStubs) BadCheck() *schema.Check {
 	check := t.Check()
-	check.Target = &Target{
+	check.Target = &schema.Target{
 		Type: "sg",
 		Id:   "unknown",
 		Name: "unknown",
 	}
-	check.CheckSpec = &Any{
+	check.CheckSpec = &opsee_types.Any{
 		TypeUrl: "unknown",
 		Value:   []byte{},
 	}
@@ -102,13 +107,13 @@ func (t TestCommonStubs) BadCheck() *Check {
 }
 
 type testResolver struct {
-	Targets map[string][]*Target
+	Targets map[string][]*schema.Target
 }
 
-func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
+func (t *testResolver) Resolve(tgt *schema.Target) ([]*schema.Target, error) {
 	log.Debug("Resolving target: %s", tgt)
 	if tgt.Id == "empty" {
-		return []*Target{}, nil
+		return []*schema.Target{}, nil
 	}
 	resolved := t.Targets[tgt.Id]
 	if resolved == nil {
@@ -121,37 +126,37 @@ func (t *testResolver) Resolve(tgt *Target) ([]*Target, error) {
 func newTestResolver() *testResolver {
 	addr := "127.0.0.1"
 	return &testResolver{
-		Targets: map[string][]*Target{
-			"sg": []*Target{
-				&Target{
+		Targets: map[string][]*schema.Target{
+			"sg": []*schema.Target{
+				&schema.Target{
 					Id:      "id",
 					Type:    "instance",
 					Name:    "id",
 					Address: addr,
 				},
 			},
-			"sg3": []*Target{
-				&Target{
+			"sg3": []*schema.Target{
+				&schema.Target{
 					Id:      "id",
 					Name:    "id",
 					Type:    "instance",
 					Address: addr,
 				},
-				&Target{
+				&schema.Target{
 					Id:      "id",
 					Name:    "id",
 					Type:    "instance",
 					Address: addr,
 				},
-				&Target{
+				&schema.Target{
 					Id:      "id",
 					Name:    "id",
 					Type:    "instance",
 					Address: addr,
 				},
 			},
-			"instance": []*Target{
-				&Target{
+			"instance": []*schema.Target{
+				&schema.Target{
 					Id:      "instance",
 					Name:    "instance",
 					Type:    "instance",
@@ -217,29 +222,29 @@ func resetNsq(host string, qmap resetNsqConfig) {
 
 func setupBartnetEmulator() {
 	// dead stupid bartnet api emulator with 2 hardcoded checks
-	checka := &Check{
+	checka := &schema.Check{
 		Id:       "stub-check-id",
 		Interval: 60,
 		Name:     "fuck off",
-		Target: &Target{
+		Target: &schema.Target{
 			Type: "sg",
 			Id:   "sg3",
 			Name: "sg3",
 		},
-		CheckSpec: &Any{},
+		CheckSpec: &opsee_types.Any{},
 	}
-	checkb := &Check{
+	checkb := &schema.Check{
 		Id:       "stub-check-id",
 		Interval: 60,
 		Name:     "fuck off",
-		Target: &Target{
+		Target: &schema.Target{
 			Type: "sg",
 			Id:   "sg3",
 			Name: "sg3",
 		},
-		CheckSpec: &Any{},
+		CheckSpec: &opsee_types.Any{},
 	}
-	checkspec := &HttpCheck{
+	checkspec := &schema.HttpCheck{
 		Name:     "test check",
 		Path:     "/",
 		Protocol: "http",
@@ -251,8 +256,8 @@ func setupBartnetEmulator() {
 	checka.CheckSpec = spec
 	checkb.CheckSpec = spec
 
-	req := &CheckResourceRequest{
-		Checks: []*Check{checka, checkb},
+	req := &opsee.CheckResourceRequest{
+		Checks: []*schema.Check{checka, checkb},
 	}
 	data, err := proto.Marshal(req)
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
+	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
@@ -37,7 +38,7 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	runner := NewRunner(s.Resolver)
 	responses, err := runner.RunCheck(s.Context, check)
 	assert.NoError(s.T(), err)
-	targets, err := s.Resolver.Resolve(&Target{
+	targets, err := s.Resolver.Resolve(&schema.Target{
 		Id: "sg3",
 	})
 	assert.NoError(s.T(), err)
@@ -46,7 +47,7 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	count := 0
 	for response := range responses {
 		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
 	assert.Equal(s.T(), 3, count)
@@ -57,7 +58,7 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(s.Context, check)
 	assert.NoError(s.T(), err)
-	targets, err := s.Resolver.Resolve(&Target{
+	targets, err := s.Resolver.Resolve(&schema.Target{
 		Id: "sg3",
 	})
 	assert.NoError(s.T(), err)
@@ -66,7 +67,7 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	count := 0
 	for response := range responses {
 		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
 	assert.Equal(s.T(), 3, count)
@@ -80,7 +81,7 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 	count := 0
 	for response := range responses {
 		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
 	assert.Equal(s.T(), 1, count)
@@ -94,7 +95,7 @@ func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
 	count := 0
 	for response := range responses {
 		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
 	assert.Equal(s.T(), 1, count)
@@ -125,7 +126,7 @@ func (s *RunnerTestSuite) TestRunCheckDeadlineExceeded() {
 	count := 0
 	for response := range responses {
 		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Error)
 	}
 	assert.Equal(s.T(), 3, count)
@@ -140,7 +141,7 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	count := 0
 	for response := range responses {
 		count++
-		assert.IsType(s.T(), new(CheckResponse), response)
+		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Error)
 	}
 	assert.Equal(s.T(), 3, count)
@@ -258,7 +259,7 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	select {
 	case m := <-s.MsgChan:
 		log.Debug("TestHandlerDoesItsThing: Received message.")
-		result := &CheckResult{}
+		result := &schema.CheckResult{}
 		err := proto.Unmarshal(m.Body, result)
 		assert.NoError(s.T(), err)
 		assert.Equal(s.T(), check.Id, result.CheckId)

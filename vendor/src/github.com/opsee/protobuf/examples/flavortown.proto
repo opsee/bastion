@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+import "github.com/opsee/protobuf/examples/dessert/dessert.proto";
+
+package flavortown;
+
+option (opseeproto.graphql) = true;
+
+// The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors
+message Menu {
+  // These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors
+  repeated LineItem items = 1;
+}
+
+// A line item representing a dish and price
+message LineItem {
+  // The menu dish, can either be lunch or dessert
+  oneof dish {
+    // A lunch dish don't choke on this quote " here
+    Lunch lunch = 100;
+    // A dessert dish
+    flavortown.dessert.Dessert tasty_dessert = 101;
+  }
+  // The price of the dish in cents
+  int32 price_cents = 2;
+  // A timestamp representing when the dish was added to the menu
+  opsee.types.Timestamp created_at = 3;
+  // A timestamp representing when the dish was updated
+  opsee.types.Timestamp updated_at = 4;
+  // A list of nothing really
+  Nothing nothing = 5;
+}
+
+// A delicious lunch dish on the menu
+message Lunch {
+  // The name of the dish
+  string name = 1;
+  // The description of the dish
+  bytes description = 2;
+}
+
+// confusion
+message Nothing {
+  // the void
+  string void = 1;
+}

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/opsee/basic/schema"
 	"golang.org/x/net/context"
 )
 
@@ -22,8 +23,8 @@ type SlateClient struct {
 }
 
 type SlateRequest struct {
-	Assertions []*Assertion  `json:"assertions"`
-	Response   *HttpResponse `json:"response"`
+	Assertions []*schema.Assertion  `json:"assertions"`
+	Response   *schema.HttpResponse `json:"response"`
 }
 
 type SlateResponse struct {
@@ -47,7 +48,7 @@ func NewSlateClient(slateUrl string) *SlateClient {
 
 // CheckAssertions issues a request to Slate to determine if a check response
 // is passing or failing.
-func (s *SlateClient) CheckAssertions(ctx context.Context, check *Check, checkResponse interface{}) (bool, error) {
+func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, checkResponse interface{}) (bool, error) {
 	var (
 		body        []byte
 		success     bool
@@ -57,7 +58,7 @@ func (s *SlateClient) CheckAssertions(ctx context.Context, check *Check, checkRe
 
 	success = false
 
-	httpResponse, ok := checkResponse.(*HttpResponse)
+	httpResponse, ok := checkResponse.(*schema.HttpResponse)
 	if !ok {
 		return false, errors.New("Unable to read HttpResponse.")
 	}

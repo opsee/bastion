@@ -1,5 +1,7 @@
 package checker
 
+import "github.com/opsee/basic/schema"
+
 var (
 	Recruiters = make(map[string]NewWorkerFunc)
 )
@@ -15,7 +17,7 @@ type Response struct {
 
 type Task struct {
 	Type     string
-	Target   *Target
+	Target   *schema.Target
 	Request  Request
 	Response *Response
 }
