@@ -43,7 +43,10 @@ func main() {
 	})
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
-	portmapper.Register(moduleName, int(cfg.AdminPort))
+	err = portmapper.Register(moduleName, int(cfg.AdminPort))
+	if err != nil {
+		log.WithError(err).Fatal("Unable to register service with portmapper.")
+	}
 	defer portmapper.Unregister(moduleName, int(cfg.AdminPort))
 
 	// serve http forever
