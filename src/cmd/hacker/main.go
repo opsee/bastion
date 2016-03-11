@@ -38,23 +38,35 @@ func init() {
 type Hacker struct {
 	CustomerId                  string
 	HostSecurityGroupPhysicalId string
+	VpcId                       string
 	ingressStackPhysicalId      string
 	bastionStackPhysicalId      string
 	waitTime                    time.Duration
 	stackTimeoutMinutes         int64
-	ec2metadataClient           *ec2metadata.EC2Metadata
 	ec2Client                   *ec2.EC2
 	cloudformationClient        *cloudformation.CloudFormation
 }
 
 func NewHacker() (*Hacker, error) {
 	cfg := config.GetConfig()
+
 	customerId := os.Getenv("CUSTOMER_ID")
 	hacker := &Hacker{
 		CustomerId:             customerId,
 		bastionStackPhysicalId: fmt.Sprintf("opsee-stack-%s", customerId),
 		waitTime:               time.Duration(time.Minute * 2),
 		stackTimeoutMinutes:    int64(2),
+	}
+
+	if cfg.MetaData.VpcId == "" {
+		// config previously failed to get the vpc-id.  try one more time.
+		err := cfg.MetaData.Update()
+		if err != nil {
+			log.WithError(err).Fatal("Couldn't get vpc-id from metadata service.")
+		}
+		hacker.VpcId = cfg.MetaData.VpcId
+	} else {
+		hacker.VpcId = cfg.MetaData.VpcId
 	}
 
 	creds := credentials.NewChainCredentials(
@@ -72,7 +84,6 @@ func NewHacker() (*Hacker, error) {
 	})
 
 	hacker.ec2Client = ec2.New(sess)
-	hacker.ec2metadataClient = ec2metadata.New(sess)
 	hacker.cloudformationClient = cloudformation.New(sess)
 
 	// get security group id, group name, from bastion cloudformation stack
@@ -121,7 +132,14 @@ func (this *Hacker) Validate() error {
 
 // Returns a list of security groups for the hacker's instances vpc
 func (this *Hacker) GetSecurityGroups() ([]*ec2.SecurityGroup, error) {
-	output, err := this.ec2Client.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{})
+	output, err := this.ec2Client.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("vpc-id"),
+				Values: []*string{aws.String(this.VpcId)},
+			},
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
