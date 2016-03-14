@@ -7,8 +7,10 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
+	"github.com/opsee/basic/schema"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 )
 
@@ -42,15 +44,14 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
 		// Message is a Check
 		// We emit a CheckResult
-		check := &Check{}
+		check := &schema.Check{}
 		if err := proto.Unmarshal(m.Body, check); err != nil {
 			return err
 		}
 		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
 
-		timestamp := &Timestamp{
-			Seconds: int64(time.Now().Unix()),
-		}
+		timestamp := &opsee_types.Timestamp{}
+		timestamp.Scan(time.Now())
 
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
@@ -58,13 +59,13 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		if err != nil {
 			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
-			result := &CheckResult{
+			result := &schema.CheckResult{
 				CustomerId: cfg.CustomerID,
 				CheckId:    check.Id,
 				CheckName:  check.Name,
 				Target:     check.Target,
 				Timestamp:  timestamp,
-				Responses: []*CheckResponse{&CheckResponse{
+				Responses: []*schema.CheckResponse{&schema.CheckResponse{
 					Target: check.Target,
 					Error:  handleError(err),
 				}},
@@ -88,7 +89,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 
 		// TODO(greg): We're currently ignoring the deadline we _just_ set on this
 		// this.
-		var responses []*CheckResponse
+		var responses []*schema.CheckResponse
 		passing := true
 		for response := range responseChan {
 			responses = append(responses, response)
@@ -97,7 +98,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			}
 		}
 
-		result := &CheckResult{
+		result := &schema.CheckResult{
 			CustomerId: cfg.CustomerID,
 			CheckId:    check.Id,
 			Target:     check.Target,
@@ -174,9 +175,9 @@ func NewRunner(resolver Resolver) *Runner {
 	return r
 }
 
-func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Target, error) {
+func (r *Runner) resolveRequestTargets(ctx context.Context, check *schema.Check) ([]*schema.Target, error) {
 	var (
-		targets []*Target
+		targets []*schema.Target
 		err     error
 	)
 
@@ -207,7 +208,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *Check) ([]*Ta
 	return targets[:maxHosts], nil
 }
 
-func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) (chan *Task, error) {
+func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*schema.Target) (chan *Task, error) {
 	// If the Check submitted is invalid, RunCheck will return a single
 	// CheckResponse indicating that there was an error with the Check.
 	c, err := UnmarshalAny(check.CheckSpec)
@@ -224,7 +225,7 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 
 		var request Request
 		switch typedCheck := c.(type) {
-		case *HttpCheck:
+		case *schema.HttpCheck:
 			var host string
 
 			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
@@ -268,12 +269,12 @@ func (r *Runner) dispatch(ctx context.Context, check *Check, targets []*Target) 
 	return r.dispatcher.Dispatch(ctx, tg), nil
 }
 
-func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, responses chan *CheckResponse) {
+func (r *Runner) runCheck(ctx context.Context, check *schema.Check, tasks chan *Task, responses chan *schema.CheckResponse) {
 	for t := range tasks {
 		log.WithFields(log.Fields{"task": *t}).Debug("runCheck - Handling finished task.")
 		var (
 			responseError string
-			responseAny   *Any
+			responseAny   *opsee_types.Any
 			err           error
 			passing       bool
 		)
@@ -290,7 +291,7 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, r
 			responseError = t.Response.Error.Error()
 		}
 
-		response := &CheckResponse{
+		response := &schema.CheckResponse{
 			Target:   t.Target,
 			Response: responseAny,
 			Error:    responseError,
@@ -323,7 +324,7 @@ func (r *Runner) runCheck(ctx context.Context, check *Check, tasks chan *Task, r
 // If the Context passed to RunCheck is cancelled or its deadline is exceeded,
 // all CheckResponse objects after that event will be passed to the channel
 // with appropriate errors associated with them.
-func (r *Runner) RunCheck(ctx context.Context, check *Check) (chan *CheckResponse, error) {
+func (r *Runner) RunCheck(ctx context.Context, check *schema.Check) (chan *schema.CheckResponse, error) {
 	targets, err := r.resolveRequestTargets(ctx, check)
 	if err != nil {
 		return nil, err
@@ -334,7 +335,7 @@ func (r *Runner) RunCheck(ctx context.Context, check *Check) (chan *CheckRespons
 		return nil, err
 	}
 
-	responses := make(chan *CheckResponse, 1)
+	responses := make(chan *schema.CheckResponse, 1)
 	// TODO: Place requests on a queue, much like the dispatcher. Working from that
 	// queue--thus giving us the ability to limit the number of concurrently
 	// executing checks.

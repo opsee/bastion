@@ -6,7 +6,8 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
+	"github.com/opsee/basic/schema"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 	MinimumCheckInterval = 15
 )
 
-func validateCheck(check *Check) error {
+func validateCheck(check *schema.Check) error {
 	if check.Id == "" {
 		return fmt.Errorf("Check has null ID")
 	}
@@ -36,8 +37,8 @@ func validateCheck(check *Check) error {
 // task -- some wrapper object with a context that includes a deadline. Basically, add contexts to
 // scheduled executions.
 type CheckTimer struct {
-	Check   *Check
-	runChan chan *Check
+	Check   *schema.Check
+	runChan chan *schema.Check
 	stop    chan struct{}
 	ticker  *time.Ticker
 }
@@ -47,7 +48,7 @@ type CheckTimer struct {
 // the runChan channel. If this channel blocks for more than N seconds, you will start
 // executing stale check requests. Managing backpressure for this channel is important.
 // TODO(greg): manage backpressure for this channel.
-func NewCheckTimer(check *Check, runChan chan *Check) (*CheckTimer, error) {
+func NewCheckTimer(check *schema.Check, runChan chan *schema.Check) (*CheckTimer, error) {
 	d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 	if err != nil {
 		return nil, err
@@ -86,24 +87,24 @@ func (c *CheckTimer) Stop() {
 type scheduleMap struct {
 	sync.RWMutex
 	checks  map[string]*CheckTimer
-	runChan chan *Check
+	runChan chan *schema.Check
 }
 
 func newScheduleMap() *scheduleMap {
 	return &scheduleMap{
 		checks:  make(map[string]*CheckTimer),
-		runChan: make(chan *Check, 10),
+		runChan: make(chan *schema.Check, 10),
 	}
 }
 
-func (m *scheduleMap) RunChan() chan *Check {
+func (m *scheduleMap) RunChan() chan *schema.Check {
 	return m.runChan
 }
 
 // Set adds a new CheckTimer to the schedule map, returning the CheckTimer
 // after creation. It blocks acquiring a write lock on the schedule map.
 
-func (m *scheduleMap) Set(key string, check *Check) (*CheckTimer, error) {
+func (m *scheduleMap) Set(key string, check *schema.Check) (*CheckTimer, error) {
 	m.Lock()
 	defer m.Unlock()
 	ct, err := NewCheckTimer(check, m.runChan)
@@ -183,7 +184,7 @@ func NewScheduler() *Scheduler {
 // previous value for the Check. This is so that we can be aware of check
 // redefinition when it happens.
 
-func (s *Scheduler) CreateCheck(check *Check) (*Check, error) {
+func (s *Scheduler) CreateCheck(check *schema.Check) (*schema.Check, error) {
 	if err := validateCheck(check); err != nil {
 		return check, err
 	}
@@ -200,7 +201,7 @@ func (s *Scheduler) CreateCheck(check *Check) (*Check, error) {
 // will be returned. Otherwise, it will return nil and an error indicating the
 // check does not exist.
 
-func (s *Scheduler) RetrieveCheck(check *Check) (*Check, error) {
+func (s *Scheduler) RetrieveCheck(check *schema.Check) (*schema.Check, error) {
 	var (
 		ct  *CheckTimer
 		err error
@@ -216,7 +217,7 @@ func (s *Scheduler) RetrieveCheck(check *Check) (*Check, error) {
 	return ct.Check, err
 }
 
-func (s *Scheduler) DeleteCheck(check *Check) (*Check, error) {
+func (s *Scheduler) DeleteCheck(check *schema.Check) (*schema.Check, error) {
 	var (
 		c   *CheckTimer
 		err error

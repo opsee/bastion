@@ -3,11 +3,12 @@ package checker
 import (
 	"fmt"
 
+	opsee "github.com/opsee/basic/service"
 	"google.golang.org/grpc"
 )
 
 type CheckerRpcClient struct {
-	Client     CheckerClient
+	Client     opsee.CheckerClient
 	connection *grpc.ClientConn
 }
 
@@ -19,7 +20,7 @@ func NewRpcClient(host string, port int) (*CheckerRpcClient, error) {
 		return nil, err
 	}
 	client.connection = conn
-	client.Client = NewCheckerClient(conn)
+	client.Client = opsee.NewCheckerClient(conn)
 
 	return client, nil
 }

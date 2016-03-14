@@ -80,10 +80,170 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/dedis/protobuf",
+			"repository": "https://github.com/dedis/protobuf",
+			"revision": "6948fbd96a0f1e4e96582003261cf647dc66c831",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/go-ini/ini",
 			"repository": "https://github.com/go-ini/ini",
 			"revision": "a4e5487f4a695680ed4a5444b9a094df8eaf48cb",
 			"branch": "v1"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/gogoproto",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/gogoproto"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/defaultcheck",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/defaultcheck"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/description",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/description"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/embedcheck",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/embedcheck"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/enumstringer",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/enumstringer"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/equal",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/equal"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/face",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/face"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/gostring",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/gostring"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/grpc",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/grpc"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/marshalto",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/marshalto"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/oneofcheck",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/oneofcheck"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/populate",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/populate"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/size",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/size"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/stringer",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/stringer"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/testgen",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/testgen"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/union",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/union"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/plugin/unmarshal",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/plugin/unmarshal"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/proto",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/protoc-gen-gogo/descriptor"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/protoc-gen-gogo/generator",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/protoc-gen-gogo/generator"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/protoc-gen-gogo/plugin",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/protoc-gen-gogo/plugin"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/vanity",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"branch": "master",
+			"path": "/vanity"
 		},
 		{
 			"importpath": "github.com/golang/glog",
@@ -94,7 +254,7 @@
 		{
 			"importpath": "github.com/golang/protobuf/proto",
 			"repository": "https://github.com/golang/protobuf",
-			"revision": "45bba206dd5270d96bac4942dcfe515726613249",
+			"revision": "cde632b2dfc9b2747363b9ad6efa68c902944a27",
 			"branch": "master",
 			"path": "/proto"
 		},
@@ -106,9 +266,21 @@
 			"path": "/protoc-gen-go"
 		},
 		{
+			"importpath": "github.com/graphql-go/graphql",
+			"repository": "https://github.com/graphql-go/graphql",
+			"revision": "ac8b40ba2be38115622fc4fcda3805662575cfa7",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/jmespath/go-jmespath",
 			"repository": "https://github.com/jmespath/go-jmespath",
 			"revision": "c01cf91b011868172fdcd9f41838e80c9d716264",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/julienschmidt/httprouter",
+			"repository": "https://github.com/julienschmidt/httprouter",
+			"revision": "77366a47451a56bb3ba682481eed85b64fea14e8",
 			"branch": "master"
 		},
 		{
@@ -142,10 +314,36 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/opsee/basic",
+			"repository": "https://github.com/opsee/basic",
+			"revision": "7b379065803f6ef5bb77d233f201ea1f79cfbf13",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/opsee/portmapper",
 			"repository": "https://github.com/opsee/portmapper",
 			"revision": "4b1e8d1cf4a6d187e6ba87fbe68ba4119afbecd1",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/opsee/protobuf",
+			"repository": "https://github.com/opsee/protobuf",
+			"revision": "1776823a8fe8856c8e3a75c9d4f846c9008c6935",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/opsee/protobuf/opseeproto",
+			"repository": "https://github.com/opsee/protobuf",
+			"revision": "1776823a8fe8856c8e3a75c9d4f846c9008c6935",
+			"branch": "master",
+			"path": "/opseeproto"
+		},
+		{
+			"importpath": "github.com/opsee/protobuf/plugin/graphql/scalars",
+			"repository": "https://github.com/opsee/protobuf",
+			"revision": "1776823a8fe8856c8e3a75c9d4f846c9008c6935",
+			"branch": "master",
+			"path": "/plugin/graphql/scalars"
 		},
 		{
 			"importpath": "github.com/rcrowley/go-metrics",
@@ -163,6 +361,12 @@
 			"importpath": "github.com/shiena/ansicolor",
 			"repository": "https://github.com/shiena/ansicolor",
 			"revision": "a422bbe96644373c5753384a59d678f7d261ff10",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/sirupsen/logrus",
+			"repository": "https://github.com/sirupsen/logrus",
+			"revision": "219c8cb75c258c552e999735be6df753ffc7afdc",
 			"branch": "master"
 		},
 		{
@@ -195,6 +399,20 @@
 			"revision": "5abd4e96a45c386928ed2ca2a7ef63e2533e18ec",
 			"branch": "master",
 			"path": "/codec"
+		},
+		{
+			"importpath": "golang.org/x/crypto/bcrypt",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "5dc8cb4b8a8eb076cbb5a06bc3b8682c15bdbbd3",
+			"branch": "master",
+			"path": "/bcrypt"
+		},
+		{
+			"importpath": "golang.org/x/crypto/blowfish",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "5dc8cb4b8a8eb076cbb5a06bc3b8682c15bdbbd3",
+			"branch": "master",
+			"path": "/blowfish"
 		},
 		{
 			"importpath": "golang.org/x/crypto/ssh/terminal",

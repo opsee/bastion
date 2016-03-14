@@ -11,13 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
+	"github.com/opsee/basic/schema"
 	"github.com/opsee/bastion/config"
 
 	log "github.com/Sirupsen/logrus"
 )
 
 type Resolver interface {
-	Resolve(*Target) ([]*Target, error)
+	Resolve(*schema.Target) ([]*schema.Target, error)
 }
 
 // TODO: The resolver should not query the EC2Scanner directly, but
@@ -52,7 +53,7 @@ func NewResolver(cfg *config.Config) Resolver {
 	return resolver
 }
 
-func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*Target, error) {
+func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*schema.Target, error) {
 	var grs []*string = []*string{aws.String(sgId)}
 	var reservations []*ec2.Reservation
 
@@ -83,10 +84,10 @@ func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*Target, error) {
 
 	log.Debug("reservations: %v", reservations)
 
-	var targets []*Target
+	var targets []*schema.Target
 	for _, reservation := range reservations {
 		for _, instance := range reservation.Instances {
-			targets = append(targets, &Target{
+			targets = append(targets, &schema.Target{
 				Id:      *instance.InstanceId,
 				Type:    "instance",
 				Address: getAddrFromInstance(instance),
@@ -96,7 +97,7 @@ func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*Target, error) {
 	return targets, nil
 }
 
-func (this *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
+func (this *AWSResolver) resolveELB(elbId string) ([]*schema.Target, error) {
 	input := &elb.DescribeLoadBalancersInput{
 		LoadBalancerNames: []*string{aws.String(elbId)},
 	}
@@ -111,7 +112,7 @@ func (this *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
 		return nil, fmt.Errorf("LoadBalancer not found with vpc id = %s", this.VpcId)
 	}
 
-	targets := make([]*Target, len(elb.Instances))
+	targets := make([]*schema.Target, len(elb.Instances))
 	for i, elbInstance := range elb.Instances {
 		t, err := this.resolveInstance(*elbInstance.InstanceId)
 		if err != nil {
@@ -123,7 +124,7 @@ func (this *AWSResolver) resolveELB(elbId string) ([]*Target, error) {
 	return targets, nil
 }
 
-func (this *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
+func (this *AWSResolver) resolveInstance(instanceId string) ([]*schema.Target, error) {
 	resp, err := this.ec2Client.DescribeInstances(&ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
@@ -144,9 +145,9 @@ func (this *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
 	// InstanceId to Reservation mappings are 1-to-1
 	reservation := resp.Reservations[0]
 
-	target := make([]*Target, len(reservation.Instances))
+	target := make([]*schema.Target, len(reservation.Instances))
 	for i, instance := range reservation.Instances {
-		target[i] = &Target{
+		target[i] = &schema.Target{
 			Type:    "instance",
 			Id:      instanceId,
 			Address: getAddrFromInstance(instance),
@@ -156,7 +157,7 @@ func (this *AWSResolver) resolveInstance(instanceId string) ([]*Target, error) {
 	return target, nil
 }
 
-func (this *AWSResolver) resolveHost(host string) ([]*Target, error) {
+func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 	log.Debugf("resolving host: %s", host)
 
 	ips, err := net.LookupIP(host)
@@ -165,9 +166,9 @@ func (this *AWSResolver) resolveHost(host string) ([]*Target, error) {
 		return nil, err
 	}
 
-	target := make([]*Target, len(ips))
+	target := make([]*schema.Target, len(ips))
 	for i, ip := range ips {
-		target[i] = &Target{
+		target[i] = &schema.Target{
 			Type:    "host",
 			Id:      host,
 			Address: ip.String(),
@@ -177,7 +178,7 @@ func (this *AWSResolver) resolveHost(host string) ([]*Target, error) {
 	return target, nil
 }
 
-func (this *AWSResolver) Resolve(target *Target) ([]*Target, error) {
+func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error) {
 	log.Debug("Resolving target: %v", *target)
 
 	switch target.Type {

@@ -1,15 +1,17 @@
 package checker
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/opsee/basic/schema"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestResolveHost(t *testing.T) {
 	var (
 		assert   = assert.New(t)
 		resolver = &AWSResolver{}
-		targets  []*Target
+		targets  []*schema.Target
 		err      error
 	)
 
@@ -20,7 +22,7 @@ func TestResolveHost(t *testing.T) {
 
 	assert.Equal(1, len(targets), "resolver.resolveHost will work with an ip address given as a parameter")
 	assert.EqualValues(
-		&Target{Type: "host", Id: "127.0.0.1", Address: "127.0.0.1"},
+		&schema.Target{Type: "host", Id: "127.0.0.1", Address: "127.0.0.1"},
 		targets[0],
 		"resolver.resolveHost will work with an ip address given as a parameter",
 	)

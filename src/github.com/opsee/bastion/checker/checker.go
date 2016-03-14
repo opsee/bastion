@@ -14,10 +14,13 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/nu7hatch/gouuid"
+	"github.com/opsee/basic/schema"
+	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/auth"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -39,7 +42,7 @@ var (
 
 func init() {
 	// Check types for Any recomposition go here.
-	registry["HttpCheck"] = reflect.TypeOf(HttpCheck{})
+	registry["HttpCheck"] = reflect.TypeOf(schema.HttpCheck{})
 
 	envLevel := strings.ToLower(os.Getenv("LOG_LEVEL"))
 	if envLevel == "" {
@@ -55,7 +58,7 @@ func init() {
 
 // UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
 
-func UnmarshalAny(any *Any) (interface{}, error) {
+func UnmarshalAny(any *opsee_types.Any) (interface{}, error) {
 	class := any.TypeUrl
 	bytes := any.Value
 
@@ -109,7 +112,7 @@ func handleError(err error) string {
 // MarshalAny uses reflection to marshal an interface{} into an Any object and
 // sets up its TypeUrl type hint.
 
-func MarshalAny(i interface{}) (*Any, error) {
+func MarshalAny(i interface{}) (*opsee_types.Any, error) {
 	msg, ok := i.(proto.Message)
 	if !ok {
 		err := fmt.Errorf("Unable to convert to proto.Message: %v", i)
@@ -123,7 +126,7 @@ func MarshalAny(i interface{}) (*Any, error) {
 		return nil, err
 	}
 
-	return &Any{
+	return &opsee_types.Any{
 		TypeUrl: reflect.ValueOf(i).Elem().Type().Name(),
 		Value:   bytes,
 	}, nil
@@ -139,7 +142,7 @@ type RemoteRunner struct {
 	consumer   *nsq.Consumer
 	producer   *nsq.Producer
 	config     *NSQRunnerConfig
-	requestMap map[string]chan *CheckResult // TODO(greg): I really want NBHM for Golang. :(
+	requestMap map[string]chan *schema.CheckResult // TODO(greg): I really want NBHM for Golang. :(
 	sync.RWMutex
 }
 
@@ -158,13 +161,13 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 	}
 
 	r := &RemoteRunner{
-		requestMap: make(map[string]chan *CheckResult),
+		requestMap: make(map[string]chan *schema.CheckResult),
 		consumer:   consumer,
 		producer:   producer,
 		config:     cfg,
 	}
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
-		chk := &CheckResult{}
+		chk := &schema.CheckResult{}
 		err := proto.Unmarshal(m.Body, chk)
 		if err != nil {
 			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't add handler function")
@@ -173,7 +176,7 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 
 		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("handling check")
 
-		var respChan chan *CheckResult
+		var respChan chan *schema.CheckResult
 
 		r.withLock(func() {
 			respChan = r.requestMap[chk.CheckId]
@@ -217,7 +220,7 @@ func (r *RemoteRunner) withLock(f func()) {
 // RunCheck asynchronously executes the check and blocks waiting on the result. It's important to set a
 // context deadline unless you want this to block forever.
 
-func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, error) {
+func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema.CheckResult, error) {
 	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("Running check")
 
 	var (
@@ -236,7 +239,7 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *Check) (*CheckResult, 
 		id = chk.Id
 	}
 
-	respChan := make(chan *CheckResult, 1)
+	respChan := make(chan *schema.CheckResult, 1)
 
 	r.withLock(func() {
 		r.requestMap[id] = respChan
@@ -298,26 +301,28 @@ func NewChecker() *Checker {
 	}
 }
 
-func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequest) (*ResourceResponse, error) {
+func (c *Checker) invoke(ctx context.Context, cmd string, req *opsee.CheckResourceRequest) (*opsee.ResourceResponse, error) {
 	log.WithFields(log.Fields{"service": "checker", "event": "invoke", "command": cmd}).Info("handling request")
 
-	responses := make([]*CheckResourceResponse, len(req.Checks))
-	response := &ResourceResponse{
+	responses := make([]*opsee.CheckResourceResponse, len(req.Checks))
+	response := &opsee.ResourceResponse{
 		Responses: responses,
 	}
 	for i, check := range req.Checks {
 		in := []reflect.Value{reflect.ValueOf(check)}
 		out := reflect.ValueOf(c.Scheduler).MethodByName(cmd).Call(in)
-		checkResponse, ok := out[0].Interface().(*Check)
+		checkResponse, ok := out[0].Interface().(*schema.Check)
 		if !ok {
 			err, ok := out[1].Interface().(error)
 			if ok {
 				if err != nil {
-					responses[i] = &CheckResourceResponse{Error: err.Error()}
+					responses[i] = &opsee.CheckResourceResponse{
+						Error: err.Error(),
+					}
 				}
 			}
 		} else {
-			responses[i] = &CheckResourceResponse{
+			responses[i] = &opsee.CheckResourceResponse{
 				Id:    check.Id,
 				Check: checkResponse,
 			}
@@ -330,21 +335,21 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *CheckResourceRequ
 // CreateCheck creates a check within a request context. It will return an error if there is any difficulty
 // creating the check.
 
-func (c *Checker) CreateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+func (c *Checker) CreateCheck(ctx context.Context, req *opsee.CheckResourceRequest) (*opsee.ResourceResponse, error) {
 	return c.invoke(ctx, "CreateCheck", req)
 }
 
 // RetrieveCheck retrieves an existing check within a request context. It will return an error if the check
 // does not exist.
 
-func (c *Checker) RetrieveCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+func (c *Checker) RetrieveCheck(ctx context.Context, req *opsee.CheckResourceRequest) (*opsee.ResourceResponse, error) {
 	return c.invoke(ctx, "RetrieveCheck", req)
 }
 
 // UpdateCheck deletes and then recreates a check within a request context. It will return an error if there is
 // a problem deleting or creating a check.
 
-func (c *Checker) UpdateCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+func (c *Checker) UpdateCheck(ctx context.Context, req *opsee.CheckResourceRequest) (*opsee.ResourceResponse, error) {
 	c.invoke(ctx, "DeleteCheck", req)
 	return c.invoke(ctx, "CreateCheck", req)
 }
@@ -352,7 +357,7 @@ func (c *Checker) UpdateCheck(ctx context.Context, req *CheckResourceRequest) (*
 // DeleteCheck deletes a check within a request context. It will return an error if there is a problem
 // deleting the check.
 
-func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*ResourceResponse, error) {
+func (c *Checker) DeleteCheck(ctx context.Context, req *opsee.CheckResourceRequest) (*opsee.ResourceResponse, error) {
 	return c.invoke(ctx, "DeleteCheck", req)
 }
 
@@ -369,7 +374,7 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *CheckResourceRequest) (*
 // TODO(greg): Get this into the invoke() fold so that we can do a "middleware"
 // ish pattern. to logging, instrumentation, etc.
 
-func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCheckResponse, error) {
+func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*opsee.TestCheckResponse, error) {
 	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Info("Handling request: %v", req)
 
 	if req.Deadline == nil {
@@ -378,13 +383,13 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 		return nil, err
 	}
 
-	deadline := time.Unix(req.Deadline.Seconds, req.Deadline.Nanos)
+	deadline := time.Unix(req.Deadline.Seconds, int64(req.Deadline.Nanos))
 	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Debug("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
 	// We add the request deadline here, and the Runner will adhere to that
 	// deadline.
 	ctx, _ = context.WithDeadline(ctx, deadline)
 
-	testCheckResponse := &TestCheckResponse{}
+	testCheckResponse := &opsee.TestCheckResponse{}
 
 	result, err := c.Runner.RunCheck(ctx, req.Check)
 	if err != nil {
@@ -412,10 +417,10 @@ func (c *Checker) TestCheck(ctx context.Context, req *TestCheckRequest) (*TestCh
 // this customer's bastion. It authenticates before retrieving the
 // configuration.
 
-func (c *Checker) GetExistingChecks(tries int) ([]*Check, error) {
+func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 	cache := &auth.BastionAuthCache{Tokens: make(map[string]*auth.BastionAuthToken)}
 
-	var checks = &CheckResourceRequest{}
+	var checks = &opsee.CheckResourceRequest{}
 
 	tokenType, err := auth.GetTokenTypeByString(os.Getenv("BASTION_AUTH_TYPE"))
 	if err != nil {
@@ -498,7 +503,7 @@ func (c *Checker) Start() error {
 
 	// Now start and register the GRPC server and allow users to create/edit/etc checks
 	go c.grpcServer.Serve(listen)
-	RegisterCheckerServer(c.grpcServer, c)
+	opsee.RegisterCheckerServer(c.grpcServer, c)
 	return nil
 }
 

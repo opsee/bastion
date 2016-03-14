@@ -11,7 +11,10 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
+	"github.com/opsee/basic/schema"
+	opsee "github.com/opsee/basic/service"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
@@ -36,7 +39,7 @@ type CheckerTestSuite struct {
 	Checker          *Checker
 	CheckerClient    *CheckerRpcClient
 	Context          context.Context
-	TestCheckRequest *TestCheckRequest
+	TestCheckRequest *opsee.TestCheckRequest
 	Publisher        Publisher
 	NSQRunner        *NSQRunner
 	RunnerConfig     *NSQRunnerConfig
@@ -104,7 +107,7 @@ func (s *CheckerTestSuite) SetupTest() {
 	s.CheckerClient = checkerClient
 	s.Context = context.Background()
 	s.Common = TestCommonStubs{}
-	s.TestCheckRequest = &TestCheckRequest{
+	s.TestCheckRequest = &opsee.TestCheckRequest{
 		MaxHosts: 1,
 		Deadline: nil,
 		Check:    nil,
@@ -135,8 +138,8 @@ func (s *CheckerTestSuite) TestSynchronizeChecks() {
  ******************************************************************************/
 
 func (s *CheckerTestSuite) TestGoodCreateCheckRequest() {
-	req := &CheckResourceRequest{
-		Checks: []*Check{s.Common.PassingCheck()},
+	req := &opsee.CheckResourceRequest{
+		Checks: []*schema.Check{s.Common.PassingCheck()},
 	}
 	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
 	assert.NoError(s.T(), err)
@@ -148,14 +151,14 @@ func (s *CheckerTestSuite) TestGoodCreateCheckRequest() {
  * TestCheck()
  ******************************************************************************/
 
-func (s *CheckerTestSuite) buildTestCheckRequest(check *HttpCheck, target *Target) (*TestCheckRequest, error) {
+func (s *CheckerTestSuite) buildTestCheckRequest(check *schema.HttpCheck, target *schema.Target) (*opsee.TestCheckRequest, error) {
 	request := s.TestCheckRequest
 	checkBytes, err := proto.Marshal(check)
 	if err != nil {
 		log.Fatalf("Unable to marshal HttpCheck: %v", err)
 		return nil, err
 	}
-	checkAny := &Any{
+	checkAny := &opsee_types.Any{
 		TypeUrl: "HttpCheck",
 		Value:   checkBytes,
 	}
@@ -165,14 +168,15 @@ func (s *CheckerTestSuite) buildTestCheckRequest(check *HttpCheck, target *Targe
 	c.Target = target
 
 	request.Check = c
-	request.Deadline = &Timestamp{
-		Nanos: time.Now().Add(3 * time.Second).UnixNano(),
-	}
+
+	request.Deadline = &opsee_types.Timestamp{}
+	request.Deadline.Scan(time.Now().Add(time.Second * 60))
+
 	return request, nil
 }
 
 func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
-	target := &Target{
+	target := &schema.Target{
 		Id:   "sg",
 		Name: "sg",
 		Type: "sg",
@@ -182,9 +186,9 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
 	assert.NoError(s.T(), err)
-	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
 
-	httpResponse := &HttpResponse{}
+	httpResponse := &schema.HttpResponse{}
 	responses := response.GetResponses()
 	assert.NotNil(s.T(), responses)
 	assert.Len(s.T(), responses, 1)
@@ -195,7 +199,7 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 }
 
 func (s *CheckerTestSuite) TestCheckResolverFailure() {
-	target := &Target{
+	target := &schema.Target{
 		Id:   "unknown",
 		Type: "sg",
 		Name: "unknown",
@@ -204,12 +208,12 @@ func (s *CheckerTestSuite) TestCheckResolverFailure() {
 	assert.NoError(s.T(), err)
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
 	assert.NotNil(s.T(), response.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckResolverEmpty() {
-	target := &Target{
+	target := &schema.Target{
 		Id:   "empty",
 		Type: "sg",
 		Name: "unknown",
@@ -219,12 +223,12 @@ func (s *CheckerTestSuite) TestCheckResolverEmpty() {
 
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
 	assert.NoError(s.T(), err)
-	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
 	assert.NotNil(s.T(), response.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckTimeout() {
-	target := &Target{
+	target := &schema.Target{
 		Name: "sg",
 		Type: "sg",
 		Id:   "sg",
@@ -239,11 +243,11 @@ func (s *CheckerTestSuite) TestCheckTimeout() {
 	// _after_ we get to the Checker.
 	response, err := s.Checker.TestCheck(ctx, request)
 	assert.NoError(s.T(), err)
-	assert.IsType(s.T(), new(TestCheckResponse), response)
+	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
 }
 
 func (s *CheckerTestSuite) TestCheckAdheresToMaxHosts() {
-	target := &Target{
+	target := &schema.Target{
 		Type: "sg",
 		Id:   "sg3",
 		Name: "sg3",
@@ -259,7 +263,7 @@ func (s *CheckerTestSuite) TestCheckAdheresToMaxHosts() {
 }
 
 func (s *CheckerTestSuite) TestCheckSupportsInstances() {
-	target := &Target{
+	target := &schema.Target{
 		Type: "instance",
 		Id:   "instance",
 		Name: "instance",
@@ -275,9 +279,10 @@ func (s *CheckerTestSuite) TestCheckSupportsInstances() {
 }
 
 func (s *CheckerTestSuite) TestUpdateCheck() {
-	req := &CheckResourceRequest{
-		Checks: []*Check{s.Common.PassingCheck()},
+	req := &opsee.CheckResourceRequest{
+		Checks: []*schema.Check{s.Common.PassingCheck()},
 	}
+
 	resp, err := s.CheckerClient.Client.CreateCheck(s.Context, req)
 	assert.NoError(s.T(), err)
 	assert.NotNil(s.T(), resp)
@@ -287,8 +292,8 @@ func (s *CheckerTestSuite) TestUpdateCheck() {
 	newInterval := int32(30)
 	check.Interval = newInterval
 
-	req = &CheckResourceRequest{
-		Checks: []*Check{check},
+	req = &opsee.CheckResourceRequest{
+		Checks: []*schema.Check{check},
 	}
 	resp, err = s.CheckerClient.Client.UpdateCheck(s.Context, req)
 	assert.NoError(s.T(), err)

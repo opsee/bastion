@@ -5,7 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/opsee/basic/schema"
+	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/checker"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -17,9 +20,9 @@ func main() {
 		panic(err)
 	}
 
-	cc := checker.NewCheckerClient(clientConn)
+	cc := opsee.NewCheckerClient(clientConn)
 
-	check := &checker.HttpCheck{
+	check := &schema.HttpCheck{
 		Name:     "test",
 		Path:     "/health_check",
 		Protocol: "http",
@@ -31,13 +34,13 @@ func main() {
 		panic(err)
 	}
 
-	testCheckRequest := &checker.TestCheckRequest{
+	testCheckRequest := &opsee.TestCheckRequest{
 		MaxHosts: 1,
-		Deadline: &checker.Timestamp{
+		Deadline: &opsee_types.Timestamp{
 			Seconds: time.Now().Add(time.Duration(30) * time.Second).Unix(),
 		},
-		Check: &checker.Check{
-			Target: &checker.Target{
+		Check: &schema.Check{
+			Target: &schema.Target{
 				Id:   "api-lb",
 				Name: "api-lb",
 				Type: "elb",
