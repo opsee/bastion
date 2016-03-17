@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -34,6 +35,9 @@ var (
 
 func init() {
 	client = &http.Client{
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return errors.New("Not following redirect.")
+		},
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
@@ -75,12 +79,18 @@ func (r *HTTPRequest) Do() *Response {
 	}
 
 	t0 := time.Now()
+	// If the http client returns a non-nil response and a non-nil
+	// error, then it may be a redirect. We test.
 	resp, err := client.Do(req)
-	if err != nil {
+	if resp == nil && err != nil {
 		return &Response{Error: err}
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode < 300 && resp.StatusCode > 399 && err != nil {
+		return &Response{Error: err}
+	}
 
 	log.Debug("Attempting to read body of response...")
 	// WARNING: You cannot do this.
