@@ -167,7 +167,7 @@ func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 	}
 
 	target := make([]*schema.Target, 0, len(ips))
-	for i, ip := range ips {
+	for _, ip := range ips {
 		// ipv4 only
 		if ip.To4() != nil {
 			target = append(target, &schema.Target{
