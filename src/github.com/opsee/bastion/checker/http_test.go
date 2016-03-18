@@ -6,12 +6,41 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 )
+
+// don't follow redirects for 301s, make sure there is a response object with
+// a Location header.
+func TestRedirectResponse(t *testing.T) {
+	ts := httptest.NewServer(http.RedirectHandler("http://redirected/", 301))
+	defer ts.Close()
+
+	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
+	resp := requestMaker.Do()
+	if resp == nil {
+		log.Fatal("TestRedirectResponse: Got nil response from http worker")
+	}
+
+	httpResponse, _ := resp.Response.(*schema.HttpResponse)
+
+	assert.EqualValues(t, 301, httpResponse.Code, "response code should contain the redirect code")
+	location := ""
+
+	assert.NotEmpty(t, httpResponse.Headers, "response should have headers")
+
+	for _, header := range httpResponse.Headers {
+		if strings.ToLower(header.Name) == "location" {
+			location = header.Values[0]
+		}
+	}
+
+	assert.Equal(t, "http://redirected/", location, "redirect response should container correct location header")
+}
 
 // case where http server returns no response body
 func TestResponseEmpty(t *testing.T) {
