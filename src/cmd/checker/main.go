@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"

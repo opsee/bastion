@@ -3,7 +3,7 @@ package groups
 import (
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/streamrail/concurrent-map"
 )

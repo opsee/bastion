@@ -3,7 +3,7 @@ package checker
 import (
 	"testing"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

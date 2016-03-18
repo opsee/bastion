@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"

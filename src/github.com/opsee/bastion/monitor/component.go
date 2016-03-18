@@ -3,7 +3,7 @@ package monitor
 import (
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/opsee/bastion/heart"
 )
 

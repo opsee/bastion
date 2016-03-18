@@ -11,7 +11,7 @@
 		{
 			"importpath": "github.com/Sirupsen/logrus",
 			"repository": "https://github.com/Sirupsen/logrus",
-			"revision": "6f383a9b2998dd6f401704269c3e6e192f6175ad",
+			"revision": "4b6ea7319e214d98c938f12692336f7ca9348d6b",
 			"branch": "master"
 		},
 		{
@@ -366,7 +366,7 @@
 		{
 			"importpath": "github.com/sirupsen/logrus",
 			"repository": "https://github.com/sirupsen/logrus",
-			"revision": "219c8cb75c258c552e999735be6df753ffc7afdc",
+			"revision": "4b6ea7319e214d98c938f12692336f7ca9348d6b",
 			"branch": "master"
 		},
 		{

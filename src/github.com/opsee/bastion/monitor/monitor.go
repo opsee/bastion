@@ -3,7 +3,7 @@ package monitor
 import (
 	"encoding/json"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/messaging"
 )
