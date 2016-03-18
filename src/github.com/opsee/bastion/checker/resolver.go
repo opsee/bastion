@@ -166,12 +166,15 @@ func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 		return nil, err
 	}
 
-	target := make([]*schema.Target, len(ips))
-	for i, ip := range ips {
-		target[i] = &schema.Target{
-			Type:    "host",
-			Id:      host,
-			Address: ip.String(),
+	target := make([]*schema.Target, 0, len(ips))
+	for _, ip := range ips {
+		// ipv4 only
+		if ip.To4() != nil {
+			target = append(target, &schema.Target{
+				Type:    "host",
+				Id:      host,
+				Address: ip.String(),
+			})
 		}
 	}
 
