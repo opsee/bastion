@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type BackOff interface {

@@ -3,7 +3,7 @@ package heart
 import (
 	"testing"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func TestHeartMetrics(t *testing.T) {

@@ -14,7 +14,7 @@ import (
 	"github.com/opsee/basic/schema"
 	"github.com/opsee/bastion/config"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type Resolver interface {

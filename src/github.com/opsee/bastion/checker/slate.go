@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/opsee/basic/schema"
 	"golang.org/x/net/context"
 )
