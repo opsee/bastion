@@ -21,27 +21,30 @@ const httpWorkerTaskType = "HTTPRequest"
 // easier for now. As soon as we move away from JSON, these should be []byte.
 
 type HTTPRequest struct {
-	Method  string           `json:"method"`
-	Host    string           `json:"host"`
-	URL     string           `json:"url"`
-	Headers []*schema.Header `json:"headers"`
-	Body    string           `json:"body"`
+	Method             string           `json:"method"`
+	Host               string           `json:"host"`
+	URL                string           `json:"url"`
+	Headers            []*schema.Header `json:"headers"`
+	Body               string           `json:"body"`
+	InsecureSkipVerify bool             `json:"insecure_skip_verify"`
 }
 
-var (
-	// NOTE: http.Client, net.Dialer are safe for concurrent use.
-	client *http.Client
-)
-
 func init() {
-	client = &http.Client{
+	Recruiters[httpWorkerTaskType] = NewHTTPWorker
+}
+
+func (r *HTTPRequest) Do() *Response {
+	tlsConfig := &tls.Config{
+		ServerName:         r.Host,
+		InsecureSkipVerify: r.InsecureSkipVerify,
+	}
+
+	client := &http.Client{
 		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 			return errors.New("Not following redirect.")
 		},
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
+			TLSClientConfig:       tlsConfig,
 			ResponseHeaderTimeout: 30 * time.Second,
 			Dial: (&net.Dialer{
 				Timeout: 15 * time.Second,
@@ -49,10 +52,6 @@ func init() {
 		},
 	}
 
-	Recruiters[httpWorkerTaskType] = NewHTTPWorker
-}
-
-func (r *HTTPRequest) Do() *Response {
 	req, err := http.NewRequest(r.Method, r.URL, strings.NewReader(r.Body))
 	if err != nil {
 		return &Response{Error: err}

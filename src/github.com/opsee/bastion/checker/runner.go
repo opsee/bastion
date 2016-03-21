@@ -226,7 +226,10 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 		var request Request
 		switch typedCheck := c.(type) {
 		case *schema.HttpCheck:
-			var host string
+			var (
+				host       string
+				skipVerify = true
+			)
 
 			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
 			if target.Address == "" {
@@ -235,17 +238,20 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			}
 
 			// special case host targets so that we may explicitly set host name in http requests
+			// and validate ssl certs
 			switch target.Type {
 			case "host":
 				host = target.Id
+				skipVerify = false
 			}
 
 			request = &HTTPRequest{
-				Method:  typedCheck.Verb,
-				URL:     fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path),
-				Headers: typedCheck.Headers,
-				Body:    typedCheck.Body,
-				Host:    host,
+				Method:             typedCheck.Verb,
+				URL:                fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path),
+				Headers:            typedCheck.Headers,
+				Body:               typedCheck.Body,
+				Host:               host,
+				InsecureSkipVerify: skipVerify,
 			}
 		default:
 			log.WithFields(log.Fields{"type": reflect.TypeOf(c)}).Error("dispatch - Unknown check type.")
