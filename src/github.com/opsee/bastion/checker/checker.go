@@ -2,6 +2,7 @@ package checker
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -458,20 +459,39 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 				}
 				resp, err := client.Do(req)
 				if err != nil {
-					log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Warn("Couldn't sychronize checks")
+					log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
 				} else {
 					defer resp.Body.Close()
 					body, _ := ioutil.ReadAll(resp.Body)
-					proto.Unmarshal(body, checks)
+					if err := proto.Unmarshal(body, checks); err != nil {
+						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
+						goto SLEEP
+					}
+
+					if resp.StatusCode != http.StatusOK {
+						err = errors.New("Non-200 response while synchronizing checks.")
+						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
+						goto SLEEP
+					}
+
+					if len(checks.Checks) == 0 {
+						// Consider this a fatal error. If there are legitimately 0 checks, then
+						// the checker doesn't need to startup anyway. If there are 0 checks because
+						// of an error, then same.
+						err = errors.New("Got 0 checks when synchronizing bastion state with Bartnet.")
+						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
+						goto SLEEP
+					}
 					log.Debug("Got existing checks ", checks)
 					success = true
 					break
 				}
 			}
+		SLEEP:
 			time.Sleep((1 << uint(i)) * time.Millisecond * 10)
 		}
 		if !success {
-			return nil, fmt.Errorf("Couldn't synchronize checks with bartnet.")
+			return nil, fmt.Errorf("Couldn't synchronize checks.")
 		}
 	}
 
