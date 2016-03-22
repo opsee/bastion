@@ -12,7 +12,6 @@ import (
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
-
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
 )
@@ -265,7 +264,7 @@ func setupBartnetEmulator() {
 	}
 
 	http.HandleFunc("/checks", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, string(data), r.URL.Path)
+		w.Write(data)
 	})
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
