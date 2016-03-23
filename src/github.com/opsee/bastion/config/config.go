@@ -9,6 +9,15 @@ import (
 
 var (
 	config *Config = nil
+
+	LogLevelMap = map[string]log.Level{
+		"panic": log.PanicLevel,
+		"fatal": log.FatalLevel,
+		"error": log.ErrorLevel,
+		"warn":  log.WarnLevel,
+		"info":  log.InfoLevel,
+		"debug": log.DebugLevel,
+	}
 )
 
 type Config struct {
@@ -43,6 +52,8 @@ func GetConfig() *Config {
 		flag.UintVar(&config.AdminPort, "admin_port", 4000, "Port for the admin server.")
 		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
 		flag.Parse()
+
+		log.SetLevel(LogLevelMap[config.LogLevel])
 
 		config.MetaData = &InstanceMeta{}
 		err := config.MetaData.Update()
