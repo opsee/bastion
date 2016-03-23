@@ -136,13 +136,13 @@ func (this *AWSResolver) resolveInstance(instanceId string) ([]*schema.Target, e
 	})
 
 	if err != nil {
-		if len(resp.Reservations) > 1 {
-			return nil, fmt.Errorf("Received multiple reservations for instance id: %v, %v", instanceId, resp)
-		}
 		return nil, err
 	}
 
-	// InstanceId to Reservation mappings are 1-to-1
+	if len(resp.Reservations) < 1 {
+		return nil, fmt.Errorf("Invalid number of reservations for instance: %s, %v", instanceId, resp)
+	}
+
 	reservation := resp.Reservations[0]
 
 	target := make([]*schema.Target, len(reservation.Instances))
