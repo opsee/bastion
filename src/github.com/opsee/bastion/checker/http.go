@@ -113,11 +113,16 @@ func (r *HTTPRequest) Do() *Response {
 		contentLength = 4096
 	}
 
+	log.WithFields(log.Fields{"Content-Length": resp.ContentLength, "contentLength": contentLength}).Debug("Setting content length.")
 	body := make([]byte, int64(contentLength))
 	if contentLength > 0 {
-		rdr.Read(body)
+		numBytes, err := rdr.Read(body)
+		if err != nil {
+			log.WithError(err).Error("Error reading message body")
+		}
 		body = bytes.Trim(body, "\x00")
 		body = bytes.Trim(body, "\n")
+		log.Debugf("Successfully read %i bytes...", numBytes)
 	}
 
 	httpResponse := &schema.HttpResponse{
