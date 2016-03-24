@@ -13,6 +13,7 @@ ENV BASTION_AUTH_ENDPOINT="https://auth.opsee.com/authenticate/password"
 ENV HOSTNAME=""
 ENV AWS_ACCESS_KEY_ID=""
 ENV AWS_SECRET_ACCESS_KEY=""
+ENV AWS_DEFAULT_REGION=""
 
 RUN apk add --update bash ca-certificates
 

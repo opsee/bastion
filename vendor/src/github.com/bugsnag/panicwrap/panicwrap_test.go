@@ -171,9 +171,9 @@ func TestHelperProcess(*testing.T) {
 	case "panic-monitor":
 
 		config := &WrapConfig{
-			Handler: panicHandler,
+			Handler:   panicHandler,
 			HidePanic: true,
-			Monitor: true,
+			Monitor:   true,
 		}
 
 		exitStatus, err := Wrap(config)

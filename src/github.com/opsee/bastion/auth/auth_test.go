@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"os"
+	"fmt"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/opsee/bastion/config"
 )
 
 func TestGetBasicToken(t *testing.T) {
@@ -18,10 +19,10 @@ func TestGetBasicToken(t *testing.T) {
 
 	request := &BastionAuthTokenRequest{
 		TokenType:      tokenType,
-		CustomerEmail:  os.Getenv("CUSTOMER_EMAIL"),
-		CustomerID:     os.Getenv("CUSTOMER_ID"),
-		TargetEndpoint: "https://bartnet.in.opsee.com/checks",
-		AuthEndpoint:   os.Getenv("BASTION_AUTH_ENDPOINT"),
+		CustomerEmail:  config.GetConfig().CustomerEmail,
+		CustomerID:     config.GetConfig().CustomerId,
+		TargetEndpoint: fmt.Sprintf("%s/checks", config.GetConfig().BartnetHost),
+		AuthEndpoint:   config.GetConfig().BastionAuthEndpoint,
 	}
 
 	if token, err := cache.GetToken(request); err != nil || token == nil {

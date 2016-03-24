@@ -3,7 +3,6 @@ package checker
 import (
 	"testing"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -131,11 +130,6 @@ func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
   ******************************************************************************/
 
 func BenchmarkRunCheckParallel(b *testing.B) {
-	logLevel, err := log.ParseLevel("error")
-	if err != nil {
-		panic(err)
-	}
-	log.SetLevel(logLevel)
 	runner := NewRunner(newTestResolver())
 	check := (&TestCommonStubs{}).PassingCheckMultiTarget()
 	b.RunParallel(func(pb *testing.PB) {

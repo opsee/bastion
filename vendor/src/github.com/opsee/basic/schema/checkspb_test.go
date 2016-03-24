@@ -14,6 +14,7 @@ import fmt "fmt"
 import math "math"
 import _ "github.com/opsee/protobuf/opseeproto/types"
 import _ "github.com/opsee/protobuf/opseeproto/types"
+import _ "github.com/opsee/protobuf/opseeproto/types"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/opseeproto"
 

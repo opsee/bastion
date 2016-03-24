@@ -75,6 +75,7 @@ var (
 	header   = `syntax = "proto2";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
 
 package opsee.aws.%s;
 
@@ -109,6 +110,7 @@ func main() {
 
 		sanitized := bytes.Replace(buf.Bytes(), []byte("  required  _ = 1;\n"), []byte{}, -1)
 		sanitized = bytes.Replace(sanitized, []byte("  required"), []byte("  optional"), -1)
+		sanitized = bytes.Replace(sanitized, []byte("sfixed64"), []byte("opsee.types.Timestamp"), -1)
 
 		p := path.Join(*basePath, pkg)
 		if err := os.MkdirAll(p, 0777); err != nil {

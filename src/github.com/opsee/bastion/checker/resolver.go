@@ -5,12 +5,9 @@ import (
 	"net"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
-	"github.com/aws/aws-sdk-go/aws/ec2metadata"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
+	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/opsee/basic/schema"
 	"github.com/opsee/bastion/config"
 
@@ -26,28 +23,26 @@ type Resolver interface {
 type AWSResolver struct {
 	ec2Client *ec2.EC2
 	elbClient *elb.ELB
+	rdsClient *rds.RDS
 	VpcId     string
 }
 
 func NewResolver(cfg *config.Config) Resolver {
-	creds := credentials.NewChainCredentials(
-		[]credentials.Provider{
-			&ec2rolecreds.EC2RoleProvider{
-				Client: ec2metadata.New(session.New()),
-			},
-			&credentials.EnvProvider{},
-		},
-	)
+	sess, err := cfg.AWS.Session()
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't get aws session from global config.")
+	}
 
-	sess := session.New(&aws.Config{
-		Credentials: creds,
-		Region:      aws.String(cfg.MetaData.Region),
-	})
+	metaData, err := cfg.AWS.MetaData()
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't get metadata from global config.")
+	}
 
 	resolver := &AWSResolver{
 		ec2Client: ec2.New(sess),
 		elbClient: elb.New(sess),
-		VpcId:     cfg.MetaData.VpcId,
+		rdsClient: rds.New(sess),
+		VpcId:     metaData.VpcId,
 	}
 
 	return resolver
@@ -122,6 +117,29 @@ func (this *AWSResolver) resolveELB(elbId string) ([]*schema.Target, error) {
 	}
 
 	return targets, nil
+}
+
+// in case we need it some day
+func (this *AWSResolver) resolveDBInstance(instanceId string) ([]*schema.Target, error) {
+	input := &rds.DescribeDBInstancesInput{
+		DBInstanceIdentifier: aws.String(instanceId),
+	}
+
+	resp, err := this.rdsClient.DescribeDBInstances(input)
+	if err != nil {
+		return nil, err
+	}
+
+	target := make([]*schema.Target, len(resp.DBInstances))
+	for i, instance := range resp.DBInstances {
+		target[i] = &schema.Target{
+			Type:    "dbinstance",
+			Id:      instanceId,
+			Address: *instance.Endpoint.Address, // the instances actual http address
+		}
+	}
+
+	return target, nil
 }
 
 func (this *AWSResolver) resolveInstance(instanceId string) ([]*schema.Target, error) {
@@ -203,6 +221,8 @@ func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
 		return this.resolveInstance(target.Id)
+	case "dbinstance":
+		return this.resolveDBInstance(target.Id)
 	case "host":
 		return this.resolveHost(target.Id)
 	}

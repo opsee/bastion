@@ -44,8 +44,12 @@ func NewDispatcher() *Dispatcher {
 	d.metrics = metrics.NewPrefixedChildRegistry(metricsRegistry, "dispatcher.")
 
 	workerGroups := make(map[string]*workerGroup)
-	for workerType, newFunc := range Recruiters {
-		workerGroups[workerType] = newWorkerGroup(newFunc, MaxQueueDepth, MaxRoutinesPerWorkerType)
+	for _, workerType := range Recruiters.Keys() {
+		if newFunc, ok := Recruiters.Get(workerType); ok {
+			workerGroups[workerType] = newWorkerGroup(newFunc, MaxQueueDepth, MaxRoutinesPerWorkerType)
+		} else {
+			log.Warnf("Couldn't get worker type %s from Recuiters map.", workerType)
+		}
 	}
 	d.workerGroups = workerGroups
 

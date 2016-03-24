@@ -37,6 +37,7 @@ import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/opseeproto"
+import _ "github.com/opsee/protobuf/opseeproto/types"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal

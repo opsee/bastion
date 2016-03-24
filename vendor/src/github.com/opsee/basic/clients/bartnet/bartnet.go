@@ -6,12 +6,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gogo/protobuf/proto"
-	"github.com/opsee/basic/schema"
-	"github.com/opsee/basic/service"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/gogo/protobuf/proto"
+	"github.com/opsee/basic/schema"
+	"github.com/opsee/basic/service"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 )
 
 type Client interface {
@@ -98,7 +100,7 @@ func (c *client) do(user *schema.User, method, accept, path string, body io.Read
 }
 
 func marshalCheck(check *schema.Check) ([]byte, error) {
-	httpCheckInt, err := schema.UnmarshalAny(check.CheckSpec)
+	httpCheckInt, err := opsee_types.UnmarshalAny(check.CheckSpec)
 	if err != nil {
 		return nil, err
 	}

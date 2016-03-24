@@ -31,7 +31,7 @@ func main() {
 	commander := aws_command.NewAWSCommander()
 	commander.Port = 4002
 
-	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
+	portmapper.EtcdHost = cfg.EtcdHost
 	portmapper.Register(moduleName, commander.Port)
 	defer portmapper.Unregister(moduleName, commander.Port)
 
@@ -43,7 +43,7 @@ func main() {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "grpc server started"}).Info("started up aws commander")
 	}
 
-	heart, err := heart.NewHeart(cfg, moduleName)
+	heart, err := heart.NewHeart(cfg.NsqdHost, moduleName)
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't initialize heartbeat!")
 	}

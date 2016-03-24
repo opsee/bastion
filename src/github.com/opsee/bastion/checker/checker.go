@@ -7,9 +7,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"os"
 	"reflect"
-	"strings"
 	"sync"
 	"time"
 
@@ -21,6 +19,7 @@ import (
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/auth"
+	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
@@ -52,17 +51,7 @@ var (
 func init() {
 	// Check types for Any recomposition go here.
 	registry["HttpCheck"] = reflect.TypeOf(schema.HttpCheck{})
-
-	envLevel := strings.ToLower(os.Getenv("LOG_LEVEL"))
-	if envLevel == "" {
-		envLevel = "error"
-	}
-
-	logLevel, err := log.ParseLevel(envLevel)
-	if err != nil {
-		panic(err)
-	}
-	log.SetLevel(logLevel)
+	registry["CloudWatchCheck"] = reflect.TypeOf(schema.CloudWatchCheck{})
 }
 
 // UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
@@ -159,15 +148,18 @@ type RemoteRunner struct {
 
 func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, nsq.NewConfig())
+	log.WithFields(log.Fields{"channel": cfg.ConsumerChannelName, "queue": cfg.ConsumerQueueName}).Debug("Creating RemoteRunner consumer")
 	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't create new consumer")
+		log.WithError(err).Error("couldn't create new producer")
 		return nil, err
 	}
-	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
+	producer, err := nsq.NewProducer(cfg.ProducerNsqdHost, nsq.NewConfig())
 	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't create new producer")
+		log.WithError(err).Error("couldn't create new producer")
 		return nil, err
 	}
+
+	log.WithFields(log.Fields{"queue": cfg.ProducerQueueName}).Debug("Creating RemoteRunner producer")
 
 	r := &RemoteRunner{
 		requestMap: make(map[string]chan *schema.CheckResult),
@@ -179,21 +171,20 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 		chk := &schema.CheckResult{}
 		err := proto.Unmarshal(m.Body, chk)
 		if err != nil {
-			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("couldn't add handler function")
 			return err
 		}
 
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("handling check")
+		log.WithFields(log.Fields{"channel": cfg.ConsumerChannelName, "queue": cfg.ConsumerQueueName}).Debugf("Consumed check id %s", chk.CheckId)
 
 		var respChan chan *schema.CheckResult
 
 		r.withLock(func() {
 			respChan = r.requestMap[chk.CheckId]
-			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("got response channel ", respChan)
+			log.Debugf("found response channel for check id %s", chk.CheckId)
 		})
 
 		if respChan == nil {
-			log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Warn("got unexpected results")
+			log.Debugf("response channel for check id %s is nil", chk.CheckId)
 			return nil
 		}
 
@@ -204,14 +195,13 @@ func NewRemoteRunner(cfg *NSQRunnerConfig) (*RemoteRunner, error) {
 		// nice to really understand what the cost of this approach is, but I don't
 		// think it's particularly important. -greg
 		respChan <- chk
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "check": chk.String()}).Debug("RemoteRunner handler sent results to channel")
 		close(respChan)
 		return nil
 	}), cfg.MaxHandlers)
 
-	err = consumer.ConnectToNSQD(cfg.NSQDHost)
+	err = consumer.ConnectToNSQD(cfg.ConsumerNsqdHost)
 	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "NewRemoteRunner", "error": err.Error()}).Error("error connecting to nsqd")
+		log.WithError(err).Error("checker's NewRemoteRunner consumer failed to connect to nsqd")
 		return nil, err
 	}
 
@@ -230,7 +220,7 @@ func (r *RemoteRunner) withLock(f func()) {
 // context deadline unless you want this to block forever.
 
 func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema.CheckResult, error) {
-	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("Running check")
+	log.Debugf("RemoteRunner Running check %s", chk.String())
 
 	var (
 		id  string
@@ -239,7 +229,7 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema
 	if chk.Id == "" {
 		uid, err := uuid.NewV4()
 		if err != nil {
-			log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String(), "error": err.Error()}).Error("Error creating UUID")
+			log.WithError(err).Error("Couldn't create UUID")
 			return nil, err
 		}
 		id = uid.String()
@@ -252,31 +242,31 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema
 
 	r.withLock(func() {
 		r.requestMap[id] = respChan
-		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("RemoteRunner.RunCheck: Set response channel for request: ", id)
+		log.Debugf("Set response channel for request: %s", id)
 	})
 
 	defer func() {
 		r.withLock(func() {
 			delete(r.requestMap, id)
-			log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("deleted response channel for request: ", id)
+			log.Debugf("deleted response channel for request: %s", id)
 		})
 	}()
 
 	msg, err := proto.Marshal(chk)
 	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "error": err.Error()}).Error("error marshalling")
+		log.WithError(err).Error("Failed to unmarshal check")
 		return nil, err
 	}
 
-	log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("RemoteRunner.RunCheck: publishing request to run check")
+	log.Debug("Publishing request to run check")
 	r.producer.Publish(r.config.ProducerQueueName, msg)
 
 	select {
 	case result := <-respChan:
-		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "check": chk.String()}).Debug("RemoteRunner.RunCheck: Got result from resopnse channel: %s", result.String())
+		log.Debugf("Got result from response channel: %s", result.String())
 		return result, nil
 	case <-ctx.Done():
-		log.WithFields(log.Fields{"service": "checker", "event": "RunCheck", "error": ctx.Err()}).Error("context error")
+		log.WithError(ctx.Err()).Error("context error")
 		return nil, ctx.Err()
 	}
 }
@@ -311,8 +301,6 @@ func NewChecker() *Checker {
 }
 
 func (c *Checker) invoke(ctx context.Context, cmd string, req *opsee.CheckResourceRequest) (*opsee.ResourceResponse, error) {
-	log.WithFields(log.Fields{"service": "checker", "event": "invoke", "command": cmd}).Info("handling request")
-
 	responses := make([]*opsee.CheckResourceResponse, len(req.Checks))
 	response := &opsee.ResourceResponse{
 		Responses: responses,
@@ -337,7 +325,6 @@ func (c *Checker) invoke(ctx context.Context, cmd string, req *opsee.CheckResour
 			}
 		}
 	}
-	log.WithFields(log.Fields{"service": "checker", "event": "invoke"}).Info("Response: ", response)
 	return response, nil
 }
 
@@ -425,7 +412,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 
 	testCheckResponse.Responses = responses[:maxHosts]
 
-	log.Debug("Response: %v", testCheckResponse)
+	log.Debugf("Response: %v", testCheckResponse)
 	return testCheckResponse, nil
 }
 
@@ -438,18 +425,17 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 
 	var checks = &opsee.CheckResourceRequest{}
 
-	tokenType, err := auth.GetTokenTypeByString(os.Getenv("BASTION_AUTH_TYPE"))
+	tokenType, err := auth.GetTokenTypeByString(config.GetConfig().BastionAuthType)
 	if err != nil {
 		return nil, err
 	}
 
 	request := &auth.BastionAuthTokenRequest{
-		TokenType:        tokenType,
-		CustomerEmail:    os.Getenv("CUSTOMER_EMAIL"),
-		CustomerPassword: os.Getenv("CUSTOMER_PASSWORD"),
-		CustomerID:       os.Getenv("CUSTOMER_ID"),
-		TargetEndpoint:   os.Getenv("BARTNET_HOST") + "/checks",
-		AuthEndpoint:     os.Getenv("BASTION_AUTH_ENDPOINT"),
+		TokenType:      tokenType,
+		CustomerEmail:  config.GetConfig().CustomerEmail,
+		CustomerID:     config.GetConfig().CustomerId,
+		TargetEndpoint: config.GetConfig().BartnetHost + "/checks",
+		AuthEndpoint:   config.GetConfig().BastionAuthEndpoint,
 	}
 
 	if token, err := cache.GetToken(request); err != nil || token == nil {
@@ -463,7 +449,7 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 		for i := 0; i < tries; i++ {
 			req, err := http.NewRequest("GET", request.TargetEndpoint, nil)
 			if err != nil {
-				log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to synch checks.")
+				log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to fetch checks.")
 			} else {
 				req.Header.Set("Accept", "application/x-protobuf")
 				req.Header.Set(theauth, header)
@@ -474,17 +460,29 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 				}
 				resp, err := client.Do(req)
 				if err != nil {
-					log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
+					if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+						log.WithError(netErr).Error("Couldn't fetch checks. Dial Timed out.")
+					} else if opError, ok := err.(*net.OpError); ok {
+						if opError.Op == "dial" {
+							log.WithError(netErr).Error("Couldn't sync checks. %s is Unknown Host. Exiting.", request.TargetEndpoint)
+							break
+						} else if opError.Op == "read" {
+							log.WithError(netErr).Errorf("Couldn't fetch checks. Connection to %s Refused.", request.TargetEndpoint)
+						}
+					} else {
+						log.WithError(err).Errorf("Couldn't fetch checks. Failed to connect to %s.", request.TargetEndpoint)
+					}
+					goto SLEEP
 				} else {
 					defer resp.Body.Close()
 					body, _ := ioutil.ReadAll(resp.Body)
 					if err := proto.Unmarshal(body, checks); err != nil {
-						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
+						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't fetch checks.")
 						goto SLEEP
 					}
 
 					if resp.StatusCode != http.StatusOK {
-						err = errors.New("Non-200 response while synchronizing checks.")
+						err = errors.New("Non-200 response while fetching checks.")
 						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
 						goto SLEEP
 					}
@@ -498,11 +496,24 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 			time.Sleep((1 << uint(i)) * time.Millisecond * 10)
 		}
 		if !success {
-			return nil, fmt.Errorf("Couldn't synchronize checks.")
+			return nil, fmt.Errorf("Couldn't fetch existing checks.")
 		}
 	}
 
 	return checks.Checks, nil
+}
+
+func (c *Checker) synchronizeChecks() error {
+	log.Debug("Synchronizing checks with Opsee.")
+	// Now Get existing checks from bartnet
+	existingChecks, err := c.GetExistingChecks(NumCheckSyncRetries)
+	if err != nil {
+		return err
+	}
+	for _, check := range existingChecks {
+		c.Scheduler.CreateCheck(check)
+	}
+	return nil
 }
 
 // Start all of the checker loops, grpc server, etc.
@@ -518,13 +529,10 @@ func (c *Checker) Start() error {
 		return err
 	}
 
-	log.Info("Getting existing checks")
-	existingChecks, err := c.GetExistingChecks(NumCheckSyncRetries)
+	log.Debug("Getting existing checks")
+	err = c.synchronizeChecks()
 	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "sync checks", "error": err}).Error("failed to sync checks")
-	}
-	for _, check := range existingChecks {
-		c.Scheduler.CreateCheck(check)
+		log.WithError(err).Fatal("Couldn't retrieve existing checks from server.")
 	}
 
 	// Now start and register the GRPC server and allow users to create/edit/etc checks

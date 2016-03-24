@@ -2,40 +2,6 @@
 // source: checker.proto
 // DO NOT EDIT!
 
-/*
-Package service is a generated protocol buffer package.
-
-It is generated from these files:
-	checker.proto
-	keelhaul.proto
-	spanx.proto
-	vape.proto
-
-It has these top-level messages:
-	CheckResourceResponse
-	ResourceResponse
-	CheckResourceRequest
-	ResultsResource
-	TestCheckRequest
-	TestCheckResponse
-	ListBastionStatesRequest
-	ListBastionStatesResponse
-	ScanVpcsRequest
-	ScanVpcsResponse
-	LaunchStackRequest
-	LaunchStackResponse
-	AuthenticateBastionRequest
-	AuthenticateBastionResponse
-	PutRoleRequest
-	PutRoleResponse
-	GetCredentialsRequest
-	GetCredentialsResponse
-	GetUserRequest
-	GetUserResponse
-	ListUsersRequest
-	ListUsersResponse
-	ListCustomersResponse
-*/
 package service
 
 import testing "testing"

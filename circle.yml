@@ -12,6 +12,7 @@ machine:
     VPN_REMOTE: "bastion.opsee.com"
     DNS_SERVER: 169.254.169.253
     NSQD_HOST: nsqd.in.opsee.com
+    BASTION_VERSION: $CIRCLE_SHA1
 experimental:
   notify:
     branches:
@@ -26,14 +27,12 @@ dependencies:
     - go version
     - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD quay.io
     - docker pull quay.io/opsee/build-go:go15
-    - docker-compose up -d
-    - sudo pip install awscli
     - git submodule update --init
+
 test:
   override:
-    - docker run --link bastion_slate_1:slate -e "SLATE_HOST=slate:7000" -e "TARGETS=linux/amd64" --link bastion_nsqd_1:nsqd -e "NSQD_HOST=nsqd:4150" -e CUSTOMER_ID -e CUSTOMER_EMAIL -e BARTNET_HOST -e BASTION_AUTH_TYPE -e CUSTOMER_PASSWORD -e BASTION_AUTH_ENDPOINT -v `pwd`:/build quay.io/opsee/build-go:go15
-    - docker build -t quay.io/opsee/bastion:$CIRCLE_SHA1 .
-    - docker push quay.io/opsee/bastion:$CIRCLE_SHA1
+    - make build
+    - make docker-push
 deployment:
   ami:
     branch: master

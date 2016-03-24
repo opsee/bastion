@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -19,6 +20,7 @@ const (
 )
 
 var (
+	adminPort      int
 	signalsChannel = make(chan os.Signal, 1)
 )
 
@@ -28,9 +30,12 @@ func init() {
 
 func main() {
 	cfg := config.GetConfig()
-	listenAddress := fmt.Sprintf(":%d", cfg.AdminPort)
+	flag.IntVar(&adminPort, "admin_port", 4001, "Port for the admin server.")
+	flag.Parse()
 
-	mon, err := monitor.NewMonitor(cfg)
+	listenAddress := fmt.Sprintf(":%d", adminPort)
+
+	mon, err := monitor.NewMonitor(config.GetConfig().NsqdHost)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -43,12 +48,12 @@ func main() {
 		}
 	})
 
-	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
-	err = portmapper.Register(moduleName, int(cfg.AdminPort))
+	portmapper.EtcdHost = cfg.EtcdHost
+	err = portmapper.Register(moduleName, adminPort)
 	if err != nil {
 		log.WithError(err).Fatal("Unable to register service with portmapper.")
 	}
-	defer portmapper.Unregister(moduleName, int(cfg.AdminPort))
+	defer portmapper.Unregister(moduleName, adminPort)
 
 	// serve http forever
 	go func() {
@@ -57,7 +62,7 @@ func main() {
 		}
 	}()
 
-	heart, err := heart.NewHeart(cfg, moduleName)
+	heart, err := heart.NewHeart(config.GetConfig().NsqdHost, moduleName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

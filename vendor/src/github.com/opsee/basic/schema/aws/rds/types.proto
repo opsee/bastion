@@ -1,6 +1,7 @@
 syntax = "proto2";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
 
 package opsee.aws.rds;
 
@@ -35,10 +36,10 @@ message DBInstance {
   optional string Engine = 21;
   optional string EngineVersion = 22;
   optional string EnhancedMonitoringResourceArn = 23;
-  optional sfixed64 InstanceCreateTime = 24;
+  optional opsee.types.Timestamp InstanceCreateTime = 24;
   optional sint64 Iops = 25;
   optional string KmsKeyId = 26;
-  optional sfixed64 LatestRestorableTime = 27;
+  optional opsee.types.Timestamp LatestRestorableTime = 27;
   optional string LicenseModel = 28;
   optional string MasterUsername = 29;
   optional sint64 MonitoringInterval = 30;

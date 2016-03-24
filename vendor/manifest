@@ -322,7 +322,7 @@
 		{
 			"importpath": "github.com/opsee/basic",
 			"repository": "https://github.com/opsee/basic",
-			"revision": "06217d3502b6e09646d0846f9afa7c5f7293d602",
+			"revision": "02ecff6f3f4e9570d4a0a488bb14b05ea78afa3e",
 			"branch": "master"
 		},
 		{
@@ -334,13 +334,13 @@
 		{
 			"importpath": "github.com/opsee/protobuf",
 			"repository": "https://github.com/opsee/protobuf",
-			"revision": "490f167f615b104554f0094904c054361a95d84b",
+			"revision": "fcd127be28d4536d18a88580598eb30664b5d68f",
 			"branch": "master"
 		},
 		{
 			"importpath": "github.com/opsee/protobuf/opseeproto",
 			"repository": "https://github.com/opsee/protobuf",
-			"revision": "1776823a8fe8856c8e3a75c9d4f846c9008c6935",
+			"revision": "fcd127be28d4536d18a88580598eb30664b5d68f",
 			"branch": "master",
 			"path": "/opseeproto"
 		},

@@ -1,15 +1,17 @@
 package checker
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
 	"reflect"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/basic/schema"
+	"github.com/opsee/bastion/config"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	metrics "github.com/rcrowley/go-metrics"
 	"golang.org/x/net/context"
@@ -20,7 +22,8 @@ type NSQRunnerConfig struct {
 	ConsumerQueueName   string
 	ProducerQueueName   string
 	ConsumerChannelName string
-	NSQDHost            string
+	ConsumerNsqdHost    string
+	ProducerNsqdHost    string
 	CustomerID          string
 	MaxHandlers         int
 }
@@ -43,10 +46,15 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	if err != nil {
 		return nil, err
 	}
-	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
+	log.Debugf("NSQRunner consuming on queue %s, channel %s", cfg.ConsumerQueueName, cfg.ConsumerChannelName)
+
+	producerConfig := nsq.NewConfig()
+	producerConfig.MaxInFlight = 2
+	producer, err := nsq.NewProducer(cfg.ProducerNsqdHost, producerConfig)
 	if err != nil {
 		return nil, err
 	}
+	log.Debugf("NSQRunner producing on queue %s", cfg.ProducerQueueName)
 
 	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner.")
 
@@ -124,19 +132,26 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			log.WithError(err).Error("Error marshaling CheckResult")
 			return err
 		}
-
-		log.Debug("NSQRunner handler publishing result: %s", result.String())
 		if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
 			log.WithError(err).Error("Error publishing CheckResult")
 			return err
+		} else {
+			log.WithFields(log.Fields{
+				"CustomerId": cfg.CustomerID,
+				"CheckId":    check.Id,
+				"Target":     check.Target,
+				"CheckName":  check.Name,
+				"Timestamp":  timestamp,
+				"Responses":  responses,
+				"Passing":    passing,
+				"Version":    BastionProtoVersion}).Debug("Published result to queue %s", cfg.ProducerQueueName)
 		}
-		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Published result for check")
 
 		metrics.GetOrRegisterCounter("nsq_messages_handled", registry).Inc(1)
 		return nil
 	}), cfg.MaxHandlers)
 
-	err = consumer.ConnectToNSQD(cfg.NSQDHost)
+	err = consumer.ConnectToNSQD(cfg.ConsumerNsqdHost)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +192,7 @@ func NewRunner(resolver Resolver) *Runner {
 		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner."),
 	}
 
-	slateHost := os.Getenv("SLATE_HOST")
+	slateHost := config.GetConfig().SlateHost
 	if slateHost != "" {
 		slateUrl := fmt.Sprintf("http://%s/check", slateHost)
 		r.slateClient = NewSlateClient(slateUrl)
@@ -265,6 +280,32 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				Host:               host,
 				InsecureSkipVerify: skipVerify,
 			}
+
+		case *schema.CloudWatchCheck:
+			cloudwatchCheck, ok := c.(*schema.CloudWatchCheck)
+			if !ok {
+				return nil, fmt.Errorf("Unable to assert type on cloudwatch check")
+			}
+			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
+
+			if target.Id == "" {
+				log.WithFields(log.Fields{"target": target}).Error("Target missing Id")
+				continue
+			}
+			if len(cloudwatchCheck.Metrics) == 0 {
+				log.Info("Refusing to create CloudWatchCheck with 0 metrics")
+				continue
+			}
+
+			request = &CloudWatchRequest{
+				Target:                 target,
+				Metrics:                cloudwatchCheck.Metrics,
+				StatisticsIntervalSecs: int(check.Interval * 2),
+				StatisticsPeriod:       CloudWatchStatisticsPeriod,
+				Statistics:             []*string{aws.String("Average")}, //TODO(dan) Eventually include all Statistics?
+				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
+			}
+
 		default:
 			log.WithFields(log.Fields{"type": reflect.TypeOf(c)}).Error("dispatch - Unknown check type.")
 			return nil, fmt.Errorf("Unrecognized check type.")
@@ -297,14 +338,15 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 			err           error
 			passing       bool
 		)
-		passing = false
 
+		passing = false
 		if t.Response.Response != nil {
 			responseAny, err = MarshalAny(t.Response.Response)
 			if err != nil {
 				responseError = err.Error()
 			}
 		}
+
 		// Overwrite the error if there is an error on the response.
 		if t.Response.Error != nil {
 			responseError = t.Response.Error.Error()
@@ -317,12 +359,13 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 		}
 
 		if response.Error == "" && len(check.Assertions) > 0 && r.slateClient != nil {
-			passing, err = r.slateClient.CheckAssertions(ctx, check, t.Response.Response)
+			jsonBytes, err := json.Marshal(t.Response.Response)
+			passing, err = r.slateClient.CheckAssertions(ctx, check, jsonBytes)
 			if err != nil {
 				log.WithError(err).Error("Could not contact slate.")
 			}
 		}
-		log.WithFields(log.Fields{"response": *response}).Debug("runAssertions - Emitting CheckResponse.")
+		log.WithFields(log.Fields{"Check Name": check.Name, "Check Id": check.Id}).Debugf("Check is passing: %t", passing)
 
 		response.Passing = passing
 		responses = append(responses, response)

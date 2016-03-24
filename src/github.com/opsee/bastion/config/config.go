@@ -1,70 +1,72 @@
 package config
 
 import (
-	"flag"
 	"os"
+	"sync"
 
 	log "github.com/Sirupsen/logrus"
 )
 
 var (
 	config *Config = nil
-
-	LogLevelMap = map[string]log.Level{
-		"panic": log.PanicLevel,
-		"fatal": log.FatalLevel,
-		"error": log.ErrorLevel,
-		"warn":  log.WarnLevel,
-		"info":  log.InfoLevel,
-		"debug": log.DebugLevel,
-	}
+	once   sync.Once
 )
 
+// Global config provides shared aws session, metadata, and environmental variables declared in etc/opsee/bastion-env.sh.
 type Config struct {
-	AccessKeyId string // AWS Access Key Id
-	SecretKey   string // AWS Secret Key
-	Opsee       string // Opsee home IP address and port
-	MDFile      string // Path to a file which overrides the instance meta
-	CaPath      string // path to CA
-	CertPath    string // path to TLS cert
-	KeyPath     string // path to cert privkey
-	DataPath    string // path to event logfile for replay
-	CustomerId  string // The Customer ID
-	BastionId   string // The Bastion ID
-	AdminPort   uint   // Port for admin server.
-	LogLevel    string // the log level to use
-	NSQDHost    string // host:port of NSQD
-	MetaData    *InstanceMeta
+	CustomerId          string
+	CustomerEmail       string
+	BastionAuthEndpoint string
+	BartnetHost         string
+	BastionAuthType     string
+	BastionId           string
+	NsqdHost            string
+	EtcdHost            string
+	SlateHost           string
+	LogLevel            string
+	AWS                 *AWSConfig
+}
+
+func (this *Config) getAWSConfig() {
+	awsConfig, err := NewAWSConfig()
+	if err != nil {
+		log.WithError(err).Fatal("Coudn't get AWS config.")
+	} else {
+		this.AWS = awsConfig
+	}
+}
+
+func (this *Config) setLogLevel(defaultLevel log.Level) {
+	level, err := log.ParseLevel(this.LogLevel)
+	if err != nil {
+		log.WithError(err).Warnf("Couldn't parse log level.  Using default level %s.", defaultLevel)
+		log.SetLevel(defaultLevel)
+	} else {
+		log.Infof("Setting log level to %s", this.LogLevel)
+		log.SetLevel(level)
+	}
+}
+
+func (this *Config) getEnv() {
+	this.LogLevel = os.Getenv("LOG_LEVEL")
+	this.CustomerId = os.Getenv("CUSTOMER_ID")
+	this.CustomerEmail = os.Getenv("CUSTOMER_EMAIL")
+	this.BastionId = os.Getenv("BASTION_ID")
+	this.SlateHost = os.Getenv("SLATE_HOST")
+	this.BartnetHost = os.Getenv("BARTNET_HOST")
+	this.BastionAuthType = os.Getenv("BASTION_AUTH_TYPE")
+	this.BastionAuthEndpoint = os.Getenv("BASTION_AUTH_ENDPOINT")
+	this.NsqdHost = os.Getenv("NSQD_HOST")
+	this.EtcdHost = os.Getenv("ETCD_HOST")
 }
 
 func GetConfig() *Config {
-	if config == nil {
+	once.Do(func() {
 		config = &Config{}
-
-		flag.StringVar(&config.AccessKeyId, "access_key_id", os.Getenv("AWS_ACCESS_KEY_ID"), "AWS access key ID.")
-		flag.StringVar(&config.SecretKey, "secret_key", os.Getenv("AWS_SECRET_ACCESS_KEY"), "AWS secret key ID.")
-		flag.StringVar(&config.Opsee, "opsee", os.Getenv("BARTNET_HOST"), "Hostname and port to the Opsee server.")
-		flag.StringVar(&config.CaPath, "ca", os.Getenv("CA_PATH"), "Path to the CA certificate.")
-		flag.StringVar(&config.CertPath, "cert", os.Getenv("CERT_PATH"), "Path to the certificate.")
-		flag.StringVar(&config.KeyPath, "key", os.Getenv("KEY_PATH"), "Path to the key file.")
-		flag.StringVar(&config.CustomerId, "customer_id", os.Getenv("CUSTOMER_ID"), "Customer ID.")
-		flag.StringVar(&config.BastionId, "bastion_id", os.Getenv("BASTION_ID"), "Customer ID.")
-		flag.StringVar(&config.NSQDHost, "nsqd_host", os.Getenv("NSQD_HOST"), "NSQD Host.")
-
-		flag.StringVar(&config.DataPath, "data", "", "Data path.")
-		flag.StringVar(&config.MDFile, "metadata", "", "Metadata path.")
-		flag.UintVar(&config.AdminPort, "admin_port", 4000, "Port for the admin server.")
-		flag.StringVar(&config.LogLevel, "level", "info", "The log level to use")
-		flag.Parse()
-
-		log.SetLevel(LogLevelMap[config.LogLevel])
-
-		config.MetaData = &InstanceMeta{}
-		err := config.MetaData.Update()
-		if err != nil {
-			log.WithError(err).Warn("Couldn't get metadata from metadata service")
-		}
-	}
+		config.getEnv()
+		config.setLogLevel(log.ErrorLevel)
+		config.getAWSConfig()
+	})
 
 	return config
 }

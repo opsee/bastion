@@ -2,37 +2,29 @@ package aws_command
 
 import (
 	"fmt"
+	"net"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
-	"github.com/aws/aws-sdk-go/aws/ec2metadata"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/opsee/bastion/config"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"net"
 )
 
 var (
-	cfg   = config.GetConfig()
-	creds = credentials.NewChainCredentials(
-		[]credentials.Provider{
-			&ec2rolecreds.EC2RoleProvider{
-				Client: ec2metadata.New(session.New()),
-			},
-			&credentials.EnvProvider{},
-		},
-	)
-	sess = session.New(&aws.Config{
-		Credentials: creds,
-		Region:      aws.String(cfg.MetaData.Region),
-		MaxRetries:  aws.Int(11),
-	})
-	awsEc2Client = ec2.New(sess)
+	awsEC2Client *ec2.EC2
 )
+
+func init() {
+	cfg := config.GetConfig()
+	sess, err := cfg.AWS.Session()
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't get AWS Session")
+	}
+	awsEC2Client = ec2.New(sess)
+}
 
 type AWSCommander struct {
 	Port       int
@@ -64,7 +56,7 @@ func (s *AWSCommander) StopInstances(ctx context.Context, in *StopInstancesReque
 		Force:       aws.Bool(in.Force),
 		InstanceIds: aws.StringSlice(in.InstanceIds),
 	}
-	resp, err := awsEc2Client.StopInstances(stopInstancesInput)
+	resp, err := awsEC2Client.StopInstances(stopInstancesInput)
 
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
@@ -98,7 +90,7 @@ func (s *AWSCommander) StartInstances(ctx context.Context, in *StartInstancesReq
 		InstanceIds:    aws.StringSlice(in.InstanceIds),
 	}
 
-	resp, err := awsEc2Client.StartInstances(input)
+	resp, err := awsEC2Client.StartInstances(input)
 
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
@@ -131,7 +123,7 @@ func (s *AWSCommander) RebootInstances(ctx context.Context, in *RebootInstancesR
 		InstanceIds: aws.StringSlice(in.InstanceIds),
 	}
 
-	resp, err := awsEc2Client.RebootInstances(input)
+	resp, err := awsEC2Client.RebootInstances(input)
 
 	log.Debug(resp)
 	rebootInstancesResult := &RebootInstancesResult{Err: ""}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/bastion/config"
 	metrics "github.com/rcrowley/go-metrics"
@@ -24,7 +25,6 @@ type Heart struct {
 	StopChan    chan bool
 	producer    *nsq.Producer
 	ticker      *time.Ticker
-	config      *config.Config
 }
 
 type HeartBeat struct {
@@ -35,8 +35,8 @@ type HeartBeat struct {
 	BastionId  string                 `json:"bastion_id"`
 }
 
-func NewHeart(cfg *config.Config, name string) (*Heart, error) {
-	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
+func NewHeart(nsqdHost string, name string) (*Heart, error) {
+	producer, err := nsq.NewProducer(nsqdHost, nsq.NewConfig())
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,6 @@ func NewHeart(cfg *config.Config, name string) (*Heart, error) {
 		ProcessName: name,
 		producer:    producer,
 		ticker:      time.NewTicker(heartRate),
-		config:      cfg,
 	}
 
 	metrics.RegisterRuntimeMemStats(MetricsRegistry)
@@ -74,8 +73,9 @@ func Metrics() (map[string]interface{}, error) {
 
 func (this *Heart) Beat() chan error {
 	errChan := make(chan error)
-	customerId := this.config.CustomerId
-	bastionId := this.config.BastionId
+	customerId := config.GetConfig().CustomerId
+	bastionId := config.GetConfig().BastionId
+	log.Debugf("Started heartbeat for %s", this.ProcessName)
 	go func(customerId string, bastionId string) {
 	BeatLoop:
 		for {

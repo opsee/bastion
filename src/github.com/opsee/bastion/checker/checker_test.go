@@ -5,7 +5,6 @@ package checker
 // worth testing.
 
 import (
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +13,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
+	"github.com/opsee/bastion/config"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -48,7 +48,8 @@ type CheckerTestSuite struct {
 
 func (s *CheckerTestSuite) SetupSuite() {
 	cfg := &NSQRunnerConfig{
-		NSQDHost:            os.Getenv("NSQD_HOST"),
+		ProducerNsqdHost:    config.GetConfig().NsqdHost,
+		ConsumerNsqdHost:    config.GetConfig().NsqdHost,
 		ConsumerQueueName:   "test-runner",
 		ProducerQueueName:   "test-results",
 		ConsumerChannelName: "test-runner",
@@ -75,12 +76,13 @@ func (s *CheckerTestSuite) SetupSuite() {
 }
 
 func (s *CheckerTestSuite) SetupTest() {
-	resetNsq(strings.Split(s.RunnerConfig.NSQDHost, ":")[0], s.ResetNsqConfig)
+	resetNsq(strings.Split(s.RunnerConfig.ConsumerNsqdHost, ":")[0], s.ResetNsqConfig)
 	var err error
 
 	checker := NewChecker()
 	testRunner, err := NewRemoteRunner(&NSQRunnerConfig{
-		NSQDHost:            s.RunnerConfig.NSQDHost,
+		ProducerNsqdHost:    s.RunnerConfig.ProducerNsqdHost,
+		ConsumerNsqdHost:    s.RunnerConfig.ConsumerNsqdHost,
 		ConsumerQueueName:   s.RunnerConfig.ProducerQueueName,
 		ConsumerChannelName: "test-check-results",
 		ProducerQueueName:   s.RunnerConfig.ConsumerQueueName,
@@ -120,7 +122,7 @@ func (s *CheckerTestSuite) TearDownTest() {
 	s.CheckerClient.Close()
 	s.Checker.Stop()
 	// Reset NSQ state every time so that we don't end up reading stale garbage.
-	resetNsq(strings.Split(s.RunnerConfig.NSQDHost, ":")[0], s.ResetNsqConfig)
+	resetNsq(strings.Split(s.RunnerConfig.ConsumerNsqdHost, ":")[0], s.ResetNsqConfig)
 }
 
 /*******************************************************************************
