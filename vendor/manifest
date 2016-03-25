@@ -266,6 +266,12 @@
 			"path": "/protoc-gen-go"
 		},
 		{
+			"importpath": "github.com/gorilla/websocket",
+			"repository": "https://github.com/gorilla/websocket",
+			"revision": "e2e3d8414d0fbae04004f151979f4e27c6747fe7",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/graphql-go/graphql",
 			"repository": "https://github.com/graphql-go/graphql",
 			"revision": "ac8b40ba2be38115622fc4fcda3805662575cfa7",

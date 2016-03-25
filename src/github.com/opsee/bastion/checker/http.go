@@ -8,16 +8,16 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gorilla/websocket"
 	"github.com/opsee/basic/schema"
 )
 
 const (
-	BodyReadTimeout    = 3 * time.Second
-	MaxContentLength   = 4096
 	httpWorkerTaskType = "HTTPRequest"
 )
 
@@ -37,7 +37,94 @@ func init() {
 	Recruiters[httpWorkerTaskType] = NewHTTPWorker
 }
 
+func (r *HTTPRequest) isWebSocketRequest() bool {
+	url, err := url.Parse(r.URL)
+	if err != nil {
+		log.WithError(err).Error("Cannot parse URL")
+		return false
+	}
+
+	if url.Scheme == "ws" || url.Scheme == "wss" {
+		return true
+	}
+
+	for _, h := range r.Headers {
+		if strings.ToLower(h.Name) == "upgrade" {
+			if len(h.Values) > 0 && strings.ToLower(h.Values[0]) == "websocket" {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func (r *HTTPRequest) doWebSocket() *Response {
+	response := &Response{}
+
+	tlsConfig := &tls.Config{
+		ServerName:         r.Host,
+		InsecureSkipVerify: r.InsecureSkipVerify,
+	}
+
+	dialer := websocket.DefaultDialer
+	dialer.TLSClientConfig = tlsConfig
+	dialer.HandshakeTimeout = 10 * time.Second
+
+	t0 := time.Now()
+	c, resp, err := dialer.Dial(r.URL, nil)
+	if err != nil {
+		log.WithError(err).Error("Failed to dial WebSocket service.")
+		response.Error = err
+		return response
+	}
+
+	defer c.Close()
+	err = c.SetReadDeadline(time.Now().Add(BodyReadTimeout))
+	if err != nil {
+		log.WithError(err).Error("Failed to set read deadline on WebSocket connection.")
+		response.Error = err
+		return response
+	}
+
+	_, msgBytes, err := c.ReadMessage()
+	if err != nil {
+		log.WithError(err).Error("Error reading WebSocket message.")
+		response.Error = err
+	}
+
+	httpResponse := &schema.HttpResponse{
+		Code: int32(resp.StatusCode),
+		Metrics: []*schema.Metric{
+			&schema.Metric{
+				Name:  "request_latency_ms",
+				Value: time.Since(t0).Seconds() * 1000,
+			},
+		},
+		Headers: []*schema.Header{},
+	}
+
+	if msgBytes != nil && len(msgBytes) > 0 {
+		httpResponse.Body = string(msgBytes)
+	}
+
+	for k, v := range resp.Header {
+		header := &schema.Header{}
+		header.Name = k
+		header.Values = v
+		httpResponse.Headers = append(httpResponse.Headers, header)
+	}
+
+	return &Response{
+		Response: httpResponse,
+	}
+}
+
 func (r *HTTPRequest) Do() *Response {
+	if r.isWebSocketRequest() {
+		return r.doWebSocket()
+	}
+
 	tlsConfig := &tls.Config{
 		ServerName:         r.Host,
 		InsecureSkipVerify: r.InsecureSkipVerify,
