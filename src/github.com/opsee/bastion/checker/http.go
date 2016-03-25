@@ -16,6 +16,7 @@ import (
 )
 
 const (
+	BodyReadTimeout    = 3 * time.Second
 	MaxContentLength   = 4096
 	httpWorkerTaskType = "HTTPRequest"
 )
@@ -59,6 +60,14 @@ func (r *HTTPRequest) Do() *Response {
 	if err != nil {
 		return &Response{Error: err}
 	}
+
+	// Close the connection after we're done. It's the polite thing to do.
+	req.Close = true
+	// Give ourselves an out if we have to cancel the request. Close this
+	// to cancel.
+	cancelChannel := make(chan struct{})
+	cancel := func() { close(cancelChannel) }
+	req.Cancel = cancelChannel
 
 	for _, header := range r.Headers {
 		key := header.Name
@@ -112,19 +121,39 @@ func (r *HTTPRequest) Do() *Response {
 
 	if resp.ContentLength >= 0 && resp.ContentLength <= MaxContentLength {
 		contentLength = resp.ContentLength
-	} else if resp.ContentLength > MaxContentLength {
-		contentLength = MaxContentLength
 	} else {
-		contentLength = 0
+		contentLength = MaxContentLength
 	}
 
 	log.WithFields(log.Fields{"Content-Length": resp.ContentLength, "contentLength": contentLength}).Debug("Setting content length.")
 	body := make([]byte, int64(contentLength))
 	if contentLength > 0 {
-		numBytes, err := rdr.Read(body)
-		if err != nil {
-			log.WithError(err).Error("Error reading message body")
+		// If the server does not close the connection and there is no Content-Length header,
+		// then the HTTP Client will block indefinitely when trying to read the response body.
+		// So, we have to wrap this in a timeout and cancel the request in order to continue.
+		var (
+			numBytes int
+			err      error
+		)
+		done := make(chan struct{}, 1)
+
+		go func() {
+			numBytes, err = rdr.Read(body)
+			done <- struct{}{}
+		}()
+
+		select {
+		case <-time.After(BodyReadTimeout):
+			cancel()
+			err = errors.New("Timed out waiting to read body.")
+		case <-done:
+			// Just continue, really.
 		}
+
+		if err != nil {
+			log.WithError(err).Error("Error while reading message body.")
+		}
+
 		body = bytes.Trim(body, "\x00")
 		body = bytes.Trim(body, "\n")
 		log.Debugf("Successfully read %i bytes...", numBytes)
