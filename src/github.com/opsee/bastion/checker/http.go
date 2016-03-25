@@ -15,7 +15,10 @@ import (
 	"github.com/opsee/basic/schema"
 )
 
-const httpWorkerTaskType = "HTTPRequest"
+const (
+	MaxContentLength   = 4096
+	httpWorkerTaskType = "HTTPRequest"
+)
 
 // HTTPRequest and HTTPResponse leave their bodies as strings to make life
 // easier for now. As soon as we move away from JSON, these should be []byte.
@@ -107,10 +110,12 @@ func (r *HTTPRequest) Do() *Response {
 	rdr := bufio.NewReader(resp.Body)
 	var contentLength int64
 
-	if resp.ContentLength >= 0 && resp.ContentLength < 4096 {
+	if resp.ContentLength >= 0 && resp.ContentLength <= MaxContentLength {
 		contentLength = resp.ContentLength
+	} else if resp.ContentLength > MaxContentLength {
+		contentLength = MaxContentLength
 	} else {
-		contentLength = 4096
+		contentLength = 0
 	}
 
 	log.WithFields(log.Fields{"Content-Length": resp.ContentLength, "contentLength": contentLength}).Debug("Setting content length.")
