@@ -72,7 +72,20 @@ func (r *HTTPRequest) doWebSocket() *Response {
 	dialer.HandshakeTimeout = 10 * time.Second
 
 	t0 := time.Now()
-	c, resp, err := dialer.Dial(r.URL, nil)
+	url, err := url.Parse(r.URL)
+	if err != nil {
+		log.WithError(err).Error("Cannot parse URL")
+		response.Error = err
+		return response
+	}
+
+	if url.Scheme == "http" {
+		url.Scheme = "ws"
+	} else if url.Scheme == "https" {
+		url.Scheme = "wss"
+	}
+
+	c, resp, err := dialer.Dial(url.String(), nil)
 	if err != nil {
 		log.WithError(err).Error("Failed to dial WebSocket service.")
 		response.Error = err
