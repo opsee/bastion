@@ -141,6 +141,7 @@ func (r *HTTPRequest) Do() <-chan *Response {
 		defer close(respChan)
 		if r.isWebSocketRequest() {
 			respChan <- r.doWebSocket()
+			return
 		}
 
 		tlsConfig := &tls.Config{
