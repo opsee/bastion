@@ -27,7 +27,7 @@ func init() {
 
 func main() {
 
-	config := config.GetConfig()
+	cfg := config.GetConfig()
 	commander := aws_command.NewAWSCommander()
 	commander.Port = 4002
 
@@ -35,12 +35,12 @@ func main() {
 	portmapper.Register(moduleName, commander.Port)
 	defer portmapper.Unregister(moduleName, commander.Port)
 
-	log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "startup"}).Info("startng up aws commander")
+	log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "startup"}).Info("startng up aws commander")
 	if err := commander.Start(); err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "event": "start grpc server", "err": err}).Error("Couldn't start aws_command grpc server")
 		panic(err) // systemd restart
 	} else {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "grpc server started"}).Info("started up aws commander")
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "grpc server started"}).Info("started up aws commander")
 	}
 
 	heart, err := heart.NewHeart(moduleName)

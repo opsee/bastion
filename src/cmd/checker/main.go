@@ -36,13 +36,13 @@ func main() {
 	flag.IntVar(&runnerConfig.MaxHandlers, "max_checks", 10, "Maximum concurrently executing checks.")
 	runnerConfig.NSQDHost = os.Getenv("NSQD_HOST")
 	runnerConfig.CustomerID = os.Getenv("CUSTOMER_ID")
-	config := config.GetConfig()
-	log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId}).Info("starting up")
+	cfg := config.GetConfig()
+	log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId}).Info("starting up")
 
 	newChecker := checker.NewChecker()
 	runner, err := checker.NewRemoteRunner(runnerConfig)
 	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
 	newChecker.Runner = runner
 	scheduler := checker.NewScheduler()
@@ -51,7 +51,7 @@ func main() {
 	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
 
 	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create create producer", "error": "couldn't create producer"}).Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create create producer", "error": "couldn't create producer"}).Fatal(err.Error())
 	}
 
 	scheduler.Producer = producer

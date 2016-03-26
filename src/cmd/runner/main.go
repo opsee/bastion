@@ -34,13 +34,13 @@ func main() {
 	flag.StringVar(&runnerConfig.ConsumerQueueName, "requests", "runner", "Requests queue name.")
 	flag.StringVar(&runnerConfig.ConsumerChannelName, "channel", "runner", "Consumer channel name.")
 	flag.IntVar(&runnerConfig.MaxHandlers, "max_checks", 10, "Maximum concurrently executing checks.")
-	config := config.GetConfig()
+	cfg := config.GetConfig()
 
-	runnerConfig.NSQDHost = os.Getenv("NSQD_HOST")
-	runnerConfig.CustomerID = os.Getenv("CUSTOMER_ID")
+	runnerConfig.NSQDHost = cfg.NSQDHost
 
 	log.Info("Starting %s...", moduleName)
-	runner, err := checker.NewNSQRunner(checker.NewRunner(checker.NewResolver(config)), runnerConfig)
+	// TODO(greg): This intialization is fucking bullshit. Kill me.
+	runner, err := checker.NewNSQRunner(checker.NewRunner(checker.NewResolver(cfg)), runnerConfig)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
