@@ -41,7 +41,7 @@ type Dispatcher struct {
 // NewDispatcher returns a dispatcher with populated internal worker groups.
 func NewDispatcher() *Dispatcher {
 	d := new(Dispatcher)
-	d.metrics = metrics.NewPrefixedChildRegistry(metricsRegistry, "dispatcher")
+	d.metrics = metrics.NewPrefixedChildRegistry(metricsRegistry, "dispatcher.")
 
 	workerGroups := make(map[string]*workerGroup)
 	for workerType, newFunc := range Recruiters {

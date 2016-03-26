@@ -48,7 +48,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		return nil, err
 	}
 
-	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner")
+	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner.")
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
 		// Message is a Check
@@ -174,7 +174,7 @@ func NewRunner(resolver Resolver) *Runner {
 	r := &Runner{
 		dispatcher: dispatcher,
 		resolver:   resolver,
-		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner"),
+		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner."),
 	}
 
 	slateHost := os.Getenv("SLATE_HOST")
