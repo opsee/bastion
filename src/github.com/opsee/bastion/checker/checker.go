@@ -21,6 +21,7 @@ import (
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/auth"
+	"github.com/opsee/bastion/heart"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -44,7 +45,8 @@ const (
 )
 
 var (
-	registry = make(map[string]reflect.Type)
+	registry        = make(map[string]reflect.Type)
+	metricsRegistry = heart.MetricsRegistry
 )
 
 func init() {
@@ -368,15 +370,17 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *opsee.CheckResourceReque
 	return c.invoke(ctx, "DeleteCheck", req)
 }
 
-// TestCheck will synchronously execute a check.
+// TestCheck will synchronously* execute a check.
 //
 // A TestCheckResponse is returned if there are no request errors. If there are
 // request-specific errors, then an error will be returned with no
 // TestCheckResponse.
 //
-// "Request-specific errors" are defined as:
-// - An unresolvable Check target.
-// - An unidentifiable Check type or CheckSpec.
+// "Request-specific errors" are defined as: - An unresolvable Check target.  -
+// An unidentifiable Check type or CheckSpec.
+//
+// * Synchronously in this case means that TestCheck blocks until a runner has
+// returned a response via NSQ or the context deadline is exceeded.
 //
 // TODO(greg): Get this into the invoke() fold so that we can do a "middleware"
 // ish pattern. to logging, instrumentation, etc.
@@ -399,6 +403,11 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 	testCheckResponse := &opsee.TestCheckResponse{}
 
 	result, err := c.Runner.RunCheck(ctx, req.Check)
+	// I hate this hot garbage. We have to do this because the Java
+	// GRPC client will throw exceptions if we return errors via GRPC.
+	// So, rather than dealing with exceptions on the bartnet side, we
+	// just do this nonsense.
+	// TODO(greg): Fucking get rid of Error fields in GRPC responses.
 	if err != nil {
 		testCheckResponse.Error = handleError(err)
 		return testCheckResponse, nil

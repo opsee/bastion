@@ -21,7 +21,7 @@ func TestRedirectResponse(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := requestMaker.Do()
+	resp := <-requestMaker.Do()
 	if resp == nil {
 		log.Fatal("TestRedirectResponse: Got nil response from http worker")
 	}
@@ -53,7 +53,7 @@ func TestResponseEmpty(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := requestMaker.Do()
+	resp := <-requestMaker.Do()
 	err := resp.Error
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "Error": "request error"}).Fatal(err)
@@ -81,7 +81,7 @@ func TestResponseNormal(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := requestMaker.Do()
+	resp := <-requestMaker.Do()
 	err = resp.Error
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "Error": "request error"}).Fatal(err)
@@ -109,7 +109,7 @@ func TestResponseTruncate(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := requestMaker.Do()
+	resp := <-requestMaker.Do()
 	err = resp.Error
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "Error": "request error"}).Fatal(err)

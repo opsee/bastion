@@ -1,7 +1,11 @@
 package checker
 
 import (
+	"fmt"
+	"sync"
+
 	log "github.com/Sirupsen/logrus"
+	metrics "github.com/rcrowley/go-metrics"
 	"golang.org/x/net/context"
 )
 
@@ -31,11 +35,13 @@ func newWorkerGroup(workerFunc NewWorkerFunc, maxQueueDepth int, maxWorkers int)
 
 type Dispatcher struct {
 	workerGroups map[string]*workerGroup
+	metrics      metrics.Registry
 }
 
 // NewDispatcher returns a dispatcher with populated internal worker groups.
 func NewDispatcher() *Dispatcher {
 	d := new(Dispatcher)
+	d.metrics = metrics.NewPrefixedChildRegistry(metricsRegistry, "dispatcher")
 
 	workerGroups := make(map[string]*workerGroup)
 	for workerType, newFunc := range Recruiters {
@@ -52,29 +58,38 @@ func NewDispatcher() *Dispatcher {
 // the response that indicates the context was cancelled.
 func (d *Dispatcher) Dispatch(ctx context.Context, tg TaskGroup) chan *Task {
 	finished := make(chan *Task, len(tg))
-	go func() {
-		defer close(finished)
-		cancelled := false
+	defer close(finished)
 
-		for _, t := range tg {
-			select {
-			case <-ctx.Done():
-				cancelled = true
-			default:
+	wg := &sync.WaitGroup{}
+
+	for _, t := range tg {
+		log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Dispatching request.")
+		metrics.GetOrRegisterCounter("task_dispatched", d.metrics).Inc(1)
+
+		select {
+		case <-ctx.Done():
+			t.Response = &Response{
+				Error: ctx.Err(),
 			}
 
-			if !cancelled {
-				log.Debug("Dispatching request: task = %s, type = %s", *t, t.Type)
-				worker := <-d.workerGroups[t.Type].WorkerQueue
-				finished <- worker.Work(t)
-			} else {
-				t.Response = &Response{
-					Error: ctx.Err(),
-				}
-				finished <- t
-			}
+			log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Request cancelled.")
+			metrics.GetOrRegisterCounter("task_cancelled", d.metrics).Inc(1)
+			finished <- t
+		case worker := <-d.workerGroups[t.Type].WorkerQueue:
+			wg.Add(1)
+			go func() {
+				// We rely on the worker to correctly handle context cancellation so that it
+				// immediately returns once the context is cancelled.
+				finished <- worker.Work(ctx, t)
+				log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Request finished.")
+				wg.Done()
+				metrics.GetOrRegisterCounter("task_executed", d.metrics).Inc(1)
+			}()
 		}
-	}()
+	}
+
+	wg.Wait()
+	log.Debug("Successfully dispatched TaskGroup. Returning.")
 
 	return finished
 }

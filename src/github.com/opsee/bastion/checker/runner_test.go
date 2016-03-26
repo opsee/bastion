@@ -44,13 +44,11 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	assert.NoError(s.T(), err)
 	assert.Len(s.T(), targets, 3)
 
-	count := 0
-	for response := range responses {
-		count++
+	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
-	assert.Equal(s.T(), 3, count)
+	assert.Equal(s.T(), 3, len(responses))
 	os.Setenv("SLATE_HOST", slate_host)
 }
 
@@ -64,13 +62,11 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	assert.NoError(s.T(), err)
 	assert.Len(s.T(), targets, 3)
 
-	count := 0
-	for response := range responses {
-		count++
+	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
-	assert.Equal(s.T(), 3, count)
+	assert.Equal(s.T(), 3, len(responses))
 }
 
 func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
@@ -78,13 +74,11 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(ctx, check)
 	assert.NoError(s.T(), err)
-	count := 0
-	for response := range responses {
-		count++
+	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
-	assert.Equal(s.T(), 1, count)
+	assert.Equal(s.T(), 1, len(responses))
 }
 
 func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
@@ -92,30 +86,11 @@ func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
 	check := s.Common.PassingCheckInstanceTarget()
 	responses, err := s.Runner.RunCheck(ctx, check)
 	assert.NoError(s.T(), err)
-	count := 0
-	for response := range responses {
-		count++
+	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Response)
 	}
-	assert.Equal(s.T(), 1, count)
-}
-
-func (s *RunnerTestSuite) TestRunCheckClosesChannel() {
-	check := s.Common.PassingCheckMultiTarget()
-	responses, err := s.Runner.RunCheck(s.Context, check)
-	assert.NoError(s.T(), err)
-	for {
-		select {
-		case r, ok := <-responses:
-			if !ok {
-				return
-			}
-			assert.NotNil(s.T(), r.Response)
-		case <-time.After(time.Duration(5) * time.Second):
-			assert.Fail(s.T(), "Timed out waiting for response channel to close.")
-		}
-	}
+	assert.Equal(s.T(), 1, len(responses))
 }
 
 func (s *RunnerTestSuite) TestRunCheckDeadlineExceeded() {
@@ -123,13 +98,11 @@ func (s *RunnerTestSuite) TestRunCheckDeadlineExceeded() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(ctx, check)
 	assert.NoError(s.T(), err)
-	count := 0
-	for response := range responses {
-		count++
+	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Error)
 	}
-	assert.Equal(s.T(), 3, count)
+	assert.Equal(s.T(), 3, len(responses))
 }
 
 func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
@@ -138,13 +111,11 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(ctx, check)
 	assert.NoError(s.T(), err)
-	count := 0
-	for response := range responses {
-		count++
+	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
 		assert.NotNil(s.T(), response.Error)
 	}
-	assert.Equal(s.T(), 3, count)
+	assert.Equal(s.T(), 3, len(responses))
 }
 
 func (s *RunnerTestSuite) TestRunCheckResolveFailureReturnsError() {
