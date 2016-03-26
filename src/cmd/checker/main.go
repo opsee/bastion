@@ -36,13 +36,13 @@ func main() {
 	flag.IntVar(&runnerConfig.MaxHandlers, "max_checks", 10, "Maximum concurrently executing checks.")
 	runnerConfig.NSQDHost = os.Getenv("NSQD_HOST")
 	runnerConfig.CustomerID = os.Getenv("CUSTOMER_ID")
-	config := config.GetConfig()
-	log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId}).Info("starting up")
+	cfg := config.GetConfig()
+	log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId}).Info("starting up")
 
 	newChecker := checker.NewChecker()
 	runner, err := checker.NewRemoteRunner(runnerConfig)
 	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
 	newChecker.Runner = runner
 	scheduler := checker.NewScheduler()
@@ -51,7 +51,7 @@ func main() {
 	producer, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), nsq.NewConfig())
 
 	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "create create producer", "error": "couldn't create producer"}).Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create create producer", "error": "couldn't create producer"}).Fatal(err.Error())
 	}
 
 	scheduler.Producer = producer
@@ -59,14 +59,14 @@ func main() {
 
 	newChecker.Port = 4000
 	if err := newChecker.Start(); err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
 	}
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 	portmapper.Register(moduleName, newChecker.Port)
 	defer portmapper.Unregister(moduleName, newChecker.Port)
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(cfg, moduleName)
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't initialize heartbeat.")
 	}

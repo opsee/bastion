@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/opsee/bastion/config"
 )
 
 func TestHeartMetrics(t *testing.T) {
-	_, err := NewHeart("hearttest")
+	_, err := NewHeart(config.GetConfig(), "hearttest")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

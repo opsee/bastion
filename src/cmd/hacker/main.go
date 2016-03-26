@@ -47,9 +47,7 @@ type Hacker struct {
 	cloudformationClient        *cloudformation.CloudFormation
 }
 
-func NewHacker() (*Hacker, error) {
-	cfg := config.GetConfig()
-
+func NewHacker(cfg *config.Config) (*Hacker, error) {
 	customerId := os.Getenv("CUSTOMER_ID")
 	hacker := &Hacker{
 		CustomerId:             customerId,
@@ -289,12 +287,13 @@ func (this *Hacker) Hack() (*string, error) {
 }
 
 func main() {
-	hacker, err := NewHacker()
+	cfg := config.GetConfig()
+	hacker, err := NewHacker(cfg)
 	if err != nil {
 		log.WithError(err).Fatal("Error starting hacker.")
 	}
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(cfg, moduleName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
