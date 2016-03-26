@@ -59,14 +59,14 @@ func main() {
 
 	newChecker.Port = 4000
 	if err := newChecker.Start(); err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": config.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "start checker", "error": "couldn't start checker"}).Fatal(err.Error())
 	}
 
 	portmapper.EtcdHost = os.Getenv("ETCD_HOST")
 	portmapper.Register(moduleName, newChecker.Port)
 	defer portmapper.Unregister(moduleName, newChecker.Port)
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(cfg, moduleName)
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't initialize heartbeat.")
 	}

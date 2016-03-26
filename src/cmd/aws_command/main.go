@@ -43,7 +43,7 @@ func main() {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "grpc server started"}).Info("started up aws commander")
 	}
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(cfg, moduleName)
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't initialize heartbeat!")
 	}

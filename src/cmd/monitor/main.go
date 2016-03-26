@@ -9,6 +9,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/bastion/config"
+	"github.com/opsee/bastion/heart"
 	"github.com/opsee/bastion/monitor"
 	"github.com/opsee/portmapper"
 )
@@ -56,6 +57,12 @@ func main() {
 		}
 	}()
 
+	heart, err := heart.NewHeart(cfg, moduleName)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	beatChan := heart.Beat()
+
 	for {
 		select {
 		case s := <-signalsChannel:
@@ -64,6 +71,8 @@ func main() {
 				log.Info("Received signal ", s, ". Stopping.")
 				os.Exit(0)
 			}
+		case beatErr := <-beatChan:
+			log.WithError(beatErr).Error("Heartbeat error.")
 		}
 	}
 }

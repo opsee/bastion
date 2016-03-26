@@ -45,7 +45,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	heart, err := heart.NewHeart(runnerConfig.Id)
+	heart, err := heart.NewHeart(cfg, runnerConfig.Id)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

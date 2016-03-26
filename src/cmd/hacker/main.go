@@ -293,7 +293,7 @@ func main() {
 		log.WithError(err).Fatal("Error starting hacker.")
 	}
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(cfg, moduleName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

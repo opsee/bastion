@@ -3,10 +3,10 @@ package heart
 import (
 	"bytes"
 	"encoding/json"
-	"os"
 	"time"
 
-	"github.com/opsee/bastion/messaging"
+	"github.com/nsqio/go-nsq"
+	"github.com/opsee/bastion/config"
 	metrics "github.com/rcrowley/go-metrics"
 )
 
@@ -22,8 +22,9 @@ var (
 type Heart struct {
 	ProcessName string
 	StopChan    chan bool
-	producer    messaging.Producer
+	producer    *nsq.Producer
 	ticker      *time.Ticker
+	config      *config.Config
 }
 
 type HeartBeat struct {
@@ -34,8 +35,8 @@ type HeartBeat struct {
 	BastionId  string                 `json:"bastion_id"`
 }
 
-func NewHeart(name string) (*Heart, error) {
-	producer, err := messaging.NewProducer(Topic)
+func NewHeart(config *config.Config, name string) (*Heart, error) {
+	producer, err := nsq.NewProducer(config.NSQDHost, nsq.NewConfig())
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +68,8 @@ func Metrics() (map[string]interface{}, error) {
 
 func (this *Heart) Beat() chan error {
 	errChan := make(chan error)
-	customerId := os.Getenv("BASTION_ID")
-	bastionId := os.Getenv("CUSTOMER_ID")
+	customerId := this.config.CustomerId
+	bastionId := this.config.BastionId
 	go func(customerId string, bastionId string) {
 	BeatLoop:
 		for {
@@ -87,8 +88,13 @@ func (this *Heart) Beat() chan error {
 					BastionId:  bastionId,
 				}
 
-				if err := this.producer.Publish(hb); err != nil {
+				hbBytes, err := json.Marshal(hb)
+				if err != nil {
 					errChan <- err
+				} else {
+					if err := this.producer.Publish(Topic, hbBytes); err != nil {
+						errChan <- err
+					}
 				}
 			case <-this.StopChan:
 				this.ticker.Stop()

@@ -63,7 +63,7 @@ func main() {
 		panic(err)
 	}
 
-	heart, err := heart.NewHeart(moduleName)
+	heart, err := heart.NewHeart(cfg, moduleName)
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't initialize heartbeat!")
 	}
