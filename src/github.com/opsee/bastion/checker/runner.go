@@ -11,6 +11,7 @@ import (
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/basic/schema"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
+	metrics "github.com/rcrowley/go-metrics"
 	"golang.org/x/net/context"
 )
 
@@ -32,7 +33,13 @@ type NSQRunner struct {
 }
 
 func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
-	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, nsq.NewConfig())
+	consumerConfig := nsq.NewConfig()
+	// This will effectively be the maximum number of simultaneous Checks that we can
+	// run. Keep in mind that each Check MAY yield many requests, and there are only
+	// MaxRoutinesPerWorkerType workers per check type.
+	consumerConfig.MaxInFlight = 2
+
+	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, consumerConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -40,6 +47,8 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner")
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
 		// Message is a Check
@@ -55,7 +64,10 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
-		responseChan, err := runner.RunCheck(ctx, check)
+		// A call to RunCheck is synchronous. Calling cancel() is not necessarily superfluous though.
+		responses, err := runner.RunCheck(ctx, check)
+		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
+		cancel()
 		if err != nil {
 			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
@@ -77,22 +89,20 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 				log.WithError(err).Error("Error marshaling CheckResult")
 				return err
 			}
+
 			if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
 				log.WithError(err).Error("Error publishing CheckResult")
 				return err
 			}
+
+			metrics.GetOrRegisterCounter("nsq_messages_handled", registry).Inc(1)
+
 			return nil
 		}
-		// At this point we have successfully run/are running the check. Indicate
-		// as such.
-		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Runnng check.")
 
-		// TODO(greg): We're currently ignoring the deadline we _just_ set on this
-		// this.
-		var responses []*schema.CheckResponse
+		// Determine if the CheckResult has its passing flag set.
 		passing := true
-		for response := range responseChan {
-			responses = append(responses, response)
+		for _, response := range responses {
 			if !response.Passing {
 				passing = false
 			}
@@ -112,18 +122,17 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		msg, err := proto.Marshal(result)
 		if err != nil {
 			log.WithError(err).Error("Error marshaling CheckResult")
-			cancel()
 			return err
 		}
 
 		log.Debug("NSQRunner handler publishing result: %s", result.String())
 		if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
 			log.WithError(err).Error("Error publishing CheckResult")
-			cancel()
 			return err
 		}
 		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Published result for check")
 
+		metrics.GetOrRegisterCounter("nsq_messages_handled", registry).Inc(1)
 		return nil
 	}), cfg.MaxHandlers)
 
@@ -155,6 +164,7 @@ type Runner struct {
 	resolver    Resolver
 	dispatcher  *Dispatcher
 	slateClient *SlateClient
+	registry    metrics.Registry
 }
 
 // NewRunner returns a runner associated with a particular resolver.
@@ -164,6 +174,7 @@ func NewRunner(resolver Resolver) *Runner {
 	r := &Runner{
 		dispatcher: dispatcher,
 		resolver:   resolver,
+		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner"),
 	}
 
 	slateHost := os.Getenv("SLATE_HOST")
@@ -189,6 +200,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *schema.Check)
 	if err != nil {
 		return nil, err
 	}
+
 	if len(targets) == 0 {
 		return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
 	}
@@ -275,9 +287,10 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 	return r.dispatcher.Dispatch(ctx, tg), nil
 }
 
-func (r *Runner) runCheck(ctx context.Context, check *schema.Check, tasks chan *Task, responses chan *schema.CheckResponse) {
+func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks chan *Task) []*schema.CheckResponse {
+	responses := []*schema.CheckResponse{}
 	for t := range tasks {
-		log.WithFields(log.Fields{"task": *t}).Debug("runCheck - Handling finished task.")
+		log.WithFields(log.Fields{"task": *t}).Debug("runAssertions - Handling finished task.")
 		var (
 			responseError string
 			responseAny   *opsee_types.Any
@@ -309,11 +322,13 @@ func (r *Runner) runCheck(ctx context.Context, check *schema.Check, tasks chan *
 				log.WithError(err).Error("Could not contact slate.")
 			}
 		}
-		log.WithFields(log.Fields{"response": *response}).Debug("runCheck - Emitting CheckResponse.")
+		log.WithFields(log.Fields{"response": *response}).Debug("runAssertions - Emitting CheckResponse.")
 
 		response.Passing = passing
-		responses <- response
+		responses = append(responses, response)
 	}
+
+	return responses
 }
 
 // RunCheck will resolve all of the targets in a check and trigger execution
@@ -330,24 +345,22 @@ func (r *Runner) runCheck(ctx context.Context, check *schema.Check, tasks chan *
 // If the Context passed to RunCheck is cancelled or its deadline is exceeded,
 // all CheckResponse objects after that event will be passed to the channel
 // with appropriate errors associated with them.
-func (r *Runner) RunCheck(ctx context.Context, check *schema.Check) (chan *schema.CheckResponse, error) {
+func (r *Runner) RunCheck(ctx context.Context, check *schema.Check) ([]*schema.CheckResponse, error) {
 	targets, err := r.resolveRequestTargets(ctx, check)
 	if err != nil {
+		metrics.GetOrRegisterCounter("resolver_errors", r.registry).Inc(1)
 		return nil, err
 	}
 
+	// tasks is a channel of tasks which runCheck will iterate over.
 	tasks, err := r.dispatch(ctx, check, targets)
 	if err != nil {
 		return nil, err
 	}
 
-	responses := make(chan *schema.CheckResponse, 1)
-	// TODO: Place requests on a queue, much like the dispatcher. Working from that
-	// queue--thus giving us the ability to limit the number of concurrently
-	// executing checks.
-	go func() {
-		defer close(responses)
-		r.runCheck(ctx, check, tasks, responses)
-	}()
+	// TODO(greg): Move assertion processing to a parallel model, but for now
+	// try to be a little nicer to slate and run these serially, blocking until
+	// all assertions have been processed.
+	responses := r.runAssertions(ctx, check, tasks)
 	return responses, nil
 }

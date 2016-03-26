@@ -1,13 +1,16 @@
 package checker
 
-import "github.com/opsee/basic/schema"
+import (
+	"github.com/opsee/basic/schema"
+	"golang.org/x/net/context"
+)
 
 var (
 	Recruiters = make(map[string]NewWorkerFunc)
 )
 
 type Request interface {
-	Do() *Response
+	Do() <-chan *Response
 }
 
 type Response struct {
@@ -23,7 +26,7 @@ type Task struct {
 }
 
 type Worker interface {
-	Work(*Task) *Task
+	Work(context.Context, *Task) *Task
 }
 
 type NewWorkerFunc func(chan Worker) Worker

@@ -187,6 +187,7 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
 	assert.NoError(s.T(), err)
 	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
+	assert.Empty(s.T(), response.Error)
 
 	httpResponse := &schema.HttpResponse{}
 	responses := response.GetResponses()

@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	metricsRegistry = metrics.NewRegistry()
+	MetricsRegistry = metrics.NewRegistry()
 )
 
 type Heart struct {
@@ -46,7 +46,7 @@ func NewHeart(name string) (*Heart, error) {
 		ticker:      time.NewTicker(heartRate),
 	}
 
-	metrics.RegisterRuntimeMemStats(metricsRegistry)
+	metrics.RegisterRuntimeMemStats(MetricsRegistry)
 
 	return heart, nil
 }
@@ -54,9 +54,9 @@ func NewHeart(name string) (*Heart, error) {
 func Metrics() (map[string]interface{}, error) {
 	// NOTE(dan)
 	// runtime.ReadMemStats calls the C functions runtime·semacquire(&runtime·worldsema) and runtime·stoptheworld()
-	metrics.CaptureRuntimeMemStatsOnce(metricsRegistry)
+	metrics.CaptureRuntimeMemStatsOnce(MetricsRegistry)
 	b := &bytes.Buffer{}
-	metrics.WriteJSONOnce(metricsRegistry, b)
+	metrics.WriteJSONOnce(MetricsRegistry, b)
 	heartMetrics := make(map[string]interface{})
 
 	if err := json.Unmarshal(b.Bytes(), &heartMetrics); err != nil {

@@ -14,16 +14,25 @@ type dispatcherTestWorker struct {
 	WorkerQueue chan Worker
 }
 
-func (w *dispatcherTestWorkerRequest) Do() *Response {
-	return &Response{}
+func (w *dispatcherTestWorkerRequest) Do() <-chan *Response {
+	r := make(chan *Response, 1)
+	defer close(r)
+	r <- &Response{}
+	return r
 }
 func newDispatcherTestWorker(c chan Worker) Worker {
 	return &dispatcherTestWorker{
 		WorkerQueue: c,
 	}
 }
-func (w *dispatcherTestWorker) Work(t *Task) *Task {
-	t.Response = t.Request.Do()
+func (w *dispatcherTestWorker) Work(ctx context.Context, t *Task) *Task {
+	if ctx.Err() != nil {
+		t.Response = &Response{
+			Error: ctx.Err(),
+		}
+		return t
+	}
+	t.Response = <-t.Request.Do()
 	return t
 }
 
@@ -84,9 +93,15 @@ func (s *DispatcherTestSuite) TestDispatchTaskGroup() {
 	}
 }
 
+//**********************************************************************************
+//
+// These context tests are to ensure that things behave deterministically despite the
+// non-determinism inherent in the concurrency patterns involved.
+//
+
 func (s *DispatcherTestSuite) TestDispatchWithDeadlineExceeded() {
 	tg := s.MultiTaskTG
-	ctx, _ := context.WithDeadline(s.Context, time.Now())
+	ctx, _ := context.WithDeadline(s.Context, time.Now().Add(-1*30*time.Second))
 	finished := s.Dispatcher.Dispatch(ctx, tg)
 	done := TaskGroup{}
 	for ft := range finished {
@@ -114,6 +129,10 @@ func (s *DispatcherTestSuite) TestDispatchWithCancelledContext() {
 		assert.NotNil(s.T(), t.Response.Error)
 	}
 }
+
+//
+//
+//**********************************************************************************
 
 func TestDispatcherTestSuite(t *testing.T) {
 	setupTestEnv()
