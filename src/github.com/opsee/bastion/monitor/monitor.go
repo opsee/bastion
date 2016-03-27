@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/nsqio/go-nsq"
+	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"github.com/opsee/bastion/messaging"
 )
 
 const (
@@ -25,12 +26,15 @@ var (
 
 type Monitor struct {
 	components map[string]*Component
-	consumer   messaging.Consumer
+	consumer   *nsq.Consumer
 	statemap   map[string]*State
 }
 
-func NewMonitor() (*Monitor, error) {
-	consumer, err := messaging.NewConsumer(heart.Topic, moduleName)
+func NewMonitor(cfg *config.Config) (*Monitor, error) {
+	nsqConfig := nsq.NewConfig()
+	nsqConfig.ClientID = "monitor"
+
+	consumer, err := nsq.NewConsumer(heart.Topic, moduleName, nsqConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -47,18 +51,12 @@ func NewMonitor() (*Monitor, error) {
 		m.statemap[c] = cm.State
 	}
 
-	go m.monitorState()
-
-	return m, nil
-}
-
-func (m *Monitor) monitorState() {
-	for event := range m.consumer.Channel() {
+	consumer.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
 		log.WithFields(log.Fields{"service": "monitor"}).Debug("monitor event received")
 
 		heartBeat := new(heart.HeartBeat)
 
-		if err := json.Unmarshal([]byte(event.Body()), heartBeat); err != nil {
+		if err := json.Unmarshal(msg.Body, heartBeat); err != nil {
 			log.WithFields(log.Fields{"service": "monitor"}).Error("monitor failed to unmarshall event")
 		} else {
 			log.WithFields(log.Fields{"service": "monitor", "component": heartBeat.Process, "heartbeat timestamp": heartBeat.Timestamp}).Debug("monitor unmarshalled event")
@@ -71,8 +69,19 @@ func (m *Monitor) monitorState() {
 			}
 		}
 
-		event.Ack()
+		return nil
+	}))
+
+	if err := consumer.ConnectToNSQD(cfg.NSQDHost); err != nil {
+		return nil, err
 	}
+
+	return m, nil
+}
+
+func (m *Monitor) Stop() {
+	m.consumer.Stop()
+	<-m.consumer.StopChan
 }
 
 func (m *Monitor) SerializeState() ([]byte, error) {
