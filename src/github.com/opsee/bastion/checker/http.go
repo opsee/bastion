@@ -248,8 +248,9 @@ func (r *HTTPRequest) Do() <-chan *Response {
 				close(done)
 			}()
 
+			timer := time.NewTimer(BodyReadTimeout)
 			select {
-			case <-time.After(BodyReadTimeout):
+			case <-timer.C:
 				// Calling cancel() here will thread through the http request causing the
 				// response Body ReadCloser to be closed. The above goroutine will
 				// receive an error in the call to Read(body) and then return, closing
@@ -260,6 +261,7 @@ func (r *HTTPRequest) Do() <-chan *Response {
 				// Just continue, really.
 				err = nil
 			}
+			timer.Stop()
 
 			if err != nil {
 				log.WithError(err).Error("Error while reading message body.")

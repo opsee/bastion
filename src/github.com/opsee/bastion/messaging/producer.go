@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -78,17 +79,20 @@ func (p *NsqProducer) PublishRepliable(id string, msg EventInterface) error {
 }
 
 // Stop gracefully terminates producing to nsqd.
-// NOTE: This blocks until completion.
 func (p *NsqProducer) Close() error {
-	errChan := make(chan error, 1)
-	go func(errChan chan error) {
+	done := make(chan struct{}, 1)
+	go func() {
 		p.nsqProducer.Stop()
-		errChan <- nil
-	}(errChan)
+		close(done)
+	}()
+
+	timer := time.NewTimer(5 * time.Second)
+	defer func() { timer.Stop() }()
+
 	select {
-	case err := <-errChan:
-		return err
-	case <-time.After(5 * time.Second):
-		return fmt.Errorf("Timed out waiting for producer to stop.")
+	case <-done:
+		return nil
+	case <-timer.C:
+		return errors.New("Timed out waiting for Producer to stop.")
 	}
 }

@@ -227,6 +227,7 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	check := s.Common.PassingCheck()
 	msg, _ := proto.Marshal(check)
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg)
+	timer := time.NewTimer(10 * time.Second)
 	select {
 	case m := <-s.MsgChan:
 		log.Debug("TestHandlerDoesItsThing: Received message.")
@@ -234,9 +235,10 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 		err := proto.Unmarshal(m.Body, result)
 		assert.NoError(s.T(), err)
 		assert.Equal(s.T(), check.Id, result.CheckId)
-	case <-time.After(10 * time.Second):
+	case <-timer.C:
 		assert.Fail(s.T(), "Timed out waiting on response from runner.")
 	}
+	timer.Stop()
 }
 
 func TestNSQRunnerTestSuite(t *testing.T) {
