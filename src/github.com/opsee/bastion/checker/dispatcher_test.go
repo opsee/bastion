@@ -60,12 +60,14 @@ func (s *DispatcherTestSuite) SetupTest() {
 func (s *DispatcherTestSuite) TestDispatchClosesFinishedChannel() {
 	tg := s.EmptyTG
 	finished := s.Dispatcher.Dispatch(s.Context, tg)
+	timer := time.NewTimer(1 * time.Second)
 	select {
 	case _, ok := <-finished:
 		assert.False(s.T(), ok)
-	case <-time.After(time.Duration(1) * time.Second):
+	case <-timer.C:
 		assert.Fail(s.T(), "Dispatcher.Dispatch did not close channel.")
 	}
+	timer.Stop()
 }
 
 func (s *DispatcherTestSuite) TestDispatchEmptyTaskGroup() {

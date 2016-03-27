@@ -30,7 +30,7 @@ func main() {
 	cfg := config.GetConfig()
 	listenAddress := fmt.Sprintf(":%d", cfg.AdminPort)
 
-	mon, err := monitor.NewMonitor()
+	mon, err := monitor.NewMonitor(cfg)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

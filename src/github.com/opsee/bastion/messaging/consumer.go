@@ -75,13 +75,15 @@ func (c *NsqConsumer) Close() error {
 	c.nsqConsumer.Stop()
 
 	var err error
+	timer := time.NewTimer(5 * time.Second)
 	select {
 	case <-c.nsqConsumer.StopChan:
 		err = nil
-	case <-time.After(5 * time.Second):
+	case <-timer.C:
 		err = fmt.Errorf("Timed out waiting for Consumer to stop.")
 	}
 
+	timer.Stop()
 	close(c.channel)
 	return err
 }
