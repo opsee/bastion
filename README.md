@@ -53,3 +53,5 @@ java -jar mami/mami.jar build --bastion-version $BASTION_VERSION build/mami.json
 # --no-cleanup flag to the build command.
 # java -jar mami/mami.jar build --no-cleanup --bastion-version $BASTION_VERSION build/mami.json
 ```
+
+Sometimes I fucking cannot stand CircleCI.
