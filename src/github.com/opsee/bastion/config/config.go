@@ -48,7 +48,7 @@ func GetConfig() *Config {
 		flag.StringVar(&config.CertPath, "cert", os.Getenv("CERT_PATH"), "Path to the certificate.")
 		flag.StringVar(&config.KeyPath, "key", os.Getenv("KEY_PATH"), "Path to the key file.")
 		flag.StringVar(&config.CustomerId, "customer_id", os.Getenv("CUSTOMER_ID"), "Customer ID.")
-		flag.StringVar(&config.CustomerId, "bastion_id", os.Getenv("BASTION_ID"), "Customer ID.")
+		flag.StringVar(&config.BastionId, "bastion_id", os.Getenv("BASTION_ID"), "Customer ID.")
 		flag.StringVar(&config.NSQDHost, "nsqd_host", os.Getenv("NSQD_HOST"), "NSQD Host.")
 
 		flag.StringVar(&config.DataPath, "data", "", "Data path.")
