@@ -72,7 +72,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
 			result := &schema.CheckResult{
-				CustomerId: cfg.CustomerID,
+				CustomerId: cfg.CustomerId,
 				CheckId:    check.Id,
 				CheckName:  check.Name,
 				Target:     check.Target,
