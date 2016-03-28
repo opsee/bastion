@@ -35,8 +35,8 @@ type HeartBeat struct {
 	BastionId  string                 `json:"bastion_id"`
 }
 
-func NewHeart(config *config.Config, name string) (*Heart, error) {
-	producer, err := nsq.NewProducer(config.NSQDHost, nsq.NewConfig())
+func NewHeart(cfg *config.Config, name string) (*Heart, error) {
+	producer, err := nsq.NewProducer(cfg.NSQDHost, nsq.NewConfig())
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +45,7 @@ func NewHeart(config *config.Config, name string) (*Heart, error) {
 		ProcessName: name,
 		producer:    producer,
 		ticker:      time.NewTicker(heartRate),
+		config:      cfg,
 	}
 
 	metrics.RegisterRuntimeMemStats(MetricsRegistry)
