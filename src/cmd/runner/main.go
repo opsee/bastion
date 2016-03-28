@@ -37,6 +37,7 @@ func main() {
 	cfg := config.GetConfig()
 
 	runnerConfig.NSQDHost = cfg.NSQDHost
+	runnerConfig.CustomerID = cfg.CustomerId
 
 	log.Info("Starting %s...", moduleName)
 	// TODO(greg): This intialization is fucking bullshit. Kill me.
