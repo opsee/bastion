@@ -70,8 +70,8 @@ func (c *Component) loop() {
 			log.WithFields(log.Fields{"component": c.Name, "heartbeat": nil, "state OK": c.State.OK}).Warning("Timeout waiting for heartbeat.")
 
 		case hb := <-c.HeartBeatChannel:
-			if c.State.Heartbeat == nil {
-				c.State.Heartbeat = hb
+			if c.State.HeartBeat == nil {
+				c.State.HeartBeat = hb
 			} else {
 
 				// If the current timestamp is < heartbeat.timestamp + 30 sec, and the received
@@ -81,7 +81,7 @@ func (c *Component) loop() {
 				hbTime := time.Unix(nsec, 0)
 				timeoutTime := hbTime.Add(HeartBeatTimeout)
 
-				nsec = c.State.Heartbeat.Timestamp * int64(time.Nanosecond) / int64(time.Second)
+				nsec = c.State.HeartBeat.Timestamp * int64(time.Nanosecond) / int64(time.Second)
 				ctime := time.Unix(nsec, 0)
 
 				if time.Now().Before(timeoutTime) && hbTime.After(ctime) {
