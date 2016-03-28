@@ -70,24 +70,35 @@ func (c *Component) loop() {
 			log.WithFields(log.Fields{"component": c.Name, "heartbeat": nil, "state OK": c.State.OK}).Warning("Timeout waiting for heartbeat.")
 
 		case hb := <-c.HeartBeatChannel:
-			nsec := c.State.HeartBeat.Timestamp * int64(time.Nanosecond) / int64(time.Second)
-			ctime := time.Unix(nsec, 0)
-			timeoutTime := time.Now().Add(HeartBeatTimeout)
-
-			if ctime.After(timeoutTime) {
-				c.State.OK = false
-				log.WithFields(log.Fields{
-					"component":  c.Name,
-					"heartbeat":  nil,
-					"timoutTime": timeoutTime,
-					"OK":         c.State.OK}).Warning("Component received stale heartbeat.")
+			if c.State.Heartbeat == nil {
+				c.State.Heartbeat = hb
 			} else {
-				c.State.HeartBeat = hb
-				c.State.OK = true
-				log.WithFields(log.Fields{
-					"component": c.Name,
-					"heartbeat": c.State.HeartBeat,
-					"state OK":  c.State.OK}).Debug("Component received good heartbeat.")
+
+				// If the current timestamp is < heartbeat.timestamp + 30 sec, and the received
+				// heartbeat is newer than the current heartbeat, then we udpate the component
+				// state.
+				nsec := hb.Timestamp * int64(time.Nanosecond) / int64(time.Second)
+				hbTime := time.Unix(nsec, 0)
+				timeoutTime := hbTime.Add(HeartBeatTimeout)
+
+				nsec = c.State.Heartbeat.Timestamp * int64(time.Nanosecond) / int64(time.Second)
+				ctime := time.Unix(nsec, 0)
+
+				if time.Now().Before(timeoutTime) && hbTime.After(ctime) {
+					c.State.HeartBeat = hb
+					c.State.OK = true
+					log.WithFields(log.Fields{
+						"component": c.Name,
+						"heartbeat": c.State.HeartBeat,
+						"state OK":  c.State.OK}).Debug("Component received good heartbeat.")
+				} else {
+					c.State.OK = false
+					log.WithFields(log.Fields{
+						"component":  c.Name,
+						"heartbeat":  nil,
+						"timoutTime": timeoutTime,
+						"OK":         c.State.OK}).Warning("Component received stale heartbeat.")
+				}
 			}
 		}
 
