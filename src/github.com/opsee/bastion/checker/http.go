@@ -165,6 +165,7 @@ func (r *HTTPRequest) Do() <-chan *Response {
 		req, err := http.NewRequest(r.Method, r.URL, strings.NewReader(r.Body))
 		if err != nil {
 			respChan <- &Response{Error: err}
+			return
 		}
 
 		// Close the connection after we're done. It's the polite thing to do.
@@ -201,12 +202,14 @@ func (r *HTTPRequest) Do() <-chan *Response {
 		resp, err := client.Do(req)
 		if resp == nil && err != nil {
 			respChan <- &Response{Error: err}
+			return
 		}
 
 		defer resp.Body.Close()
 
 		if resp.StatusCode < 300 && resp.StatusCode > 399 && err != nil {
 			respChan <- &Response{Error: err}
+			return
 		}
 
 		log.Debug("Attempting to read body of response...")
