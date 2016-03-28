@@ -21,6 +21,7 @@ var (
 		"aws_command",
 		"checker",
 		"discovery",
+		"monitor",
 	}
 )
 
