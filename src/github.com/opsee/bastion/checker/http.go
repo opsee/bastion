@@ -264,7 +264,7 @@ func (r *HTTPRequest) Do() <-chan *Response {
 			timer.Stop()
 
 			if err != nil {
-				log.WithError(err).Error("Error while reading message body.")
+				log.WithFields(log.Fields{"url": r.URL, "method": r.Method, "response": fmt.Sprintf("%#v", resp)}).WithError(err).Error("Error while reading message body.")
 			}
 
 			body = bytes.Trim(body, "\x00")
