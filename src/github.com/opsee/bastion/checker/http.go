@@ -86,7 +86,30 @@ func (r *HTTPRequest) doWebSocket() *Response {
 		url.Scheme = "wss"
 	}
 
-	c, resp, err := dialer.Dial(url.String(), nil)
+	requestHeader := http.Header{}
+	for _, header := range r.Headers {
+		key := header.Name
+
+		for _, value := range header.Values {
+			switch {
+			case strings.ToLower(key) == "upgrade" ||
+				strings.ToLower(key) == "connection" ||
+				strings.ToLower(key) == "sec-websocket-key" ||
+				strings.ToLower(key) == "sec-websocket-version" ||
+				strings.ToLower(key) == "sec-websocket-protocol":
+				continue
+			default:
+				requestHeader.Add(key, value)
+			}
+		}
+	}
+
+	// if we have set the host explicity, override any user-provided host
+	if r.Host != "" {
+		requestHeader.Set("Host", r.Host)
+	}
+
+	c, resp, err := dialer.Dial(url.String(), requestHeader)
 	if err != nil {
 		log.WithError(err).Error("Failed to dial WebSocket service.")
 		response.Error = err
