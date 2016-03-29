@@ -77,14 +77,14 @@ func (d *Dispatcher) Dispatch(ctx context.Context, tg TaskGroup) chan *Task {
 			finished <- t
 		case worker := <-d.workerGroups[t.Type].WorkerQueue:
 			wg.Add(1)
-			go func() {
+			go func(worker Worker) {
 				// We rely on the worker to correctly handle context cancellation so that it
 				// immediately returns once the context is cancelled.
 				finished <- worker.Work(ctx, t)
 				log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Request finished.")
 				wg.Done()
 				metrics.GetOrRegisterCounter("task_executed", d.metrics).Inc(1)
-			}()
+			}(worker)
 		}
 	}
 
