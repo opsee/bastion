@@ -75,16 +75,16 @@ func (d *Dispatcher) Dispatch(ctx context.Context, tg TaskGroup) chan *Task {
 			log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Request cancelled.")
 			metrics.GetOrRegisterCounter("task_cancelled", d.metrics).Inc(1)
 			finished <- t
-		case worker := <-d.workerGroups[t.Type].WorkerQueue:
+		case w := <-d.workerGroups[t.Type].WorkerQueue:
 			wg.Add(1)
-			go func(worker Worker) {
+			go func(worker Worker, task *Task) {
 				// We rely on the worker to correctly handle context cancellation so that it
 				// immediately returns once the context is cancelled.
-				finished <- worker.Work(ctx, t)
-				log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Request finished.")
+				finished <- worker.Work(ctx, task)
+				log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", task.Request)}).Debug("Request finished.")
 				wg.Done()
 				metrics.GetOrRegisterCounter("task_executed", d.metrics).Inc(1)
-			}(worker)
+			}(w, t)
 		}
 	}
 
