@@ -9,7 +9,10 @@ import (
 	"golang.org/x/net/context"
 )
 
-type dispatcherTestWorkerRequest struct{}
+type dispatcherTestWorkerRequest struct {
+	ID int
+}
+
 type dispatcherTestWorker struct {
 	WorkerQueue chan Worker
 }
@@ -17,7 +20,9 @@ type dispatcherTestWorker struct {
 func (w *dispatcherTestWorkerRequest) Do() <-chan *Response {
 	r := make(chan *Response, 1)
 	defer close(r)
-	r <- &Response{}
+	r <- &Response{
+		Response: w.ID,
+	}
 	return r
 }
 func newDispatcherTestWorker(c chan Worker) Worker {
@@ -50,14 +55,14 @@ func (s *DispatcherTestSuite) SetupTest() {
 	s.Context = context.Background()
 	RegisterWorker("dispatcherTestWorkerRequest", newDispatcherTestWorker)
 	s.MultiTaskTG = TaskGroup{
-		&Task{Type: "dispatcherTestWorkerRequest", Request: new(dispatcherTestWorkerRequest)},
-		&Task{Type: "dispatcherTestWorkerRequest", Request: new(dispatcherTestWorkerRequest)},
-		&Task{Type: "dispatcherTestWorkerRequest", Request: new(dispatcherTestWorkerRequest)},
+		&Task{Type: "dispatcherTestWorkerRequest", Request: &dispatcherTestWorkerRequest{1}},
+		&Task{Type: "dispatcherTestWorkerRequest", Request: &dispatcherTestWorkerRequest{2}},
+		&Task{Type: "dispatcherTestWorkerRequest", Request: &dispatcherTestWorkerRequest{3}},
 	}
 	s.EmptyTG = TaskGroup{}
 }
 
-func (s *DispatcherTestSuite) TestDispatchClosesFinishedChannel() {
+func (s *DispatcherTestSuite) TestDispatcherClosesFinishedChannel() {
 	tg := s.EmptyTG
 	finished := s.Dispatcher.Dispatch(s.Context, tg)
 	timer := time.NewTimer(1 * time.Second)
@@ -70,7 +75,7 @@ func (s *DispatcherTestSuite) TestDispatchClosesFinishedChannel() {
 	timer.Stop()
 }
 
-func (s *DispatcherTestSuite) TestDispatchEmptyTaskGroup() {
+func (s *DispatcherTestSuite) TestDispatcherEmptyTaskGroup() {
 	tg := s.EmptyTG
 	finished := s.Dispatcher.Dispatch(s.Context, tg)
 	done := TaskGroup{}
@@ -80,7 +85,7 @@ func (s *DispatcherTestSuite) TestDispatchEmptyTaskGroup() {
 	assert.Len(s.T(), tg, 0)
 }
 
-func (s *DispatcherTestSuite) TestDispatchTaskGroup() {
+func (s *DispatcherTestSuite) TestDispatcherTaskGroup() {
 	tg := s.MultiTaskTG
 
 	finished := s.Dispatcher.Dispatch(s.Context, tg)
@@ -90,6 +95,9 @@ func (s *DispatcherTestSuite) TestDispatchTaskGroup() {
 	}
 	assert.Len(s.T(), done, 3)
 	for _, t := range done {
+		req := t.Request.(*dispatcherTestWorkerRequest)
+		id := req.ID
+		assert.Equal(s.T(), id, t.Response.Response.(int))
 		assert.IsType(s.T(), new(Task), t)
 		assert.NotNil(s.T(), t.Response)
 	}
@@ -101,7 +109,7 @@ func (s *DispatcherTestSuite) TestDispatchTaskGroup() {
 // non-determinism inherent in the concurrency patterns involved.
 //
 
-func (s *DispatcherTestSuite) TestDispatchWithDeadlineExceeded() {
+func (s *DispatcherTestSuite) TestDispatcherWithDeadlineExceeded() {
 	tg := s.MultiTaskTG
 	ctx, _ := context.WithDeadline(s.Context, time.Now().Add(-1*30*time.Second))
 	finished := s.Dispatcher.Dispatch(ctx, tg)
@@ -116,7 +124,7 @@ func (s *DispatcherTestSuite) TestDispatchWithDeadlineExceeded() {
 	}
 }
 
-func (s *DispatcherTestSuite) TestDispatchWithCancelledContext() {
+func (s *DispatcherTestSuite) TestDispatcherWithCancelledContext() {
 	tg := s.MultiTaskTG
 	ctx, cancel := context.WithCancel(s.Context)
 	cancel()
