@@ -20,7 +20,7 @@ func TestHeartMetrics(t *testing.T) {
 		log.Info(metrics)
 	}
 
-	b, err := json.Marshal(metrics)
+	_, err = json.Marshal(metrics)
 	if err != nil {
 		t.FailNow()
 	}
