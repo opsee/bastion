@@ -489,14 +489,6 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 						goto SLEEP
 					}
 
-					if len(checks.Checks) == 0 {
-						// Consider this a fatal error. If there are legitimately 0 checks, then
-						// the checker doesn't need to startup anyway. If there are 0 checks because
-						// of an error, then same.
-						err = errors.New("Got 0 checks when synchronizing bastion state with Bartnet.")
-						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
-						goto SLEEP
-					}
 					log.Debug("Got existing checks ", checks)
 					success = true
 					break
@@ -527,7 +519,6 @@ func (c *Checker) Start() error {
 	}
 
 	log.Info("Getting existing checks")
-	// Now Get existing checks from bartnet
 	existingChecks, err := c.GetExistingChecks(NumCheckSyncRetries)
 	if err != nil {
 		log.WithFields(log.Fields{"service": "checker", "event": "sync checks", "error": err}).Error("failed to sync checks")
@@ -539,6 +530,7 @@ func (c *Checker) Start() error {
 	// Now start and register the GRPC server and allow users to create/edit/etc checks
 	go c.grpcServer.Serve(listen)
 	opsee.RegisterCheckerServer(c.grpcServer, c)
+
 	return nil
 }
 
