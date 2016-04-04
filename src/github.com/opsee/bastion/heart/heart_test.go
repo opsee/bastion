@@ -1,6 +1,7 @@
 package heart
 
 import (
+	"encoding/json"
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
@@ -17,5 +18,10 @@ func TestHeartMetrics(t *testing.T) {
 		t.FailNow()
 	} else {
 		log.Info(metrics)
+	}
+
+	_, err = json.Marshal(metrics)
+	if err != nil {
+		t.FailNow()
 	}
 }

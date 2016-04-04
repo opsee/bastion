@@ -58,12 +58,17 @@ func Metrics() (map[string]interface{}, error) {
 	// runtime.ReadMemStats calls the C functions runtime·semacquire(&runtime·worldsema) and runtime·stoptheworld()
 	metrics.CaptureRuntimeMemStatsOnce(MetricsRegistry)
 	b := &bytes.Buffer{}
+
 	metrics.WriteJSONOnce(MetricsRegistry, b)
+
 	heartMetrics := make(map[string]interface{})
 
 	if err := json.Unmarshal(b.Bytes(), &heartMetrics); err != nil {
 		return nil, err
 	}
+
+	addMetricTypes(&heartMetrics)
+
 	return heartMetrics, nil
 }
 
@@ -105,4 +110,31 @@ func (this *Heart) Beat() chan error {
 	}(customerId, bastionId)
 
 	return errChan
+}
+
+func addMetricTypes(heartbeat *map[string]interface{}) error {
+	metricTypes := make(map[string]string)
+
+	MetricsRegistry.Each(func(name string, i interface{}) {
+		switch i.(type) {
+		case metrics.Counter:
+			metricTypes[name] = "counter"
+		case metrics.Gauge:
+			metricTypes[name] = "gauge"
+		case metrics.GaugeFloat64:
+			metricTypes[name] = "gaugeFloat64"
+		case metrics.Healthcheck:
+			metricTypes[name] = "healthcheck"
+		case metrics.Histogram:
+			metricTypes[name] = "histogram"
+		case metrics.Meter:
+			metricTypes[name] = "meter"
+		case metrics.Timer:
+			metricTypes[name] = "timer"
+		}
+	})
+
+	(*heartbeat)["metricTypes"] = metricTypes
+
+	return nil
 }
