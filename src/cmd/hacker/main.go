@@ -270,9 +270,9 @@ func (this *Hacker) Hack() (*string, error) {
 		return nil, err
 	}
 
-	stackName, err := this.CreateOrUpdateStack(this.ingressStackPhysicalId, parameters, string(templateBody))
+	stackName, err := this.UpdateStack(this.ingressStackPhysicalId, parameters, string(templateBody))
 	if err != nil {
-		log.WithError(err).Error("Failed to create or update stack.")
+		log.WithError(err).Error("Failed to update stack.")
 		return nil, err
 	}
 
