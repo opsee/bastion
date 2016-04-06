@@ -213,7 +213,7 @@
 		{
 			"importpath": "github.com/gogo/protobuf/proto",
 			"repository": "https://github.com/gogo/protobuf",
-			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"revision": "4365f750fe246471f2a03ef5da5231c3565c5628",
 			"branch": "master",
 			"path": "/proto"
 		},
