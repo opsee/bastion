@@ -124,9 +124,21 @@ func (r *HTTPRequest) doWebSocket() *Response {
 		return response
 	}
 
+	requestBody := []byte(r.Body)
+	if len(requestBody) > 0 {
+		if err := c.WriteMessage(websocket.TextMessage, requestBody); err != nil {
+			log.WithError(err).Error("Error writing WebSocket message.")
+			response.Error = err
+		}
+	}
+
 	_, msgBytes, err := c.ReadMessage()
 	if err != nil {
 		log.WithError(err).Error("Error reading WebSocket message.")
+
+		// TODO(greg): We'll be overwriting the response error here if
+		// there was a previous attempt to write to the websocket that
+		// failed. I'm not sure what to do about that right now.
 		response.Error = err
 	}
 
@@ -134,8 +146,9 @@ func (r *HTTPRequest) doWebSocket() *Response {
 		Code: int32(resp.StatusCode),
 		Metrics: []*schema.Metric{
 			&schema.Metric{
-				Name:  "request_latency_ms",
+				Name:  "request_latency",
 				Value: time.Since(t0).Seconds() * 1000,
+				Unit:  "ms",
 			},
 		},
 		Headers: []*schema.Header{},
@@ -303,8 +316,9 @@ func (r *HTTPRequest) Do() <-chan *Response {
 			Body: string(body),
 			Metrics: []*schema.Metric{
 				&schema.Metric{
-					Name:  "request_latency_ms",
+					Name:  "request_latency",
 					Value: time.Since(t0).Seconds() * 1000,
+					Unit:  "ms",
 				},
 			},
 			Headers: []*schema.Header{},

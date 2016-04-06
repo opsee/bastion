@@ -12,7 +12,7 @@ import (
 
 const (
 	Topic     = "heartbeat"
-	heartRate = 15 * time.Second
+	heartRate = 60 * time.Second
 )
 
 var (

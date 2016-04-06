@@ -63,17 +63,32 @@ message HttpCheck {
 }
 
 message CloudWatchCheck {
-	Target target = 1;
-	string metric_name = 2;
-	string function = 3;
-	repeated string function_params = 4;
+	repeated CloudWatchMetric metrics = 1;
+}
+
+message CloudWatchMetric {
+	string namespace = 1;
+	string name = 2;
+}
+
+message CloudWatchResponse {
+	// The AWS CloudWatch metric namespace, e.g. AWS/RDS
+	string namespace = 1;
+	repeated Metric metrics = 2;
+}
+
+message Tag {
+	string name = 1;
+	string value = 2;
 }
 
 message Metric {
 	string name = 1;
 	double value = 2;
-	repeated string tags = 3;
+	repeated Tag tags = 3;
 	opsee.types.Timestamp timestamp = 4;
+	string unit = 5;	  // kbps, percent, ...
+	string statistic = 6; // average, sum, ...
 }
 
 message HttpResponse {
@@ -86,12 +101,13 @@ message HttpResponse {
 
 
 message CheckResponse {
-	Target target = 1;
+	Target target = 1; //
 	opsee.types.Any response = 2;
 	string error = 3;
 	bool passing = 4;
 	oneof reply {
 		HttpResponse http_response = 101;
+		CloudWatchResponse cloudwatch_response = 102;
 	}
 }
 

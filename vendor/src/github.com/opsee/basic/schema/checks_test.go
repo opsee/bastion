@@ -1,11 +1,12 @@
 package schema
 
 import (
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/graphql-go/graphql"
 	"math/rand"
 	"testing"
 	"time"
+
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/graphql-go/graphql"
 )
 
 func TestUnmarshalCheck(t *testing.T) {
@@ -64,15 +65,11 @@ func TestCheckschema(t *testing.T) {
 					body
 				}
 				... on schemaCloudWatchCheck {
-					target {
+					metrics {
+						namespace
 						name
-						type
-						id
-						address
 					}
-					metric_name
-					function
-					function_params
+
 				}
 			}
 			name
@@ -108,8 +105,13 @@ func TestCheckschema(t *testing.T) {
 							metrics {
 								name
 								value
-								tags
+								tags {
+									name
+									value
+								}
 								timestamp
+								unit
+								statistic
 							}
 							host
 						}

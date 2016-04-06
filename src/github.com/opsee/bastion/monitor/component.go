@@ -11,13 +11,13 @@ const (
 	// HeartBeatTimeout is the maximum age of a component's heartbeat.
 	// After this time, the heartbeat is considered to be stale and the
 	// component in a bad state.
-	HeartBeatTimeout = 30 * time.Second
+	HeartBeatTimeout = 90 * time.Second
 
 	// HeartBeatWaitTimeout is the maximum amount of time the component will
 	// wait to get a heartbeat. After this time, the component will examine
 	// the last heartbeat received to determine if it has timed out. If so,
 	// the component will be set at a bad state.
-	HeartBeatWaitTimeout = 60 * time.Second
+	HeartBeatWaitTimeout = 120 * time.Second
 )
 
 type State struct {
@@ -74,7 +74,7 @@ func (c *Component) loop() {
 				c.State.HeartBeat = hb
 			} else {
 
-				// If the current timestamp is < heartbeat.timestamp + 30 sec, and the received
+				// If the current timestamp is < heartbeat.timestamp + 60 sec, and the received
 				// heartbeat is newer than the current heartbeat, then we udpate the component
 				// state.
 				nsec := hb.Timestamp * int64(time.Nanosecond) / int64(time.Second)

@@ -213,7 +213,7 @@
 		{
 			"importpath": "github.com/gogo/protobuf/proto",
 			"repository": "https://github.com/gogo/protobuf",
-			"revision": "f4cc07910fc38f5b6b8d6e75d7457cf504157b6c",
+			"revision": "4365f750fe246471f2a03ef5da5231c3565c5628",
 			"branch": "master",
 			"path": "/proto"
 		},
@@ -322,7 +322,7 @@
 		{
 			"importpath": "github.com/opsee/basic",
 			"repository": "https://github.com/opsee/basic",
-			"revision": "7b379065803f6ef5bb77d233f201ea1f79cfbf13",
+			"revision": "06217d3502b6e09646d0846f9afa7c5f7293d602",
 			"branch": "master"
 		},
 		{
@@ -334,7 +334,7 @@
 		{
 			"importpath": "github.com/opsee/protobuf",
 			"repository": "https://github.com/opsee/protobuf",
-			"revision": "1776823a8fe8856c8e3a75c9d4f846c9008c6935",
+			"revision": "490f167f615b104554f0094904c054361a95d84b",
 			"branch": "master"
 		},
 		{

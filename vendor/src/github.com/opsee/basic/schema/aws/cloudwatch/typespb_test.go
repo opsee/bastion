@@ -3,21 +3,22 @@
 // DO NOT EDIT!
 
 /*
-Package autoscaling is a generated protocol buffer package.
+Package cloudwatch is a generated protocol buffer package.
 
 It is generated from these files:
 	types.proto
 
 It has these top-level messages:
-	DescribeAutoScalingGroupsInput
-	DescribeAutoScalingGroupsOutput
-	EnabledMetric
-	Group
-	Instance
-	SuspendedProcess
-	TagDescription
+	Datapoint
+	Dimension
+	DimensionFilter
+	GetMetricStatisticsInput
+	GetMetricStatisticsOutput
+	ListMetricsInput
+	ListMetricsOutput
+	Metric
 */
-package autoscaling
+package cloudwatch
 
 import testing "testing"
 import math_rand "math/rand"
@@ -35,15 +36,15 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-func TestDescribeAutoScalingGroupsInputProto(t *testing.T) {
+func TestDatapointProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsInput(popr, false)
+	p := NewPopulatedDatapoint(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DescribeAutoScalingGroupsInput{}
+	msg := &Datapoint{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -66,10 +67,10 @@ func TestDescribeAutoScalingGroupsInputProto(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsInputMarshalTo(t *testing.T) {
+func TestDatapointMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsInput(popr, false)
+	p := NewPopulatedDatapoint(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -79,7 +80,7 @@ func TestDescribeAutoScalingGroupsInputMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DescribeAutoScalingGroupsInput{}
+	msg := &Datapoint{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -91,15 +92,15 @@ func TestDescribeAutoScalingGroupsInputMarshalTo(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsOutputProto(t *testing.T) {
+func TestDimensionProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsOutput(popr, false)
+	p := NewPopulatedDimension(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DescribeAutoScalingGroupsOutput{}
+	msg := &Dimension{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -122,10 +123,10 @@ func TestDescribeAutoScalingGroupsOutputProto(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsOutputMarshalTo(t *testing.T) {
+func TestDimensionMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsOutput(popr, false)
+	p := NewPopulatedDimension(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -135,7 +136,7 @@ func TestDescribeAutoScalingGroupsOutputMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DescribeAutoScalingGroupsOutput{}
+	msg := &Dimension{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -147,15 +148,15 @@ func TestDescribeAutoScalingGroupsOutputMarshalTo(t *testing.T) {
 	}
 }
 
-func TestEnabledMetricProto(t *testing.T) {
+func TestDimensionFilterProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedEnabledMetric(popr, false)
+	p := NewPopulatedDimensionFilter(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &EnabledMetric{}
+	msg := &DimensionFilter{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -178,10 +179,10 @@ func TestEnabledMetricProto(t *testing.T) {
 	}
 }
 
-func TestEnabledMetricMarshalTo(t *testing.T) {
+func TestDimensionFilterMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedEnabledMetric(popr, false)
+	p := NewPopulatedDimensionFilter(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -191,7 +192,7 @@ func TestEnabledMetricMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &EnabledMetric{}
+	msg := &DimensionFilter{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -203,15 +204,15 @@ func TestEnabledMetricMarshalTo(t *testing.T) {
 	}
 }
 
-func TestGroupProto(t *testing.T) {
+func TestGetMetricStatisticsInputProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedGroup(popr, false)
+	p := NewPopulatedGetMetricStatisticsInput(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Group{}
+	msg := &GetMetricStatisticsInput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -234,10 +235,10 @@ func TestGroupProto(t *testing.T) {
 	}
 }
 
-func TestGroupMarshalTo(t *testing.T) {
+func TestGetMetricStatisticsInputMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedGroup(popr, false)
+	p := NewPopulatedGetMetricStatisticsInput(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -247,7 +248,7 @@ func TestGroupMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Group{}
+	msg := &GetMetricStatisticsInput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -259,15 +260,15 @@ func TestGroupMarshalTo(t *testing.T) {
 	}
 }
 
-func TestInstanceProto(t *testing.T) {
+func TestGetMetricStatisticsOutputProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedInstance(popr, false)
+	p := NewPopulatedGetMetricStatisticsOutput(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Instance{}
+	msg := &GetMetricStatisticsOutput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -290,10 +291,10 @@ func TestInstanceProto(t *testing.T) {
 	}
 }
 
-func TestInstanceMarshalTo(t *testing.T) {
+func TestGetMetricStatisticsOutputMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedInstance(popr, false)
+	p := NewPopulatedGetMetricStatisticsOutput(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -303,7 +304,7 @@ func TestInstanceMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Instance{}
+	msg := &GetMetricStatisticsOutput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -315,15 +316,15 @@ func TestInstanceMarshalTo(t *testing.T) {
 	}
 }
 
-func TestSuspendedProcessProto(t *testing.T) {
+func TestListMetricsInputProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedSuspendedProcess(popr, false)
+	p := NewPopulatedListMetricsInput(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &SuspendedProcess{}
+	msg := &ListMetricsInput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -346,10 +347,10 @@ func TestSuspendedProcessProto(t *testing.T) {
 	}
 }
 
-func TestSuspendedProcessMarshalTo(t *testing.T) {
+func TestListMetricsInputMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedSuspendedProcess(popr, false)
+	p := NewPopulatedListMetricsInput(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -359,7 +360,7 @@ func TestSuspendedProcessMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &SuspendedProcess{}
+	msg := &ListMetricsInput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -371,15 +372,15 @@ func TestSuspendedProcessMarshalTo(t *testing.T) {
 	}
 }
 
-func TestTagDescriptionProto(t *testing.T) {
+func TestListMetricsOutputProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedTagDescription(popr, false)
+	p := NewPopulatedListMetricsOutput(popr, false)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &TagDescription{}
+	msg := &ListMetricsOutput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -402,10 +403,10 @@ func TestTagDescriptionProto(t *testing.T) {
 	}
 }
 
-func TestTagDescriptionMarshalTo(t *testing.T) {
+func TestListMetricsOutputMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedTagDescription(popr, false)
+	p := NewPopulatedListMetricsOutput(popr, false)
 	size := p.Size()
 	data := make([]byte, size)
 	for i := range data {
@@ -415,7 +416,7 @@ func TestTagDescriptionMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &TagDescription{}
+	msg := &ListMetricsOutput{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -427,16 +428,72 @@ func TestTagDescriptionMarshalTo(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsInputJSON(t *testing.T) {
+func TestMetricProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsInput(popr, true)
+	p := NewPopulatedMetric(popr, false)
+	data, err := github_com_gogo_protobuf_proto.Marshal(p)
+	if err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	msg := &Metric{}
+	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	littlefuzz := make([]byte, len(data))
+	copy(littlefuzz, data)
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("seed = %d, %#v !Proto %#v", seed, msg, p)
+	}
+	if len(littlefuzz) > 0 {
+		fuzzamount := 100
+		for i := 0; i < fuzzamount; i++ {
+			littlefuzz[popr.Intn(len(littlefuzz))] = byte(popr.Intn(256))
+			littlefuzz = append(littlefuzz, byte(popr.Intn(256)))
+		}
+		// shouldn't panic
+		_ = github_com_gogo_protobuf_proto.Unmarshal(littlefuzz, msg)
+	}
+}
+
+func TestMetricMarshalTo(t *testing.T) {
+	seed := time.Now().UnixNano()
+	popr := math_rand.New(math_rand.NewSource(seed))
+	p := NewPopulatedMetric(popr, false)
+	size := p.Size()
+	data := make([]byte, size)
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	_, err := p.MarshalTo(data)
+	if err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	msg := &Metric{}
+	if err := github_com_gogo_protobuf_proto.Unmarshal(data, msg); err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("seed = %d, %#v !Proto %#v", seed, msg, p)
+	}
+}
+
+func TestDatapointJSON(t *testing.T) {
+	seed := time.Now().UnixNano()
+	popr := math_rand.New(math_rand.NewSource(seed))
+	p := NewPopulatedDatapoint(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DescribeAutoScalingGroupsInput{}
+	msg := &Datapoint{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -445,16 +502,16 @@ func TestDescribeAutoScalingGroupsInputJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestDescribeAutoScalingGroupsOutputJSON(t *testing.T) {
+func TestDimensionJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsOutput(popr, true)
+	p := NewPopulatedDimension(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DescribeAutoScalingGroupsOutput{}
+	msg := &Dimension{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -463,16 +520,16 @@ func TestDescribeAutoScalingGroupsOutputJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestEnabledMetricJSON(t *testing.T) {
+func TestDimensionFilterJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedEnabledMetric(popr, true)
+	p := NewPopulatedDimensionFilter(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &EnabledMetric{}
+	msg := &DimensionFilter{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -481,16 +538,16 @@ func TestEnabledMetricJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestGroupJSON(t *testing.T) {
+func TestGetMetricStatisticsInputJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedGroup(popr, true)
+	p := NewPopulatedGetMetricStatisticsInput(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Group{}
+	msg := &GetMetricStatisticsInput{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -499,16 +556,16 @@ func TestGroupJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestInstanceJSON(t *testing.T) {
+func TestGetMetricStatisticsOutputJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedInstance(popr, true)
+	p := NewPopulatedGetMetricStatisticsOutput(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Instance{}
+	msg := &GetMetricStatisticsOutput{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -517,16 +574,16 @@ func TestInstanceJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestSuspendedProcessJSON(t *testing.T) {
+func TestListMetricsInputJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedSuspendedProcess(popr, true)
+	p := NewPopulatedListMetricsInput(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &SuspendedProcess{}
+	msg := &ListMetricsInput{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -535,16 +592,16 @@ func TestSuspendedProcessJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestTagDescriptionJSON(t *testing.T) {
+func TestListMetricsOutputJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedTagDescription(popr, true)
+	p := NewPopulatedListMetricsOutput(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &TagDescription{}
+	msg := &ListMetricsOutput{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -553,12 +610,30 @@ func TestTagDescriptionJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestDescribeAutoScalingGroupsInputProtoText(t *testing.T) {
+func TestMetricJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsInput(popr, true)
+	p := NewPopulatedMetric(popr, true)
+	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
+	jsondata, err := marshaler.MarshalToString(p)
+	if err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	msg := &Metric{}
+	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
+	if err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
+	}
+}
+func TestDatapointProtoText(t *testing.T) {
+	seed := time.Now().UnixNano()
+	popr := math_rand.New(math_rand.NewSource(seed))
+	p := NewPopulatedDatapoint(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &DescribeAutoScalingGroupsInput{}
+	msg := &Datapoint{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -567,12 +642,12 @@ func TestDescribeAutoScalingGroupsInputProtoText(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsInputProtoCompactText(t *testing.T) {
+func TestDatapointProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsInput(popr, true)
+	p := NewPopulatedDatapoint(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &DescribeAutoScalingGroupsInput{}
+	msg := &Datapoint{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -581,12 +656,12 @@ func TestDescribeAutoScalingGroupsInputProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsOutputProtoText(t *testing.T) {
+func TestDimensionProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsOutput(popr, true)
+	p := NewPopulatedDimension(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &DescribeAutoScalingGroupsOutput{}
+	msg := &Dimension{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -595,12 +670,12 @@ func TestDescribeAutoScalingGroupsOutputProtoText(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsOutputProtoCompactText(t *testing.T) {
+func TestDimensionProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsOutput(popr, true)
+	p := NewPopulatedDimension(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &DescribeAutoScalingGroupsOutput{}
+	msg := &Dimension{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -609,12 +684,12 @@ func TestDescribeAutoScalingGroupsOutputProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestEnabledMetricProtoText(t *testing.T) {
+func TestDimensionFilterProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedEnabledMetric(popr, true)
+	p := NewPopulatedDimensionFilter(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &EnabledMetric{}
+	msg := &DimensionFilter{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -623,12 +698,12 @@ func TestEnabledMetricProtoText(t *testing.T) {
 	}
 }
 
-func TestEnabledMetricProtoCompactText(t *testing.T) {
+func TestDimensionFilterProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedEnabledMetric(popr, true)
+	p := NewPopulatedDimensionFilter(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &EnabledMetric{}
+	msg := &DimensionFilter{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -637,12 +712,12 @@ func TestEnabledMetricProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestGroupProtoText(t *testing.T) {
+func TestGetMetricStatisticsInputProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedGroup(popr, true)
+	p := NewPopulatedGetMetricStatisticsInput(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &Group{}
+	msg := &GetMetricStatisticsInput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -651,12 +726,12 @@ func TestGroupProtoText(t *testing.T) {
 	}
 }
 
-func TestGroupProtoCompactText(t *testing.T) {
+func TestGetMetricStatisticsInputProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedGroup(popr, true)
+	p := NewPopulatedGetMetricStatisticsInput(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &Group{}
+	msg := &GetMetricStatisticsInput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -665,12 +740,12 @@ func TestGroupProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestInstanceProtoText(t *testing.T) {
+func TestGetMetricStatisticsOutputProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedInstance(popr, true)
+	p := NewPopulatedGetMetricStatisticsOutput(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &Instance{}
+	msg := &GetMetricStatisticsOutput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -679,12 +754,12 @@ func TestInstanceProtoText(t *testing.T) {
 	}
 }
 
-func TestInstanceProtoCompactText(t *testing.T) {
+func TestGetMetricStatisticsOutputProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedInstance(popr, true)
+	p := NewPopulatedGetMetricStatisticsOutput(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &Instance{}
+	msg := &GetMetricStatisticsOutput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -693,12 +768,12 @@ func TestInstanceProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestSuspendedProcessProtoText(t *testing.T) {
+func TestListMetricsInputProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedSuspendedProcess(popr, true)
+	p := NewPopulatedListMetricsInput(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &SuspendedProcess{}
+	msg := &ListMetricsInput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -707,12 +782,12 @@ func TestSuspendedProcessProtoText(t *testing.T) {
 	}
 }
 
-func TestSuspendedProcessProtoCompactText(t *testing.T) {
+func TestListMetricsInputProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedSuspendedProcess(popr, true)
+	p := NewPopulatedListMetricsInput(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &SuspendedProcess{}
+	msg := &ListMetricsInput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -721,12 +796,12 @@ func TestSuspendedProcessProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestTagDescriptionProtoText(t *testing.T) {
+func TestListMetricsOutputProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedTagDescription(popr, true)
+	p := NewPopulatedListMetricsOutput(popr, true)
 	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &TagDescription{}
+	msg := &ListMetricsOutput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -735,12 +810,12 @@ func TestTagDescriptionProtoText(t *testing.T) {
 	}
 }
 
-func TestTagDescriptionProtoCompactText(t *testing.T) {
+func TestListMetricsOutputProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedTagDescription(popr, true)
+	p := NewPopulatedListMetricsOutput(popr, true)
 	data := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &TagDescription{}
+	msg := &ListMetricsOutput{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -749,10 +824,38 @@ func TestTagDescriptionProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsInputSize(t *testing.T) {
+func TestMetricProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsInput(popr, true)
+	p := NewPopulatedMetric(popr, true)
+	data := github_com_gogo_protobuf_proto.MarshalTextString(p)
+	msg := &Metric{}
+	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("seed = %d, %#v !Proto %#v", seed, msg, p)
+	}
+}
+
+func TestMetricProtoCompactText(t *testing.T) {
+	seed := time.Now().UnixNano()
+	popr := math_rand.New(math_rand.NewSource(seed))
+	p := NewPopulatedMetric(popr, true)
+	data := github_com_gogo_protobuf_proto.CompactTextString(p)
+	msg := &Metric{}
+	if err := github_com_gogo_protobuf_proto.UnmarshalText(data, msg); err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("seed = %d, %#v !Proto %#v", seed, msg, p)
+	}
+}
+
+func TestDatapointSize(t *testing.T) {
+	seed := time.Now().UnixNano()
+	popr := math_rand.New(math_rand.NewSource(seed))
+	p := NewPopulatedDatapoint(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -771,10 +874,10 @@ func TestDescribeAutoScalingGroupsInputSize(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsOutputSize(t *testing.T) {
+func TestDimensionSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDescribeAutoScalingGroupsOutput(popr, true)
+	p := NewPopulatedDimension(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -793,10 +896,10 @@ func TestDescribeAutoScalingGroupsOutputSize(t *testing.T) {
 	}
 }
 
-func TestEnabledMetricSize(t *testing.T) {
+func TestDimensionFilterSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedEnabledMetric(popr, true)
+	p := NewPopulatedDimensionFilter(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -815,10 +918,10 @@ func TestEnabledMetricSize(t *testing.T) {
 	}
 }
 
-func TestGroupSize(t *testing.T) {
+func TestGetMetricStatisticsInputSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedGroup(popr, true)
+	p := NewPopulatedGetMetricStatisticsInput(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -837,10 +940,10 @@ func TestGroupSize(t *testing.T) {
 	}
 }
 
-func TestInstanceSize(t *testing.T) {
+func TestGetMetricStatisticsOutputSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedInstance(popr, true)
+	p := NewPopulatedGetMetricStatisticsOutput(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -859,10 +962,10 @@ func TestInstanceSize(t *testing.T) {
 	}
 }
 
-func TestSuspendedProcessSize(t *testing.T) {
+func TestListMetricsInputSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedSuspendedProcess(popr, true)
+	p := NewPopulatedListMetricsInput(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -881,10 +984,10 @@ func TestSuspendedProcessSize(t *testing.T) {
 	}
 }
 
-func TestTagDescriptionSize(t *testing.T) {
+func TestListMetricsOutputSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedTagDescription(popr, true)
+	p := NewPopulatedListMetricsOutput(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	data, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -903,65 +1006,96 @@ func TestTagDescriptionSize(t *testing.T) {
 	}
 }
 
-func TestDescribeAutoScalingGroupsInputGraphQL(t *testing.T) {
+func TestMetricSize(t *testing.T) {
+	seed := time.Now().UnixNano()
+	popr := math_rand.New(math_rand.NewSource(seed))
+	p := NewPopulatedMetric(popr, true)
+	size2 := github_com_gogo_protobuf_proto.Size(p)
+	data, err := github_com_gogo_protobuf_proto.Marshal(p)
+	if err != nil {
+		t.Fatalf("seed = %d, err = %v", seed, err)
+	}
+	size := p.Size()
+	if len(data) != size {
+		t.Errorf("seed = %d, size %v != marshalled size %v", seed, size, len(data))
+	}
+	if size2 != size {
+		t.Errorf("seed = %d, size %v != before marshal proto.Size %v", seed, size, size2)
+	}
+	size3 := github_com_gogo_protobuf_proto.Size(p)
+	if size3 != size {
+		t.Errorf("seed = %d, size %v != after marshal proto.Size %v", seed, size, size3)
+	}
+}
+
+func TestDatapointGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedDescribeAutoScalingGroupsInput(popr, false)
+	_ = NewPopulatedDatapoint(popr, false)
 	objdesc := ""
-	pdesc := GraphQLDescribeAutoScalingGroupsInputType.PrivateDescription
+	pdesc := GraphQLDatapointType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
-func TestDescribeAutoScalingGroupsOutputGraphQL(t *testing.T) {
+func TestDimensionGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedDescribeAutoScalingGroupsOutput(popr, false)
+	_ = NewPopulatedDimension(popr, false)
 	objdesc := ""
-	pdesc := GraphQLDescribeAutoScalingGroupsOutputType.PrivateDescription
+	pdesc := GraphQLDimensionType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
-func TestEnabledMetricGraphQL(t *testing.T) {
+func TestDimensionFilterGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedEnabledMetric(popr, false)
+	_ = NewPopulatedDimensionFilter(popr, false)
 	objdesc := ""
-	pdesc := GraphQLEnabledMetricType.PrivateDescription
+	pdesc := GraphQLDimensionFilterType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
-func TestGroupGraphQL(t *testing.T) {
+func TestGetMetricStatisticsInputGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedGroup(popr, false)
+	_ = NewPopulatedGetMetricStatisticsInput(popr, false)
 	objdesc := ""
-	pdesc := GraphQLGroupType.PrivateDescription
+	pdesc := GraphQLGetMetricStatisticsInputType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
-func TestInstanceGraphQL(t *testing.T) {
+func TestGetMetricStatisticsOutputGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedInstance(popr, false)
+	_ = NewPopulatedGetMetricStatisticsOutput(popr, false)
 	objdesc := ""
-	pdesc := GraphQLInstanceType.PrivateDescription
+	pdesc := GraphQLGetMetricStatisticsOutputType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
-func TestSuspendedProcessGraphQL(t *testing.T) {
+func TestListMetricsInputGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedSuspendedProcess(popr, false)
+	_ = NewPopulatedListMetricsInput(popr, false)
 	objdesc := ""
-	pdesc := GraphQLSuspendedProcessType.PrivateDescription
+	pdesc := GraphQLListMetricsInputType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
-func TestTagDescriptionGraphQL(t *testing.T) {
+func TestListMetricsOutputGraphQL(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedTagDescription(popr, false)
+	_ = NewPopulatedListMetricsOutput(popr, false)
 	objdesc := ""
-	pdesc := GraphQLTagDescriptionType.PrivateDescription
+	pdesc := GraphQLListMetricsOutputType.PrivateDescription
+	if pdesc != objdesc {
+		t.Fatalf("String want %v got %v", objdesc, pdesc)
+	}
+}
+func TestMetricGraphQL(t *testing.T) {
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	_ = NewPopulatedMetric(popr, false)
+	objdesc := ""
+	pdesc := GraphQLMetricType.PrivateDescription
 	if pdesc != objdesc {
 		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
