@@ -146,8 +146,9 @@ func (r *HTTPRequest) doWebSocket() *Response {
 		Code: int32(resp.StatusCode),
 		Metrics: []*schema.Metric{
 			&schema.Metric{
-				Name:  "request_latency_ms",
+				Name:  "request_latency",
 				Value: time.Since(t0).Seconds() * 1000,
+				Unit:  "ms",
 			},
 		},
 		Headers: []*schema.Header{},
@@ -315,8 +316,9 @@ func (r *HTTPRequest) Do() <-chan *Response {
 			Body: string(body),
 			Metrics: []*schema.Metric{
 				&schema.Metric{
-					Name:  "request_latency_ms",
+					Name:  "request_latency",
 					Value: time.Since(t0).Seconds() * 1000,
+					Unit:  "ms",
 				},
 			},
 			Headers: []*schema.Header{},
