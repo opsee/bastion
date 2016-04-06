@@ -3,16 +3,16 @@
 // DO NOT EDIT!
 
 /*
-Package flavortown is a generated protocol buffer package.
+	Package flavortown is a generated protocol buffer package.
 
-It is generated from these files:
-	flavortown.proto
+	It is generated from these files:
+		flavortown.proto
 
-It has these top-level messages:
-	Menu
-	LineItem
-	Lunch
-	Nothing
+	It has these top-level messages:
+		Menu
+		LineItem
+		Lunch
+		Nothing
 */
 package flavortown
 
@@ -29,10 +29,16 @@ import bytes "bytes"
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
 import github_com_opsee_protobuf_plugin_graphql_scalars "github.com/opsee/protobuf/plugin/graphql/scalars"
 
+import io "io"
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.GoGoProtoPackageIsVersion1
 
 // The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors
 type Menu struct {
@@ -40,9 +46,10 @@ type Menu struct {
 	Items []*LineItem `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
 }
 
-func (m *Menu) Reset()         { *m = Menu{} }
-func (m *Menu) String() string { return proto.CompactTextString(m) }
-func (*Menu) ProtoMessage()    {}
+func (m *Menu) Reset()                    { *m = Menu{} }
+func (m *Menu) String() string            { return proto.CompactTextString(m) }
+func (*Menu) ProtoMessage()               {}
+func (*Menu) Descriptor() ([]byte, []int) { return fileDescriptorFlavortown, []int{0} }
 
 func (m *Menu) GetItems() []*LineItem {
 	if m != nil {
@@ -60,29 +67,32 @@ type LineItem struct {
 	//	*LineItem_TastyDessert
 	Dish isLineItem_Dish `protobuf_oneof:"dish"`
 	// The price of the dish in cents
-	PriceCents int32 `protobuf:"varint,2,opt,name=price_cents,proto3" json:"price_cents,omitempty"`
+	PriceCents int32 `protobuf:"varint,2,opt,name=price_cents,json=priceCents,proto3" json:"price_cents,omitempty"`
 	// A timestamp representing when the dish was added to the menu
-	CreatedAt *opsee_types.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
+	CreatedAt *opsee_types.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
 	// A timestamp representing when the dish was updated
-	UpdatedAt *opsee_types.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
+	UpdatedAt *opsee_types.Timestamp `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
 	// A list of nothing really
 	Nothing *Nothing `protobuf:"bytes,5,opt,name=nothing" json:"nothing,omitempty"`
 }
 
-func (m *LineItem) Reset()         { *m = LineItem{} }
-func (m *LineItem) String() string { return proto.CompactTextString(m) }
-func (*LineItem) ProtoMessage()    {}
+func (m *LineItem) Reset()                    { *m = LineItem{} }
+func (m *LineItem) String() string            { return proto.CompactTextString(m) }
+func (*LineItem) ProtoMessage()               {}
+func (*LineItem) Descriptor() ([]byte, []int) { return fileDescriptorFlavortown, []int{1} }
 
 type isLineItem_Dish interface {
 	isLineItem_Dish()
 	Equal(interface{}) bool
+	MarshalTo([]byte) (int, error)
+	Size() int
 }
 
 type LineItem_Lunch struct {
 	Lunch *Lunch `protobuf:"bytes,100,opt,name=lunch,oneof"`
 }
 type LineItem_TastyDessert struct {
-	TastyDessert *flavortown_dessert.Dessert `protobuf:"bytes,101,opt,name=tasty_dessert,oneof"`
+	TastyDessert *flavortown_dessert.Dessert `protobuf:"bytes,101,opt,name=tasty_dessert,json=tastyDessert,oneof"`
 }
 
 func (*LineItem_Lunch) isLineItem_Dish()        {}
@@ -131,8 +141,8 @@ func (m *LineItem) GetNothing() *Nothing {
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*LineItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
-	return _LineItem_OneofMarshaler, _LineItem_OneofUnmarshaler, []interface{}{
+func (*LineItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _LineItem_OneofMarshaler, _LineItem_OneofUnmarshaler, _LineItem_OneofSizer, []interface{}{
 		(*LineItem_Lunch)(nil),
 		(*LineItem_TastyDessert)(nil),
 	}
@@ -183,6 +193,27 @@ func _LineItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffe
 	}
 }
 
+func _LineItem_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*LineItem)
+	// dish
+	switch x := m.Dish.(type) {
+	case *LineItem_Lunch:
+		s := proto.Size(x.Lunch)
+		n += proto.SizeVarint(100<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *LineItem_TastyDessert:
+		s := proto.Size(x.TastyDessert)
+		n += proto.SizeVarint(101<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
 // A delicious lunch dish on the menu
 type Lunch struct {
 	// The name of the dish
@@ -191,9 +222,10 @@ type Lunch struct {
 	Description []byte `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
-func (m *Lunch) Reset()         { *m = Lunch{} }
-func (m *Lunch) String() string { return proto.CompactTextString(m) }
-func (*Lunch) ProtoMessage()    {}
+func (m *Lunch) Reset()                    { *m = Lunch{} }
+func (m *Lunch) String() string            { return proto.CompactTextString(m) }
+func (*Lunch) ProtoMessage()               {}
+func (*Lunch) Descriptor() ([]byte, []int) { return fileDescriptorFlavortown, []int{2} }
 
 // confusion
 type Nothing struct {
@@ -201,9 +233,10 @@ type Nothing struct {
 	Void string `protobuf:"bytes,1,opt,name=void,proto3" json:"void,omitempty"`
 }
 
-func (m *Nothing) Reset()         { *m = Nothing{} }
-func (m *Nothing) String() string { return proto.CompactTextString(m) }
-func (*Nothing) ProtoMessage()    {}
+func (m *Nothing) Reset()                    { *m = Nothing{} }
+func (m *Nothing) String() string            { return proto.CompactTextString(m) }
+func (*Nothing) ProtoMessage()               {}
+func (*Nothing) Descriptor() ([]byte, []int) { return fileDescriptorFlavortown, []int{3} }
 
 func init() {
 	proto.RegisterType((*Menu)(nil), "flavortown.Menu")
@@ -682,6 +715,211 @@ func init() {
 		},
 	})
 }
+func (m *Menu) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Menu) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Items) > 0 {
+		for _, msg := range m.Items {
+			data[i] = 0xa
+			i++
+			i = encodeVarintFlavortown(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
+func (m *LineItem) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *LineItem) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.PriceCents != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(m.PriceCents))
+	}
+	if m.CreatedAt != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(m.CreatedAt.Size()))
+		n1, err := m.CreatedAt.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.UpdatedAt != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(m.UpdatedAt.Size()))
+		n2, err := m.UpdatedAt.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.Nothing != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(m.Nothing.Size()))
+		n3, err := m.Nothing.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
+	}
+	if m.Dish != nil {
+		nn4, err := m.Dish.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += nn4
+	}
+	return i, nil
+}
+
+func (m *LineItem_Lunch) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Lunch != nil {
+		data[i] = 0xa2
+		i++
+		data[i] = 0x6
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(m.Lunch.Size()))
+		n5, err := m.Lunch.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
+	}
+	return i, nil
+}
+func (m *LineItem_TastyDessert) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.TastyDessert != nil {
+		data[i] = 0xaa
+		i++
+		data[i] = 0x6
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(m.TastyDessert.Size()))
+		n6, err := m.TastyDessert.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	return i, nil
+}
+func (m *Lunch) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Lunch) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Description != nil {
+		if len(m.Description) > 0 {
+			data[i] = 0x12
+			i++
+			i = encodeVarintFlavortown(data, i, uint64(len(m.Description)))
+			i += copy(data[i:], m.Description)
+		}
+	}
+	return i, nil
+}
+
+func (m *Nothing) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Nothing) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Void) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(len(m.Void)))
+		i += copy(data[i:], m.Void)
+	}
+	return i, nil
+}
+
+func encodeFixed64Flavortown(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32Flavortown(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintFlavortown(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
+}
 func NewPopulatedMenu(r randyFlavortown, easy bool) *Menu {
 	this := &Menu{}
 	if r.Intn(10) != 0 {
@@ -698,13 +936,6 @@ func NewPopulatedMenu(r randyFlavortown, easy bool) *Menu {
 
 func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 	this := &LineItem{}
-	oneofNumber_Dish := []int32{100, 101}[r.Intn(2)]
-	switch oneofNumber_Dish {
-	case 100:
-		this.Dish = NewPopulatedLineItem_Lunch(r, easy)
-	case 101:
-		this.Dish = NewPopulatedLineItem_TastyDessert(r, easy)
-	}
 	this.PriceCents = int32(r.Int31())
 	if r.Intn(2) == 0 {
 		this.PriceCents *= -1
@@ -717,6 +948,13 @@ func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 	}
 	if r.Intn(10) != 0 {
 		this.Nothing = NewPopulatedNothing(r, easy)
+	}
+	oneofNumber_Dish := []int32{100, 101}[r.Intn(2)]
+	switch oneofNumber_Dish {
+	case 100:
+		this.Dish = NewPopulatedLineItem_Lunch(r, easy)
+	case 101:
+		this.Dish = NewPopulatedLineItem_TastyDessert(r, easy)
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -825,4 +1063,734 @@ func encodeVarintPopulateFlavortown(data []byte, v uint64) []byte {
 	}
 	data = append(data, uint8(v))
 	return data
+}
+func (m *Menu) Size() (n int) {
+	var l int
+	_ = l
+	if len(m.Items) > 0 {
+		for _, e := range m.Items {
+			l = e.Size()
+			n += 1 + l + sovFlavortown(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *LineItem) Size() (n int) {
+	var l int
+	_ = l
+	if m.PriceCents != 0 {
+		n += 1 + sovFlavortown(uint64(m.PriceCents))
+	}
+	if m.CreatedAt != nil {
+		l = m.CreatedAt.Size()
+		n += 1 + l + sovFlavortown(uint64(l))
+	}
+	if m.UpdatedAt != nil {
+		l = m.UpdatedAt.Size()
+		n += 1 + l + sovFlavortown(uint64(l))
+	}
+	if m.Nothing != nil {
+		l = m.Nothing.Size()
+		n += 1 + l + sovFlavortown(uint64(l))
+	}
+	if m.Dish != nil {
+		n += m.Dish.Size()
+	}
+	return n
+}
+
+func (m *LineItem_Lunch) Size() (n int) {
+	var l int
+	_ = l
+	if m.Lunch != nil {
+		l = m.Lunch.Size()
+		n += 2 + l + sovFlavortown(uint64(l))
+	}
+	return n
+}
+func (m *LineItem_TastyDessert) Size() (n int) {
+	var l int
+	_ = l
+	if m.TastyDessert != nil {
+		l = m.TastyDessert.Size()
+		n += 2 + l + sovFlavortown(uint64(l))
+	}
+	return n
+}
+func (m *Lunch) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovFlavortown(uint64(l))
+	}
+	if m.Description != nil {
+		l = len(m.Description)
+		if l > 0 {
+			n += 1 + l + sovFlavortown(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *Nothing) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Void)
+	if l > 0 {
+		n += 1 + l + sovFlavortown(uint64(l))
+	}
+	return n
+}
+
+func sovFlavortown(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+func sozFlavortown(x uint64) (n int) {
+	return sovFlavortown(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *Menu) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowFlavortown
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Menu: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Menu: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Items", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Items = append(m.Items, &LineItem{})
+			if err := m.Items[len(m.Items)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipFlavortown(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *LineItem) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowFlavortown
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LineItem: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LineItem: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PriceCents", wireType)
+			}
+			m.PriceCents = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.PriceCents |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CreatedAt == nil {
+				m.CreatedAt = &opsee_types.Timestamp{}
+			}
+			if err := m.CreatedAt.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.UpdatedAt == nil {
+				m.UpdatedAt = &opsee_types.Timestamp{}
+			}
+			if err := m.UpdatedAt.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Nothing", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Nothing == nil {
+				m.Nothing = &Nothing{}
+			}
+			if err := m.Nothing.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 100:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Lunch", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &Lunch{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Dish = &LineItem_Lunch{v}
+			iNdEx = postIndex
+		case 101:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TastyDessert", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &flavortown_dessert.Dessert{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Dish = &LineItem_TastyDessert{v}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipFlavortown(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Lunch) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowFlavortown
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Lunch: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Lunch: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = append(m.Description[:0], data[iNdEx:postIndex]...)
+			if m.Description == nil {
+				m.Description = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipFlavortown(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Nothing) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowFlavortown
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Nothing: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Nothing: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Void", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Void = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipFlavortown(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthFlavortown
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipFlavortown(data []byte) (n int, err error) {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowFlavortown
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if data[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+			return iNdEx, nil
+		case 1:
+			iNdEx += 8
+			return iNdEx, nil
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowFlavortown
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			iNdEx += length
+			if length < 0 {
+				return 0, ErrInvalidLengthFlavortown
+			}
+			return iNdEx, nil
+		case 3:
+			for {
+				var innerWire uint64
+				var start int = iNdEx
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return 0, ErrIntOverflowFlavortown
+					}
+					if iNdEx >= l {
+						return 0, io.ErrUnexpectedEOF
+					}
+					b := data[iNdEx]
+					iNdEx++
+					innerWire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				innerWireType := int(innerWire & 0x7)
+				if innerWireType == 4 {
+					break
+				}
+				next, err := skipFlavortown(data[start:])
+				if err != nil {
+					return 0, err
+				}
+				iNdEx = start + next
+			}
+			return iNdEx, nil
+		case 4:
+			return iNdEx, nil
+		case 5:
+			iNdEx += 4
+			return iNdEx, nil
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+	}
+	panic("unreachable")
+}
+
+var (
+	ErrInvalidLengthFlavortown = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowFlavortown   = fmt.Errorf("proto: integer overflow")
+)
+
+var fileDescriptorFlavortown = []byte{
+	// 422 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x8c, 0x91, 0xcf, 0x8a, 0xd4, 0x40,
+	0x10, 0xc6, 0xcd, 0x6e, 0xb2, 0xeb, 0x56, 0x56, 0xd0, 0x56, 0x24, 0xac, 0xba, 0x3b, 0xe4, 0x34,
+	0x0a, 0x93, 0xc8, 0x88, 0x20, 0x82, 0x07, 0x47, 0x0f, 0x0a, 0xea, 0x21, 0x78, 0x1f, 0x32, 0x49,
+	0x4d, 0xd2, 0x30, 0xe9, 0x0e, 0xe9, 0xca, 0xe8, 0xbc, 0x8e, 0x27, 0x1f, 0xc1, 0x9b, 0x1e, 0x3d,
+	0xfa, 0x08, 0xea, 0x53, 0x78, 0xb4, 0xd3, 0x9d, 0x30, 0xf1, 0xa0, 0x78, 0x28, 0xba, 0xfe, 0x7c,
+	0xbf, 0x4a, 0xf7, 0x17, 0xb8, 0xba, 0xde, 0xa4, 0x5b, 0xd9, 0x90, 0x7c, 0x27, 0xa2, 0xba, 0x91,
+	0x24, 0x19, 0xec, 0x3b, 0x67, 0x8f, 0x0b, 0x4e, 0x65, 0xbb, 0x8a, 0x32, 0x59, 0xc5, 0xb2, 0x56,
+	0x88, 0xb1, 0xd1, 0xac, 0xda, 0xb5, 0x2d, 0x4d, 0x15, 0xd3, 0xae, 0x46, 0x15, 0x13, 0xaf, 0x50,
+	0x51, 0x5a, 0xd5, 0x76, 0xcf, 0xd9, 0x6c, 0xc4, 0x16, 0xb2, 0x90, 0x7b, 0xb4, 0xab, 0x2c, 0xd9,
+	0x65, 0xbd, 0xfc, 0xfe, 0x7f, 0x7d, 0xca, 0xa4, 0x3d, 0xf1, 0xe8, 0xef, 0x04, 0xbe, 0xd7, 0xf7,
+	0xd8, 0xe8, 0x4b, 0xe5, 0xa8, 0x14, 0x36, 0x34, 0x9c, 0x96, 0x0c, 0xe7, 0xe0, 0xbe, 0x46, 0xd1,
+	0xb2, 0x7b, 0xe0, 0x71, 0xc2, 0x4a, 0x05, 0xce, 0xe4, 0x70, 0xea, 0xcf, 0x6f, 0x44, 0x23, 0x33,
+	0x5e, 0x71, 0x81, 0x2f, 0xf5, 0x30, 0xb1, 0x92, 0xf0, 0xf3, 0x01, 0x5c, 0x1e, 0x7a, 0xec, 0x02,
+	0xfc, 0xba, 0xe1, 0x19, 0x2e, 0x33, 0x14, 0xa4, 0x82, 0x83, 0x89, 0x33, 0xf5, 0x12, 0x30, 0xad,
+	0x67, 0x5d, 0x87, 0x3d, 0x04, 0xc8, 0x1a, 0x4c, 0x09, 0xf3, 0x65, 0x4a, 0xc1, 0xa1, 0x9e, 0xfb,
+	0xf3, 0x9b, 0x91, 0xbd, 0xbd, 0xb1, 0x2b, 0x7a, 0x3b, 0xd8, 0x95, 0x9c, 0xf4, 0xca, 0xa7, 0xd4,
+	0x61, 0x6d, 0x9d, 0x0f, 0x98, 0xfb, 0x6f, 0xac, 0x57, 0x6a, 0x6c, 0x06, 0xc7, 0x42, 0x52, 0xc9,
+	0x45, 0x11, 0x78, 0x86, 0xb9, 0x3e, 0x7e, 0xc9, 0x1b, 0x3b, 0x4a, 0x06, 0x0d, 0xbb, 0x0b, 0xde,
+	0xa6, 0x15, 0x59, 0x19, 0xe4, 0x46, 0x7c, 0xed, 0x8f, 0x67, 0x77, 0x83, 0x17, 0x97, 0x12, 0xab,
+	0x60, 0x0b, 0xb8, 0x42, 0xa9, 0xa2, 0xdd, 0xb2, 0x37, 0x30, 0x40, 0x83, 0xdc, 0x1a, 0x23, 0x83,
+	0xb7, 0xcf, 0xed, 0xa9, 0xe1, 0x53, 0xc3, 0xf4, 0xf5, 0xe2, 0x08, 0xdc, 0x9c, 0xab, 0x32, 0x7c,
+	0x02, 0x9e, 0xd9, 0xce, 0x18, 0xb8, 0x22, 0xad, 0x50, 0xbb, 0xee, 0x4c, 0x4f, 0x12, 0x93, 0xb3,
+	0x09, 0xf8, 0x7a, 0x4f, 0xd6, 0xf0, 0x9a, 0xb8, 0x14, 0xc6, 0xd1, 0xd3, 0x64, 0xdc, 0x0a, 0xef,
+	0xc0, 0x71, 0xff, 0x92, 0x6e, 0xc1, 0x56, 0xf2, 0x7c, 0x58, 0xd0, 0xe5, 0x8b, 0xdb, 0xbf, 0x7e,
+	0x9c, 0x3b, 0x1f, 0x7f, 0x9e, 0x3b, 0x9f, 0x74, 0x7c, 0xd5, 0xf1, 0x4d, 0xc7, 0x77, 0x1d, 0x5f,
+	0x3e, 0x5c, 0x38, 0xab, 0x23, 0xf3, 0xe3, 0x1f, 0xfc, 0x0e, 0x00, 0x00, 0xff, 0xff, 0x5b, 0xca,
+	0x2a, 0x8d, 0xef, 0x02, 0x00, 0x00,
 }

@@ -334,7 +334,7 @@
 		{
 			"importpath": "github.com/opsee/protobuf",
 			"repository": "https://github.com/opsee/protobuf",
-			"revision": "1776823a8fe8856c8e3a75c9d4f846c9008c6935",
+			"revision": "490f167f615b104554f0094904c054361a95d84b",
 			"branch": "master"
 		},
 		{
