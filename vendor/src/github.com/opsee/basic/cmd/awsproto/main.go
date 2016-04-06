@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
@@ -36,22 +37,37 @@ func (p *protonamer) ConstName(name string) string {
 var (
 	topTypes = map[string][]interface{}{
 		"ec2": []interface{}{
-			ec2.Instance{},
-			ec2.SecurityGroup{},
-			ec2.Vpc{},
-			ec2.Subnet{},
+			ec2.DescribeInstancesInput{},
+			ec2.DescribeInstancesOutput{},
+			ec2.DescribeSecurityGroupsInput{},
+			ec2.DescribeSecurityGroupsOutput{},
+			ec2.DescribeVpcsInput{},
+			ec2.DescribeVpcsOutput{},
+			ec2.DescribeSubnetsInput{},
+			ec2.DescribeSubnetsOutput{},
+			ec2.DescribeRouteTablesInput{},
+			ec2.DescribeRouteTablesOutput{},
 		},
 		"elb": []interface{}{
-			elb.LoadBalancerDescription{},
+			elb.DescribeLoadBalancersInput{},
+			elb.DescribeLoadBalancersOutput{},
 		},
 		"autoscaling": []interface{}{
-			autoscaling.Group{},
+			autoscaling.DescribeAutoScalingGroupsInput{},
+			autoscaling.DescribeAutoScalingGroupsOutput{},
 		},
 		"rds": []interface{}{
-			rds.DBInstance{},
+			rds.DescribeDBInstancesInput{},
+			rds.DescribeDBInstancesOutput{},
 		},
 		"credentials": []interface{}{
 			credentials.Value{},
+		},
+		"cloudwatch": []interface{}{
+			cloudwatch.ListMetricsInput{},
+			cloudwatch.ListMetricsOutput{},
+			cloudwatch.GetMetricStatisticsInput{},
+			cloudwatch.GetMetricStatisticsOutput{},
 		},
 	}
 

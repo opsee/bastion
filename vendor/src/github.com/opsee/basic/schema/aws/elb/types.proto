@@ -18,6 +18,17 @@ message BackendServerDescription {
   repeated string PolicyNames = 3;
 }
 
+message DescribeLoadBalancersInput {
+  repeated string LoadBalancerNames = 2;
+  optional string Marker = 3;
+  optional sint64 PageSize = 4;
+}
+
+message DescribeLoadBalancersOutput {
+  repeated LoadBalancerDescription LoadBalancerDescriptions = 2;
+  optional string NextMarker = 3;
+}
+
 message HealthCheck {
   optional sint64 HealthyThreshold = 2;
   optional sint64 Interval = 3;
