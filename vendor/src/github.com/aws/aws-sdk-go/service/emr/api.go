@@ -8,6 +8,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/protocol"
+	"github.com/aws/aws-sdk-go/private/protocol/jsonrpc"
 )
 
 const opAddInstanceGroups = "AddInstanceGroups"
@@ -149,6 +151,9 @@ const opDescribeJobFlows = "DescribeJobFlows"
 
 // DescribeJobFlowsRequest generates a request for the DescribeJobFlows operation.
 func (c *EMR) DescribeJobFlowsRequest(input *DescribeJobFlowsInput) (req *request.Request, output *DescribeJobFlowsOutput) {
+	if c.Client.Config.Logger != nil {
+		c.Client.Config.Logger.Log("This operation, DescribeJobFlows, has been deprecated")
+	}
 	op := &request.Operation{
 		Name:       opDescribeJobFlows,
 		HTTPMethod: "POST",
@@ -444,6 +449,8 @@ func (c *EMR) ModifyInstanceGroupsRequest(input *ModifyInstanceGroupsInput) (req
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &ModifyInstanceGroupsOutput{}
 	req.Data = output
 	return
@@ -555,6 +562,8 @@ func (c *EMR) SetTerminationProtectionRequest(input *SetTerminationProtectionInp
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &SetTerminationProtectionOutput{}
 	req.Data = output
 	return
@@ -598,6 +607,8 @@ func (c *EMR) SetVisibleToAllUsersRequest(input *SetVisibleToAllUsersInput) (req
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &SetVisibleToAllUsersOutput{}
 	req.Data = output
 	return
@@ -630,6 +641,8 @@ func (c *EMR) TerminateJobFlowsRequest(input *TerminateJobFlowsInput) (req *requ
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &TerminateJobFlowsOutput{}
 	req.Data = output
 	return
@@ -1212,6 +1225,92 @@ func (s DescribeStepOutput) GoString() string {
 	return s.String()
 }
 
+// Configuration of requested EBS block device associated with the instance
+// group.
+type EbsBlockDevice struct {
+	_ struct{} `type:"structure"`
+
+	// The device name that is exposed to the instance, such as /dev/sdh.
+	Device *string `type:"string"`
+
+	// EBS volume specifications such as volume type, IOPS, and size(GiB) that will
+	// be requested for the EBS volume attached to an EC2 instance in the cluster.
+	VolumeSpecification *VolumeSpecification `type:"structure"`
+}
+
+// String returns the string representation
+func (s EbsBlockDevice) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EbsBlockDevice) GoString() string {
+	return s.String()
+}
+
+// Configuration of requested EBS block device associated with the instance
+// group with count of volumes that will be associated to every instance.
+type EbsBlockDeviceConfig struct {
+	_ struct{} `type:"structure"`
+
+	// EBS volume specifications such as volume type, IOPS, and size(GiB) that will
+	// be requested for the EBS volume attached to an EC2 instance in the cluster.
+	VolumeSpecification *VolumeSpecification `type:"structure" required:"true"`
+
+	// Number of EBS volumes with specific volume configuration, that will be associated
+	// with every instance in the instance group
+	VolumesPerInstance *int64 `type:"integer"`
+}
+
+// String returns the string representation
+func (s EbsBlockDeviceConfig) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EbsBlockDeviceConfig) GoString() string {
+	return s.String()
+}
+
+type EbsConfiguration struct {
+	_ struct{} `type:"structure"`
+
+	EbsBlockDeviceConfigs []*EbsBlockDeviceConfig `type:"list"`
+
+	EbsOptimized *bool `type:"boolean"`
+}
+
+// String returns the string representation
+func (s EbsConfiguration) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EbsConfiguration) GoString() string {
+	return s.String()
+}
+
+// EBS block device that's attached to an EC2 instance.
+type EbsVolume struct {
+	_ struct{} `type:"structure"`
+
+	// The device name that is exposed to the instance, such as /dev/sdh.
+	Device *string `type:"string"`
+
+	// The volume identifier of the EBS volume.
+	VolumeId *string `type:"string"`
+}
+
+// String returns the string representation
+func (s EbsVolume) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EbsVolume) GoString() string {
+	return s.String()
+}
+
 // Provides information about the EC2 instances in a cluster grouped by category.
 // For example, key name, subnet ID, IAM instance profile, and so on.
 type Ec2InstanceAttributes struct {
@@ -1240,17 +1339,19 @@ type Ec2InstanceAttributes struct {
 	// type for nodes of a job flow launched in a VPC.
 	Ec2SubnetId *string `type:"string"`
 
-	// The identifier of the Amazon EC2 security group (managed by Amazon Elastic
-	// MapReduce) for the master node.
+	// The identifier of the Amazon EC2 security group for the master node.
 	EmrManagedMasterSecurityGroup *string `type:"string"`
 
-	// The identifier of the Amazon EC2 security group (managed by Amazon Elastic
-	// MapReduce) for the slave nodes.
+	// The identifier of the Amazon EC2 security group for the slave nodes.
 	EmrManagedSlaveSecurityGroup *string `type:"string"`
 
 	// The IAM role that was specified when the job flow was launched. The EC2 instances
 	// of the job flow assume this role.
 	IamInstanceProfile *string `type:"string"`
+
+	// The identifier of the Amazon EC2 security group for the Amazon EMR service
+	// to access clusters in VPC private subnets.
+	ServiceAccessSecurityGroup *string `type:"string"`
 }
 
 // String returns the string representation
@@ -1331,11 +1432,17 @@ func (s HadoopStepConfig) GoString() string {
 type Instance struct {
 	_ struct{} `type:"structure"`
 
+	// The list of EBS volumes that are attached to this instance.
+	EbsVolumes []*EbsVolume `type:"list"`
+
 	// The unique identifier of the instance in Amazon EC2.
 	Ec2InstanceId *string `type:"string"`
 
 	// The unique identifier for the instance in Amazon EMR.
 	Id *string `type:"string"`
+
+	// The identifier of the instance group to which this instance belongs.
+	InstanceGroupId *string `type:"string"`
 
 	// The private DNS name of the instance.
 	PrivateDnsName *string `type:"string"`
@@ -1378,6 +1485,14 @@ type InstanceGroup struct {
 	// can specify a separate configuration for each instance group (master, core,
 	// and task).
 	Configurations []*Configuration `type:"list"`
+
+	// The EBS block devices that are mapped to this instance group.
+	EbsBlockDevices []*EbsBlockDevice `type:"list"`
+
+	// If the instance group is EBS-optimized. An Amazon EBS–optimized instance
+	// uses an optimized configuration stack and provides additional, dedicated
+	// capacity for Amazon EBS I/O.
+	EbsOptimized *bool `type:"boolean"`
 
 	// The identifier of the instance group.
 	Id *string `type:"string"`
@@ -1429,6 +1544,10 @@ type InstanceGroupConfig struct {
 	// can specify a separate configuration for each instance group (master, core,
 	// and task).
 	Configurations []*Configuration `type:"list"`
+
+	// EBS configurations that will be attached to each Amazon EC2 instance in the
+	// instance group.
+	EbsConfiguration *EbsConfiguration `type:"structure"`
 
 	// Target number of instances for the instance group.
 	InstanceCount *int64 `type:"integer" required:"true"`
@@ -1803,12 +1922,10 @@ type JobFlowInstancesConfig struct {
 	// type for nodes of a job flow launched in a Amazon VPC.
 	Ec2SubnetId *string `type:"string"`
 
-	// The identifier of the Amazon EC2 security group (managed by Amazon ElasticMapReduce)
-	// for the master node.
+	// The identifier of the Amazon EC2 security group for the master node.
 	EmrManagedMasterSecurityGroup *string `type:"string"`
 
-	// The identifier of the Amazon EC2 security group (managed by Amazon ElasticMapReduce)
-	// for the slave nodes.
+	// The identifier of the Amazon EC2 security group for the slave nodes.
 	EmrManagedSlaveSecurityGroup *string `type:"string"`
 
 	// The Hadoop version for the job flow. Valid inputs are "0.18" (deprecated),
@@ -1833,6 +1950,10 @@ type JobFlowInstancesConfig struct {
 
 	// The Availability Zone the job flow will run in.
 	Placement *PlacementType `type:"structure"`
+
+	// The identifier of the Amazon EC2 security group for the Amazon EMR service
+	// to access clusters in VPC private subnets.
+	ServiceAccessSecurityGroup *string `type:"string"`
 
 	// The EC2 instance type of the slave nodes.
 	SlaveInstanceType *string `min:"1" type:"string"`
@@ -2298,9 +2419,10 @@ type RunJobFlowInput struct {
 	// run the job flow.
 	Instances *JobFlowInstancesConfig `type:"structure" required:"true"`
 
-	// An IAM role for the job flow. The EC2 instances of the job flow assume this
-	// role. The default role is EMRJobflowDefault. In order to use the default
-	// role, you must have already created it using the CLI.
+	// Also called instance profile and EC2 role. An IAM role for an EMR cluster.
+	// The EC2 instances of the cluster assume this role. The default role is EMR_EC2_DefaultRole.
+	// In order to use the default role, you must have already created it using
+	// the CLI or console.
 	JobFlowRole *string `type:"string"`
 
 	// The location in Amazon S3 to write the log files of the job flow. If a value
@@ -2780,6 +2902,32 @@ func (s TerminateJobFlowsOutput) String() string {
 
 // GoString returns the string representation
 func (s TerminateJobFlowsOutput) GoString() string {
+	return s.String()
+}
+
+// EBS volume specifications such as volume type, IOPS, and size(GiB) that will
+// be requested for the EBS volume attached to an EC2 instance in the cluster.
+type VolumeSpecification struct {
+	_ struct{} `type:"structure"`
+
+	// The number of I/O operations per second (IOPS) that the volume supports.
+	Iops *int64 `type:"integer"`
+
+	// The volume size, in gibibytes (GiB). This can be a number from 1 – 1024.
+	// If the volume type is EBS-optimized, the minimum value is 10.
+	SizeInGB *int64 `type:"integer" required:"true"`
+
+	// The volume type. Volume types supported are gp2, io1, standard.
+	VolumeType *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s VolumeSpecification) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s VolumeSpecification) GoString() string {
 	return s.String()
 }
 

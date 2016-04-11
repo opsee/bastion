@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/autoscaling"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
@@ -24,6 +25,7 @@ type AWSResolver struct {
 	ec2Client *ec2.EC2
 	elbClient *elb.ELB
 	rdsClient *rds.RDS
+	asgClient *autoscaling.AutoScaling
 	VpcId     string
 }
 
@@ -42,6 +44,7 @@ func NewResolver(cfg *config.Config) Resolver {
 		ec2Client: ec2.New(sess),
 		elbClient: elb.New(sess),
 		rdsClient: rds.New(sess),
+		asgClient: autoscaling.New(sess),
 		VpcId:     metaData.VpcId,
 	}
 
@@ -49,21 +52,43 @@ func NewResolver(cfg *config.Config) Resolver {
 }
 
 func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*schema.Target, error) {
-	var grs []*string = []*string{aws.String(sgId)}
-	var reservations []*ec2.Reservation
-
-	filters := []*ec2.Filter{
-		{
-			Name:   aws.String("vpc-id"),
-			Values: []*string{aws.String(this.VpcId)},
-		},
-		{
-			Name:   aws.String("instance.group-id"),
-			Values: grs,
+	input := &ec2.DescribeInstancesInput{
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("vpc-id"),
+				Values: []*string{aws.String(this.VpcId)},
+			},
+			{
+				Name:   aws.String("instance.group-id"),
+				Values: []*string{aws.String(sgId)},
+			},
 		},
 	}
 
-	err := this.ec2Client.DescribeInstancesPages(&ec2.DescribeInstancesInput{Filters: filters}, func(resp *ec2.DescribeInstancesOutput, lastPage bool) bool {
+	return this.resolveEC2InstancesWithInput(input)
+}
+
+func (this *AWSResolver) resolveEC2Instances(instanceIds ...string) ([]*schema.Target, error) {
+	ids := []*string{}
+	for _, id := range instanceIds {
+		ids = append(ids, aws.String(id))
+	}
+	input := &ec2.DescribeInstancesInput{
+		Filters: []*ec2.Filter{
+			&ec2.Filter{
+				Name:   aws.String("vpc-id"),
+				Values: []*string{aws.String(this.VpcId)},
+			},
+		},
+		InstanceIds: ids,
+	}
+
+	return this.resolveEC2InstancesWithInput(input)
+}
+
+func (this *AWSResolver) resolveEC2InstancesWithInput(input *ec2.DescribeInstancesInput) ([]*schema.Target, error) {
+	var reservations []*ec2.Reservation
+	err := this.ec2Client.DescribeInstancesPages(input, func(resp *ec2.DescribeInstancesOutput, lastPage bool) bool {
 		for _, res := range resp.Reservations {
 			reservations = append(reservations, res)
 		}
@@ -78,7 +103,6 @@ func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*schema.Target, er
 	}
 
 	log.Debug("reservations: %v", reservations)
-
 	var targets []*schema.Target
 	for _, reservation := range reservations {
 		for _, instance := range reservation.Instances {
@@ -90,6 +114,25 @@ func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*schema.Target, er
 		}
 	}
 	return targets, nil
+}
+
+func (this *AWSResolver) resolveASG(asgName string) ([]*schema.Target, error) {
+	resp, err := this.asgClient.DescribeAutoScalingGroups(&autoscaling.DescribeAutoScalingGroupsInput{
+		AutoScalingGroupNames: []*string{aws.String(asgName)},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	instanceIds := []string{}
+	for _, gr := range resp.AutoScalingGroups {
+		for _, instance := range gr.Instances {
+			if aws.StringValue(instance.LifecycleState) == autoscaling.LifecycleStateInService {
+				instanceIds = append(instanceIds, aws.StringValue(instance.InstanceId))
+			}
+		}
+	}
+	return this.resolveEC2Instances(instanceIds...)
 }
 
 func (this *AWSResolver) resolveELB(elbId string) ([]*schema.Target, error) {
@@ -217,6 +260,14 @@ func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error
 		}
 		if target.Id != "" {
 			return this.resolveELB(target.Id)
+		}
+		return nil, fmt.Errorf("Invalid target: %s", target.String())
+	case "asg":
+		if target.Name != "" {
+			return this.resolveASG(target.Name)
+		}
+		if target.Id != "" {
+			return this.resolveASG(target.Id)
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
