@@ -17,8 +17,29 @@
 		{
 			"importpath": "github.com/aws/aws-sdk-go",
 			"repository": "https://github.com/aws/aws-sdk-go",
-			"revision": "999b1591218c36d5050d1ba7266eba956e65965f",
+			"revision": "b743ca27e4b9237d7e2911d6dba2f039c4a3ad0f",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/aws/aws-sdk-go/private",
+			"repository": "https://github.com/aws/aws-sdk-go",
+			"revision": "b743ca27e4b9237d7e2911d6dba2f039c4a3ad0f",
+			"branch": "master",
+			"path": "/private"
+		},
+		{
+			"importpath": "github.com/aws/aws-sdk-go/private/protocol",
+			"repository": "https://github.com/aws/aws-sdk-go",
+			"revision": "b743ca27e4b9237d7e2911d6dba2f039c4a3ad0f",
+			"branch": "master",
+			"path": "/private/protocol"
+		},
+		{
+			"importpath": "github.com/aws/aws-sdk-go/service/autoscaling",
+			"repository": "https://github.com/aws/aws-sdk-go",
+			"revision": "09a34f2d32ca4df07da73ccb303bee6790076d69",
+			"branch": "master",
+			"path": "/service/autoscaling"
 		},
 		{
 			"importpath": "github.com/bugsnag/bugsnag-go",
@@ -412,13 +433,6 @@
 			"revision": "5dc8cb4b8a8eb076cbb5a06bc3b8682c15bdbbd3",
 			"branch": "master",
 			"path": "/bcrypt"
-		},
-		{
-			"importpath": "golang.org/x/crypto/blowfish",
-			"repository": "https://go.googlesource.com/crypto",
-			"revision": "5dc8cb4b8a8eb076cbb5a06bc3b8682c15bdbbd3",
-			"branch": "master",
-			"path": "/blowfish"
 		},
 		{
 			"importpath": "golang.org/x/crypto/ssh/terminal",

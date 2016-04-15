@@ -23,6 +23,8 @@ func buildSigner(serviceName string, region string, signTime time.Time, expireTi
 	req.Header.Add("Content-Type", "application/x-amz-json-1.0")
 	req.Header.Add("Content-Length", string(len(body)))
 	req.Header.Add("X-Amz-Meta-Other-Header", "some-value=!@#$%^&* (+)")
+	req.Header.Add("X-Amz-Meta-Other-Header_With_Underscore", "some-value=!@#$%^&* (+)")
+	req.Header.Add("X-amz-Meta-Other-Header_With_Underscore", "some-value=!@#$%^&* (+)")
 
 	return signer{
 		Request:     req,
@@ -54,15 +56,18 @@ func TestPresignRequest(t *testing.T) {
 	signer.sign()
 
 	expectedDate := "19700101T000000Z"
-	expectedHeaders := "host;x-amz-meta-other-header;x-amz-target"
-	expectedSig := "5eeedebf6f995145ce56daa02902d10485246d3defb34f97b973c1f40ab82d36"
+	expectedHeaders := "content-type;host;x-amz-meta-other-header;x-amz-meta-other-header_with_underscore"
+	expectedSig := "59c79b83112a55d188a0708cdfd776f19e4265e700990c60798a05d8923a1300"
 	expectedCred := "AKID/19700101/us-east-1/dynamodb/aws4_request"
+	expectedTarget := "prefix.Operation"
 
 	q := signer.Request.URL.Query()
 	assert.Equal(t, expectedSig, q.Get("X-Amz-Signature"))
 	assert.Equal(t, expectedCred, q.Get("X-Amz-Credential"))
 	assert.Equal(t, expectedHeaders, q.Get("X-Amz-SignedHeaders"))
 	assert.Equal(t, expectedDate, q.Get("X-Amz-Date"))
+	assert.Empty(t, q.Get("X-Amz-Meta-Other-Header"))
+	assert.Equal(t, expectedTarget, q.Get("X-Amz-Target"))
 }
 
 func TestSignRequest(t *testing.T) {
@@ -70,7 +75,7 @@ func TestSignRequest(t *testing.T) {
 	signer.sign()
 
 	expectedDate := "19700101T000000Z"
-	expectedSig := "AWS4-HMAC-SHA256 Credential=AKID/19700101/us-east-1/dynamodb/aws4_request, SignedHeaders=host;x-amz-date;x-amz-meta-other-header;x-amz-security-token;x-amz-target, Signature=69ada33fec48180dab153576e4dd80c4e04124f80dda3eccfed8a67c2b91ed5e"
+	expectedSig := "AWS4-HMAC-SHA256 Credential=AKID/19700101/us-east-1/dynamodb/aws4_request, SignedHeaders=content-type;host;x-amz-date;x-amz-meta-other-header;x-amz-meta-other-header_with_underscore;x-amz-security-token;x-amz-target, Signature=47f95059b6f4c3fb5043545281560b3366961d3014757f8aac7480953c344509"
 
 	q := signer.Request.Header
 	assert.Equal(t, expectedSig, q.Get("Authorization"))
@@ -201,11 +206,31 @@ func TestResignRequestExpiredCreds(t *testing.T) {
 	)
 	Sign(r)
 	querySig := r.HTTPRequest.Header.Get("Authorization")
+	var origSignedHeaders string
+	for _, p := range strings.Split(querySig, ", ") {
+		if strings.HasPrefix(p, "SignedHeaders=") {
+			origSignedHeaders = p[len("SignedHeaders="):]
+			break
+		}
+	}
+	assert.NotEmpty(t, origSignedHeaders)
+	assert.NotContains(t, origSignedHeaders, "authorization")
 
 	creds.Expire()
 
 	Sign(r)
-	assert.NotEqual(t, querySig, r.HTTPRequest.Header.Get("Authorization"))
+	updatedQuerySig := r.HTTPRequest.Header.Get("Authorization")
+	assert.NotEqual(t, querySig, updatedQuerySig)
+
+	var updatedSignedHeaders string
+	for _, p := range strings.Split(updatedQuerySig, ", ") {
+		if strings.HasPrefix(p, "SignedHeaders=") {
+			updatedSignedHeaders = p[len("SignedHeaders="):]
+			break
+		}
+	}
+	assert.NotEmpty(t, updatedSignedHeaders)
+	assert.NotContains(t, updatedQuerySig, "authorization")
 }
 
 func TestPreResignRequestExpiredCreds(t *testing.T) {
@@ -229,12 +254,17 @@ func TestPreResignRequestExpiredCreds(t *testing.T) {
 
 	Sign(r)
 	querySig := r.HTTPRequest.URL.Query().Get("X-Amz-Signature")
+	signedHeaders := r.HTTPRequest.URL.Query().Get("X-Amz-SignedHeaders")
+	assert.NotEmpty(t, signedHeaders)
 
 	creds.Expire()
 	r.Time = time.Now().Add(time.Hour * 48)
 
 	Sign(r)
 	assert.NotEqual(t, querySig, r.HTTPRequest.URL.Query().Get("X-Amz-Signature"))
+	resignedHeaders := r.HTTPRequest.URL.Query().Get("X-Amz-SignedHeaders")
+	assert.Equal(t, signedHeaders, resignedHeaders)
+	assert.NotContains(t, signedHeaders, "x-amz-signedHeaders")
 }
 
 func BenchmarkPresignRequest(b *testing.B) {

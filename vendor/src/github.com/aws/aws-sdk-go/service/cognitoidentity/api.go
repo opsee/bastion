@@ -8,6 +8,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/protocol"
+	"github.com/aws/aws-sdk-go/private/protocol/jsonrpc"
 )
 
 const opCreateIdentityPool = "CreateIdentityPool"
@@ -32,7 +34,10 @@ func (c *CognitoIdentity) CreateIdentityPoolRequest(input *CreateIdentityPoolInp
 
 // Creates a new identity pool. The identity pool is a store of user identity
 // information that is specific to your AWS account. The limit on identity pools
-// is 60 per account. You must use AWS Developer credentials to call this API.
+// is 60 per account. The keys for SupportedLoginProviders are as follows:
+// Facebook: graph.facebook.com  Google: accounts.google.com  Amazon: www.amazon.com
+//  Twitter: api.twitter.com  Digits: www.digits.com   You must use AWS Developer
+// credentials to call this API.
 func (c *CognitoIdentity) CreateIdentityPool(input *CreateIdentityPoolInput) (*IdentityPool, error) {
 	req, out := c.CreateIdentityPoolRequest(input)
 	err := req.Send()
@@ -84,6 +89,8 @@ func (c *CognitoIdentity) DeleteIdentityPoolRequest(input *DeleteIdentityPoolInp
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &DeleteIdentityPoolOutput{}
 	req.Data = output
 	return
@@ -179,10 +186,10 @@ func (c *CognitoIdentity) GetCredentialsForIdentityRequest(input *GetCredentials
 	return
 }
 
-// Returns credentials for the the provided identity ID. Any provided logins
-// will be validated against supported login providers. If the token is for
-// cognito-identity.amazonaws.com, it will be passed through to AWS Security
-// Token Service with the appropriate role for the token.
+// Returns credentials for the provided identity ID. Any provided logins will
+// be validated against supported login providers. If the token is for cognito-identity.amazonaws.com,
+// it will be passed through to AWS Security Token Service with the appropriate
+// role for the token.
 //
 // This is a public API. You do not need any credentials to call this API.
 func (c *CognitoIdentity) GetCredentialsForIdentity(input *GetCredentialsForIdentityInput) (*GetCredentialsForIdentityOutput, error) {
@@ -213,8 +220,6 @@ func (c *CognitoIdentity) GetIdRequest(input *GetIdInput) (req *request.Request,
 
 // Generates (or retrieves) a Cognito ID. Supplying multiple logins will create
 // an implicit linked account.
-//
-// token+";"+tokenSecret.
 //
 // This is a public API. You do not need any credentials to call this API.
 func (c *CognitoIdentity) GetId(input *GetIdInput) (*GetIdOutput, error) {
@@ -378,7 +383,7 @@ func (c *CognitoIdentity) ListIdentityPoolsRequest(input *ListIdentityPoolsInput
 
 // Lists all of the Cognito identity pools registered for your account.
 //
-// This is a public API. You do not need any credentials to call this API.
+// You must use AWS Developer credentials to call this API.
 func (c *CognitoIdentity) ListIdentityPools(input *ListIdentityPoolsInput) (*ListIdentityPoolsOutput, error) {
 	req, out := c.ListIdentityPoolsRequest(input)
 	err := req.Send()
@@ -471,6 +476,8 @@ func (c *CognitoIdentity) SetIdentityPoolRolesRequest(input *SetIdentityPoolRole
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &SetIdentityPoolRolesOutput{}
 	req.Data = output
 	return
@@ -501,6 +508,8 @@ func (c *CognitoIdentity) UnlinkDeveloperIdentityRequest(input *UnlinkDeveloperI
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &UnlinkDeveloperIdentityOutput{}
 	req.Data = output
 	return
@@ -511,7 +520,7 @@ func (c *CognitoIdentity) UnlinkDeveloperIdentityRequest(input *UnlinkDeveloperI
 // a given Cognito identity, you remove all federated identities as well as
 // the developer user identifier, the Cognito identity becomes inaccessible.
 //
-// This is a public API. You do not need any credentials to call this API.
+// You must use AWS Developer credentials to call this API.
 func (c *CognitoIdentity) UnlinkDeveloperIdentity(input *UnlinkDeveloperIdentityInput) (*UnlinkDeveloperIdentityOutput, error) {
 	req, out := c.UnlinkDeveloperIdentityRequest(input)
 	err := req.Send()
@@ -533,6 +542,8 @@ func (c *CognitoIdentity) UnlinkIdentityRequest(input *UnlinkIdentityInput) (req
 	}
 
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Remove(jsonrpc.UnmarshalHandler)
+	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
 	output = &UnlinkIdentityOutput{}
 	req.Data = output
 	return
@@ -614,7 +625,7 @@ func (s CreateIdentityPoolInput) GoString() string {
 	return s.String()
 }
 
-// Credentials for the the provided identity ID.
+// Credentials for the provided identity ID.
 type Credentials struct {
 	_ struct{} `type:"structure"`
 
@@ -771,7 +782,7 @@ func (s GetCredentialsForIdentityInput) GoString() string {
 type GetCredentialsForIdentityOutput struct {
 	_ struct{} `type:"structure"`
 
-	// Credentials for the the provided identity ID.
+	// Credentials for the provided identity ID.
 	Credentials *Credentials `type:"structure"`
 
 	// A unique identifier in the format REGION:GUID.
@@ -801,7 +812,7 @@ type GetIdInput struct {
 	// A set of optional name-value pairs that map provider names to provider tokens.
 	//
 	// The available provider names for Logins are as follows:  Facebook: graph.facebook.com
-	//  Google: accounts.google.com  Amazon: www.amazon.com  Twitter: www.twitter.com
+	//  Google: accounts.google.com  Amazon: www.amazon.com  Twitter: api.twitter.com
 	//  Digits: www.digits.com
 	Logins map[string]*string `type:"map"`
 }
