@@ -102,7 +102,6 @@ func (this *AWSResolver) resolveEC2InstancesWithInput(input *ec2.DescribeInstanc
 		return nil, err
 	}
 
-	log.Debug("reservations: %v", reservations)
 	var targets []*schema.Target
 	for _, reservation := range reservations {
 		for _, instance := range reservation.Instances {
@@ -116,9 +115,14 @@ func (this *AWSResolver) resolveEC2InstancesWithInput(input *ec2.DescribeInstanc
 	return targets, nil
 }
 
-func (this *AWSResolver) resolveASG(asgName string) ([]*schema.Target, error) {
+func (this *AWSResolver) resolveASGs(asgNames ...string) ([]*schema.Target, error) {
+	names := []*string{}
+	for _, name := range asgNames {
+		names = append(names, aws.String(name))
+	}
+
 	resp, err := this.asgClient.DescribeAutoScalingGroups(&autoscaling.DescribeAutoScalingGroupsInput{
-		AutoScalingGroupNames: []*string{aws.String(asgName)},
+		AutoScalingGroupNames: names,
 	})
 	if err != nil {
 		return nil, err
@@ -135,9 +139,14 @@ func (this *AWSResolver) resolveASG(asgName string) ([]*schema.Target, error) {
 	return this.resolveEC2Instances(instanceIds...)
 }
 
-func (this *AWSResolver) resolveELB(elbId string) ([]*schema.Target, error) {
+func (this *AWSResolver) resolveELBs(elbNames ...string) ([]*schema.Target, error) {
+	names := []*string{}
+	for _, name := range elbNames {
+		names = append(names, aws.String(name))
+	}
+
 	input := &elb.DescribeLoadBalancersInput{
-		LoadBalancerNames: []*string{aws.String(elbId)},
+		LoadBalancerNames: names,
 	}
 
 	resp, err := this.elbClient.DescribeLoadBalancers(input)
@@ -150,16 +159,11 @@ func (this *AWSResolver) resolveELB(elbId string) ([]*schema.Target, error) {
 		return nil, fmt.Errorf("LoadBalancer not found with vpc id = %s", this.VpcId)
 	}
 
-	targets := make([]*schema.Target, len(elb.Instances))
-	for i, elbInstance := range elb.Instances {
-		t, err := this.resolveInstance(*elbInstance.InstanceId)
-		if err != nil {
-			return nil, err
-		}
-		targets[i] = t[0]
+	instanceIds := []string{}
+	for _, elbInstance := range elb.Instances {
+		instanceIds = append(instanceIds, aws.StringValue(elbInstance.InstanceId))
 	}
-
-	return targets, nil
+	return this.resolveEC2Instances(instanceIds...)
 }
 
 // in case we need it some day
@@ -179,39 +183,6 @@ func (this *AWSResolver) resolveDBInstance(instanceId string) ([]*schema.Target,
 			Type:    "dbinstance",
 			Id:      instanceId,
 			Address: *instance.Endpoint.Address, // the instances actual http address
-		}
-	}
-
-	return target, nil
-}
-
-func (this *AWSResolver) resolveInstance(instanceId string) ([]*schema.Target, error) {
-	resp, err := this.ec2Client.DescribeInstances(&ec2.DescribeInstancesInput{
-		Filters: []*ec2.Filter{
-			{
-				Name:   aws.String("vpc-id"),
-				Values: []*string{aws.String(this.VpcId)},
-			},
-		},
-		InstanceIds: []*string{&instanceId},
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(resp.Reservations) < 1 {
-		return nil, fmt.Errorf("Invalid number of reservations for instance: %s, %v", instanceId, resp)
-	}
-
-	reservation := resp.Reservations[0]
-
-	target := make([]*schema.Target, len(reservation.Instances))
-	for i, instance := range reservation.Instances {
-		target[i] = &schema.Target{
-			Type:    "instance",
-			Id:      instanceId,
-			Address: getAddrFromInstance(instance),
 		}
 	}
 
@@ -256,22 +227,22 @@ func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error
 		// request is made to create the check, lo and behold, the ELB Target object
 		// ends up with an ID and no Name. So we account for that here.
 		if target.Name != "" {
-			return this.resolveELB(target.Name)
+			return this.resolveELBs(target.Name)
 		}
 		if target.Id != "" {
-			return this.resolveELB(target.Id)
+			return this.resolveELBs(target.Id)
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "asg":
 		if target.Name != "" {
-			return this.resolveASG(target.Name)
+			return this.resolveASGs(target.Name)
 		}
 		if target.Id != "" {
-			return this.resolveASG(target.Id)
+			return this.resolveASGs(target.Id)
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
-		return this.resolveInstance(target.Id)
+		return this.resolveEC2Instances(target.Id)
 	case "dbinstance":
 		return this.resolveDBInstance(target.Id)
 	case "host":
