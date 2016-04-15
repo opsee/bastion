@@ -1,6 +1,7 @@
 syntax = "proto2";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
 
 package opsee.aws.ec2;
 
@@ -63,7 +64,7 @@ message DescribeVpcsOutput {
 }
 
 message EbsInstanceBlockDevice {
-  optional sfixed64 AttachTime = 2;
+  optional opsee.types.Timestamp AttachTime = 2;
   optional bool DeleteOnTermination = 3;
   optional string Status = 4;
   optional string VolumeId = 5;
@@ -98,7 +99,7 @@ message Instance {
   optional string InstanceType = 12;
   optional string KernelId = 13;
   optional string KeyName = 14;
-  optional sfixed64 LaunchTime = 15;
+  optional opsee.types.Timestamp LaunchTime = 15;
   optional Monitoring Monitoring = 16;
   repeated InstanceNetworkInterface NetworkInterfaces = 17;
   optional Placement Placement = 18;
@@ -153,7 +154,7 @@ message InstanceNetworkInterfaceAssociation {
 }
 
 message InstanceNetworkInterfaceAttachment {
-  optional sfixed64 AttachTime = 2;
+  optional opsee.types.Timestamp AttachTime = 2;
   optional string AttachmentId = 3;
   optional bool DeleteOnTermination = 4;
   optional sint64 DeviceIndex = 5;

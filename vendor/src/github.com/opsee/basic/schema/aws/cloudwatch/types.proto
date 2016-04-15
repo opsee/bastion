@@ -1,6 +1,7 @@
 syntax = "proto2";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
 
 package opsee.aws.cloudwatch;
 
@@ -14,7 +15,7 @@ message Datapoint {
   optional double Minimum = 4;
   optional double SampleCount = 5;
   optional double Sum = 6;
-  optional sfixed64 Timestamp = 7;
+  optional opsee.types.Timestamp Timestamp = 7;
   optional string Unit = 8;
 }
 
@@ -30,11 +31,11 @@ message DimensionFilter {
 
 message GetMetricStatisticsInput {
   repeated Dimension Dimensions = 2;
-  optional sfixed64 EndTime = 3;
+  optional opsee.types.Timestamp EndTime = 3;
   optional string MetricName = 4;
   optional string Namespace = 5;
   optional sint64 Period = 6;
-  optional sfixed64 StartTime = 7;
+  optional opsee.types.Timestamp StartTime = 7;
   repeated string Statistics = 8;
   optional string Unit = 9;
 }

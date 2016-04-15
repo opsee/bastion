@@ -53,7 +53,7 @@ type DispatcherTestSuite struct {
 func (s *DispatcherTestSuite) SetupTest() {
 	s.Dispatcher = NewDispatcher()
 	s.Context = context.Background()
-	RegisterWorker("dispatcherTestWorkerRequest", newDispatcherTestWorker)
+	Recruiters.RegisterWorker("dispatcherTestWorkerRequest", newDispatcherTestWorker)
 	s.MultiTaskTG = TaskGroup{
 		&Task{Type: "dispatcherTestWorkerRequest", Request: &dispatcherTestWorkerRequest{1}},
 		&Task{Type: "dispatcherTestWorkerRequest", Request: &dispatcherTestWorkerRequest{2}},

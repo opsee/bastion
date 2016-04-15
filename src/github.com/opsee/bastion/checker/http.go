@@ -35,7 +35,7 @@ type HTTPRequest struct {
 }
 
 func init() {
-	Recruiters[httpWorkerTaskType] = NewHTTPWorker
+	Recruiters.RegisterWorker(httpWorkerTaskType, NewHTTPWorker)
 }
 
 func (r *HTTPRequest) isWebSocketRequest() bool {

@@ -9,7 +9,7 @@ import (
 )
 
 func TestHeartMetrics(t *testing.T) {
-	_, err := NewHeart(config.GetConfig(), "hearttest")
+	_, err := NewHeart(config.GetConfig().NsqdHost, "hearttest")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

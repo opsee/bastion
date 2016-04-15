@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/basic/schema"
+	"github.com/opsee/bastion/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
@@ -32,6 +33,7 @@ func (s *RunnerTestSuite) SetupTest() {
 
 func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	check := s.Common.PassingCheckMultiTarget()
+	// Not updating this to use the global config
 	slate_host := os.Getenv("SLATE_HOST")
 	os.Setenv("SLATE_HOST", "")
 	assert.Equal(s.T(), "", os.Getenv("SLATE_HOST"))
@@ -162,7 +164,8 @@ func (s *NSQRunnerTestSuite) SetupSuite() {
 		ConsumerQueueName:   "test-runner",
 		ProducerQueueName:   "test-results",
 		ConsumerChannelName: "test-runner",
-		NSQDHost:            os.Getenv("NSQD_HOST"),
+		ProducerNsqdHost:    config.GetConfig().NsqdHost,
+		ConsumerNsqdHost:    config.GetConfig().NsqdHost,
 		CustomerID:          "test",
 		MaxHandlers:         1,
 	}
@@ -181,7 +184,7 @@ func (s *NSQRunnerTestSuite) SetupSuite() {
 }
 
 func (s *NSQRunnerTestSuite) SetupTest() {
-	resetNsq(strings.Split(s.Config.NSQDHost, ":")[0], s.ResetNsqConfig)
+	resetNsq(strings.Split(s.Config.ConsumerNsqdHost, ":")[0], s.ResetNsqConfig)
 	s.MsgChan = make(chan *nsq.Message, 1)
 
 	// Connect our consumer to the producer channel for the NSQRunner.
@@ -195,12 +198,12 @@ func (s *NSQRunnerTestSuite) SetupTest() {
 		log.Debug("Test consumer sent message on message channel.")
 		return nil
 	}), s.Config.MaxHandlers)
-	err = consumer.ConnectToNSQD(s.Config.NSQDHost)
+	err = consumer.ConnectToNSQD(s.Config.ConsumerNsqdHost)
 	if err != nil {
 		panic(err)
 	}
 	s.Consumer = consumer
-	producer, err := nsq.NewProducer(s.Config.NSQDHost, nsq.NewConfig())
+	producer, err := nsq.NewProducer(s.Config.ProducerNsqdHost, nsq.NewConfig())
 	if err != nil {
 		panic(err)
 	}
@@ -220,7 +223,7 @@ func (s *NSQRunnerTestSuite) TearDownTest() {
 	<-s.Consumer.StopChan
 	s.Producer.Stop()
 	close(s.MsgChan)
-	resetNsq(strings.Split(s.Config.NSQDHost, ":")[0], s.ResetNsqConfig)
+	resetNsq(strings.Split(s.Config.ConsumerNsqdHost, ":")[0], s.ResetNsqConfig)
 }
 
 func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {

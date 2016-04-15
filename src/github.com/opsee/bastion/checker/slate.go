@@ -3,7 +3,6 @@ package checker
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -23,8 +22,8 @@ type SlateClient struct {
 }
 
 type SlateRequest struct {
-	Assertions []*schema.Assertion  `json:"assertions"`
-	Response   *schema.HttpResponse `json:"response"`
+	Assertions []*schema.Assertion `json:"assertions"`
+	Response   json.RawMessage     `json:"response"`
 }
 
 type SlateResponse struct {
@@ -48,7 +47,7 @@ func NewSlateClient(slateUrl string) *SlateClient {
 
 // CheckAssertions issues a request to Slate to determine if a check response
 // is passing or failing.
-func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, checkResponse interface{}) (bool, error) {
+func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, checkResponse json.RawMessage) (bool, error) {
 	var (
 		body        []byte
 		success     bool
@@ -56,25 +55,17 @@ func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, 
 		slateResp   SlateResponse
 	)
 
-	success = false
-
-	httpResponse, ok := checkResponse.(*schema.HttpResponse)
-	if !ok {
-		return false, errors.New("Unable to read HttpResponse.")
-	}
-
 	sr := &SlateRequest{
 		Assertions: check.Assertions,
-		Response:   httpResponse,
+		Response:   checkResponse,
 	}
 
-	reqBody, err := json.Marshal(sr)
+	marshalledSlateRequest, err := json.Marshal(sr)
 	if err != nil {
-		return success, err
+		log.WithError(err).Error("Couldn't marshal slate request")
 	}
-	log.WithFields(log.Fields{"namespace": "slate", "function": "CheckAssertions", "request": string(reqBody)}).Debug("Issuing POST request to Slate.")
 
-	bodyReader := bytes.NewReader(reqBody)
+	bodyReader := bytes.NewReader(marshalledSlateRequest)
 	req, err := http.NewRequest("POST", s.slateUrl, bodyReader)
 	if err != nil {
 		return success, err
@@ -90,10 +81,11 @@ func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, 
 		defer resp.Body.Close()
 		body, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
+			log.Info(body)
 			clientError = err
 			goto ERROR
 		}
-		log.WithFields(log.Fields{"namespace": "slate", "function": "CheckAssertions", "response": string(body)}).Debug("Got Slate response.")
+		log.WithFields(log.Fields{"response": string(body)}).Debug("Got Slate response.")
 
 		err = json.Unmarshal(body, &slateResp)
 		if err != nil {
@@ -106,7 +98,7 @@ func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, 
 
 	ERROR:
 		if clientError != nil {
-			log.WithFields(log.Fields{"namespace": "slate", "function": "CheckAssertions", "request": string(reqBody)}).WithError(clientError).Error("Issuing POST request to Slate.")
+			log.WithError(clientError).Error("Issuing POST request to slate.")
 			// Check to see if the context was cancelled/deadline was exceeded.
 			if ctx.Err() != nil {
 				return success, ctx.Err()

@@ -7,10 +7,12 @@
 
 	It is generated from these files:
 		types/any.proto
+		types/errors.proto
 		types/timestamp.proto
 
 	It has these top-level messages:
 		Any
+		Error
 		Timestamp
 */
 package types

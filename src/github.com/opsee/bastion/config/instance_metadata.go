@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
 	"github.com/aws/aws-sdk-go/aws/session"
 )
@@ -14,7 +13,7 @@ type InstanceMeta struct {
 }
 
 func (this *InstanceMeta) Update() error {
-	ec2MetadataClient := ec2metadata.New(session.New(&aws.Config{}))
+	ec2MetadataClient := ec2metadata.New(session.New())
 	region, err := ec2MetadataClient.Region()
 	if err != nil {
 		return err

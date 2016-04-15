@@ -12,10 +12,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
-	"github.com/aws/aws-sdk-go/aws/ec2metadata"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cf "github.com/crewjam/go-cloudformation"
@@ -48,38 +44,26 @@ type Hacker struct {
 }
 
 func NewHacker(cfg *config.Config) (*Hacker, error) {
-	customerId := os.Getenv("CUSTOMER_ID")
 	hacker := &Hacker{
-		CustomerId:             customerId,
-		bastionStackPhysicalId: fmt.Sprintf("opsee-stack-%s", customerId),
+		CustomerId:             cfg.CustomerId,
+		bastionStackPhysicalId: fmt.Sprintf("opsee-stack-%s", cfg.CustomerId),
 		waitTime:               time.Duration(time.Minute * 2),
 		stackTimeoutMinutes:    int64(2),
 	}
 
-	if cfg.MetaData.VpcId == "" {
-		// config previously failed to get the vpc-id.  try one more time.
-		err := cfg.MetaData.Update()
-		if err != nil {
-			log.WithError(err).Fatal("Couldn't get vpc-id from metadata service.")
-		}
-		hacker.VpcId = cfg.MetaData.VpcId
-	} else {
-		hacker.VpcId = cfg.MetaData.VpcId
+	sess, err := cfg.AWS.Session()
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't get aws session from global config")
 	}
 
-	creds := credentials.NewChainCredentials(
-		[]credentials.Provider{
-			&ec2rolecreds.EC2RoleProvider{
-				Client: ec2metadata.New(session.New()),
-			},
-			&credentials.EnvProvider{},
-		},
-	)
-
-	sess := session.New(&aws.Config{
-		Credentials: creds,
-		Region:      aws.String(cfg.MetaData.Region),
-	})
+	metaData, err := cfg.AWS.MetaData()
+	if err != nil {
+		log.WithError(err).Fatal("Couldn't get aws metadata from global config")
+	}
+	if metaData.VpcId == "" {
+		log.Warn("No VpcId available in global config aws metadata")
+	}
+	hacker.VpcId = metaData.VpcId
 
 	hacker.ec2Client = ec2.New(sess)
 	hacker.cloudformationClient = cloudformation.New(sess)
@@ -293,7 +277,7 @@ func main() {
 		log.WithError(err).Fatal("Error starting hacker.")
 	}
 
-	heart, err := heart.NewHeart(cfg, moduleName)
+	heart, err := heart.NewHeart(cfg.NsqdHost, moduleName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

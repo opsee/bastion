@@ -10,11 +10,11 @@ package messaging
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"reflect"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitly/go-nsq"
+	"github.com/opsee/bastion/config"
 )
 
 const (
@@ -27,7 +27,7 @@ var (
 )
 
 func getNsqdURL() string {
-	nsqdURL := os.Getenv("NSQD_HOST")
+	nsqdURL := config.GetConfig().NsqdHost
 	return nsqdURL
 }
 

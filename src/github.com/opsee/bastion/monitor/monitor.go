@@ -5,7 +5,6 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
-	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 )
 
@@ -31,7 +30,7 @@ type Monitor struct {
 	statemap   map[string]*State
 }
 
-func NewMonitor(cfg *config.Config) (*Monitor, error) {
+func NewMonitor(nsqdHost string) (*Monitor, error) {
 	nsqConfig := nsq.NewConfig()
 	nsqConfig.ClientID = "monitor"
 
@@ -73,7 +72,7 @@ func NewMonitor(cfg *config.Config) (*Monitor, error) {
 		return nil
 	}))
 
-	if err := consumer.ConnectToNSQD(cfg.NSQDHost); err != nil {
+	if err := consumer.ConnectToNSQD(nsqdHost); err != nil {
 		return nil, err
 	}
 

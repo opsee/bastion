@@ -348,9 +348,9 @@ func TestRedirectPolicyFunc(t *testing.T) {
 	New().
 		Get(ts.URL).
 		RedirectPolicy(func(req Request, via []Request) error {
-		redirectFuncGetCalled = true
-		return nil
-	}).End()
+			redirectFuncGetCalled = true
+			return nil
+		}).End()
 	if !redirectSuccess {
 		t.Errorf("Expected reaching another redirect url not original one")
 	}

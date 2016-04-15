@@ -1,6 +1,7 @@
 syntax = "proto2";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
 
 package opsee.aws.elb;
 
@@ -64,7 +65,7 @@ message LoadBalancerDescription {
   repeated BackendServerDescription BackendServerDescriptions = 3;
   optional string CanonicalHostedZoneName = 4;
   optional string CanonicalHostedZoneNameID = 5;
-  optional sfixed64 CreatedTime = 6;
+  optional opsee.types.Timestamp CreatedTime = 6;
   optional string DNSName = 7;
   optional HealthCheck HealthCheck = 8;
   repeated Instance Instances = 9;
