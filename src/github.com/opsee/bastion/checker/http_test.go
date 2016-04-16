@@ -97,7 +97,7 @@ func TestResponseNormal(t *testing.T) {
 
 // case where http server returns response larger than 4096 bytes
 func TestResponseTruncate(t *testing.T) {
-	testResponse, err := GenerateRandomString(9999)
+	testResponse, err := GenerateRandomString(129000)
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "Error": "error generating random response"}).Fatal(err)
 	}
@@ -117,7 +117,7 @@ func TestResponseTruncate(t *testing.T) {
 
 	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": resp.Body}).Info("received response")
-		assert.Equal(t, 4096, len(resp.Body), "body should be trucated to 4096 bytes")
+		assert.Equal(t, MaxContentLength, len(resp.Body), "body should be trucated to 4096 bytes")
 	} else {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": resp.Body, "Error": "no response body"}).Fatal(err)
 	}
