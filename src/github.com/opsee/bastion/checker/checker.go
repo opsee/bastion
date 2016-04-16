@@ -40,7 +40,7 @@ const (
 	BodyReadTimeout = 10 * time.Second
 
 	// Maximum length of response bodies
-	MaxContentLength = 4096
+	MaxContentLength = 128000
 )
 
 var (
