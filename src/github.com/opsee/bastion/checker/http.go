@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -272,7 +274,9 @@ func (r *HTTPRequest) Do() <-chan *Response {
 
 		log.WithFields(log.Fields{"Content-Length": resp.ContentLength, "contentLength": contentLength}).Debug("Setting content length.")
 		body := make([]byte, int64(contentLength))
-		if contentLength > 0 {
+
+		// ContentLength is unknown.  read what we can
+		if resp.ContentLength == -1 {
 			// If the server does not close the connection and there is no Content-Length header,
 			// then the HTTP Client will block indefinitely when trying to read the response body.
 			// So, we have to wrap this in a timeout and cancel the request in order to continue.
@@ -307,9 +311,14 @@ func (r *HTTPRequest) Do() <-chan *Response {
 			}
 
 			body = bytes.Trim(body, "\x00")
-			body = bytes.Trim(body, "\n")
 			log.Debugf("Successfully read %i bytes...", numBytes)
+		} else {
+			body, err = ioutil.ReadAll(io.LimitReader(resp.Body, contentLength)) // read all
+			if err != nil {
+				log.WithFields(log.Fields{"url": r.URL, "method": r.Method, "response": fmt.Sprintf("%#v", resp)}).WithError(err).Error("Error while reading message body.")
+			}
 		}
+		body = bytes.TrimSuffix(body, []byte("\n"))
 
 		httpResponse := &schema.HttpResponse{
 			Code: int32(resp.StatusCode),
