@@ -307,7 +307,7 @@ func (r *HTTPRequest) Do() <-chan *Response {
 			timer.Stop()
 
 			if err != nil {
-				log.WithFields(log.Fields{"url": r.URL, "method": r.Method, "response": fmt.Sprintf("%#v", resp)}).WithError(err).Error("Error while reading message body.")
+				log.WithFields(log.Fields{"url": r.URL, "method": r.Method}).WithError(err).Error("Error while reading message body.")
 			}
 
 			body = bytes.Trim(body, "\x00")
@@ -315,7 +315,7 @@ func (r *HTTPRequest) Do() <-chan *Response {
 		} else {
 			body, err = ioutil.ReadAll(io.LimitReader(resp.Body, contentLength)) // read all
 			if err != nil {
-				log.WithFields(log.Fields{"url": r.URL, "method": r.Method, "response": fmt.Sprintf("%#v", resp)}).WithError(err).Error("Error while reading message body.")
+				log.WithFields(log.Fields{"url": r.URL, "method": r.Method}).WithError(err).Error("Error while reading message body.")
 			}
 		}
 		body = bytes.TrimSuffix(body, []byte("\n"))

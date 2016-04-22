@@ -81,7 +81,6 @@ func (s *SlateClient) CheckAssertions(ctx context.Context, check *schema.Check, 
 		defer resp.Body.Close()
 		body, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Info(body)
 			clientError = err
 			goto ERROR
 		}
