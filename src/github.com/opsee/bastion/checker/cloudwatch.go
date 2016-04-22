@@ -58,6 +58,13 @@ func (this *CloudWatchRequest) GetDimensions(metric *schema.CloudWatchMetric) ([
 				Value: aws.String(this.Target.Id),
 			},
 		}, nil
+	case "AWS/EC2":
+		return []*cloudwatch.Dimension{
+			&cloudwatch.Dimension{
+				Name:  aws.String("InstanceId"),
+				Value: aws.String(this.Target.Id),
+			},
+		}, nil
 	default:
 		return nil, fmt.Errorf("Couldn't get dimensions for %T namespace %s", this, metric.Namespace)
 	}
