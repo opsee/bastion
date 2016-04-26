@@ -18,7 +18,6 @@ import (
 	"github.com/nu7hatch/gouuid"
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
-	"github.com/opsee/bastion/auth"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
@@ -421,83 +420,81 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 // configuration.
 
 func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
-	cache := &auth.BastionAuthCache{Tokens: make(map[string]*auth.BastionAuthToken)}
+	checks := &opsee.CheckResourceRequest{}
 
-	var checks = &opsee.CheckResourceRequest{}
+	authToken := struct {
+		Email      string `json:"email"`
+		CustomerID string `json:"customer_id"`
+	}{
+		config.GetConfig().CustomerEmail,
+		config.GetConfig().CustomerId,
+	}
 
-	tokenType, err := auth.GetTokenTypeByString(config.GetConfig().BastionAuthType)
+	authBytes, err := json.Marshal(authToken)
 	if err != nil {
+		log.WithFields(log.Fields{"service": "checker"}).WithError(err).Error("Cannot serialize auth token")
 		return nil, err
 	}
 
-	request := &auth.BastionAuthTokenRequest{
-		TokenType:      tokenType,
-		CustomerEmail:  config.GetConfig().CustomerEmail,
-		CustomerID:     config.GetConfig().CustomerId,
-		TargetEndpoint: config.GetConfig().BartnetHost + "/checks",
-		AuthEndpoint:   config.GetConfig().BastionAuthEndpoint,
+	bartnetHost := fmt.Sprintf("%s/checks", config.GetConfig().BartnetHost)
+	if bartnetHost == "" {
+		return nil, errors.New("No bartnet host set in configuration")
 	}
 
-	if token, err := cache.GetToken(request); err != nil || token == nil {
-		log.WithFields(log.Fields{"service": "checker", "Error": err.Error()}).Fatal("Error initializing BastionAuth")
-		return nil, err
-	} else {
-		theauth, header := token.AuthHeader()
-		log.WithFields(log.Fields{"service": "checker", "Auth header:": theauth + " " + header}).Info("Synchronizing checks")
-		success := false
+	log.WithFields(log.Fields{"service": "checker"}).Info("Synchronizing checks")
+	success := false
 
-		for i := 0; i < tries; i++ {
-			req, err := http.NewRequest("GET", request.TargetEndpoint, nil)
-			if err != nil {
-				log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to fetch checks.")
-			} else {
-				req.Header.Set("Accept", "application/x-protobuf")
-				req.Header.Set(theauth, header)
+	for i := 0; i < tries; i++ {
+		req, err := http.NewRequest("GET", bartnetHost, nil)
+		if err != nil {
+			log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to fetch checks.")
+		} else {
+			req.Header.Set("Accept", "application/x-protobuf")
+			req.Header.Set("Authorization", string(authBytes))
 
-				timeout := time.Duration(10 * time.Second)
-				client := &http.Client{
-					Timeout: timeout,
-				}
-				resp, err := client.Do(req)
-				if err != nil {
-					if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
-						log.WithError(netErr).Error("Couldn't fetch checks. Dial Timed out.")
-					} else if opError, ok := err.(*net.OpError); ok {
-						if opError.Op == "dial" {
-							log.WithError(netErr).Error("Couldn't sync checks. %s is Unknown Host. Exiting.", request.TargetEndpoint)
-							break
-						} else if opError.Op == "read" {
-							log.WithError(netErr).Errorf("Couldn't fetch checks. Connection to %s Refused.", request.TargetEndpoint)
-						}
-					} else {
-						log.WithError(err).Errorf("Couldn't fetch checks. Failed to connect to %s.", request.TargetEndpoint)
-					}
-					goto SLEEP
-				} else {
-					defer resp.Body.Close()
-					body, _ := ioutil.ReadAll(resp.Body)
-					if err := proto.Unmarshal(body, checks); err != nil {
-						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't fetch checks.")
-						goto SLEEP
-					}
-
-					if resp.StatusCode != http.StatusOK {
-						err = errors.New("Non-200 response while fetching checks.")
-						log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
-						goto SLEEP
-					}
-
-					log.Debug("Got existing checks ", checks)
-					success = true
-					break
-				}
+			timeout := time.Duration(10 * time.Second)
+			client := &http.Client{
+				Timeout: timeout,
 			}
-		SLEEP:
-			time.Sleep((1 << uint(i)) * time.Millisecond * 10)
+			resp, err := client.Do(req)
+			if err != nil {
+				if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+					log.WithError(netErr).Error("Couldn't fetch checks. Dial Timed out.")
+				} else if opError, ok := err.(*net.OpError); ok {
+					if opError.Op == "dial" {
+						log.WithError(netErr).Error("Couldn't sync checks. %s is Unknown Host. Exiting.", bartnetHost)
+						break
+					} else if opError.Op == "read" {
+						log.WithError(netErr).Errorf("Couldn't fetch checks. Connection to %s Refused.", bartnetHost)
+					}
+				} else {
+					log.WithError(err).Errorf("Couldn't fetch checks. Failed to connect to %s.", bartnetHost)
+				}
+				goto SLEEP
+			} else {
+				defer resp.Body.Close()
+				body, _ := ioutil.ReadAll(resp.Body)
+				if err := proto.Unmarshal(body, checks); err != nil {
+					log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't fetch checks.")
+					goto SLEEP
+				}
+
+				if resp.StatusCode != http.StatusOK {
+					err = errors.New("Non-200 response while fetching checks.")
+					log.WithFields(log.Fields{"service": "checker", "error": err, "response": resp}).Error("Couldn't sychronize checks.")
+					goto SLEEP
+				}
+
+				log.Debug("Got existing checks ", checks)
+				success = true
+				break
+			}
 		}
-		if !success {
-			return nil, fmt.Errorf("Couldn't fetch existing checks.")
-		}
+	SLEEP:
+		time.Sleep((1 << uint(i)) * time.Millisecond * 10)
+	}
+	if !success {
+		return nil, fmt.Errorf("Couldn't fetch existing checks.")
 	}
 
 	return checks.Checks, nil
