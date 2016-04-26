@@ -52,6 +52,7 @@ type Config struct {
 	EtcdHost      string
 	SlateHost     string
 	LogLevel      string
+	BezosHost     string
 	AWS           *AWSConfig
 }
 

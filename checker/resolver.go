@@ -6,54 +6,50 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elb"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/opsee/basic/schema"
+	opsee_aws_ec2 "github.com/opsee/basic/schema/aws/ec2"
+	opsee "github.com/opsee/basic/service"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/opsee/bastion/config"
 
 	log "github.com/Sirupsen/logrus"
 )
 
+var (
+	MaxEC2ResponseTime = time.Minute * 5
+	MaxEC2Instances = 200 // XXX(mike) but is it enough?
+)
+
 type Resolver interface {
-	Resolve(*schema.Target) ([]*schema.Target, error)
+	Resolve(ctx context.Context, *schema.Target) ([]*schema.Target, error)
 }
 
 // TODO: The resolver should not query the EC2Scanner directly, but
 // should go through the instance/group cache instead.
 type AWSResolver struct {
-	ec2Client *ec2.EC2
-	elbClient *elb.ELB
-	rdsClient *rds.RDS
-	asgClient *autoscaling.AutoScaling
-	VpcId     string
+	BezosClient *opsee.BezosClient
+	VpcId       string
 }
 
-func NewResolver(cfg *config.Config) Resolver {
-	sess, err := cfg.AWS.Session()
-	if err != nil {
-		log.WithError(err).Fatal("Couldn't get aws session from global config.")
-	}
-
+func NewResolver(bezos *opsee.BezosClient, cfg *config.Config) Resolver {
 	metaData, err := cfg.AWS.MetaData()
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't get metadata from global config.")
 	}
 
 	resolver := &AWSResolver{
-		ec2Client: ec2.New(sess),
-		elbClient: elb.New(sess),
-		rdsClient: rds.New(sess),
-		asgClient: autoscaling.New(sess),
-		VpcId:     metaData.VpcId,
+		BezosClient: bezos,
+		VpcId:       metaData.VpcId,
 	}
 
 	return resolver
 }
 
-func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*schema.Target, error) {
-	input := &ec2.DescribeInstancesInput{
-		Filters: []*ec2.Filter{
+func (this *AWSResolver) resolveSecurityGroup(ctx context.Context, sgId string) ([]*schema.Target, error) {
+	input := &opsee_aws_ec2.DescribeInstancesInput{
+		Filters: []*opsee_aws_ec2.Filter{
 			{
 				Name:   aws.String("vpc-id"),
 				Values: []*string{aws.String(this.VpcId)},
@@ -68,38 +64,52 @@ func (this *AWSResolver) resolveSecurityGroup(sgId string) ([]*schema.Target, er
 	return this.resolveEC2InstancesWithInput(input)
 }
 
-func (this *AWSResolver) resolveEC2Instances(instanceIds ...string) ([]*schema.Target, error) {
+func (this *AWSResolver) resolveEC2Instances(ctx context.Context, instanceIds ...string) ([]*schema.Target, error) {
 	ids := []*string{}
 	for _, id := range instanceIds {
 		ids = append(ids, aws.String(id))
 	}
-	input := &ec2.DescribeInstancesInput{
-		Filters: []*ec2.Filter{
-			&ec2.Filter{
+
+	input := &opsee_aws_ec2.DescribeInstancesInput{
+		Filters: []*opsee_aws_ec2.Filter{
+			&opsee_aws_ec2.Filter{
 				Name:   aws.String("vpc-id"),
 				Values: []*string{aws.String(this.VpcId)},
 			},
 		},
 		InstanceIds: ids,
+		MaxResults: MaxEC2Instances,
 	}
 
-	return this.resolveEC2InstancesWithInput(input)
+	return this.resolveEC2InstancesWithInput(ctx, input)
 }
 
-func (this *AWSResolver) resolveEC2InstancesWithInput(input *ec2.DescribeInstancesInput) ([]*schema.Target, error) {
-	var reservations []*ec2.Reservation
-	err := this.ec2Client.DescribeInstancesPages(input, func(resp *ec2.DescribeInstancesOutput, lastPage bool) bool {
-		for _, res := range resp.Reservations {
-			reservations = append(reservations, res)
-		}
-		if lastPage {
-			return false
-		}
-		return true
-	})
+func (this *AWSResolver) resolveEC2InstancesWithInput(ctx context.Context, input *opsee_aws_ec2.DescribeInstancesInput) ([]*schema.Target, error) {
 
+	var reservations []*opsee_aws_ec2.Reservation
+	timestamp := &opsee_types.Timestamp{}
+	timestamp.Scan(time.Now().UTC().Sub(MaxEC2ResponseTime))
+	resp, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+			User: user,
+			Region: region,
+			VpcId: vpc,
+			MaxAge: timestamp,
+			Input: &opsee.BezosRequest_Ec2_DescribeInstancesInput{input}
+		})
 	if err != nil {
 		return nil, err
+	}
+
+	output := resp.GetEc2_DescribeInstancesOutput()
+	if output == nil {
+		return nil, fmt.Errorf("error decoding aws response")
+	}
+
+
+	for _, output:= range resp.Reservations {
+		reservations = append(reservations, res)
 	}
 
 	var targets []*schema.Target
@@ -115,7 +125,7 @@ func (this *AWSResolver) resolveEC2InstancesWithInput(input *ec2.DescribeInstanc
 	return targets, nil
 }
 
-func (this *AWSResolver) resolveASGs(asgNames ...string) ([]*schema.Target, error) {
+func (this *AWSResolver) resolveASGs(ctx context.Context, asgNames ...string) ([]*schema.Target, error) {
 	names := []*string{}
 	for _, name := range asgNames {
 		names = append(names, aws.String(name))
@@ -139,7 +149,7 @@ func (this *AWSResolver) resolveASGs(asgNames ...string) ([]*schema.Target, erro
 	return this.resolveEC2Instances(instanceIds...)
 }
 
-func (this *AWSResolver) resolveELBs(elbNames ...string) ([]*schema.Target, error) {
+func (this *AWSResolver) resolveELBs(ctx context.Context, elbNames ...string) ([]*schema.Target, error) {
 	names := []*string{}
 	for _, name := range elbNames {
 		names = append(names, aws.String(name))
@@ -167,7 +177,7 @@ func (this *AWSResolver) resolveELBs(elbNames ...string) ([]*schema.Target, erro
 }
 
 // in case we need it some day
-func (this *AWSResolver) resolveDBInstance(instanceId string) ([]*schema.Target, error) {
+func (this *AWSResolver) resolveDBInstance(ctx context.Context, instanceId string) ([]*schema.Target, error) {
 	input := &rds.DescribeDBInstancesInput{
 		DBInstanceIdentifier: aws.String(instanceId),
 	}
@@ -213,12 +223,12 @@ func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 	return target, nil
 }
 
-func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error) {
+func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]*schema.Target, error) {
 	log.Debug("Resolving target: %v", *target)
 
 	switch target.Type {
 	case "sg":
-		return this.resolveSecurityGroup(target.Id)
+		return this.resolveSecurityGroup(ctx, target.Id)
 	case "elb":
 		// TODO(greg): We should probably handle this kind of thing better. This
 		// came to pass, because ELBs don't have IDs, they only have names.
@@ -227,24 +237,24 @@ func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error
 		// request is made to create the check, lo and behold, the ELB Target object
 		// ends up with an ID and no Name. So we account for that here.
 		if target.Name != "" {
-			return this.resolveELBs(target.Name)
+			return this.resolveELBs(ctx, target.Name)
 		}
 		if target.Id != "" {
-			return this.resolveELBs(target.Id)
+			return this.resolveELBs(ctx, target.Id)
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "asg":
 		if target.Name != "" {
-			return this.resolveASGs(target.Name)
+			return this.resolveASGs(ctx, target.Name)
 		}
 		if target.Id != "" {
-			return this.resolveASGs(target.Id)
+			return this.resolveASGs(ctx, target.Id)
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "instance":
-		return this.resolveEC2Instances(target.Id)
+		return this.resolveEC2Instances(ctx, target.Id)
 	case "dbinstance":
-		return this.resolveDBInstance(target.Id)
+		return this.resolveDBInstance(ctx, target.Id)
 	case "host":
 		return this.resolveHost(target.Id)
 	}
@@ -255,7 +265,7 @@ func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error
 // TODO: In some cases this won't be so easy.
 // TODO: Also, god help us if a reservation contains more than one
 // instance
-func getAddrFromInstance(instance *ec2.Instance) string {
+func getAddrFromInstance(instance *opsee_aws_ec2.Instance) string {
 	var addr *string
 	if instance.PrivateIpAddress != nil {
 		addr = instance.PrivateIpAddress
