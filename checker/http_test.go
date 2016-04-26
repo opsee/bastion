@@ -12,16 +12,18 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/net/context"
 )
 
 // don't follow redirects for 301s, make sure there is a response object with
 // a Location header.
 func TestRedirectResponse(t *testing.T) {
+	ctx := context.Background()
 	ts := httptest.NewServer(http.RedirectHandler("http://redirected/", 301))
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := <-requestMaker.Do()
+	resp := <-requestMaker.Do(ctx)
 	if resp == nil {
 		log.Fatal("TestRedirectResponse: Got nil response from http worker")
 	}
@@ -44,6 +46,7 @@ func TestRedirectResponse(t *testing.T) {
 
 // case where http server returns no response body
 func TestResponseEmpty(t *testing.T) {
+	ctx := context.Background()
 	testResponse := ""
 
 	log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "action": "starting server"}).Info("starting server for test with no response body")
@@ -53,7 +56,7 @@ func TestResponseEmpty(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := <-requestMaker.Do()
+	resp := <-requestMaker.Do(ctx)
 	err := resp.Error
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "Error": "request error"}).Fatal(err)
@@ -69,6 +72,7 @@ func TestResponseEmpty(t *testing.T) {
 
 // case where http server returns response body smaller than 4096 bytes
 func TestResponseNormal(t *testing.T) {
+	ctx := context.Background()
 	testResponse, err := GenerateRandomString(2948)
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "Error": "error generating random response"}).Fatal(err)
@@ -81,7 +85,7 @@ func TestResponseNormal(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := <-requestMaker.Do()
+	resp := <-requestMaker.Do(ctx)
 	err = resp.Error
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "Error": "request error"}).Fatal(err)
@@ -97,6 +101,7 @@ func TestResponseNormal(t *testing.T) {
 
 // case where http server returns response larger than 4096 bytes
 func TestResponseTruncate(t *testing.T) {
+	ctx := context.Background()
 	testResponse, err := GenerateRandomString(MaxContentLength + 500)
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "Error": "error generating random response"}).Fatal(err)
@@ -109,7 +114,7 @@ func TestResponseTruncate(t *testing.T) {
 	defer ts.Close()
 
 	requestMaker := &HTTPRequest{Method: "GET", URL: ts.URL, Body: ""}
-	resp := <-requestMaker.Do()
+	resp := <-requestMaker.Do(ctx)
 	err = resp.Error
 	if err != nil {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "Error": "request error"}).Fatal(err)

@@ -26,7 +26,7 @@ type RunnerTestSuite struct {
 
 func (s *RunnerTestSuite) SetupTest() {
 	s.Resolver = newTestResolver()
-	s.Runner = NewRunner(s.Resolver)
+	s.Runner = NewRunner(s.Resolver, &schema.HttpCheck{})
 	s.Common = TestCommonStubs{}
 	s.Context = context.Background()
 }
@@ -37,10 +37,10 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	slate_host := os.Getenv("SLATE_HOST")
 	os.Setenv("SLATE_HOST", "")
 	assert.Equal(s.T(), "", os.Getenv("SLATE_HOST"))
-	runner := NewRunner(s.Resolver)
+	runner := NewRunner(s.Resolver, &schema.HttpCheck{})
 	responses, err := runner.RunCheck(s.Context, check)
 	assert.NoError(s.T(), err)
-	targets, err := s.Resolver.Resolve(&schema.Target{
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
 	})
 	assert.NoError(s.T(), err)
@@ -58,7 +58,7 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(s.Context, check)
 	assert.NoError(s.T(), err)
-	targets, err := s.Resolver.Resolve(&schema.Target{
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
 	})
 	assert.NoError(s.T(), err)
@@ -209,7 +209,7 @@ func (s *NSQRunnerTestSuite) SetupTest() {
 	}
 	s.Producer = producer
 
-	runner, err := NewNSQRunner(NewRunner(s.Resolver), s.Config)
+	runner, err := NewNSQRunner(NewRunner(s.Resolver, &schema.HttpCheck{}), s.Config)
 	if err != nil {
 		panic(err)
 	}
