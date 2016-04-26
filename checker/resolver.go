@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	MaxEC2ResponseTime = time.Minute * 5
+	DefaultResponseCacheTTL = time.Minute * 5
 	MaxEC2Instances = 200 // XXX(mike) but is it enough?
 )
 
@@ -31,6 +31,8 @@ type Resolver interface {
 type AWSResolver struct {
 	BezosClient *opsee.BezosClient
 	VpcId       string
+	Region string
+	User *schema.User
 }
 
 func NewResolver(bezos *opsee.BezosClient, cfg *config.Config) Resolver {
@@ -39,9 +41,17 @@ func NewResolver(bezos *opsee.BezosClient, cfg *config.Config) Resolver {
 		log.WithError(err).Fatal("Couldn't get metadata from global config.")
 	}
 
+	user := &schema.User{
+		CustomerID: cfg.CustomerID,
+		Email: cfg.CustomerEmail,
+		Admin: false,
+	}
+
 	resolver := &AWSResolver{
 		BezosClient: bezos,
 		VpcId:       metaData.VpcId,
+		Region: metaData.Region,
+		User: user,
 	}
 
 	return resolver
@@ -85,17 +95,16 @@ func (this *AWSResolver) resolveEC2Instances(ctx context.Context, instanceIds ..
 }
 
 func (this *AWSResolver) resolveEC2InstancesWithInput(ctx context.Context, input *opsee_aws_ec2.DescribeInstancesInput) ([]*schema.Target, error) {
-
 	var reservations []*opsee_aws_ec2.Reservation
+
 	timestamp := &opsee_types.Timestamp{}
-	timestamp.Scan(time.Now().UTC().Sub(MaxEC2ResponseTime))
 	resp, err := this.BezosClient.Get(
 		ctx,
 		&opsee.BezosRequest{
-			User: user,
-			Region: region,
-			VpcId: vpc,
-			MaxAge: timestamp,
+			User: this.User,
+			Region: this.Region,
+			VpcId: this.VpcId,
+			MaxAge: timestamp.Scan(time.Now().UTC().Sub(DefaultResponseCacheTTL)),
 			Input: &opsee.BezosRequest_Ec2_DescribeInstancesInput{input}
 		})
 	if err != nil {
@@ -130,6 +139,15 @@ func (this *AWSResolver) resolveASGs(ctx context.Context, asgNames ...string) ([
 	for _, name := range asgNames {
 		names = append(names, aws.String(name))
 	}
+
+	timestamp := &opsee_types.Timestamp{}
+	maxAge := timestamp.Scan(time.Now().UTC().Sub(DefaultResponseCacheTTL)),
+	resp, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+
+		}
+	)
 
 	resp, err := this.asgClient.DescribeAutoScalingGroups(&autoscaling.DescribeAutoScalingGroupsInput{
 		AutoScalingGroupNames: names,
