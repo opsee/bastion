@@ -40,7 +40,7 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	runner := NewRunner(s.Resolver)
 	responses, err := runner.RunCheck(s.Context, check)
 	assert.NoError(s.T(), err)
-	targets, err := s.Resolver.Resolve(&schema.Target{
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
 	})
 	assert.NoError(s.T(), err)
@@ -58,7 +58,7 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	check := s.Common.PassingCheckMultiTarget()
 	responses, err := s.Runner.RunCheck(s.Context, check)
 	assert.NoError(s.T(), err)
-	targets, err := s.Resolver.Resolve(&schema.Target{
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
 	})
 	assert.NoError(s.T(), err)

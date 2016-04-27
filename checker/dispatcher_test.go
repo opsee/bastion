@@ -17,7 +17,7 @@ type dispatcherTestWorker struct {
 	WorkerQueue chan Worker
 }
 
-func (w *dispatcherTestWorkerRequest) Do() <-chan *Response {
+func (w *dispatcherTestWorkerRequest) Do(ctx context.Context) <-chan *Response {
 	r := make(chan *Response, 1)
 	defer close(r)
 	r <- &Response{
@@ -37,7 +37,7 @@ func (w *dispatcherTestWorker) Work(ctx context.Context, t *Task) *Task {
 		}
 		return t
 	}
-	t.Response = <-t.Request.Do()
+	t.Response = <-t.Request.Do(ctx)
 	return t
 }
 
