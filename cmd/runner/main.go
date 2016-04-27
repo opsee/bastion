@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

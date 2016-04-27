@@ -211,7 +211,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *schema.Check)
 		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
 	}
 
-	targets, err = r.resolver.Resolve(check.Target)
+	targets, err = r.resolver.Resolve(ctx, check.Target)
 	if err != nil {
 		return nil, err
 	}

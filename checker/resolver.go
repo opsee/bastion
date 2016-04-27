@@ -3,55 +3,58 @@ package checker
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
-	"github.com/aws/aws-sdk-go/service/elb"
-	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/opsee/basic/schema"
+	opsee_aws_autoscaling "github.com/opsee/basic/schema/aws/autoscaling"
 	opsee_aws_ec2 "github.com/opsee/basic/schema/aws/ec2"
+	opsee_aws_elb "github.com/opsee/basic/schema/aws/elb"
+	opsee_aws_rds "github.com/opsee/basic/schema/aws/rds"
 	opsee "github.com/opsee/basic/service"
-	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/opsee/bastion/config"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
+	"golang.org/x/net/context"
 
 	log "github.com/Sirupsen/logrus"
 )
 
 var (
-	DefaultResponseCacheTTL = time.Minute * 5
-	MaxEC2Instances = 200 // XXX(mike) but is it enough?
+	DefaultResponseCacheTTL = time.Minute * time.Duration(5)
+	MaxEC2Instances         = int64(200) // XXX(mike) but is it enough?
 )
 
 type Resolver interface {
-	Resolve(ctx context.Context, *schema.Target) ([]*schema.Target, error)
+	Resolve(context.Context, *schema.Target) ([]*schema.Target, error)
 }
 
 // TODO: The resolver should not query the EC2Scanner directly, but
 // should go through the instance/group cache instead.
 type AWSResolver struct {
-	BezosClient *opsee.BezosClient
+	BezosClient opsee.BezosClient
 	VpcId       string
-	Region string
-	User *schema.User
+	Region      string
+	User        *schema.User
 }
 
-func NewResolver(bezos *opsee.BezosClient, cfg *config.Config) Resolver {
+func NewResolver(bezos opsee.BezosClient, cfg *config.Config) Resolver {
 	metaData, err := cfg.AWS.MetaData()
 	if err != nil {
 		log.WithError(err).Fatal("Couldn't get metadata from global config.")
 	}
 
 	user := &schema.User{
-		CustomerID: cfg.CustomerID,
-		Email: cfg.CustomerEmail,
-		Admin: false,
+		CustomerId: cfg.CustomerId,
+		Email:      cfg.CustomerEmail,
+		Admin:      false,
 	}
 
 	resolver := &AWSResolver{
 		BezosClient: bezos,
 		VpcId:       metaData.VpcId,
-		Region: metaData.Region,
-		User: user,
+		Region:      metaData.Region,
+		User:        user,
 	}
 
 	return resolver
@@ -62,50 +65,49 @@ func (this *AWSResolver) resolveSecurityGroup(ctx context.Context, sgId string) 
 		Filters: []*opsee_aws_ec2.Filter{
 			{
 				Name:   aws.String("vpc-id"),
-				Values: []*string{aws.String(this.VpcId)},
+				Values: []string{this.VpcId},
 			},
 			{
 				Name:   aws.String("instance.group-id"),
-				Values: []*string{aws.String(sgId)},
+				Values: []string{sgId},
 			},
 		},
 	}
 
-	return this.resolveEC2InstancesWithInput(input)
+	return this.resolveEC2InstancesWithInput(ctx, input)
 }
 
 func (this *AWSResolver) resolveEC2Instances(ctx context.Context, instanceIds ...string) ([]*schema.Target, error) {
-	ids := []*string{}
+	ids := []string{}
 	for _, id := range instanceIds {
-		ids = append(ids, aws.String(id))
+		ids = append(ids, id)
 	}
 
 	input := &opsee_aws_ec2.DescribeInstancesInput{
 		Filters: []*opsee_aws_ec2.Filter{
 			&opsee_aws_ec2.Filter{
 				Name:   aws.String("vpc-id"),
-				Values: []*string{aws.String(this.VpcId)},
+				Values: []string{this.VpcId},
 			},
 		},
 		InstanceIds: ids,
-		MaxResults: MaxEC2Instances,
+		MaxResults:  aws.Int64(MaxEC2Instances),
 	}
 
 	return this.resolveEC2InstancesWithInput(ctx, input)
 }
 
 func (this *AWSResolver) resolveEC2InstancesWithInput(ctx context.Context, input *opsee_aws_ec2.DescribeInstancesInput) ([]*schema.Target, error) {
-	var reservations []*opsee_aws_ec2.Reservation
-
 	timestamp := &opsee_types.Timestamp{}
+	timestamp.Scan(time.Now().UTC().Add(DefaultResponseCacheTTL * -1))
 	resp, err := this.BezosClient.Get(
 		ctx,
 		&opsee.BezosRequest{
-			User: this.User,
+			User:   this.User,
 			Region: this.Region,
-			VpcId: this.VpcId,
-			MaxAge: timestamp.Scan(time.Now().UTC().Sub(DefaultResponseCacheTTL)),
-			Input: &opsee.BezosRequest_Ec2_DescribeInstancesInput{input}
+			VpcId:  this.VpcId,
+			MaxAge: timestamp,
+			Input:  &opsee.BezosRequest_Ec2_DescribeInstancesInput{input},
 		})
 	if err != nil {
 		return nil, err
@@ -116,14 +118,9 @@ func (this *AWSResolver) resolveEC2InstancesWithInput(ctx context.Context, input
 		return nil, fmt.Errorf("error decoding aws response")
 	}
 
-
-	for _, output:= range resp.Reservations {
-		reservations = append(reservations, res)
-	}
-
 	var targets []*schema.Target
-	for _, reservation := range reservations {
-		for _, instance := range reservation.Instances {
+	for _, res := range output.Reservations {
+		for _, instance := range res.Instances {
 			targets = append(targets, &schema.Target{
 				Id:      *instance.InstanceId,
 				Type:    "instance",
@@ -131,58 +128,82 @@ func (this *AWSResolver) resolveEC2InstancesWithInput(ctx context.Context, input
 			})
 		}
 	}
+
 	return targets, nil
 }
 
 func (this *AWSResolver) resolveASGs(ctx context.Context, asgNames ...string) ([]*schema.Target, error) {
-	names := []*string{}
+	names := []string{}
 	for _, name := range asgNames {
-		names = append(names, aws.String(name))
+		names = append(names, name)
 	}
 
-	timestamp := &opsee_types.Timestamp{}
-	maxAge := timestamp.Scan(time.Now().UTC().Sub(DefaultResponseCacheTTL)),
+	input := &opsee_aws_autoscaling.DescribeAutoScalingGroupsInput{
+		AutoScalingGroupNames: names,
+	}
+
+	maxAge := &opsee_types.Timestamp{}
+	maxAge.Scan(time.Now().UTC().Add(DefaultResponseCacheTTL * -1))
 	resp, err := this.BezosClient.Get(
 		ctx,
 		&opsee.BezosRequest{
-
-		}
-	)
-
-	resp, err := this.asgClient.DescribeAutoScalingGroups(&autoscaling.DescribeAutoScalingGroupsInput{
-		AutoScalingGroupNames: names,
-	})
+			User:   this.User,
+			Region: this.Region,
+			VpcId:  this.VpcId,
+			MaxAge: maxAge,
+			Input:  &opsee.BezosRequest_Autoscaling_DescribeAutoScalingGroupsInput{input},
+		})
 	if err != nil {
 		return nil, err
 	}
 
+	output := resp.GetAutoscaling_DescribeAutoScalingGroupsOutput()
+	if output == nil {
+		return nil, fmt.Errorf("error decoding aws response")
+	}
+
 	instanceIds := []string{}
-	for _, gr := range resp.AutoScalingGroups {
+	for _, gr := range output.AutoScalingGroups {
 		for _, instance := range gr.Instances {
 			if aws.StringValue(instance.LifecycleState) == autoscaling.LifecycleStateInService {
 				instanceIds = append(instanceIds, aws.StringValue(instance.InstanceId))
 			}
 		}
 	}
-	return this.resolveEC2Instances(instanceIds...)
+	return this.resolveEC2Instances(ctx, instanceIds...)
 }
 
 func (this *AWSResolver) resolveELBs(ctx context.Context, elbNames ...string) ([]*schema.Target, error) {
-	names := []*string{}
+	names := []string{}
 	for _, name := range elbNames {
-		names = append(names, aws.String(name))
+		names = append(names, name)
 	}
 
-	input := &elb.DescribeLoadBalancersInput{
+	input := &opsee_aws_elb.DescribeLoadBalancersInput{
 		LoadBalancerNames: names,
 	}
 
-	resp, err := this.elbClient.DescribeLoadBalancers(input)
+	maxAge := &opsee_types.Timestamp{}
+	maxAge.Scan(time.Now().UTC().Add(DefaultResponseCacheTTL * -1))
+	resp, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+			User:   this.User,
+			Region: this.Region,
+			VpcId:  this.VpcId,
+			MaxAge: maxAge,
+			Input:  &opsee.BezosRequest_Elb_DescribeLoadBalancersInput{input},
+		})
 	if err != nil {
 		return nil, err
 	}
 
-	elb := resp.LoadBalancerDescriptions[0]
+	output := resp.GetElb_DescribeLoadBalancersOutput()
+	if output == nil {
+		return nil, err
+	}
+
+	elb := output.LoadBalancerDescriptions[0]
 	if aws.StringValue(elb.VPCId) != this.VpcId {
 		return nil, fmt.Errorf("LoadBalancer not found with vpc id = %s", this.VpcId)
 	}
@@ -191,22 +212,37 @@ func (this *AWSResolver) resolveELBs(ctx context.Context, elbNames ...string) ([
 	for _, elbInstance := range elb.Instances {
 		instanceIds = append(instanceIds, aws.StringValue(elbInstance.InstanceId))
 	}
-	return this.resolveEC2Instances(instanceIds...)
+	return this.resolveEC2Instances(ctx, instanceIds...)
 }
 
 // in case we need it some day
 func (this *AWSResolver) resolveDBInstance(ctx context.Context, instanceId string) ([]*schema.Target, error) {
-	input := &rds.DescribeDBInstancesInput{
+	input := &opsee_aws_rds.DescribeDBInstancesInput{
 		DBInstanceIdentifier: aws.String(instanceId),
 	}
 
-	resp, err := this.rdsClient.DescribeDBInstances(input)
+	maxAge := &opsee_types.Timestamp{}
+	maxAge.Scan(time.Now().UTC().Add(DefaultResponseCacheTTL * -1))
+	resp, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+			User:   this.User,
+			Region: this.Region,
+			VpcId:  this.VpcId,
+			MaxAge: maxAge,
+			Input:  &opsee.BezosRequest_Rds_DescribeDBInstancesInput{input},
+		})
 	if err != nil {
 		return nil, err
 	}
 
-	target := make([]*schema.Target, len(resp.DBInstances))
-	for i, instance := range resp.DBInstances {
+	output := resp.GetRds_DescribeDBInstancesOutput()
+	if output == nil {
+		return nil, fmt.Errorf("error decoding aws response")
+	}
+
+	target := make([]*schema.Target, len(output.DBInstances))
+	for i, instance := range output.DBInstances {
 		target[i] = &schema.Target{
 			Type:    "dbinstance",
 			Id:      instanceId,
