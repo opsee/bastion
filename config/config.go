@@ -34,6 +34,7 @@ func init() {
 	viper.SetDefault("etcd_host", "etcd:2379")
 	viper.SetDefault("nsqd_host", "nsqd:4150")
 	viper.SetDefault("slate_host", "slate:7000")
+	viper.SetDefault("bezos_host", "bezos:8443")
 	viper.SetDefault("log_level", "info")
 
 	viper.WatchConfig()
@@ -79,6 +80,7 @@ func NewConfig() *Config {
 	cfg.CustomerEmail = viper.GetString("customer_email")
 	cfg.BastionId = viper.GetString("id")
 	cfg.SlateHost = viper.GetString("slate_host")
+	cfg.BezosHost = viper.GetString("bezos_host")
 	cfg.BartnetHost = viper.GetString("bartnet_host")
 	cfg.NsqdHost = viper.GetString("nsqd_host")
 	cfg.EtcdHost = viper.GetString("etcd_host")
