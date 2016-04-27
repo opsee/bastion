@@ -172,7 +172,7 @@ func (r *HTTPRequest) doWebSocket() *Response {
 	}
 }
 
-func (r *HTTPRequest) Do() <-chan *Response {
+func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 	respChan := make(chan *Response, 1)
 
 	go func() {
@@ -374,7 +374,7 @@ func (w *HTTPWorker) Work(ctx context.Context, task *Task) *Task {
 	if ok {
 		log.Debug("request: ", request)
 		select {
-		case response := <-request.Do():
+		case response := <-request.Do(ctx):
 			if response.Error != nil {
 				log.Error("error processing request: %s", *task)
 				log.Error("error: %s", response.Error.Error())

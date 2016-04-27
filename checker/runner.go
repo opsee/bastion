@@ -7,7 +7,6 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/basic/schema"
@@ -302,7 +301,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				Metrics:                cloudwatchCheck.Metrics,
 				StatisticsIntervalSecs: int(check.Interval * 2),
 				StatisticsPeriod:       CloudWatchStatisticsPeriod,
-				Statistics:             []*string{aws.String("Average")}, //TODO(dan) Eventually include all Statistics?
+				Statistics:             []string{"Average"}, //TODO(dan) Eventually include all Statistics?
 				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
 			}
 
