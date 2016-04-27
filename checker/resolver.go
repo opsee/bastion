@@ -27,6 +27,9 @@ var (
 
 type Resolver interface {
 	Resolve(context.Context, *schema.Target) ([]*schema.Target, error)
+	GetUser() *schema.User
+	GetRegion() string
+	GetVpc() string
 }
 
 // TODO: The resolver should not query the EC2Scanner directly, but
@@ -275,6 +278,18 @@ func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 	}
 
 	return target, nil
+}
+
+func (this *AWSResolver) GetUser() *schema.User {
+	return this.User
+}
+
+func (this *AWSResolver) GetRegion() string {
+	return this.Region
+}
+
+func (this *AWSResolver) GetVpc() string {
+	return this.VpcId
 }
 
 func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]*schema.Target, error) {

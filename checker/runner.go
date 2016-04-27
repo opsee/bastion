@@ -303,6 +303,9 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				StatisticsPeriod:       CloudWatchStatisticsPeriod,
 				Statistics:             []string{"Average"}, //TODO(dan) Eventually include all Statistics?
 				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
+				User:                   r.resolver.GetUser(),
+				Region:                 r.resolver.GetRegion(),
+				VpcId:                  r.resolver.GetVpc(),
 			}
 
 		default:

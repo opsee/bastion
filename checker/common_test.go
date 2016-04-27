@@ -110,6 +110,18 @@ type testResolver struct {
 	Targets map[string][]*schema.Target
 }
 
+func (t *testResolver) GetUser() *schema.User {
+	return &schema.User{}
+}
+
+func (t *testResolver) GetRegion() string {
+	return "us-test-1"
+}
+
+func (t *testResolver) GetVpc() string {
+	return "vpc-testabc00ff"
+}
+
 func (t *testResolver) Resolve(ctx context.Context, tgt *schema.Target) ([]*schema.Target, error) {
 	log.Debug("Resolving target: %s", tgt)
 	if tgt.Id == "empty" {
