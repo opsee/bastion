@@ -281,6 +281,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			}
 
 		case *schema.CloudWatchCheck:
+			defaultResponseCacheTTL := time.Second * time.Duration(5)
 			cloudwatchCheck, ok := c.(*schema.CloudWatchCheck)
 			if !ok {
 				return nil, fmt.Errorf("Unable to assert type on cloudwatch check")
@@ -306,6 +307,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				User:                   r.resolver.GetUser(),
 				Region:                 r.resolver.GetRegion(),
 				VpcId:                  r.resolver.GetVpc(),
+				MaxAge:                 defaultResponseCacheTTL,
 			}
 
 		default:

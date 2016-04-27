@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	DefaultResponseCacheTTL = time.Minute * time.Duration(5)
+	DefaultResponseCacheTTL = time.Second * time.Duration(5)
 	MaxEC2Instances         = int64(200) // XXX(mike) but is it enough?
 )
 
