@@ -18,7 +18,6 @@ var (
 		"test_runner",
 		"hacker",
 		"checker",
-		"discovery",
 		"monitor",
 	}
 )

@@ -447,12 +447,6 @@
 			"revisionTime": "2013-12-21T20:05:32Z"
 		},
 		{
-			"checksumSHA1": "nC/nwi80jCgbe228xs3DOlgQa7E=",
-			"path": "github.com/opsee/awscan",
-			"revision": "3e8875046466e0feaedb1e20548a54ba80591412",
-			"revisionTime": "2015-12-15T01:01:16Z"
-		},
-		{
 			"checksumSHA1": "kXjDammWW1jWJzF7VQwpUzYIIHI=",
 			"origin": "github.com/opsee/bastion/vendor/github.com/opsee/basic/schema",
 			"path": "github.com/opsee/basic/schema",

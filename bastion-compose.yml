@@ -51,12 +51,6 @@ nsqadmin:
   net: "container:connector"
   devices:
     - "/dev/net/tun"
-shoveldiscovery:
-  image: nsqio/nsq:v0.3.5
-  command: /nsq_to_nsq --topic=discovery --channel=shovel-discovery --nsqd-tcp-address=nsqd:4150 --destination-nsqd-tcp-address=nsqd.opsy.co:4150 --destination-topic=_.discovery
-  net: "container:connector"
-  devices:
-    - "/dev/net/tun"
 shovelresults:
   image: nsqio/nsq:v0.3.5
   command: /nsq_to_nsq --topic=results --channel=shovel-results --nsqd-tcp-address=nsqd:4150 --destination-nsqd-tcp-address=nsqd.opsy.co:4150 --destination-topic=_.results
@@ -86,14 +80,3 @@ checker:
   net: "container:connector"
   devices:
     - "/dev/net/tun"
-discovery:
-  image: quay.io/opsee/bastion
-  command: /discovery -metadata /metadata.json -level debug
-  volumes:
-    - metadata.json:/metadata.json
-  environment:
-    - AWS_ACCESS_KEY_ID
-    - AWS_DEFAULT_REGION
-    - AWS_SECRET_ACCESS_KEY
-  links:
-    - "nsqd:nsqd"
