@@ -20,7 +20,7 @@ experimental:
         - master
 notify:
   webhooks:
-    - url: https://hooks.slack.com/services/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
+    - url: https://hooks.slack.com/services/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
 dependencies:
   override:
     - docker info
