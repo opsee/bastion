@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -449,8 +450,9 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 		if err != nil {
 			log.WithFields(log.Fields{"service": "checker", "error": err}).Warn("Couldn't create request to fetch checks.")
 		} else {
+			authStr := strings.Join([]string{"Basic", string(authBytes)}, " ")
 			req.Header.Set("Accept", "application/x-protobuf")
-			req.Header.Set("Authorization", string(authBytes))
+			req.Header.Set("Authorization", authStr)
 
 			timeout := time.Duration(10 * time.Second)
 			client := &http.Client{
