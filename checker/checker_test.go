@@ -56,7 +56,7 @@ func (s *CheckerTestSuite) SetupSuite() {
 		MaxHandlers:         1,
 		CustomerID:          "test",
 	}
-	runner, err := NewNSQRunner(NewRunner(newTestResolver()), cfg)
+	runner, err := NewNSQRunner(NewRunner(newTestResolver(), &schema.HttpCheck{}), cfg)
 	if err != nil {
 		panic(err)
 	}

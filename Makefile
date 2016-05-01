@@ -26,6 +26,7 @@ build: deps
 	-e "SLATE_HOST=slate:7000" \
 	-e "TARGETS=linux/amd64"  \
 	-e "NSQD_HOST=nsqd:4150" \
+	-e "BEZOS_HOST=bezosphere.opsee.in.com:8443" \
 	-e CUSTOMER_ID \
 	-e CUSTOMER_EMAIL \
 	-e BARTNET_HOST \

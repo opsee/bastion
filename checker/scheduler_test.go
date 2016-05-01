@@ -130,7 +130,7 @@ func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
   ******************************************************************************/
 
 func BenchmarkRunCheckParallel(b *testing.B) {
-	runner := NewRunner(newTestResolver())
+	runner := NewRunner(newTestResolver(), &schema.HttpCheck{})
 	check := (&TestCommonStubs{}).PassingCheckMultiTarget()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/basic/schema"
@@ -180,16 +179,18 @@ type Runner struct {
 	dispatcher  *Dispatcher
 	slateClient *SlateClient
 	registry    metrics.Registry
+	checkType   interface{}
 }
 
 // NewRunner returns a runner associated with a particular resolver.
-func NewRunner(resolver Resolver) *Runner {
+func NewRunner(resolver Resolver, checkType interface{}) *Runner {
 	dispatcher := NewDispatcher()
 
 	r := &Runner{
 		dispatcher: dispatcher,
 		resolver:   resolver,
 		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner."),
+		checkType:  checkType,
 	}
 
 	slateHost := config.GetConfig().SlateHost
@@ -211,7 +212,7 @@ func (r *Runner) resolveRequestTargets(ctx context.Context, check *schema.Check)
 		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
 	}
 
-	targets, err = r.resolver.Resolve(check.Target)
+	targets, err = r.resolver.Resolve(ctx, check.Target)
 	if err != nil {
 		return nil, err
 	}
@@ -253,6 +254,10 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 		var request Request
 		switch typedCheck := c.(type) {
 		case *schema.HttpCheck:
+			_, ok := r.checkType.(*schema.HttpCheck)
+			if !ok {
+				return nil, nil
+			}
 			var (
 				host       string
 				skipVerify = true
@@ -282,6 +287,11 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			}
 
 		case *schema.CloudWatchCheck:
+			_, ok := r.checkType.(*schema.CloudWatchCheck)
+			if !ok {
+				return nil, nil
+			}
+			defaultResponseCacheTTL := time.Second * time.Duration(5)
 			cloudwatchCheck, ok := c.(*schema.CloudWatchCheck)
 			if !ok {
 				return nil, fmt.Errorf("Unable to assert type on cloudwatch check")
@@ -302,8 +312,12 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				Metrics:                cloudwatchCheck.Metrics,
 				StatisticsIntervalSecs: int(check.Interval * 2),
 				StatisticsPeriod:       CloudWatchStatisticsPeriod,
-				Statistics:             []*string{aws.String("Average")}, //TODO(dan) Eventually include all Statistics?
+				Statistics:             []string{"Average"}, //TODO(dan) Eventually include all Statistics?
 				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
+				User:                   r.resolver.GetUser(),
+				Region:                 r.resolver.GetRegion(),
+				VpcId:                  r.resolver.GetVpc(),
+				MaxAge:                 defaultResponseCacheTTL,
 			}
 
 		default:
