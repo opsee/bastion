@@ -151,6 +151,32 @@ var SlateTests = []struct {
 		},
 		false,
 	},
+	{
+		&schema.Check{
+			Assertions: []*schema.Assertion{
+				&schema.Assertion{
+					Key:          "cloudwatch",
+					Value:        "CPUUtilization",
+					Relationship: "lessThan",
+					Operand:      "100",
+				},
+			},
+		},
+		// Test to see if zero value is preserved in Metric JSON.
+		&schema.CloudWatchResponse{
+			Metrics: []*schema.Metric{
+				&schema.Metric{
+					Name:      "CPUUtilization",
+					Value:     0,
+					Timestamp: &opsee_types.Timestamp{},
+					Tags:      []*schema.Tag{},
+					Unit:      "Percent",
+					Statistic: "Average",
+				},
+			},
+		},
+		true,
+	},
 }
 
 func TestSlateTests(t *testing.T) {
@@ -160,6 +186,7 @@ func TestSlateTests(t *testing.T) {
 		if err != nil {
 			log.WithError(err).Fatal("Failed to marshal json response")
 		}
+		log.WithFields(log.Fields{"response": string(response)}).Debug("Testing response")
 		actual, err := client.CheckAssertions(context.Background(), test.check, response)
 		if err != nil {
 			t.Fatal(err)
