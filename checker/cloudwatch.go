@@ -72,15 +72,15 @@ func (this *CloudWatchRequest) GetDimensions(metric *schema.CloudWatchMetric) ([
 			},
 		}, nil
 	case "AWS/EC2":
-		return []*cloudwatch.Dimension{
-			&cloudwatch.Dimension{
+		return []*opsee_aws_cloudwatch.Dimension{
+			&opsee_aws_cloudwatch.Dimension{
 				Name:  aws.String("InstanceId"),
 				Value: aws.String(this.Target.Id),
 			},
 		}, nil
 	case "AWS/AutoScaling":
-		return []*cloudwatch.Dimension{
-			&cloudwatch.Dimension{
+		return []*opsee_aws_cloudwatch.Dimension{
+			&opsee_aws_cloudwatch.Dimension{
 				Name:  aws.String("AutoScalingGroupName"),
 				Value: aws.String(this.Target.Id),
 			},
