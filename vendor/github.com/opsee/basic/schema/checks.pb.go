@@ -2,6 +2,38 @@
 // source: checks.proto
 // DO NOT EDIT!
 
+/*
+	Package schema is a generated protocol buffer package.
+
+	It is generated from these files:
+		checks.proto
+		region.proto
+		stack.proto
+		user.proto
+
+	It has these top-level messages:
+		Target
+		Check
+		Notification
+		Assertion
+		Header
+		HttpCheck
+		CloudWatchCheck
+		CloudWatchMetric
+		CloudWatchResponse
+		Tag
+		Metric
+		HttpResponse
+		CheckResponse
+		CheckResult
+		Region
+		Vpc
+		Subnet
+		BastionState
+		Stack
+		User
+		Customer
+*/
 package schema
 
 import proto "github.com/gogo/protobuf/proto"
@@ -22,6 +54,10 @@ import io "io"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+const _ = proto.GoGoProtoPackageIsVersion1
 
 type Target struct {
 	Name    string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2736,23 +2772,6 @@ func init() {
 			}
 		}),
 	})
-	GraphQLCheckSpecUnion = github_com_graphql_go_graphql.NewUnion(github_com_graphql_go_graphql.UnionConfig{
-		Name:        "CheckSpec",
-		Description: "",
-		Types: []*github_com_graphql_go_graphql.Object{
-			GraphQLHttpCheckType,
-			GraphQLCloudWatchCheckType,
-		},
-		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
-			switch value.(type) {
-			case *Check_HttpCheck:
-				return GraphQLHttpCheckType
-			case *Check_CloudwatchCheck:
-				return GraphQLCloudWatchCheckType
-			}
-			return nil
-		},
-	})
 	GraphQLCheckResponseReplyUnion = github_com_graphql_go_graphql.NewUnion(github_com_graphql_go_graphql.UnionConfig{
 		Name:        "CheckResponseReply",
 		Description: "",
@@ -2766,6 +2785,23 @@ func init() {
 				return GraphQLHttpResponseType
 			case *CheckResponse_CloudwatchResponse:
 				return GraphQLCloudWatchResponseType
+			}
+			return nil
+		},
+	})
+	GraphQLCheckSpecUnion = github_com_graphql_go_graphql.NewUnion(github_com_graphql_go_graphql.UnionConfig{
+		Name:        "CheckSpec",
+		Description: "",
+		Types: []*github_com_graphql_go_graphql.Object{
+			GraphQLHttpCheckType,
+			GraphQLCloudWatchCheckType,
+		},
+		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
+			switch value.(type) {
+			case *Check_HttpCheck:
+				return GraphQLHttpCheckType
+			case *Check_CloudwatchCheck:
+				return GraphQLCloudWatchCheckType
 			}
 			return nil
 		},
