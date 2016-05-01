@@ -23,8 +23,16 @@ build: deps
 	docker run \
 	--link bastion_slate_1:slate \
 	--link bastion_nsqd_1:nsqd \
-	-e AWS_DEFAULT_REGION \
+	-e "SLATE_HOST=slate:7000" \
 	-e "TARGETS=linux/amd64"  \
+	-e "NSQD_HOST=nsqd:4150" \
+	-e CUSTOMER_ID \
+	-e CUSTOMER_EMAIL \
+	-e BARTNET_HOST \
+	-e BASTION_AUTH_TYPE \
+	-e CUSTOMER_PASSWORD \
+	-e BASTION_AUTH_ENDPOINT \
+	-e AWS_DEFAULT_REGION \
 	-e PROJECT=$(PROJECT) \
 	-v `pwd`:/gopath/src/$(PROJECT) \
 	quay.io/opsee/build-go:16

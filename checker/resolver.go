@@ -73,6 +73,11 @@ func (this *AWSResolver) resolveEC2Instances(instanceIds ...string) ([]*schema.T
 	for _, id := range instanceIds {
 		ids = append(ids, aws.String(id))
 	}
+
+	if len(ids) == 0 {
+		return []*schema.Target{}, nil
+	}
+
 	input := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			&ec2.Filter{
@@ -136,6 +141,7 @@ func (this *AWSResolver) resolveASGs(asgNames ...string) ([]*schema.Target, erro
 			}
 		}
 	}
+
 	return this.resolveEC2Instances(instanceIds...)
 }
 
@@ -163,6 +169,7 @@ func (this *AWSResolver) resolveELBs(elbNames ...string) ([]*schema.Target, erro
 	for _, elbInstance := range elb.Instances {
 		instanceIds = append(instanceIds, aws.StringValue(elbInstance.InstanceId))
 	}
+
 	return this.resolveEC2Instances(instanceIds...)
 }
 
@@ -234,9 +241,6 @@ func (this *AWSResolver) Resolve(target *schema.Target) ([]*schema.Target, error
 		}
 		return nil, fmt.Errorf("Invalid target: %s", target.String())
 	case "asg":
-		if target.Name != "" {
-			return this.resolveASGs(target.Name)
-		}
 		if target.Id != "" {
 			return this.resolveASGs(target.Id)
 		}
