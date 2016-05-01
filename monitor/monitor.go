@@ -16,7 +16,6 @@ var (
 	components = []string{
 		"runner",
 		"test_runner",
-		"hacker",
 		"checker",
 		"discovery",
 		"monitor",
