@@ -15,6 +15,6 @@ nsqadmin:
   links:
     - nsqd:nsqd
 slate:
-  image: quay.io/opsee/slate:07d4aa52e9ada49fc569945c41d6a98a080c4984
+  image: quay.io/opsee/slate:27aee50704da6a9955164481f299c12599908c66
   ports:
     - 7000:7000
