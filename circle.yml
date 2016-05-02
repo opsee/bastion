@@ -9,7 +9,6 @@ machine:
     - docker
   environment:
     ci: "true"
-    LOG_LEVEL: "debug"
     VPN_REMOTE: "bastion.opsee.com"
     DNS_SERVER: 169.254.169.253
     NSQD_HOST: nsqd.in.opsee.com
