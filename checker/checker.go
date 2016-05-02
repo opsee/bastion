@@ -15,12 +15,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
-	"github.com/nu7hatch/gouuid"
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/auth"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
+	"github.com/opsee/bastion/vendor/github.com/satori/go.uuid"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -290,13 +290,15 @@ type Checker struct {
 	Scheduler  *Scheduler
 	grpcServer *grpc.Server
 	Runner     *RemoteRunner
+	resolver   *Resolver
 }
 
 // NewChecker sets up the GRPC server for a Checker.
 
-func NewChecker() *Checker {
+func NewChecker(r *Resolver) *Checker {
 	return &Checker{
 		grpcServer: grpc.NewServer(),
+		resolver:   r,
 	}
 }
 
@@ -388,8 +390,12 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 	ctx, _ = context.WithDeadline(ctx, deadline)
 
 	testCheckResponse := &opsee.TestCheckResponse{}
-
-	result, err := c.Runner.RunCheck(ctx, req.Check)
+	targets, err := c.resolver.Resolve(ctx, req.Check.Target)
+	if err != nil {
+		testCheckResponse.Error = handleError(err)
+		return testCheckResponse, nil
+	}
+	result, err := c.Runner.RunCheck(ctx, req.Check, targets)
 	// I hate this hot garbage. We have to do this because the Java
 	// GRPC client will throw exceptions if we return errors via GRPC.
 	// So, rather than dealing with exceptions on the bartnet side, we

@@ -49,8 +49,8 @@ func main() {
 	runnerConfig.ProducerNsqdHost = cfg.NsqdHost
 	runnerConfig.CustomerID = cfg.CustomerId
 	log.WithFields(log.Fields{"service": moduleName}).Info("starting up")
-
-	newChecker := checker.NewChecker()
+	resolver := checker.NewResolver(bezosClient, config.GetConfig())
+	newChecker := checker.NewChecker(resolver)
 	runner, err := checker.NewRemoteRunner(runnerConfig)
 	if err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
@@ -69,7 +69,6 @@ func main() {
 	}
 	bezosClient := opsee.NewBezosClient(bezosConn)
 
-	resolver := checker.NewResolver(bezosClient, config.GetConfig())
 	scheduler := checker.NewScheduler(resolver)
 	newChecker.Scheduler = scheduler
 
