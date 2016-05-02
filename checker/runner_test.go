@@ -74,7 +74,6 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 }
 
 func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
-	ctx := context.WithValue(s.Context, "MaxHosts", 1)
 	check := s.Common.PassingCheckMultiTarget()
 	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
@@ -83,6 +82,7 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 		log.Fatal("Failed to get test targets")
 	}
 
+	ctx := context.WithValue(s.Context, "MaxHosts", 1)
 	responses, err := s.Runner.RunCheck(ctx, check, targets)
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
@@ -93,15 +93,15 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 }
 
 func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
-	ctx := context.WithValue(s.Context, "MaxHosts", 3)
 	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg",
 	})
 	if err != nil {
 		log.Fatal("Failed to get test targets")
 	}
-
 	check := s.Common.PassingCheckInstanceTarget()
+
+	ctx := context.WithValue(s.Context, "MaxHosts", 3)
 	responses, err := s.Runner.RunCheck(ctx, check, targets)
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
