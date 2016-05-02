@@ -79,7 +79,9 @@ func (s *CheckerTestSuite) SetupTest() {
 	resetNsq(strings.Split(s.RunnerConfig.ConsumerNsqdHost, ":")[0], s.ResetNsqConfig)
 	var err error
 
-	checker := NewChecker()
+	resolver := newTestResolver()
+
+	checker := NewChecker(resolver)
 	testRunner, err := NewRemoteRunner(&NSQRunnerConfig{
 		ProducerNsqdHost:    s.RunnerConfig.ProducerNsqdHost,
 		ConsumerNsqdHost:    s.RunnerConfig.ConsumerNsqdHost,
@@ -93,7 +95,7 @@ func (s *CheckerTestSuite) SetupTest() {
 		panic(err)
 	}
 
-	checker.Scheduler = NewScheduler(newTestResolver())
+	checker.Scheduler = NewScheduler(resolver)
 	checker.Scheduler.Producer = &testPublisher{make(chan []byte, 1)}
 	checker.Runner = testRunner
 	checker.Port = 4000

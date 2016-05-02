@@ -45,17 +45,6 @@ func main() {
 	flag.IntVar(&adminPort, "admin_port", 4000, "Port for the admin server.")
 	flag.Parse()
 
-	runnerConfig.ConsumerNsqdHost = cfg.NsqdHost
-	runnerConfig.ProducerNsqdHost = cfg.NsqdHost
-	runnerConfig.CustomerID = cfg.CustomerId
-	log.WithFields(log.Fields{"service": moduleName}).Info("starting up")
-	resolver := checker.NewResolver(bezosClient, config.GetConfig())
-	newChecker := checker.NewChecker(resolver)
-	runner, err := checker.NewRemoteRunner(runnerConfig)
-	if err != nil {
-		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
-	}
-	newChecker.Runner = runner
 	bezosConn, err := grpc.Dial(
 		config.GetConfig().BezosHost,
 		grpc.WithTransportCredentials(
@@ -68,6 +57,18 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	bezosClient := opsee.NewBezosClient(bezosConn)
+
+	runnerConfig.ConsumerNsqdHost = cfg.NsqdHost
+	runnerConfig.ProducerNsqdHost = cfg.NsqdHost
+	runnerConfig.CustomerID = cfg.CustomerId
+	log.WithFields(log.Fields{"service": moduleName}).Info("starting up")
+	resolver := checker.NewResolver(bezosClient, config.GetConfig())
+	newChecker := checker.NewChecker(resolver)
+	runner, err := checker.NewRemoteRunner(runnerConfig)
+	if err != nil {
+		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
+	}
+	newChecker.Runner = runner
 
 	scheduler := checker.NewScheduler(resolver)
 	newChecker.Scheduler = scheduler

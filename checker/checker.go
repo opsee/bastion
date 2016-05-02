@@ -20,8 +20,8 @@ import (
 	"github.com/opsee/bastion/auth"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"github.com/opsee/bastion/vendor/github.com/satori/go.uuid"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
+	"github.com/satori/go.uuid"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -59,8 +59,12 @@ func init() {
 func UnmarshalAny(any *opsee_types.Any) (interface{}, error) {
 	class := any.TypeUrl
 	bytes := any.Value
+	t, ok := registry[class]
+	if !ok {
+		return nil, fmt.Errorf("type not in Any registry: %s", class)
+	}
 
-	instance := reflect.New(registry[class]).Interface()
+	instance := reflect.New(t).Interface()
 	err := proto.Unmarshal(bytes, instance.(proto.Message))
 	if err != nil {
 		log.WithFields(log.Fields{"service": "checker", "event": "unmarshall returned error", "error": "couldn't unmarshall *Any"}).Error(err.Error())
@@ -219,7 +223,8 @@ func (r *RemoteRunner) withLock(f func()) {
 // RunCheck asynchronously executes the check and blocks waiting on the result. It's important to set a
 // context deadline unless you want this to block forever.
 
-func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema.CheckResult, error) {
+func (r *RemoteRunner) RunCheck(ctx context.Context, checkWithTargets *CheckWithTargets) (*schema.CheckResult, error) {
+	chk := checkWithTargets.Check
 	log.Debugf("RemoteRunner Running check %s", chk.String())
 
 	var (
@@ -227,12 +232,7 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema
 		err error
 	)
 	if chk.Id == "" {
-		uid, err := uuid.NewV4()
-		if err != nil {
-			log.WithError(err).Error("Couldn't create UUID")
-			return nil, err
-		}
-		id = uid.String()
+		id = uuid.NewV4().String()
 		chk.Id = id
 	} else {
 		id = chk.Id
@@ -252,9 +252,9 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, chk *schema.Check) (*schema
 		})
 	}()
 
-	msg, err := proto.Marshal(chk)
+	msg, err := json.Marshal(checkWithTargets)
 	if err != nil {
-		log.WithError(err).Error("Failed to unmarshal check")
+		log.WithError(err).Error("Failed to marshal checkwithtargets")
 		return nil, err
 	}
 
@@ -290,12 +290,12 @@ type Checker struct {
 	Scheduler  *Scheduler
 	grpcServer *grpc.Server
 	Runner     *RemoteRunner
-	resolver   *Resolver
+	resolver   Resolver
 }
 
 // NewChecker sets up the GRPC server for a Checker.
 
-func NewChecker(r *Resolver) *Checker {
+func NewChecker(r Resolver) *Checker {
 	return &Checker{
 		grpcServer: grpc.NewServer(),
 		resolver:   r,
@@ -390,12 +390,12 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 	ctx, _ = context.WithDeadline(ctx, deadline)
 
 	testCheckResponse := &opsee.TestCheckResponse{}
-	targets, err := c.resolver.Resolve(ctx, req.Check.Target)
+	checkWithTargets, err := NewCheckWithTargets(c.resolver, req.Check)
 	if err != nil {
 		testCheckResponse.Error = handleError(err)
 		return testCheckResponse, nil
 	}
-	result, err := c.Runner.RunCheck(ctx, req.Check, targets)
+	result, err := c.Runner.RunCheck(ctx, checkWithTargets)
 	// I hate this hot garbage. We have to do this because the Java
 	// GRPC client will throw exceptions if we return errors via GRPC.
 	// So, rather than dealing with exceptions on the bartnet side, we
