@@ -26,7 +26,7 @@ type RunnerTestSuite struct {
 
 func (s *RunnerTestSuite) SetupTest() {
 	s.Resolver = newTestResolver()
-	s.Runner = NewRunner(s.Resolver, &schema.HttpCheck{})
+	s.Runner = NewRunner(&schema.HttpCheck{})
 	s.Common = TestCommonStubs{}
 	s.Context = context.Background()
 }
@@ -37,12 +37,13 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 	slate_host := os.Getenv("SLATE_HOST")
 	os.Setenv("SLATE_HOST", "")
 	assert.Equal(s.T(), "", os.Getenv("SLATE_HOST"))
-	runner := NewRunner(s.Resolver, &schema.HttpCheck{})
-	responses, err := runner.RunCheck(s.Context, check)
-	assert.NoError(s.T(), err)
+	runner := NewRunner(&schema.HttpCheck{})
 	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
 	})
+
+	responses, err := runner.RunCheck(s.Context, check, targets)
+	assert.NoError(s.T(), err)
 	assert.NoError(s.T(), err)
 	assert.Len(s.T(), targets, 3)
 
@@ -56,11 +57,12 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 
 func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 	check := s.Common.PassingCheckMultiTarget()
-	responses, err := s.Runner.RunCheck(s.Context, check)
-	assert.NoError(s.T(), err)
 	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
 		Id: "sg3",
 	})
+	responses, err := s.Runner.RunCheck(s.Context, check, targets)
+	assert.NoError(s.T(), err)
+
 	assert.NoError(s.T(), err)
 	assert.Len(s.T(), targets, 3)
 
@@ -74,7 +76,14 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 	ctx := context.WithValue(s.Context, "MaxHosts", 1)
 	check := s.Common.PassingCheckMultiTarget()
-	responses, err := s.Runner.RunCheck(ctx, check)
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
+		Id: "sg3",
+	})
+	if err != nil {
+		log.Fatal("Failed to get test targets")
+	}
+
+	responses, err := s.Runner.RunCheck(ctx, check, targets)
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
@@ -85,8 +94,15 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 
 func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
 	ctx := context.WithValue(s.Context, "MaxHosts", 3)
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
+		Id: "sg",
+	})
+	if err != nil {
+		log.Fatal("Failed to get test targets")
+	}
+
 	check := s.Common.PassingCheckInstanceTarget()
-	responses, err := s.Runner.RunCheck(ctx, check)
+	responses, err := s.Runner.RunCheck(ctx, check, targets)
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
@@ -98,7 +114,14 @@ func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
 func (s *RunnerTestSuite) TestRunCheckDeadlineExceeded() {
 	ctx, _ := context.WithDeadline(s.Context, time.Unix(0, 0))
 	check := s.Common.PassingCheckMultiTarget()
-	responses, err := s.Runner.RunCheck(ctx, check)
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
+		Id: "sg",
+	})
+	if err != nil {
+		log.Fatal("Failed to get test targets")
+	}
+
+	responses, err := s.Runner.RunCheck(ctx, check, targets)
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
@@ -111,7 +134,14 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	ctx, cancel := context.WithCancel(s.Context)
 	cancel()
 	check := s.Common.PassingCheckMultiTarget()
-	responses, err := s.Runner.RunCheck(ctx, check)
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
+		Id: "sg",
+	})
+	if err != nil {
+		log.Fatal("Failed to get test targets")
+	}
+
+	responses, err := s.Runner.RunCheck(ctx, check, targets)
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
@@ -120,16 +150,16 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	assert.Equal(s.T(), 3, len(responses))
 }
 
-func (s *RunnerTestSuite) TestRunCheckResolveFailureReturnsError() {
-	check := s.Common.BadCheck()
-	responses, err := s.Runner.RunCheck(s.Context, check)
-	assert.Error(s.T(), err)
-	assert.Nil(s.T(), responses)
-}
-
 func (s *RunnerTestSuite) TestRunCheckBadCheckReturnsError() {
 	check := s.Common.BadCheck()
-	responses, err := s.Runner.RunCheck(s.Context, check)
+	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
+		Id: "sg",
+	})
+	if err != nil {
+		log.Fatal("Failed to get test targets")
+	}
+
+	responses, err := s.Runner.RunCheck(s.Context, check, targets)
 	assert.Error(s.T(), err)
 	assert.Nil(s.T(), responses)
 }
@@ -209,7 +239,7 @@ func (s *NSQRunnerTestSuite) SetupTest() {
 	}
 	s.Producer = producer
 
-	runner, err := NewNSQRunner(NewRunner(s.Resolver, &schema.HttpCheck{}), s.Config)
+	runner, err := NewNSQRunner(NewRunner(&schema.HttpCheck{}), s.Config)
 	if err != nil {
 		panic(err)
 	}

@@ -56,7 +56,7 @@ func (s *CheckerTestSuite) SetupSuite() {
 		MaxHandlers:         1,
 		CustomerID:          "test",
 	}
-	runner, err := NewNSQRunner(NewRunner(newTestResolver(), &schema.HttpCheck{}), cfg)
+	runner, err := NewNSQRunner(NewRunner(&schema.HttpCheck{}), cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -93,7 +93,7 @@ func (s *CheckerTestSuite) SetupTest() {
 		panic(err)
 	}
 
-	checker.Scheduler = NewScheduler()
+	checker.Scheduler = NewScheduler(newTestResolver())
 	checker.Scheduler.Producer = &testPublisher{make(chan []byte, 1)}
 	checker.Runner = testRunner
 	checker.Port = 4000

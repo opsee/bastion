@@ -6,7 +6,6 @@ import (
 	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"golang.org/x/net/context"
 )
 
 // Test the Scheduler
@@ -19,7 +18,7 @@ type SchedulerTestSuite struct {
 
 func (s *SchedulerTestSuite) SetupTest() {
 	s.Common = TestCommonStubs{}
-	s.Scheduler = NewScheduler()
+	s.Scheduler = NewScheduler(newTestResolver())
 }
 
 // I am lazy, so I am only testing validateCheck once.
@@ -128,16 +127,17 @@ func (s *SchedulerTestSuite) TestDeleteReturnsOriginalCheck() {
 /*******************************************************************************
  * RunCheck() Benchmarks
   ******************************************************************************/
-
+/*
 func BenchmarkRunCheckParallel(b *testing.B) {
 	runner := NewRunner(newTestResolver(), &schema.HttpCheck{})
 	check := (&TestCommonStubs{}).PassingCheckMultiTarget()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			runner.RunCheck(context.Background(), check)
+			runner.RunCheck(context.Background(), check, )
 		}
 	})
 }
+*/
 
 func TestSchedulerTestSuite(t *testing.T) {
 	setupTestEnv()
