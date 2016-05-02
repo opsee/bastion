@@ -58,10 +58,15 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner.")
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
+		checkWithTargets := &CheckWithTargets{}
+		if err := json.Unmarshal(m.Body, checkWithTargets); err != nil {
+			return err
+		}
+
 		// Message is a Check
 		// We emit a CheckResult
 		check := &schema.Check{}
-		if err := proto.Unmarshal(m.Body, check); err != nil {
+		if err := proto.Unmarshal(m.Body, checkWithTargets.CheckProto); err != nil {
 			return err
 		}
 		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
@@ -72,7 +77,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
 		// A call to RunCheck is synchronous. Calling cancel() is not necessarily superfluous though.
-		responses, err := runner.RunCheck(ctx, check)
+		responses, err := runner.RunCheck(ctx, checkWithTargets.Targets)
 		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
 		cancel()
 		if err != nil {
@@ -175,7 +180,6 @@ func (r *NSQRunner) Stop() {
 // concurrent use. It provides an asynchronous API for submitting jobs and
 // manages its own concurrency.
 type Runner struct {
-	resolver    Resolver
 	dispatcher  *Dispatcher
 	slateClient *SlateClient
 	registry    metrics.Registry
@@ -183,12 +187,11 @@ type Runner struct {
 }
 
 // NewRunner returns a runner associated with a particular resolver.
-func NewRunner(resolver Resolver, checkType interface{}) *Runner {
+func NewRunner(checkType interface{}) *Runner {
 	dispatcher := NewDispatcher()
 
 	r := &Runner{
 		dispatcher: dispatcher,
-		resolver:   resolver,
 		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner."),
 		checkType:  checkType,
 	}
@@ -200,40 +203,6 @@ func NewRunner(resolver Resolver, checkType interface{}) *Runner {
 	}
 
 	return r
-}
-
-func (r *Runner) resolveRequestTargets(ctx context.Context, check *schema.Check) ([]*schema.Target, error) {
-	var (
-		targets []*schema.Target
-		err     error
-	)
-
-	if check.Target == nil {
-		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
-	}
-
-	targets, err = r.resolver.Resolve(ctx, check.Target)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(targets) == 0 {
-		return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
-	}
-
-	var (
-		maxHosts int
-		ok       bool
-	)
-	maxHosts, ok = ctx.Value("MaxHosts").(int)
-	if !ok {
-		maxHosts = len(targets)
-	}
-	if maxHosts > len(targets) {
-		maxHosts = len(targets)
-	}
-
-	return targets[:maxHosts], nil
 }
 
 func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*schema.Target) (chan *Task, error) {
@@ -388,29 +357,28 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 	return responses
 }
 
-// RunCheck will resolve all of the targets in a check and trigger execution
-// against each of the targets. A channel is returned over which the caller
-// may receive all of the CheckResponse objects -- 1:1 with the number of
-// resolved targets.
-//
-// RunCheck will return errors immediately if it cannot resolve the check's
-// target or if it cannot unmarshal the check body.
-//
 // If the Context passed to RunCheck includes a MaxHosts value, at most MaxHosts
 // CheckResponse objects will be returned.
 //
 // If the Context passed to RunCheck is cancelled or its deadline is exceeded,
 // all CheckResponse objects after that event will be passed to the channel
 // with appropriate errors associated with them.
-func (r *Runner) RunCheck(ctx context.Context, check *schema.Check) ([]*schema.CheckResponse, error) {
-	targets, err := r.resolveRequestTargets(ctx, check)
-	if err != nil {
-		metrics.GetOrRegisterCounter("resolver_errors", r.registry).Inc(1)
-		return nil, err
+func (r *Runner) RunCheck(ctx context.Context, check *schema.Check, targets []*schema.Target) ([]*schema.CheckResponse, error) {
+	var (
+		maxHosts int
+		ok       bool
+	)
+	maxHosts, ok = ctx.Value("MaxHosts").(int)
+	if !ok {
+		maxHosts = len(targets)
 	}
+	if maxHosts > len(targets) {
+		maxHosts = len(targets)
+	}
+	targets = targets[:maxHosts]
 
 	// tasks is a channel of tasks which runCheck will iterate over.
-	tasks, err := r.dispatch(ctx, check, targets)
+	tasks, err := r.dispatch(ctx, check.Check, targets)
 	if err != nil {
 		return nil, err
 	}
@@ -418,6 +386,6 @@ func (r *Runner) RunCheck(ctx context.Context, check *schema.Check) ([]*schema.C
 	// TODO(greg): Move assertion processing to a parallel model, but for now
 	// try to be a little nicer to slate and run these serially, blocking until
 	// all assertions have been processed.
-	responses := r.runAssertions(ctx, check, tasks)
+	responses := r.runAssertions(ctx, check.Check, tasks)
 	return responses, nil
 }

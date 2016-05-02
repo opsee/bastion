@@ -1,12 +1,12 @@
 package checker
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
 )
 
@@ -166,6 +166,7 @@ type Scheduler struct {
 	scheduleMap *scheduleMap
 	Producer    Publisher
 	stopChan    chan struct{}
+	resolver    *AWSResolver
 }
 
 // NewScheduler creates a funcitoning scheduler including its own scheduleMap.
@@ -248,17 +249,22 @@ func (s *Scheduler) Start() error {
 				s.scheduleMap.Destroy()
 				return
 			case check := <-s.scheduleMap.RunChan():
-				if msg, err := proto.Marshal(check); err != nil {
+				if checkWithTargets, err := NewCheckWithTargets(s.resolver, check); err != nil {
 					log.Error(err.Error())
 				} else {
-					// TODO(greg): All of the channel configuration stuff, really needs to
-					// be centralized and easily managed. It can just be a static file or
-					// something that every microservice refers to--just to make sure
-					// they're all on the same page.
-					if err := s.Producer.Publish("runner", msg); err != nil {
+					jsonBytes, err := json.Marshal(checkWithTargets)
+					if err != nil {
 						log.Error(err.Error())
 					} else {
-						log.Debug("Scheduled check for execution: %s", check.Id)
+						// TODO(greg): All of the channel configuration stuff, really needs to
+						// be centralized and easily managed. It can just be a static file or
+						// something that every microservice refers to--just to make sure
+						// they're all on the same page.
+						if err := s.Producer.Publish("runner", jsonBytes); err != nil {
+							log.Error(err.Error())
+						} else {
+							log.Debug("Scheduled check for execution: %s", check.Id)
+						}
 					}
 				}
 			}
