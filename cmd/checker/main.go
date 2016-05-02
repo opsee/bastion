@@ -1,13 +1,18 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
+	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
@@ -51,6 +56,19 @@ func main() {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
 	newChecker.Runner = runner
+	bezosConn, err := grpc.Dial(
+		config.GetConfig().BezosHost,
+		grpc.WithTransportCredentials(
+			credentials.NewTLS(&tls.Config{
+				InsecureSkipVerify: false,
+			}),
+		),
+	)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	bezosClient := opsee.NewBezosClient(bezosConn)
+
 	resolver := checker.NewResolver(bezosClient, config.GetConfig())
 	scheduler := checker.NewScheduler(resolver)
 	newChecker.Scheduler = scheduler

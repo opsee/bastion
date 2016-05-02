@@ -130,7 +130,7 @@ func (this *CloudWatchRequest) Do(ctx context.Context) <-chan *Response {
 		}
 
 		maxAge := &opsee_types.Timestamp{}
-		maxAge.Scan(time.Now().UTC().Add(this.MaxAge * -1))
+		maxAge.Scan(time.Now().UTC().Add(this.MaxAge * -2))
 
 		resp, err := BezosClient.Get(
 			ctx,
