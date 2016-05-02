@@ -2,6 +2,7 @@ package checker
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"golang.org/x/net/context"
@@ -20,6 +21,12 @@ var (
 	cloudwatchClient           *cloudwatch.CloudWatch
 	CloudWatchStatisticsPeriod = 60
 )
+
+type metricList []*schema.Metric
+
+func (l metricList) Len() int           { return len(l) }
+func (l metricList) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+func (l metricList) Less(i, j int) bool { return l[i].Timestamp.Millis() < l[j].Timestamp.Millis() }
 
 func init() {
 	cfg := config.GetConfig()
@@ -71,7 +78,7 @@ func (this *CloudWatchRequest) Do() <-chan *Response {
 	for _, metric := range this.Metrics {
 		// 1 minute lag.  otherwise we won't get stats
 		endTime := time.Now().UTC().Add(time.Duration(-1) * time.Minute)
-		startTime := endTime.Add(time.Duration(-1*this.StatisticsIntervalSecs) * time.Second)
+		startTime := endTime.Add(time.Duration(-5*this.StatisticsIntervalSecs) * time.Second)
 		log.WithFields(log.Fields{"startTime": startTime, "endTime": endTime}).Debug("Fetching cloudwatch metric statistics")
 
 		dimensions, err := this.GetDimensions(metric)
@@ -152,6 +159,8 @@ func (this *CloudWatchRequest) Do() <-chan *Response {
 			break
 		}
 	}
+
+	sort.Sort(metricList(responseMetrics))
 
 	cloudwatchResponse := &schema.CloudWatchResponse{
 		Namespace: this.Namespace,
