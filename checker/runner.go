@@ -62,13 +62,8 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		if err := json.Unmarshal(m.Body, checkWithTargets); err != nil {
 			return err
 		}
+		check := checkWithTargets.Check
 
-		// Message is a Check
-		// We emit a CheckResult
-		check := &schema.Check{}
-		if err := proto.Unmarshal(m.Body, checkWithTargets.CheckProto); err != nil {
-			return err
-		}
 		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
 
 		timestamp := &opsee_types.Timestamp{}
@@ -77,7 +72,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
 		// A call to RunCheck is synchronous. Calling cancel() is not necessarily superfluous though.
-		responses, err := runner.RunCheck(ctx, checkWithTargets.Targets)
+		responses, err := runner.RunCheck(ctx, check, checkWithTargets.Targets)
 		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
 		cancel()
 		if err != nil {
@@ -276,17 +271,26 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				continue
 			}
 
+			globalConfig := config.GetConfig()
+			metaData, err := globalConfig.AWS.MetaData()
+			if err != nil {
+				log.Warn("Couldn't get MetaData from global config.")
+				continue
+			}
+
 			request = &CloudWatchRequest{
 				Target:                 target,
 				Metrics:                cloudwatchCheck.Metrics,
 				StatisticsIntervalSecs: int(check.Interval * 2),
 				StatisticsPeriod:       CloudWatchStatisticsPeriod,
-				Statistics:             []string{"Average"}, //TODO(dan) Eventually include all Statistics?
+				Statistics:             []string{"Average"},
 				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
-				User:                   r.resolver.GetUser(),
-				Region:                 r.resolver.GetRegion(),
-				VpcId:                  r.resolver.GetVpc(),
-				MaxAge:                 defaultResponseCacheTTL,
+				User: &schema.User{
+					CustomerId: globalConfig.CustomerId,
+				},
+				Region: metaData.Region,
+				VpcId:  metaData.VpcId,
+				MaxAge: defaultResponseCacheTTL,
 			}
 
 		default:
@@ -378,7 +382,7 @@ func (r *Runner) RunCheck(ctx context.Context, check *schema.Check, targets []*s
 	targets = targets[:maxHosts]
 
 	// tasks is a channel of tasks which runCheck will iterate over.
-	tasks, err := r.dispatch(ctx, check.Check, targets)
+	tasks, err := r.dispatch(ctx, check, targets)
 	if err != nil {
 		return nil, err
 	}
@@ -386,6 +390,6 @@ func (r *Runner) RunCheck(ctx context.Context, check *schema.Check, targets []*s
 	// TODO(greg): Move assertion processing to a parallel model, but for now
 	// try to be a little nicer to slate and run these serially, blocking until
 	// all assertions have been processed.
-	responses := r.runAssertions(ctx, check.Check, tasks)
+	responses := r.runAssertions(ctx, check, tasks)
 	return responses, nil
 }

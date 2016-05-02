@@ -166,15 +166,16 @@ type Scheduler struct {
 	scheduleMap *scheduleMap
 	Producer    Publisher
 	stopChan    chan struct{}
-	resolver    *AWSResolver
+	resolver    Resolver
 }
 
 // NewScheduler creates a funcitoning scheduler including its own scheduleMap.
 
-func NewScheduler() *Scheduler {
+func NewScheduler(r Resolver) *Scheduler {
 	scheduler := &Scheduler{
 		scheduleMap: newScheduleMap(),
 		stopChan:    make(chan struct{}, 1),
+		resolver:    r,
 	}
 
 	return scheduler

@@ -51,7 +51,8 @@ func main() {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
 	newChecker.Runner = runner
-	scheduler := checker.NewScheduler()
+	resolver := checker.NewResolver(bezosClient, config.GetConfig())
+	scheduler := checker.NewScheduler(resolver)
 	newChecker.Scheduler = scheduler
 
 	producer, err := nsq.NewProducer(cfg.NsqdHost, nsq.NewConfig())

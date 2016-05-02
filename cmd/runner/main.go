@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"os"
 	"os/signal"
@@ -9,12 +8,9 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/basic/schema"
-	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 const (
@@ -44,22 +40,9 @@ func main() {
 	runnerConfig.ProducerNsqdHost = config.GetConfig().NsqdHost
 	runnerConfig.CustomerID = config.GetConfig().CustomerId
 
-	bezosConn, err := grpc.Dial(
-		config.GetConfig().BezosHost,
-		grpc.WithTransportCredentials(
-			credentials.NewTLS(&tls.Config{
-				InsecureSkipVerify: false,
-			}),
-		),
-	)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	bezosClient := opsee.NewBezosClient(bezosConn)
-
 	log.Info("Starting %s...", moduleName)
 	// TODO(greg): This intialization is fucking bullshit. Kill me.
-	runner, err := checker.NewNSQRunner(checker.NewRunner(checker.NewResolver(bezosClient, config.GetConfig()), &schema.HttpCheck{}), runnerConfig)
+	runner, err := checker.NewNSQRunner(checker.NewRunner(&schema.HttpCheck{}), runnerConfig)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
