@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"encoding/json"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/nsqio/go-nsq"
@@ -115,7 +117,7 @@ func (s *RunnerTestSuite) TestRunCheckDeadlineExceeded() {
 	ctx, _ := context.WithDeadline(s.Context, time.Unix(0, 0))
 	check := s.Common.PassingCheckMultiTarget()
 	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
-		Id: "sg",
+		Id: "sg3",
 	})
 	if err != nil {
 		log.Fatal("Failed to get test targets")
@@ -135,7 +137,7 @@ func (s *RunnerTestSuite) TestRunCheckCancelledContext() {
 	cancel()
 	check := s.Common.PassingCheckMultiTarget()
 	targets, err := s.Resolver.Resolve(s.Context, &schema.Target{
-		Id: "sg",
+		Id: "sg3",
 	})
 	if err != nil {
 		log.Fatal("Failed to get test targets")
@@ -258,7 +260,8 @@ func (s *NSQRunnerTestSuite) TearDownTest() {
 
 func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	check := s.Common.PassingCheck()
-	msg, _ := proto.Marshal(check)
+	checkWithTargets, _ := NewCheckWithTargets(s.Resolver, check)
+	msg, _ := json.Marshal(checkWithTargets)
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg)
 	timer := time.NewTimer(10 * time.Second)
 	select {
