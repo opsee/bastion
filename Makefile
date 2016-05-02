@@ -11,7 +11,8 @@ endif
 all: clean fmt build
 
 deps:
-	docker-compose down
+	docker-compose stop
+	docker-compose rm -f
 	docker-compose up -d
 	docker run --link bastion_slate_1 aanand/wait
 
@@ -22,7 +23,6 @@ build: deps
 	docker run \
 	--link bastion_slate_1:slate \
 	--link bastion_nsqd_1:nsqd \
-	-e "LOG_LEVEL=debug" \
 	-e "SLATE_HOST=slate:7000" \
 	-e "TARGETS=linux/amd64"  \
 	-e "NSQD_HOST=nsqd:4150" \
