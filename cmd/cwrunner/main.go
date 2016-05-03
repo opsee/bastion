@@ -42,6 +42,11 @@ func main() {
 
 	log.Info("Starting %s...", moduleName)
 	// TODO(greg): This intialization is fucking bullshit. Kill me.
+	err = checker.ConnectCloudwatchBezosClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	runner, err := checker.NewNSQRunner(checker.NewRunner(&schema.CloudWatchCheck{}), runnerConfig)
 	if err != nil {
 		log.Fatal(err.Error())

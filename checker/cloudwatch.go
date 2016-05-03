@@ -33,6 +33,10 @@ func (l metricList) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l metricList) Less(i, j int) bool { return l[i].Timestamp.Millis() < l[j].Timestamp.Millis() }
 
 func init() {
+	Recruiters.RegisterWorker(cloudwatchWorkerTaskType, NewCloudWatchWorker)
+}
+
+func ConnectCloudwatchBezosClient() error {
 	bezosConn, err := grpc.Dial(
 		config.GetConfig().BezosHost,
 		grpc.WithTransportCredentials(
@@ -42,11 +46,9 @@ func init() {
 		),
 	)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 	BezosClient = opsee.NewBezosClient(bezosConn)
-
-	Recruiters.RegisterWorker(cloudwatchWorkerTaskType, NewCloudWatchWorker)
 }
 
 type CloudWatchRequest struct {
