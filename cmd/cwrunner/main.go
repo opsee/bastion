@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/opsee/basic/schema"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
