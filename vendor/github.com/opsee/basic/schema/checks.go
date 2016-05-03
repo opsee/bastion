@@ -52,6 +52,10 @@ func (m *Check) MarshalJSON() ([]byte, error) {
 	return jsonBytes.Bytes(), nil
 }
 
+func (m *Check) UnmarshalJSON(data []byte) error {
+	return jsonpb.Unmarshal(bytes.NewBuffer(data), m)
+}
+
 // these exist because bartnet and beavis expect {typeurl: "blah", value: "blach"} in their json API
 func (check *Check) MarshalCrappyJSON() ([]byte, error) {
 	var (
