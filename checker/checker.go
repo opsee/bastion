@@ -36,9 +36,6 @@ const (
 	// message types that specify a version number.
 	BastionProtoVersion = 1
 
-	// Time to allow requests to read a response body.
-	BodyReadTimeout = 10 * time.Second
-
 	// Maximum length of response bodies
 	MaxContentLength = 128000
 )

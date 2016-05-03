@@ -1,7 +1,6 @@
 package checker
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/tls"
 	"errors"
@@ -22,6 +21,8 @@ import (
 
 const (
 	httpWorkerTaskType = "HTTPRequest"
+	ConnectTimeout     = 15 * time.Second
+	ReadWriteTimeout   = 10 * time.Second
 )
 
 // HTTPRequest and HTTPResponse leave their bodies as strings to make life
@@ -119,7 +120,7 @@ func (r *HTTPRequest) doWebSocket() *Response {
 	}
 
 	defer c.Close()
-	err = c.SetReadDeadline(time.Now().Add(BodyReadTimeout))
+	err = c.SetReadDeadline(time.Now().Add(ReadWriteTimeout))
 	if err != nil {
 		log.WithError(err).Error("Failed to set read deadline on WebSocket connection.")
 		response.Error = err
@@ -172,6 +173,17 @@ func (r *HTTPRequest) doWebSocket() *Response {
 	}
 }
 
+func TimeoutDialer(cTimeout time.Duration, rwTimeout time.Duration) func(net, addr string) (c net.Conn, err error) {
+	return func(netw, addr string) (net.Conn, error) {
+		conn, err := net.DialTimeout(netw, addr, cTimeout)
+		if err != nil {
+			return nil, err
+		}
+		conn.SetDeadline(time.Now().Add(rwTimeout))
+		return conn, nil
+	}
+}
+
 func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 	respChan := make(chan *Response, 1)
 
@@ -194,9 +206,7 @@ func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 			Transport: &http.Transport{
 				TLSClientConfig:       tlsConfig,
 				ResponseHeaderTimeout: 30 * time.Second,
-				Dial: (&net.Dialer{
-					Timeout: 15 * time.Second,
-				}).Dial,
+				Dial: TimeoutDialer(ConnectTimeout, ReadWriteTimeout),
 			},
 		}
 
@@ -208,11 +218,6 @@ func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 
 		// Close the connection after we're done. It's the polite thing to do.
 		req.Close = true
-		// Give ourselves an out if we have to cancel the request. Close this
-		// to cancel.
-		cancelChannel := make(chan struct{})
-		cancel := func() { close(cancelChannel) }
-		req.Cancel = cancelChannel
 
 		for _, header := range r.Headers {
 			key := header.Name
@@ -251,19 +256,6 @@ func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 		}
 
 		log.Debug("Attempting to read body of response...")
-		// WARNING: You cannot do this.
-		//
-		// 	body, err := ioutil.ReadAll(resp.Body)
-		//
-		// We absolutely must limit the size of the body in the response or we will
-		// end up using up too much memory. There is no telling how large the bodies
-		// could be. If we need to address exceptionally large HTTP bodies, then we
-		// can do that in the future.
-		//
-		// For a breakdown of potential messaging costs, see:
-		// https://docs.google.com/a/opsee.co/spreadsheets/d/14Y8DvBkJMhIQoZ11C5_GKeB7NknYyt-fHJaQixkJfKs/edit?usp=sharing
-
-		rdr := bufio.NewReader(resp.Body)
 		var contentLength int64
 
 		if resp.ContentLength >= 0 && resp.ContentLength <= MaxContentLength {
@@ -275,48 +267,26 @@ func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 		log.WithFields(log.Fields{"Content-Length": resp.ContentLength, "contentLength": contentLength}).Debug("Setting content length.")
 		body := make([]byte, int64(contentLength))
 
-		// ContentLength is unknown.  read what we can
+		// ContentLength is unknown.  read what we can but no more than
 		if resp.ContentLength == -1 {
 			// If the server does not close the connection and there is no Content-Length header,
 			// then the HTTP Client will block indefinitely when trying to read the response body.
 			// So, we have to wrap this in a timeout and cancel the request in order to continue.
-			var (
-				numBytes int
-				err      error
-			)
-			done := make(chan struct{}, 1)
-
-			go func() {
-				numBytes, err = rdr.Read(body)
-				close(done)
-			}()
-
-			timer := time.NewTimer(BodyReadTimeout)
-			select {
-			case <-timer.C:
-				// Calling cancel() here will thread through the http request causing the
-				// response Body ReadCloser to be closed. The above goroutine will
-				// receive an error in the call to Read(body) and then return, closing
-				// the done channel, BUT IT WILL BE TOO LATE BWAHAHA
-				cancel()
-				err = errors.New("Timed out waiting to read body.")
-			case <-done:
-				// Just continue, really.
-				err = nil
-			}
-			timer.Stop()
-
+			body, err = ioutil.ReadAll(io.LimitReader(resp.Body, contentLength))
 			if err != nil {
 				log.WithFields(log.Fields{"url": r.URL, "method": r.Method}).WithError(err).Error("Error while reading message body.")
 			}
 
 			body = bytes.Trim(body, "\x00")
-			log.Debugf("Successfully read %i bytes...", numBytes)
+			log.Debugf("Content length unknown. Successfully read %d bytes...", numBytes)
+		} else if resp.ContentLength == 0 {
+			log.Debug("Content length is 0.  Response body is empty.")
 		} else {
-			body, err = ioutil.ReadAll(io.LimitReader(resp.Body, contentLength)) // read all
+			body, err = ioutil.ReadAll(io.LimitReader(resp.Body, contentLength))
 			if err != nil {
 				log.WithFields(log.Fields{"url": r.URL, "method": r.Method}).WithError(err).Error("Error while reading message body.")
 			}
+			log.Debugf("Content length %d. Successfully read %d bytes...", resp.ContentLength, len(body))
 		}
 		body = bytes.TrimSuffix(body, []byte("\n"))
 
