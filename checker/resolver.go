@@ -22,7 +22,6 @@ import (
 
 var (
 	DefaultResponseCacheTTL = time.Second * time.Duration(5)
-	MaxEC2Instances         = int64(200) // XXX(mike) but is it enough?
 )
 
 type Resolver interface {
@@ -98,7 +97,6 @@ func (this *AWSResolver) resolveEC2Instances(ctx context.Context, instanceIds ..
 			},
 		},
 		InstanceIds: ids,
-		MaxResults:  aws.Int64(MaxEC2Instances),
 	}
 
 	return this.resolveEC2InstancesWithInput(ctx, input)
