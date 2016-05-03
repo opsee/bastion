@@ -60,6 +60,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
 		checkWithTargets := &CheckWithTargets{}
 		if err := json.Unmarshal(m.Body, checkWithTargets); err != nil {
+			log.WithError(err).Errorf("Error decoding checkWithTargets: %s", string(m.Body))
 			return err
 		}
 		check := checkWithTargets.Check
