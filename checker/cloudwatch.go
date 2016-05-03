@@ -45,10 +45,14 @@ func ConnectCloudwatchBezosClient() error {
 			}),
 		),
 	)
+
 	if err != nil {
 		return err
 	}
+
 	BezosClient = opsee.NewBezosClient(bezosConn)
+
+	return nil
 }
 
 type CloudWatchRequest struct {
