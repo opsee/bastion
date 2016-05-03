@@ -39,7 +39,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	// This will effectively be the maximum number of simultaneous Checks that we can
 	// run. Keep in mind that each Check MAY yield many requests, and there are only
 	// MaxRoutinesPerWorkerType workers per check type.
-	consumerConfig.MaxInFlight = 2
+	consumerConfig.MaxInFlight = 4
 
 	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, consumerConfig)
 	if err != nil {
@@ -76,6 +76,12 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		responses, err := runner.RunCheck(ctx, check, checkWithTargets.Targets)
 		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
 		cancel()
+
+		if responses == nil {
+			log.WithFields(log.Fields{"check_id": check.Id}).Debug("skipping check.")
+			return nil
+		}
+
 		if err != nil {
 			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
@@ -391,6 +397,10 @@ func (r *Runner) RunCheck(ctx context.Context, check *schema.Check, targets []*s
 	tasks, err := r.dispatch(ctx, check, targets)
 	if err != nil {
 		return nil, err
+	}
+
+	if tasks == nil {
+		return nil, nil
 	}
 
 	// TODO(greg): Move assertion processing to a parallel model, but for now
