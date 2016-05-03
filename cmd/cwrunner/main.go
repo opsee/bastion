@@ -41,7 +41,7 @@ func main() {
 
 	log.Info("Starting %s...", moduleName)
 	// TODO(greg): This intialization is fucking bullshit. Kill me.
-	runner, err := checker.NewNSQRunner(checker.NewRunner(runnerConfig), runnerConfig)
+	runner, err := checker.NewNSQRunner(checker.NewRunner(&schema.CloudWatchCheck{}), runnerConfig)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

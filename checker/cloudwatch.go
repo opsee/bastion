@@ -3,6 +3,7 @@ package checker
 import (
 	"crypto/tls"
 	"fmt"
+	"sort"
 	"time"
 
 	"golang.org/x/net/context"
@@ -24,6 +25,12 @@ var (
 	BezosClient                opsee.BezosClient
 	CloudWatchStatisticsPeriod = 60
 )
+
+type metricList []*schema.Metric
+
+func (l metricList) Len() int           { return len(l) }
+func (l metricList) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+func (l metricList) Less(i, j int) bool { return l[i].Timestamp.Millis() < l[j].Timestamp.Millis() }
 
 func init() {
 	bezosConn, err := grpc.Dial(
@@ -199,6 +206,8 @@ func (this *CloudWatchRequest) Do(ctx context.Context) <-chan *Response {
 			break
 		}
 	}
+
+	sort.Sort(metricList(responseMetrics))
 
 	cloudwatchResponse := &schema.CloudWatchResponse{
 		Namespace: this.Namespace,
