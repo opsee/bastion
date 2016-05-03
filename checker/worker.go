@@ -42,7 +42,7 @@ func (this *recruiters) Keys() []string {
 }
 
 type Request interface {
-	Do() <-chan *Response
+	Do(context.Context) <-chan *Response
 }
 
 type Response struct {

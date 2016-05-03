@@ -24,6 +24,7 @@ type Config struct {
 	EtcdHost            string
 	SlateHost           string
 	LogLevel            string
+	BezosHost           string
 	AWS                 *AWSConfig
 }
 
@@ -58,6 +59,7 @@ func (this *Config) getEnv() {
 	this.BastionAuthEndpoint = os.Getenv("BASTION_AUTH_ENDPOINT")
 	this.NsqdHost = os.Getenv("NSQD_HOST")
 	this.EtcdHost = os.Getenv("ETCD_HOST")
+	this.BezosHost = os.Getenv("BEZOS_HOST")
 }
 
 func GetConfig() *Config {

@@ -1,13 +1,18 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/nsqio/go-nsq"
+	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/checker"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
@@ -40,18 +45,32 @@ func main() {
 	flag.IntVar(&adminPort, "admin_port", 4000, "Port for the admin server.")
 	flag.Parse()
 
+	bezosConn, err := grpc.Dial(
+		config.GetConfig().BezosHost,
+		grpc.WithTransportCredentials(
+			credentials.NewTLS(&tls.Config{
+				InsecureSkipVerify: false,
+			}),
+		),
+	)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	bezosClient := opsee.NewBezosClient(bezosConn)
+
 	runnerConfig.ConsumerNsqdHost = cfg.NsqdHost
 	runnerConfig.ProducerNsqdHost = cfg.NsqdHost
 	runnerConfig.CustomerID = cfg.CustomerId
 	log.WithFields(log.Fields{"service": moduleName}).Info("starting up")
-
-	newChecker := checker.NewChecker()
+	resolver := checker.NewResolver(bezosClient, config.GetConfig())
+	newChecker := checker.NewChecker(resolver)
 	runner, err := checker.NewRemoteRunner(runnerConfig)
 	if err != nil {
 		log.WithFields(log.Fields{"service": moduleName, "customerId": cfg.CustomerId, "event": "create runner", "error": "couldn't create runner"}).Fatal(err.Error())
 	}
 	newChecker.Runner = runner
-	scheduler := checker.NewScheduler()
+
+	scheduler := checker.NewScheduler(resolver)
 	newChecker.Scheduler = scheduler
 
 	producer, err := nsq.NewProducer(cfg.NsqdHost, nsq.NewConfig())

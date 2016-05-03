@@ -1,6 +1,7 @@
 FROM gliderlabs/alpine:3.2
 
 ENV BARTNET_HOST="https://bartnet.in.opsee.com"
+ENV BEZOS_HOST="bezosphere.in.opsee.com:8443"
 ENV NSQD_HOST="nsqd:4150"
 ENV SLATE_HOST=""
 ENV CA_PATH="ca.pem"

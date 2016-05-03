@@ -17,7 +17,6 @@ var (
 		"runner",
 		"test_runner",
 		"checker",
-		"discovery",
 		"monitor",
 	}
 )

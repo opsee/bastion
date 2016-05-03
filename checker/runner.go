@@ -7,7 +7,6 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/gogo/protobuf/proto"
 	"github.com/nsqio/go-nsq"
 	"github.com/opsee/basic/schema"
@@ -40,7 +39,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	// This will effectively be the maximum number of simultaneous Checks that we can
 	// run. Keep in mind that each Check MAY yield many requests, and there are only
 	// MaxRoutinesPerWorkerType workers per check type.
-	consumerConfig.MaxInFlight = 2
+	consumerConfig.MaxInFlight = 4
 
 	consumer, err := nsq.NewConsumer(cfg.ConsumerQueueName, cfg.ConsumerChannelName, consumerConfig)
 	if err != nil {
@@ -59,12 +58,13 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner.")
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
-		// Message is a Check
-		// We emit a CheckResult
-		check := &schema.Check{}
-		if err := proto.Unmarshal(m.Body, check); err != nil {
+		checkWithTargets := &CheckWithTargets{}
+		if err := json.Unmarshal(m.Body, checkWithTargets); err != nil {
+			log.WithError(err).Errorf("Error decoding checkWithTargets: %s", string(m.Body))
 			return err
 		}
+		check := checkWithTargets.Check
+
 		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
 
 		timestamp := &opsee_types.Timestamp{}
@@ -73,9 +73,15 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
 		// A call to RunCheck is synchronous. Calling cancel() is not necessarily superfluous though.
-		responses, err := runner.RunCheck(ctx, check)
+		responses, err := runner.RunCheck(ctx, check, checkWithTargets.Targets)
 		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
 		cancel()
+
+		if responses == nil {
+			log.WithFields(log.Fields{"check_id": check.Id}).Debug("skipping check.")
+			return nil
+		}
+
 		if err != nil {
 			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
@@ -176,20 +182,20 @@ func (r *NSQRunner) Stop() {
 // concurrent use. It provides an asynchronous API for submitting jobs and
 // manages its own concurrency.
 type Runner struct {
-	resolver    Resolver
 	dispatcher  *Dispatcher
 	slateClient *SlateClient
 	registry    metrics.Registry
+	checkType   interface{}
 }
 
 // NewRunner returns a runner associated with a particular resolver.
-func NewRunner(resolver Resolver) *Runner {
+func NewRunner(checkType interface{}) *Runner {
 	dispatcher := NewDispatcher()
 
 	r := &Runner{
 		dispatcher: dispatcher,
-		resolver:   resolver,
 		registry:   metrics.NewPrefixedChildRegistry(metricsRegistry, "runner."),
+		checkType:  checkType,
 	}
 
 	slateHost := config.GetConfig().SlateHost
@@ -199,40 +205,6 @@ func NewRunner(resolver Resolver) *Runner {
 	}
 
 	return r
-}
-
-func (r *Runner) resolveRequestTargets(ctx context.Context, check *schema.Check) ([]*schema.Target, error) {
-	var (
-		targets []*schema.Target
-		err     error
-	)
-
-	if check.Target == nil {
-		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
-	}
-
-	targets, err = r.resolver.Resolve(check.Target)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(targets) == 0 {
-		return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
-	}
-
-	var (
-		maxHosts int
-		ok       bool
-	)
-	maxHosts, ok = ctx.Value("MaxHosts").(int)
-	if !ok {
-		maxHosts = len(targets)
-	}
-	if maxHosts > len(targets) {
-		maxHosts = len(targets)
-	}
-
-	return targets[:maxHosts], nil
 }
 
 func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*schema.Target) (chan *Task, error) {
@@ -253,6 +225,10 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 		var request Request
 		switch typedCheck := c.(type) {
 		case *schema.HttpCheck:
+			_, ok := r.checkType.(*schema.HttpCheck)
+			if !ok {
+				return nil, nil
+			}
 			var (
 				host       string
 				skipVerify = true
@@ -282,6 +258,11 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			}
 
 		case *schema.CloudWatchCheck:
+			_, ok := r.checkType.(*schema.CloudWatchCheck)
+			if !ok {
+				return nil, nil
+			}
+			defaultResponseCacheTTL := time.Second * time.Duration(5)
 			cloudwatchCheck, ok := c.(*schema.CloudWatchCheck)
 			if !ok {
 				return nil, fmt.Errorf("Unable to assert type on cloudwatch check")
@@ -297,13 +278,31 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				continue
 			}
 
+			globalConfig := config.GetConfig()
+			metaData, err := globalConfig.AWS.MetaData()
+			if err != nil {
+				log.Warn("Couldn't get MetaData from global config.")
+				continue
+			}
+
 			request = &CloudWatchRequest{
 				Target:                 target,
 				Metrics:                cloudwatchCheck.Metrics,
 				StatisticsIntervalSecs: int(check.Interval * 2),
 				StatisticsPeriod:       CloudWatchStatisticsPeriod,
-				Statistics:             []*string{aws.String("Average")}, //TODO(dan) Eventually include all Statistics?
+				Statistics:             []string{"Average"},
 				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
+				User: &schema.User{
+					Id:         1,
+					Verified:   true,
+					Active:     true,
+					Email:      globalConfig.CustomerEmail,
+					Admin:      false,
+					CustomerId: globalConfig.CustomerId,
+				},
+				Region: metaData.Region,
+				VpcId:  metaData.VpcId,
+				MaxAge: defaultResponseCacheTTL,
 			}
 
 		default:
@@ -374,31 +373,34 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 	return responses
 }
 
-// RunCheck will resolve all of the targets in a check and trigger execution
-// against each of the targets. A channel is returned over which the caller
-// may receive all of the CheckResponse objects -- 1:1 with the number of
-// resolved targets.
-//
-// RunCheck will return errors immediately if it cannot resolve the check's
-// target or if it cannot unmarshal the check body.
-//
 // If the Context passed to RunCheck includes a MaxHosts value, at most MaxHosts
 // CheckResponse objects will be returned.
 //
 // If the Context passed to RunCheck is cancelled or its deadline is exceeded,
 // all CheckResponse objects after that event will be passed to the channel
 // with appropriate errors associated with them.
-func (r *Runner) RunCheck(ctx context.Context, check *schema.Check) ([]*schema.CheckResponse, error) {
-	targets, err := r.resolveRequestTargets(ctx, check)
-	if err != nil {
-		metrics.GetOrRegisterCounter("resolver_errors", r.registry).Inc(1)
-		return nil, err
+func (r *Runner) RunCheck(ctx context.Context, check *schema.Check, targets []*schema.Target) ([]*schema.CheckResponse, error) {
+	var (
+		maxHosts int
+		ok       bool
+	)
+	maxHosts, ok = ctx.Value("MaxHosts").(int)
+	if !ok {
+		maxHosts = len(targets)
 	}
+	if maxHosts > len(targets) {
+		maxHosts = len(targets)
+	}
+	targets = targets[:maxHosts]
 
 	// tasks is a channel of tasks which runCheck will iterate over.
 	tasks, err := r.dispatch(ctx, check, targets)
 	if err != nil {
 		return nil, err
+	}
+
+	if tasks == nil {
+		return nil, nil
 	}
 
 	// TODO(greg): Move assertion processing to a parallel model, but for now

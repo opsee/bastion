@@ -35,6 +35,27 @@ func (m *Metric) MarshalJSON() ([]byte, error) {
 	return jsonBytes.Bytes(), nil
 }
 
+// Checks need their any fields
+func (m *Check) MarshalJSON() ([]byte, error) {
+	var jsonBytes bytes.Buffer
+
+	// marshal to json using jsonpb
+	marshaler := jsonpb.Marshaler{
+		EmitDefaults: true,
+	}
+
+	err := marshaler.Marshal(&jsonBytes, m)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonBytes.Bytes(), nil
+}
+
+func (m *Check) UnmarshalJSON(data []byte) error {
+	return jsonpb.Unmarshal(bytes.NewBuffer(data), m)
+}
+
 // these exist because bartnet and beavis expect {typeurl: "blah", value: "blach"} in their json API
 func (check *Check) MarshalCrappyJSON() ([]byte, error) {
 	var (

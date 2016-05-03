@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	moduleName          = "runner"
+	moduleName          = "cwrunner"
 	maxConcurrentChecks = 10
 )
 
@@ -33,7 +33,7 @@ func main() {
 	flag.StringVar(&runnerConfig.Id, "id", moduleName, "Runner identifier.")
 	flag.StringVar(&runnerConfig.ProducerQueueName, "results", "results", "Result queue name.")
 	flag.StringVar(&runnerConfig.ConsumerQueueName, "requests", "runner", "Requests queue name.")
-	flag.StringVar(&runnerConfig.ConsumerChannelName, "channel", "runner", "Consumer channel name.")
+	flag.StringVar(&runnerConfig.ConsumerChannelName, "channel", "cwrunner", "Consumer channel name.")
 	flag.IntVar(&runnerConfig.MaxHandlers, "max_checks", 10, "Maximum concurrently executing checks.")
 	flag.Parse()
 	runnerConfig.ConsumerNsqdHost = config.GetConfig().NsqdHost
@@ -42,7 +42,12 @@ func main() {
 
 	log.Info("Starting %s...", moduleName)
 	// TODO(greg): This intialization is fucking bullshit. Kill me.
-	runner, err := checker.NewNSQRunner(checker.NewRunner(&schema.HttpCheck{}), runnerConfig)
+	err = checker.ConnectCloudwatchBezosClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	runner, err := checker.NewNSQRunner(checker.NewRunner(&schema.CloudWatchCheck{}), runnerConfig)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
