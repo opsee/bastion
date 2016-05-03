@@ -286,6 +286,11 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				Statistics:             []string{"Average"},
 				Namespace:              cloudwatchCheck.Metrics[0].Namespace,
 				User: &schema.User{
+					Id:         1,
+					Verified:   true,
+					Active:     true,
+					Email:      globalConfig.CustomerEmail,
+					Admin:      false,
 					CustomerId: globalConfig.CustomerId,
 				},
 				Region: metaData.Region,

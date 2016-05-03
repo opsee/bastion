@@ -45,6 +45,9 @@ func NewResolver(bezos opsee.BezosClient, cfg *config.Config) Resolver {
 	}
 
 	user := &schema.User{
+		Id:         1,
+		Verified:   true,
+		Active:     true,
 		CustomerId: cfg.CustomerId,
 		Email:      cfg.CustomerEmail,
 		Admin:      false,
