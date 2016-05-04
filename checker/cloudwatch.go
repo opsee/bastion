@@ -19,7 +19,10 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-const cloudwatchWorkerTaskType = "CloudWatchRequest"
+const (
+	cloudwatchWorkerTaskType = "CloudWatchRequest"
+	datapointWindowRewind    = 10
+)
 
 var (
 	BezosClient                opsee.BezosClient
@@ -113,7 +116,7 @@ func (this *CloudWatchRequest) Do(ctx context.Context) <-chan *Response {
 		endTs := &opsee_types.Timestamp{}
 		startTs := &opsee_types.Timestamp{}
 		endTime := time.Now().UTC().Add(time.Duration(-1) * time.Minute)
-		startTime := endTime.Add(time.Duration(-1*this.StatisticsIntervalSecs) * time.Second)
+		startTime := endTime.Add(time.Duration(-datapointWindowRewind*this.StatisticsIntervalSecs) * time.Second)
 		endTs.Scan(endTime)
 		startTs.Scan(startTime)
 		log.WithFields(log.Fields{"startTime": startTime, "endTime": endTime}).Debug("Fetching cloudwatch metric statistics")
