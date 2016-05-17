@@ -3,6 +3,7 @@ package checker
 import (
 	"fmt"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -10,6 +11,7 @@ import (
 	"github.com/opsee/basic/schema"
 	opsee_aws_autoscaling "github.com/opsee/basic/schema/aws/autoscaling"
 	opsee_aws_ec2 "github.com/opsee/basic/schema/aws/ec2"
+	opsee_aws_ecs "github.com/opsee/basic/schema/aws/ecs"
 	opsee_aws_elb "github.com/opsee/basic/schema/aws/elb"
 	opsee_aws_rds "github.com/opsee/basic/schema/aws/rds"
 	opsee "github.com/opsee/basic/service"
@@ -258,6 +260,111 @@ func (this *AWSResolver) resolveDBInstance(ctx context.Context, instanceId strin
 	return target, nil
 }
 
+func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*schema.Target, error) {
+	t := strings.Split(id, "\x00")
+	if len(t) < 2 {
+		return nil, fmt.Errorf("Invalid ECS Service target.")
+	}
+
+	cluster_name := t[0]
+	service_name := t[1]
+
+	ltInput := &opsee_aws_ecs.ListTasksInput{
+		Cluster:     aws.String(cluster_name),
+		ServiceName: aws.String(service_name),
+	}
+
+	maxAge := &opsee_types.Timestamp{}
+	maxAge.Scan(time.Now().UTC().Add(DefaultResponseCacheTTL * -1))
+	bltResponse, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+			User:   this.User,
+			Region: this.Region,
+			VpcId:  this.VpcId,
+			Input:  &opsee.BezosRequest_Ecs_ListTasksInput{ltInput},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	ltOutput := bltResponse.GetEcs_ListTasksOutput()
+	if ltOutput == nil {
+		return nil, fmt.Errorf("error decoding aws response")
+	}
+
+	var tasks []string
+	for _, t := range ltOutput.TaskArns {
+		tasks = append(tasks, t)
+	}
+
+	dtInput := &opsee_aws_ecs.DescribeTasksInput{
+		Tasks:   tasks,
+		Cluster: aws.String(cluster_name),
+	}
+
+	bdtResponse, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+			User:   this.User,
+			Region: this.Region,
+			VpcId:  this.VpcId,
+			Input:  &opsee.BezosRequest_Ecs_DescribeTasksInput{dtInput},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	bdtOutput := bdtResponse.GetEcs_DescribeTasksOutput()
+	if bdtOutput == nil {
+		return nil, fmt.Errorf("error decoding aws response")
+	}
+
+	var ci []string
+	for _, t := range bdtOutput.Tasks {
+		ci = append(ci, aws.StringValue(t.ContainerInstanceArn))
+	}
+
+	dciInput := &opsee_aws_ecs.DescribeContainerInstancesInput{
+		ContainerInstances: ci,
+	}
+
+	dciResp, err := this.BezosClient.Get(
+		ctx,
+		&opsee.BezosRequest{
+			User:   this.User,
+			Region: this.Region,
+			VpcId:  this.VpcId,
+			Input:  &opsee.BezosRequest_Ecs_DescribeContainerInstancesInput{dciInput},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	dciOutput := dciResp.GetEcs_DescribeContainerInstancesOutput()
+	if dciOutput == nil {
+		return nil, fmt.Errorf("error decoding aws response")
+	}
+
+	instances := make([]string, 0, len(ci))
+	for i, inst := range dciOutput.ContainerInstances {
+		instances[i] = aws.StringValue(inst.Ec2InstanceId)
+	}
+
+	return this.resolveEC2InstancesWithInput(ctx, &opsee_aws_ec2.DescribeInstancesInput{
+		Filters: []*opsee_aws_ec2.Filter{
+			{
+				Name:   aws.String("vpc-id"),
+				Values: []string{this.VpcId},
+			},
+		},
+		InstanceIds: instances,
+	})
+}
+
 func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 	log.Debugf("resolving host: %s", host)
 
@@ -311,6 +418,8 @@ func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]
 		return this.resolveEC2Instances(ctx, target.Id)
 	case "dbinstance":
 		return this.resolveDBInstance(ctx, target.Id)
+	case "ecs_service":
+		return this.resolveECSService(ctx, target.Id)
 	case "host":
 		return this.resolveHost(target.Id)
 	}
