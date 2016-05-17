@@ -31,6 +31,7 @@
 		Subnet
 		BastionState
 		Stack
+		RoleStack
 		User
 		Customer
 */
