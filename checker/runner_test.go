@@ -198,7 +198,6 @@ func (s *NSQRunnerTestSuite) SetupSuite() {
 		ConsumerChannelName: "test-runner",
 		ProducerNsqdHost:    config.GetConfig().NsqdHost,
 		ConsumerNsqdHost:    config.GetConfig().NsqdHost,
-		CustomerID:          "test",
 		MaxHandlers:         1,
 	}
 	s.Config = cfg
@@ -274,6 +273,42 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	case <-timer.C:
 		assert.Fail(s.T(), "Timed out waiting on response from runner.")
 	}
+	timer.Stop()
+}
+
+func (s *NSQRunnerTestSuite) TestResultsHaveCorrectCustomerId() {
+	check1 := s.Common.PassingCheck()
+	check1.CustomerId = "check1-customer-id"
+	cwt1, _ := NewCheckWithTargets(s.Resolver, check1)
+	msg1, _ := json.Marshal(cwt1)
+	s.Producer.Publish(s.Config.ConsumerQueueName, msg1)
+
+	check2 := s.Common.PassingCheck()
+	check2.CustomerId = "check2-customer-id"
+	cwt2, _ := NewCheckWithTargets(s.Resolver, check2)
+	msg2, _ := json.Marshal(cwt2)
+	s.Producer.Publish(s.Config.ConsumerQueueName, msg2)
+
+	timer := time.NewTimer(10 * time.Second)
+
+	customerIds := map[string]int{}
+
+	for i := 0; i < 2; i++ {
+		select {
+		case m := <-s.MsgChan:
+			log.Debug("TestHandlerDoesItsThing: Received message.")
+			result := &schema.CheckResult{}
+			err := proto.Unmarshal(m.Body, result)
+			assert.NoError(s.T(), err)
+			customerIds[result.CustomerId] += 1
+		case <-timer.C:
+			assert.Fail(s.T(), "Timed out waiting on response from runner.")
+		}
+	}
+
+	assert.Equal(s.T(), 1, customerIds["check2-customer-id"])
+	assert.Equal(s.T(), 1, customerIds["check1-customer-id"])
+
 	timer.Stop()
 }
 

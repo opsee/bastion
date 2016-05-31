@@ -54,7 +54,6 @@ func (s *CheckerTestSuite) SetupSuite() {
 		ProducerQueueName:   "test-results",
 		ConsumerChannelName: "test-runner",
 		MaxHandlers:         1,
-		CustomerID:          "test",
 	}
 	runner, err := NewNSQRunner(NewRunner(&schema.HttpCheck{}), cfg)
 	if err != nil {
@@ -89,7 +88,6 @@ func (s *CheckerTestSuite) SetupTest() {
 		ConsumerChannelName: "test-check-results",
 		ProducerQueueName:   s.RunnerConfig.ConsumerQueueName,
 		MaxHandlers:         1,
-		CustomerID:          s.RunnerConfig.CustomerID,
 	})
 	if err != nil {
 		panic(err)

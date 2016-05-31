@@ -38,7 +38,6 @@ func main() {
 	flag.Parse()
 	runnerConfig.ConsumerNsqdHost = config.GetConfig().NsqdHost
 	runnerConfig.ProducerNsqdHost = config.GetConfig().NsqdHost
-	runnerConfig.CustomerID = config.GetConfig().CustomerId
 
 	log.Info("Starting %s...", moduleName)
 	// TODO(greg): This intialization is fucking bullshit. Kill me.

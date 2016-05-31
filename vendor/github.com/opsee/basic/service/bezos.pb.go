@@ -36,11 +36,24 @@
 		GetRoleStackResponse
 		GetCredentialsRequest
 		GetCredentialsResponse
+		ListCustomersResponse
 		GetUserRequest
 		GetUserResponse
 		ListUsersRequest
 		ListUsersResponse
-		ListCustomersResponse
+		InviteUserRequest
+		InviteUserResponse
+		DeleteUserRequest
+		DeleteUserResponse
+		UpdateUserRequest
+		UpdateUserPermsRequest
+		UserTokenResponse
+		GetTeamRequest
+		GetTeamResponse
+		UpdateTeamRequest
+		UpdateTeamResponse
+		DeleteTeamRequest
+		DeleteTeamResponse
 */
 package service
 
@@ -84,6 +97,8 @@ type BezosRequest struct {
 	// Types that are valid to be assigned to Input:
 	//	*BezosRequest_Cloudwatch_ListMetricsInput
 	//	*BezosRequest_Cloudwatch_GetMetricStatisticsInput
+	//	*BezosRequest_Cloudwatch_DescribeAlarmsInput
+	//	*BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput
 	//	*BezosRequest_Ec2_DescribeInstancesInput
 	//	*BezosRequest_Ec2_DescribeSecurityGroupsInput
 	//	*BezosRequest_Ec2_DescribeSubnetsInput
@@ -95,6 +110,10 @@ type BezosRequest struct {
 	//	*BezosRequest_Ecs_ListTasksInput
 	//	*BezosRequest_Ecs_DescribeTasksInput
 	//	*BezosRequest_Ecs_DescribeContainerInstancesInput
+	//	*BezosRequest_Ecs_ListClustersInput
+	//	*BezosRequest_Ecs_ListServicesInput
+	//	*BezosRequest_Ecs_DescribeServicesInput
+	//	*BezosRequest_Ecs_ListContainerInstancesInput
 	Input isBezosRequest_Input `protobuf_oneof:"input"`
 }
 
@@ -115,6 +134,12 @@ type BezosRequest_Cloudwatch_ListMetricsInput struct {
 }
 type BezosRequest_Cloudwatch_GetMetricStatisticsInput struct {
 	Cloudwatch_GetMetricStatisticsInput *opsee_aws_cloudwatch.GetMetricStatisticsInput `protobuf:"bytes,102,opt,name=cloudwatch_GetMetricStatisticsInput,json=cloudwatchGetMetricStatisticsInput,oneof"`
+}
+type BezosRequest_Cloudwatch_DescribeAlarmsInput struct {
+	Cloudwatch_DescribeAlarmsInput *opsee_aws_cloudwatch.DescribeAlarmsInput `protobuf:"bytes,103,opt,name=cloudwatch_DescribeAlarmsInput,json=cloudwatchDescribeAlarmsInput,oneof"`
+}
+type BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput struct {
+	Cloudwatch_DescribeAlarmsForMetricInput *opsee_aws_cloudwatch.DescribeAlarmsForMetricInput `protobuf:"bytes,104,opt,name=cloudwatch_DescribeAlarmsForMetricInput,json=cloudwatchDescribeAlarmsForMetricInput,oneof"`
 }
 type BezosRequest_Ec2_DescribeInstancesInput struct {
 	Ec2_DescribeInstancesInput *opsee_aws_ec2.DescribeInstancesInput `protobuf:"bytes,201,opt,name=ec2_DescribeInstancesInput,json=ec2DescribeInstancesInput,oneof"`
@@ -149,9 +174,23 @@ type BezosRequest_Ecs_DescribeTasksInput struct {
 type BezosRequest_Ecs_DescribeContainerInstancesInput struct {
 	Ecs_DescribeContainerInstancesInput *opsee_aws_ecs.DescribeContainerInstancesInput `protobuf:"bytes,603,opt,name=ecs_DescribeContainerInstancesInput,json=ecsDescribeContainerInstancesInput,oneof"`
 }
+type BezosRequest_Ecs_ListClustersInput struct {
+	Ecs_ListClustersInput *opsee_aws_ecs.ListClustersInput `protobuf:"bytes,604,opt,name=ecs_ListClustersInput,json=ecsListClustersInput,oneof"`
+}
+type BezosRequest_Ecs_ListServicesInput struct {
+	Ecs_ListServicesInput *opsee_aws_ecs.ListServicesInput `protobuf:"bytes,605,opt,name=ecs_ListServicesInput,json=ecsListServicesInput,oneof"`
+}
+type BezosRequest_Ecs_DescribeServicesInput struct {
+	Ecs_DescribeServicesInput *opsee_aws_ecs.DescribeServicesInput `protobuf:"bytes,606,opt,name=ecs_DescribeServicesInput,json=ecsDescribeServicesInput,oneof"`
+}
+type BezosRequest_Ecs_ListContainerInstancesInput struct {
+	Ecs_ListContainerInstancesInput *opsee_aws_ecs.ListContainerInstancesInput `protobuf:"bytes,607,opt,name=ecs_ListContainerInstancesInput,json=ecsListContainerInstancesInput,oneof"`
+}
 
 func (*BezosRequest_Cloudwatch_ListMetricsInput) isBezosRequest_Input()                {}
 func (*BezosRequest_Cloudwatch_GetMetricStatisticsInput) isBezosRequest_Input()        {}
+func (*BezosRequest_Cloudwatch_DescribeAlarmsInput) isBezosRequest_Input()             {}
+func (*BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput) isBezosRequest_Input()    {}
 func (*BezosRequest_Ec2_DescribeInstancesInput) isBezosRequest_Input()                 {}
 func (*BezosRequest_Ec2_DescribeSecurityGroupsInput) isBezosRequest_Input()            {}
 func (*BezosRequest_Ec2_DescribeSubnetsInput) isBezosRequest_Input()                   {}
@@ -163,6 +202,10 @@ func (*BezosRequest_Rds_DescribeDBInstancesInput) isBezosRequest_Input()        
 func (*BezosRequest_Ecs_ListTasksInput) isBezosRequest_Input()                         {}
 func (*BezosRequest_Ecs_DescribeTasksInput) isBezosRequest_Input()                     {}
 func (*BezosRequest_Ecs_DescribeContainerInstancesInput) isBezosRequest_Input()        {}
+func (*BezosRequest_Ecs_ListClustersInput) isBezosRequest_Input()                      {}
+func (*BezosRequest_Ecs_ListServicesInput) isBezosRequest_Input()                      {}
+func (*BezosRequest_Ecs_DescribeServicesInput) isBezosRequest_Input()                  {}
+func (*BezosRequest_Ecs_ListContainerInstancesInput) isBezosRequest_Input()            {}
 
 func (m *BezosRequest) GetInput() isBezosRequest_Input {
 	if m != nil {
@@ -195,6 +238,20 @@ func (m *BezosRequest) GetCloudwatch_ListMetricsInput() *opsee_aws_cloudwatch.Li
 func (m *BezosRequest) GetCloudwatch_GetMetricStatisticsInput() *opsee_aws_cloudwatch.GetMetricStatisticsInput {
 	if x, ok := m.GetInput().(*BezosRequest_Cloudwatch_GetMetricStatisticsInput); ok {
 		return x.Cloudwatch_GetMetricStatisticsInput
+	}
+	return nil
+}
+
+func (m *BezosRequest) GetCloudwatch_DescribeAlarmsInput() *opsee_aws_cloudwatch.DescribeAlarmsInput {
+	if x, ok := m.GetInput().(*BezosRequest_Cloudwatch_DescribeAlarmsInput); ok {
+		return x.Cloudwatch_DescribeAlarmsInput
+	}
+	return nil
+}
+
+func (m *BezosRequest) GetCloudwatch_DescribeAlarmsForMetricInput() *opsee_aws_cloudwatch.DescribeAlarmsForMetricInput {
+	if x, ok := m.GetInput().(*BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput); ok {
+		return x.Cloudwatch_DescribeAlarmsForMetricInput
 	}
 	return nil
 }
@@ -276,11 +333,41 @@ func (m *BezosRequest) GetEcs_DescribeContainerInstancesInput() *opsee_aws_ecs.D
 	return nil
 }
 
+func (m *BezosRequest) GetEcs_ListClustersInput() *opsee_aws_ecs.ListClustersInput {
+	if x, ok := m.GetInput().(*BezosRequest_Ecs_ListClustersInput); ok {
+		return x.Ecs_ListClustersInput
+	}
+	return nil
+}
+
+func (m *BezosRequest) GetEcs_ListServicesInput() *opsee_aws_ecs.ListServicesInput {
+	if x, ok := m.GetInput().(*BezosRequest_Ecs_ListServicesInput); ok {
+		return x.Ecs_ListServicesInput
+	}
+	return nil
+}
+
+func (m *BezosRequest) GetEcs_DescribeServicesInput() *opsee_aws_ecs.DescribeServicesInput {
+	if x, ok := m.GetInput().(*BezosRequest_Ecs_DescribeServicesInput); ok {
+		return x.Ecs_DescribeServicesInput
+	}
+	return nil
+}
+
+func (m *BezosRequest) GetEcs_ListContainerInstancesInput() *opsee_aws_ecs.ListContainerInstancesInput {
+	if x, ok := m.GetInput().(*BezosRequest_Ecs_ListContainerInstancesInput); ok {
+		return x.Ecs_ListContainerInstancesInput
+	}
+	return nil
+}
+
 // XXX_OneofFuncs is for the internal use of the proto package.
 func (*BezosRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
 	return _BezosRequest_OneofMarshaler, _BezosRequest_OneofUnmarshaler, _BezosRequest_OneofSizer, []interface{}{
 		(*BezosRequest_Cloudwatch_ListMetricsInput)(nil),
 		(*BezosRequest_Cloudwatch_GetMetricStatisticsInput)(nil),
+		(*BezosRequest_Cloudwatch_DescribeAlarmsInput)(nil),
+		(*BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput)(nil),
 		(*BezosRequest_Ec2_DescribeInstancesInput)(nil),
 		(*BezosRequest_Ec2_DescribeSecurityGroupsInput)(nil),
 		(*BezosRequest_Ec2_DescribeSubnetsInput)(nil),
@@ -292,6 +379,10 @@ func (*BezosRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) 
 		(*BezosRequest_Ecs_ListTasksInput)(nil),
 		(*BezosRequest_Ecs_DescribeTasksInput)(nil),
 		(*BezosRequest_Ecs_DescribeContainerInstancesInput)(nil),
+		(*BezosRequest_Ecs_ListClustersInput)(nil),
+		(*BezosRequest_Ecs_ListServicesInput)(nil),
+		(*BezosRequest_Ecs_DescribeServicesInput)(nil),
+		(*BezosRequest_Ecs_ListContainerInstancesInput)(nil),
 	}
 }
 
@@ -307,6 +398,16 @@ func _BezosRequest_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 	case *BezosRequest_Cloudwatch_GetMetricStatisticsInput:
 		_ = b.EncodeVarint(102<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Cloudwatch_GetMetricStatisticsInput); err != nil {
+			return err
+		}
+	case *BezosRequest_Cloudwatch_DescribeAlarmsInput:
+		_ = b.EncodeVarint(103<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Cloudwatch_DescribeAlarmsInput); err != nil {
+			return err
+		}
+	case *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput:
+		_ = b.EncodeVarint(104<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Cloudwatch_DescribeAlarmsForMetricInput); err != nil {
 			return err
 		}
 	case *BezosRequest_Ec2_DescribeInstancesInput:
@@ -364,6 +465,26 @@ func _BezosRequest_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 		if err := b.EncodeMessage(x.Ecs_DescribeContainerInstancesInput); err != nil {
 			return err
 		}
+	case *BezosRequest_Ecs_ListClustersInput:
+		_ = b.EncodeVarint(604<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_ListClustersInput); err != nil {
+			return err
+		}
+	case *BezosRequest_Ecs_ListServicesInput:
+		_ = b.EncodeVarint(605<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_ListServicesInput); err != nil {
+			return err
+		}
+	case *BezosRequest_Ecs_DescribeServicesInput:
+		_ = b.EncodeVarint(606<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_DescribeServicesInput); err != nil {
+			return err
+		}
+	case *BezosRequest_Ecs_ListContainerInstancesInput:
+		_ = b.EncodeVarint(607<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_ListContainerInstancesInput); err != nil {
+			return err
+		}
 	case nil:
 	default:
 		return fmt.Errorf("BezosRequest.Input has unexpected type %T", x)
@@ -389,6 +510,22 @@ func _BezosRequest_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.B
 		msg := new(opsee_aws_cloudwatch.GetMetricStatisticsInput)
 		err := b.DecodeMessage(msg)
 		m.Input = &BezosRequest_Cloudwatch_GetMetricStatisticsInput{msg}
+		return true, err
+	case 103: // input.cloudwatch_DescribeAlarmsInput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_cloudwatch.DescribeAlarmsInput)
+		err := b.DecodeMessage(msg)
+		m.Input = &BezosRequest_Cloudwatch_DescribeAlarmsInput{msg}
+		return true, err
+	case 104: // input.cloudwatch_DescribeAlarmsForMetricInput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_cloudwatch.DescribeAlarmsForMetricInput)
+		err := b.DecodeMessage(msg)
+		m.Input = &BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput{msg}
 		return true, err
 	case 201: // input.ec2_DescribeInstancesInput
 		if wire != proto.WireBytes {
@@ -478,6 +615,38 @@ func _BezosRequest_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.B
 		err := b.DecodeMessage(msg)
 		m.Input = &BezosRequest_Ecs_DescribeContainerInstancesInput{msg}
 		return true, err
+	case 604: // input.ecs_ListClustersInput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.ListClustersInput)
+		err := b.DecodeMessage(msg)
+		m.Input = &BezosRequest_Ecs_ListClustersInput{msg}
+		return true, err
+	case 605: // input.ecs_ListServicesInput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.ListServicesInput)
+		err := b.DecodeMessage(msg)
+		m.Input = &BezosRequest_Ecs_ListServicesInput{msg}
+		return true, err
+	case 606: // input.ecs_DescribeServicesInput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.DescribeServicesInput)
+		err := b.DecodeMessage(msg)
+		m.Input = &BezosRequest_Ecs_DescribeServicesInput{msg}
+		return true, err
+	case 607: // input.ecs_ListContainerInstancesInput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.ListContainerInstancesInput)
+		err := b.DecodeMessage(msg)
+		m.Input = &BezosRequest_Ecs_ListContainerInstancesInput{msg}
+		return true, err
 	default:
 		return false, nil
 	}
@@ -495,6 +664,16 @@ func _BezosRequest_OneofSizer(msg proto.Message) (n int) {
 	case *BezosRequest_Cloudwatch_GetMetricStatisticsInput:
 		s := proto.Size(x.Cloudwatch_GetMetricStatisticsInput)
 		n += proto.SizeVarint(102<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosRequest_Cloudwatch_DescribeAlarmsInput:
+		s := proto.Size(x.Cloudwatch_DescribeAlarmsInput)
+		n += proto.SizeVarint(103<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput:
+		s := proto.Size(x.Cloudwatch_DescribeAlarmsForMetricInput)
+		n += proto.SizeVarint(104<<3 | proto.WireBytes)
 		n += proto.SizeVarint(uint64(s))
 		n += s
 	case *BezosRequest_Ec2_DescribeInstancesInput:
@@ -552,6 +731,26 @@ func _BezosRequest_OneofSizer(msg proto.Message) (n int) {
 		n += proto.SizeVarint(603<<3 | proto.WireBytes)
 		n += proto.SizeVarint(uint64(s))
 		n += s
+	case *BezosRequest_Ecs_ListClustersInput:
+		s := proto.Size(x.Ecs_ListClustersInput)
+		n += proto.SizeVarint(604<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosRequest_Ecs_ListServicesInput:
+		s := proto.Size(x.Ecs_ListServicesInput)
+		n += proto.SizeVarint(605<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosRequest_Ecs_DescribeServicesInput:
+		s := proto.Size(x.Ecs_DescribeServicesInput)
+		n += proto.SizeVarint(606<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosRequest_Ecs_ListContainerInstancesInput:
+		s := proto.Size(x.Ecs_ListContainerInstancesInput)
+		n += proto.SizeVarint(607<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
 	case nil:
 	default:
 		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
@@ -564,6 +763,8 @@ type BezosResponse struct {
 	// Types that are valid to be assigned to Output:
 	//	*BezosResponse_Cloudwatch_ListMetricsOutput
 	//	*BezosResponse_Cloudwatch_GetMetricStatisticsOutput
+	//	*BezosResponse_Cloudwatch_DescribeAlarmsOutput
+	//	*BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput
 	//	*BezosResponse_Ec2_DescribeInstancesOutput
 	//	*BezosResponse_Ec2_DescribeSecurityGroupsOutput
 	//	*BezosResponse_Ec2_DescribeSubnetsOutput
@@ -575,6 +776,10 @@ type BezosResponse struct {
 	//	*BezosResponse_Ecs_ListTasksOutput
 	//	*BezosResponse_Ecs_DescribeTasksOutput
 	//	*BezosResponse_Ecs_DescribeContainerInstancesOutput
+	//	*BezosResponse_Ecs_ListClustersOutput
+	//	*BezosResponse_Ecs_ListServicesOutput
+	//	*BezosResponse_Ecs_DescribeServicesOutput
+	//	*BezosResponse_Ecs_ListContainerInstancesOutput
 	Output isBezosResponse_Output `protobuf_oneof:"output"`
 }
 
@@ -595,6 +800,12 @@ type BezosResponse_Cloudwatch_ListMetricsOutput struct {
 }
 type BezosResponse_Cloudwatch_GetMetricStatisticsOutput struct {
 	Cloudwatch_GetMetricStatisticsOutput *opsee_aws_cloudwatch.GetMetricStatisticsOutput `protobuf:"bytes,102,opt,name=cloudwatch_GetMetricStatisticsOutput,json=cloudwatchGetMetricStatisticsOutput,oneof"`
+}
+type BezosResponse_Cloudwatch_DescribeAlarmsOutput struct {
+	Cloudwatch_DescribeAlarmsOutput *opsee_aws_cloudwatch.DescribeAlarmsOutput `protobuf:"bytes,103,opt,name=cloudwatch_DescribeAlarmsOutput,json=cloudwatchDescribeAlarmsOutput,oneof"`
+}
+type BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput struct {
+	Cloudwatch_DescribeAlarmsForMetricOutput *opsee_aws_cloudwatch.DescribeAlarmsForMetricOutput `protobuf:"bytes,104,opt,name=cloudwatch_DescribeAlarmsForMetricOutput,json=cloudwatchDescribeAlarmsForMetricOutput,oneof"`
 }
 type BezosResponse_Ec2_DescribeInstancesOutput struct {
 	Ec2_DescribeInstancesOutput *opsee_aws_ec2.DescribeInstancesOutput `protobuf:"bytes,201,opt,name=ec2_DescribeInstancesOutput,json=ec2DescribeInstancesOutput,oneof"`
@@ -629,9 +840,23 @@ type BezosResponse_Ecs_DescribeTasksOutput struct {
 type BezosResponse_Ecs_DescribeContainerInstancesOutput struct {
 	Ecs_DescribeContainerInstancesOutput *opsee_aws_ecs.DescribeContainerInstancesOutput `protobuf:"bytes,603,opt,name=ecs_DescribeContainerInstancesOutput,json=ecsDescribeContainerInstancesOutput,oneof"`
 }
+type BezosResponse_Ecs_ListClustersOutput struct {
+	Ecs_ListClustersOutput *opsee_aws_ecs.ListClustersOutput `protobuf:"bytes,604,opt,name=ecs_ListClustersOutput,json=ecsListClustersOutput,oneof"`
+}
+type BezosResponse_Ecs_ListServicesOutput struct {
+	Ecs_ListServicesOutput *opsee_aws_ecs.ListServicesOutput `protobuf:"bytes,605,opt,name=ecs_ListServicesOutput,json=ecsListServicesOutput,oneof"`
+}
+type BezosResponse_Ecs_DescribeServicesOutput struct {
+	Ecs_DescribeServicesOutput *opsee_aws_ecs.DescribeServicesOutput `protobuf:"bytes,606,opt,name=ecs_DescribeServicesOutput,json=ecsDescribeServicesOutput,oneof"`
+}
+type BezosResponse_Ecs_ListContainerInstancesOutput struct {
+	Ecs_ListContainerInstancesOutput *opsee_aws_ecs.ListContainerInstancesOutput `protobuf:"bytes,607,opt,name=ecs_ListContainerInstancesOutput,json=ecsListContainerInstancesOutput,oneof"`
+}
 
 func (*BezosResponse_Cloudwatch_ListMetricsOutput) isBezosResponse_Output()                {}
 func (*BezosResponse_Cloudwatch_GetMetricStatisticsOutput) isBezosResponse_Output()        {}
+func (*BezosResponse_Cloudwatch_DescribeAlarmsOutput) isBezosResponse_Output()             {}
+func (*BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput) isBezosResponse_Output()    {}
 func (*BezosResponse_Ec2_DescribeInstancesOutput) isBezosResponse_Output()                 {}
 func (*BezosResponse_Ec2_DescribeSecurityGroupsOutput) isBezosResponse_Output()            {}
 func (*BezosResponse_Ec2_DescribeSubnetsOutput) isBezosResponse_Output()                   {}
@@ -643,6 +868,10 @@ func (*BezosResponse_Rds_DescribeDBInstancesOutput) isBezosResponse_Output()    
 func (*BezosResponse_Ecs_ListTasksOutput) isBezosResponse_Output()                         {}
 func (*BezosResponse_Ecs_DescribeTasksOutput) isBezosResponse_Output()                     {}
 func (*BezosResponse_Ecs_DescribeContainerInstancesOutput) isBezosResponse_Output()        {}
+func (*BezosResponse_Ecs_ListClustersOutput) isBezosResponse_Output()                      {}
+func (*BezosResponse_Ecs_ListServicesOutput) isBezosResponse_Output()                      {}
+func (*BezosResponse_Ecs_DescribeServicesOutput) isBezosResponse_Output()                  {}
+func (*BezosResponse_Ecs_ListContainerInstancesOutput) isBezosResponse_Output()            {}
 
 func (m *BezosResponse) GetOutput() isBezosResponse_Output {
 	if m != nil {
@@ -668,6 +897,20 @@ func (m *BezosResponse) GetCloudwatch_ListMetricsOutput() *opsee_aws_cloudwatch.
 func (m *BezosResponse) GetCloudwatch_GetMetricStatisticsOutput() *opsee_aws_cloudwatch.GetMetricStatisticsOutput {
 	if x, ok := m.GetOutput().(*BezosResponse_Cloudwatch_GetMetricStatisticsOutput); ok {
 		return x.Cloudwatch_GetMetricStatisticsOutput
+	}
+	return nil
+}
+
+func (m *BezosResponse) GetCloudwatch_DescribeAlarmsOutput() *opsee_aws_cloudwatch.DescribeAlarmsOutput {
+	if x, ok := m.GetOutput().(*BezosResponse_Cloudwatch_DescribeAlarmsOutput); ok {
+		return x.Cloudwatch_DescribeAlarmsOutput
+	}
+	return nil
+}
+
+func (m *BezosResponse) GetCloudwatch_DescribeAlarmsForMetricOutput() *opsee_aws_cloudwatch.DescribeAlarmsForMetricOutput {
+	if x, ok := m.GetOutput().(*BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput); ok {
+		return x.Cloudwatch_DescribeAlarmsForMetricOutput
 	}
 	return nil
 }
@@ -749,11 +992,41 @@ func (m *BezosResponse) GetEcs_DescribeContainerInstancesOutput() *opsee_aws_ecs
 	return nil
 }
 
+func (m *BezosResponse) GetEcs_ListClustersOutput() *opsee_aws_ecs.ListClustersOutput {
+	if x, ok := m.GetOutput().(*BezosResponse_Ecs_ListClustersOutput); ok {
+		return x.Ecs_ListClustersOutput
+	}
+	return nil
+}
+
+func (m *BezosResponse) GetEcs_ListServicesOutput() *opsee_aws_ecs.ListServicesOutput {
+	if x, ok := m.GetOutput().(*BezosResponse_Ecs_ListServicesOutput); ok {
+		return x.Ecs_ListServicesOutput
+	}
+	return nil
+}
+
+func (m *BezosResponse) GetEcs_DescribeServicesOutput() *opsee_aws_ecs.DescribeServicesOutput {
+	if x, ok := m.GetOutput().(*BezosResponse_Ecs_DescribeServicesOutput); ok {
+		return x.Ecs_DescribeServicesOutput
+	}
+	return nil
+}
+
+func (m *BezosResponse) GetEcs_ListContainerInstancesOutput() *opsee_aws_ecs.ListContainerInstancesOutput {
+	if x, ok := m.GetOutput().(*BezosResponse_Ecs_ListContainerInstancesOutput); ok {
+		return x.Ecs_ListContainerInstancesOutput
+	}
+	return nil
+}
+
 // XXX_OneofFuncs is for the internal use of the proto package.
 func (*BezosResponse) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
 	return _BezosResponse_OneofMarshaler, _BezosResponse_OneofUnmarshaler, _BezosResponse_OneofSizer, []interface{}{
 		(*BezosResponse_Cloudwatch_ListMetricsOutput)(nil),
 		(*BezosResponse_Cloudwatch_GetMetricStatisticsOutput)(nil),
+		(*BezosResponse_Cloudwatch_DescribeAlarmsOutput)(nil),
+		(*BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput)(nil),
 		(*BezosResponse_Ec2_DescribeInstancesOutput)(nil),
 		(*BezosResponse_Ec2_DescribeSecurityGroupsOutput)(nil),
 		(*BezosResponse_Ec2_DescribeSubnetsOutput)(nil),
@@ -765,6 +1038,10 @@ func (*BezosResponse) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer)
 		(*BezosResponse_Ecs_ListTasksOutput)(nil),
 		(*BezosResponse_Ecs_DescribeTasksOutput)(nil),
 		(*BezosResponse_Ecs_DescribeContainerInstancesOutput)(nil),
+		(*BezosResponse_Ecs_ListClustersOutput)(nil),
+		(*BezosResponse_Ecs_ListServicesOutput)(nil),
+		(*BezosResponse_Ecs_DescribeServicesOutput)(nil),
+		(*BezosResponse_Ecs_ListContainerInstancesOutput)(nil),
 	}
 }
 
@@ -780,6 +1057,16 @@ func _BezosResponse_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 	case *BezosResponse_Cloudwatch_GetMetricStatisticsOutput:
 		_ = b.EncodeVarint(102<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Cloudwatch_GetMetricStatisticsOutput); err != nil {
+			return err
+		}
+	case *BezosResponse_Cloudwatch_DescribeAlarmsOutput:
+		_ = b.EncodeVarint(103<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Cloudwatch_DescribeAlarmsOutput); err != nil {
+			return err
+		}
+	case *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput:
+		_ = b.EncodeVarint(104<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Cloudwatch_DescribeAlarmsForMetricOutput); err != nil {
 			return err
 		}
 	case *BezosResponse_Ec2_DescribeInstancesOutput:
@@ -837,6 +1124,26 @@ func _BezosResponse_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 		if err := b.EncodeMessage(x.Ecs_DescribeContainerInstancesOutput); err != nil {
 			return err
 		}
+	case *BezosResponse_Ecs_ListClustersOutput:
+		_ = b.EncodeVarint(604<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_ListClustersOutput); err != nil {
+			return err
+		}
+	case *BezosResponse_Ecs_ListServicesOutput:
+		_ = b.EncodeVarint(605<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_ListServicesOutput); err != nil {
+			return err
+		}
+	case *BezosResponse_Ecs_DescribeServicesOutput:
+		_ = b.EncodeVarint(606<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_DescribeServicesOutput); err != nil {
+			return err
+		}
+	case *BezosResponse_Ecs_ListContainerInstancesOutput:
+		_ = b.EncodeVarint(607<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Ecs_ListContainerInstancesOutput); err != nil {
+			return err
+		}
 	case nil:
 	default:
 		return fmt.Errorf("BezosResponse.Output has unexpected type %T", x)
@@ -862,6 +1169,22 @@ func _BezosResponse_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.
 		msg := new(opsee_aws_cloudwatch.GetMetricStatisticsOutput)
 		err := b.DecodeMessage(msg)
 		m.Output = &BezosResponse_Cloudwatch_GetMetricStatisticsOutput{msg}
+		return true, err
+	case 103: // output.cloudwatch_DescribeAlarmsOutput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_cloudwatch.DescribeAlarmsOutput)
+		err := b.DecodeMessage(msg)
+		m.Output = &BezosResponse_Cloudwatch_DescribeAlarmsOutput{msg}
+		return true, err
+	case 104: // output.cloudwatch_DescribeAlarmsForMetricOutput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_cloudwatch.DescribeAlarmsForMetricOutput)
+		err := b.DecodeMessage(msg)
+		m.Output = &BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput{msg}
 		return true, err
 	case 201: // output.ec2_DescribeInstancesOutput
 		if wire != proto.WireBytes {
@@ -951,6 +1274,38 @@ func _BezosResponse_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.
 		err := b.DecodeMessage(msg)
 		m.Output = &BezosResponse_Ecs_DescribeContainerInstancesOutput{msg}
 		return true, err
+	case 604: // output.ecs_ListClustersOutput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.ListClustersOutput)
+		err := b.DecodeMessage(msg)
+		m.Output = &BezosResponse_Ecs_ListClustersOutput{msg}
+		return true, err
+	case 605: // output.ecs_ListServicesOutput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.ListServicesOutput)
+		err := b.DecodeMessage(msg)
+		m.Output = &BezosResponse_Ecs_ListServicesOutput{msg}
+		return true, err
+	case 606: // output.ecs_DescribeServicesOutput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.DescribeServicesOutput)
+		err := b.DecodeMessage(msg)
+		m.Output = &BezosResponse_Ecs_DescribeServicesOutput{msg}
+		return true, err
+	case 607: // output.ecs_ListContainerInstancesOutput
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(opsee_aws_ecs.ListContainerInstancesOutput)
+		err := b.DecodeMessage(msg)
+		m.Output = &BezosResponse_Ecs_ListContainerInstancesOutput{msg}
+		return true, err
 	default:
 		return false, nil
 	}
@@ -968,6 +1323,16 @@ func _BezosResponse_OneofSizer(msg proto.Message) (n int) {
 	case *BezosResponse_Cloudwatch_GetMetricStatisticsOutput:
 		s := proto.Size(x.Cloudwatch_GetMetricStatisticsOutput)
 		n += proto.SizeVarint(102<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosResponse_Cloudwatch_DescribeAlarmsOutput:
+		s := proto.Size(x.Cloudwatch_DescribeAlarmsOutput)
+		n += proto.SizeVarint(103<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput:
+		s := proto.Size(x.Cloudwatch_DescribeAlarmsForMetricOutput)
+		n += proto.SizeVarint(104<<3 | proto.WireBytes)
 		n += proto.SizeVarint(uint64(s))
 		n += s
 	case *BezosResponse_Ec2_DescribeInstancesOutput:
@@ -1023,6 +1388,26 @@ func _BezosResponse_OneofSizer(msg proto.Message) (n int) {
 	case *BezosResponse_Ecs_DescribeContainerInstancesOutput:
 		s := proto.Size(x.Ecs_DescribeContainerInstancesOutput)
 		n += proto.SizeVarint(603<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosResponse_Ecs_ListClustersOutput:
+		s := proto.Size(x.Ecs_ListClustersOutput)
+		n += proto.SizeVarint(604<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosResponse_Ecs_ListServicesOutput:
+		s := proto.Size(x.Ecs_ListServicesOutput)
+		n += proto.SizeVarint(605<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosResponse_Ecs_DescribeServicesOutput:
+		s := proto.Size(x.Ecs_DescribeServicesOutput)
+		n += proto.SizeVarint(606<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *BezosResponse_Ecs_ListContainerInstancesOutput:
+		s := proto.Size(x.Ecs_ListContainerInstancesOutput)
+		n += proto.SizeVarint(607<<3 | proto.WireBytes)
 		n += proto.SizeVarint(uint64(s))
 		n += s
 	case nil:
@@ -1140,6 +1525,66 @@ func (this *BezosRequest_Cloudwatch_GetMetricStatisticsInput) Equal(that interfa
 		return false
 	}
 	if !this.Cloudwatch_GetMetricStatisticsInput.Equal(that1.Cloudwatch_GetMetricStatisticsInput) {
+		return false
+	}
+	return true
+}
+func (this *BezosRequest_Cloudwatch_DescribeAlarmsInput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosRequest_Cloudwatch_DescribeAlarmsInput)
+	if !ok {
+		that2, ok := that.(BezosRequest_Cloudwatch_DescribeAlarmsInput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Cloudwatch_DescribeAlarmsInput.Equal(that1.Cloudwatch_DescribeAlarmsInput) {
+		return false
+	}
+	return true
+}
+func (this *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput)
+	if !ok {
+		that2, ok := that.(BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Cloudwatch_DescribeAlarmsForMetricInput.Equal(that1.Cloudwatch_DescribeAlarmsForMetricInput) {
 		return false
 	}
 	return true
@@ -1474,6 +1919,126 @@ func (this *BezosRequest_Ecs_DescribeContainerInstancesInput) Equal(that interfa
 	}
 	return true
 }
+func (this *BezosRequest_Ecs_ListClustersInput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosRequest_Ecs_ListClustersInput)
+	if !ok {
+		that2, ok := that.(BezosRequest_Ecs_ListClustersInput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_ListClustersInput.Equal(that1.Ecs_ListClustersInput) {
+		return false
+	}
+	return true
+}
+func (this *BezosRequest_Ecs_ListServicesInput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosRequest_Ecs_ListServicesInput)
+	if !ok {
+		that2, ok := that.(BezosRequest_Ecs_ListServicesInput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_ListServicesInput.Equal(that1.Ecs_ListServicesInput) {
+		return false
+	}
+	return true
+}
+func (this *BezosRequest_Ecs_DescribeServicesInput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosRequest_Ecs_DescribeServicesInput)
+	if !ok {
+		that2, ok := that.(BezosRequest_Ecs_DescribeServicesInput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_DescribeServicesInput.Equal(that1.Ecs_DescribeServicesInput) {
+		return false
+	}
+	return true
+}
+func (this *BezosRequest_Ecs_ListContainerInstancesInput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosRequest_Ecs_ListContainerInstancesInput)
+	if !ok {
+		that2, ok := that.(BezosRequest_Ecs_ListContainerInstancesInput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_ListContainerInstancesInput.Equal(that1.Ecs_ListContainerInstancesInput) {
+		return false
+	}
+	return true
+}
 func (this *BezosResponse) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
@@ -1569,6 +2134,66 @@ func (this *BezosResponse_Cloudwatch_GetMetricStatisticsOutput) Equal(that inter
 		return false
 	}
 	if !this.Cloudwatch_GetMetricStatisticsOutput.Equal(that1.Cloudwatch_GetMetricStatisticsOutput) {
+		return false
+	}
+	return true
+}
+func (this *BezosResponse_Cloudwatch_DescribeAlarmsOutput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosResponse_Cloudwatch_DescribeAlarmsOutput)
+	if !ok {
+		that2, ok := that.(BezosResponse_Cloudwatch_DescribeAlarmsOutput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Cloudwatch_DescribeAlarmsOutput.Equal(that1.Cloudwatch_DescribeAlarmsOutput) {
+		return false
+	}
+	return true
+}
+func (this *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput)
+	if !ok {
+		that2, ok := that.(BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Cloudwatch_DescribeAlarmsForMetricOutput.Equal(that1.Cloudwatch_DescribeAlarmsForMetricOutput) {
 		return false
 	}
 	return true
@@ -1903,6 +2528,126 @@ func (this *BezosResponse_Ecs_DescribeContainerInstancesOutput) Equal(that inter
 	}
 	return true
 }
+func (this *BezosResponse_Ecs_ListClustersOutput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosResponse_Ecs_ListClustersOutput)
+	if !ok {
+		that2, ok := that.(BezosResponse_Ecs_ListClustersOutput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_ListClustersOutput.Equal(that1.Ecs_ListClustersOutput) {
+		return false
+	}
+	return true
+}
+func (this *BezosResponse_Ecs_ListServicesOutput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosResponse_Ecs_ListServicesOutput)
+	if !ok {
+		that2, ok := that.(BezosResponse_Ecs_ListServicesOutput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_ListServicesOutput.Equal(that1.Ecs_ListServicesOutput) {
+		return false
+	}
+	return true
+}
+func (this *BezosResponse_Ecs_DescribeServicesOutput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosResponse_Ecs_DescribeServicesOutput)
+	if !ok {
+		that2, ok := that.(BezosResponse_Ecs_DescribeServicesOutput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_DescribeServicesOutput.Equal(that1.Ecs_DescribeServicesOutput) {
+		return false
+	}
+	return true
+}
+func (this *BezosResponse_Ecs_ListContainerInstancesOutput) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*BezosResponse_Ecs_ListContainerInstancesOutput)
+	if !ok {
+		that2, ok := that.(BezosResponse_Ecs_ListContainerInstancesOutput)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Ecs_ListContainerInstancesOutput.Equal(that1.Ecs_ListContainerInstancesOutput) {
+		return false
+	}
+	return true
+}
 
 type BezosRequestGetter interface {
 	GetBezosRequest() *BezosRequest
@@ -1923,6 +2668,12 @@ func (g *BezosRequest_Cloudwatch_ListMetricsInput) GetListMetricsInput() *opsee_
 }
 func (g *BezosRequest_Cloudwatch_GetMetricStatisticsInput) GetGetMetricStatisticsInput() *opsee_aws_cloudwatch.GetMetricStatisticsInput {
 	return g.Cloudwatch_GetMetricStatisticsInput
+}
+func (g *BezosRequest_Cloudwatch_DescribeAlarmsInput) GetDescribeAlarmsInput() *opsee_aws_cloudwatch.DescribeAlarmsInput {
+	return g.Cloudwatch_DescribeAlarmsInput
+}
+func (g *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput) GetDescribeAlarmsForMetricInput() *opsee_aws_cloudwatch.DescribeAlarmsForMetricInput {
+	return g.Cloudwatch_DescribeAlarmsForMetricInput
 }
 func (g *BezosRequest_Ec2_DescribeInstancesInput) GetDescribeInstancesInput() *opsee_aws_ec2.DescribeInstancesInput {
 	return g.Ec2_DescribeInstancesInput
@@ -1957,11 +2708,29 @@ func (g *BezosRequest_Ecs_DescribeTasksInput) GetDescribeTasksInput() *opsee_aws
 func (g *BezosRequest_Ecs_DescribeContainerInstancesInput) GetDescribeContainerInstancesInput() *opsee_aws_ecs.DescribeContainerInstancesInput {
 	return g.Ecs_DescribeContainerInstancesInput
 }
+func (g *BezosRequest_Ecs_ListClustersInput) GetListClustersInput() *opsee_aws_ecs.ListClustersInput {
+	return g.Ecs_ListClustersInput
+}
+func (g *BezosRequest_Ecs_ListServicesInput) GetListServicesInput() *opsee_aws_ecs.ListServicesInput {
+	return g.Ecs_ListServicesInput
+}
+func (g *BezosRequest_Ecs_DescribeServicesInput) GetDescribeServicesInput() *opsee_aws_ecs.DescribeServicesInput {
+	return g.Ecs_DescribeServicesInput
+}
+func (g *BezosRequest_Ecs_ListContainerInstancesInput) GetListContainerInstancesInput() *opsee_aws_ecs.ListContainerInstancesInput {
+	return g.Ecs_ListContainerInstancesInput
+}
 func (g *BezosResponse_Cloudwatch_ListMetricsOutput) GetListMetricsOutput() *opsee_aws_cloudwatch.ListMetricsOutput {
 	return g.Cloudwatch_ListMetricsOutput
 }
 func (g *BezosResponse_Cloudwatch_GetMetricStatisticsOutput) GetGetMetricStatisticsOutput() *opsee_aws_cloudwatch.GetMetricStatisticsOutput {
 	return g.Cloudwatch_GetMetricStatisticsOutput
+}
+func (g *BezosResponse_Cloudwatch_DescribeAlarmsOutput) GetDescribeAlarmsOutput() *opsee_aws_cloudwatch.DescribeAlarmsOutput {
+	return g.Cloudwatch_DescribeAlarmsOutput
+}
+func (g *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput) GetDescribeAlarmsForMetricOutput() *opsee_aws_cloudwatch.DescribeAlarmsForMetricOutput {
+	return g.Cloudwatch_DescribeAlarmsForMetricOutput
 }
 func (g *BezosResponse_Ec2_DescribeInstancesOutput) GetDescribeInstancesOutput() *opsee_aws_ec2.DescribeInstancesOutput {
 	return g.Ec2_DescribeInstancesOutput
@@ -1995,6 +2764,18 @@ func (g *BezosResponse_Ecs_DescribeTasksOutput) GetDescribeTasksOutput() *opsee_
 }
 func (g *BezosResponse_Ecs_DescribeContainerInstancesOutput) GetDescribeContainerInstancesOutput() *opsee_aws_ecs.DescribeContainerInstancesOutput {
 	return g.Ecs_DescribeContainerInstancesOutput
+}
+func (g *BezosResponse_Ecs_ListClustersOutput) GetListClustersOutput() *opsee_aws_ecs.ListClustersOutput {
+	return g.Ecs_ListClustersOutput
+}
+func (g *BezosResponse_Ecs_ListServicesOutput) GetListServicesOutput() *opsee_aws_ecs.ListServicesOutput {
+	return g.Ecs_ListServicesOutput
+}
+func (g *BezosResponse_Ecs_DescribeServicesOutput) GetDescribeServicesOutput() *opsee_aws_ecs.DescribeServicesOutput {
+	return g.Ecs_DescribeServicesOutput
+}
+func (g *BezosResponse_Ecs_ListContainerInstancesOutput) GetListContainerInstancesOutput() *opsee_aws_ecs.ListContainerInstancesOutput {
+	return g.Ecs_ListContainerInstancesOutput
 }
 
 func init() {
@@ -2155,6 +2936,8 @@ func init() {
 		Types: []*github_com_graphql_go_graphql.Object{
 			opsee_aws_cloudwatch.GraphQLListMetricsOutputType,
 			opsee_aws_cloudwatch.GraphQLGetMetricStatisticsOutputType,
+			opsee_aws_cloudwatch.GraphQLDescribeAlarmsOutputType,
+			opsee_aws_cloudwatch.GraphQLDescribeAlarmsForMetricOutputType,
 			opsee_aws_ec2.GraphQLDescribeInstancesOutputType,
 			opsee_aws_ec2.GraphQLDescribeSecurityGroupsOutputType,
 			opsee_aws_ec2.GraphQLDescribeSubnetsOutputType,
@@ -2166,6 +2949,10 @@ func init() {
 			opsee_aws_ecs.GraphQLListTasksOutputType,
 			opsee_aws_ecs.GraphQLDescribeTasksOutputType,
 			opsee_aws_ecs.GraphQLDescribeContainerInstancesOutputType,
+			opsee_aws_ecs.GraphQLListClustersOutputType,
+			opsee_aws_ecs.GraphQLListServicesOutputType,
+			opsee_aws_ecs.GraphQLDescribeServicesOutputType,
+			opsee_aws_ecs.GraphQLListContainerInstancesOutputType,
 		},
 		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
 			switch value.(type) {
@@ -2173,6 +2960,10 @@ func init() {
 				return opsee_aws_cloudwatch.GraphQLListMetricsOutputType
 			case *BezosResponse_Cloudwatch_GetMetricStatisticsOutput:
 				return opsee_aws_cloudwatch.GraphQLGetMetricStatisticsOutputType
+			case *BezosResponse_Cloudwatch_DescribeAlarmsOutput:
+				return opsee_aws_cloudwatch.GraphQLDescribeAlarmsOutputType
+			case *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput:
+				return opsee_aws_cloudwatch.GraphQLDescribeAlarmsForMetricOutputType
 			case *BezosResponse_Ec2_DescribeInstancesOutput:
 				return opsee_aws_ec2.GraphQLDescribeInstancesOutputType
 			case *BezosResponse_Ec2_DescribeSecurityGroupsOutput:
@@ -2195,6 +2986,14 @@ func init() {
 				return opsee_aws_ecs.GraphQLDescribeTasksOutputType
 			case *BezosResponse_Ecs_DescribeContainerInstancesOutput:
 				return opsee_aws_ecs.GraphQLDescribeContainerInstancesOutputType
+			case *BezosResponse_Ecs_ListClustersOutput:
+				return opsee_aws_ecs.GraphQLListClustersOutputType
+			case *BezosResponse_Ecs_ListServicesOutput:
+				return opsee_aws_ecs.GraphQLListServicesOutputType
+			case *BezosResponse_Ecs_DescribeServicesOutput:
+				return opsee_aws_ecs.GraphQLDescribeServicesOutputType
+			case *BezosResponse_Ecs_ListContainerInstancesOutput:
+				return opsee_aws_ecs.GraphQLListContainerInstancesOutputType
 			}
 			return nil
 		},
@@ -2205,6 +3004,8 @@ func init() {
 		Types: []*github_com_graphql_go_graphql.Object{
 			opsee_aws_cloudwatch.GraphQLListMetricsInputType,
 			opsee_aws_cloudwatch.GraphQLGetMetricStatisticsInputType,
+			opsee_aws_cloudwatch.GraphQLDescribeAlarmsInputType,
+			opsee_aws_cloudwatch.GraphQLDescribeAlarmsForMetricInputType,
 			opsee_aws_ec2.GraphQLDescribeInstancesInputType,
 			opsee_aws_ec2.GraphQLDescribeSecurityGroupsInputType,
 			opsee_aws_ec2.GraphQLDescribeSubnetsInputType,
@@ -2216,6 +3017,10 @@ func init() {
 			opsee_aws_ecs.GraphQLListTasksInputType,
 			opsee_aws_ecs.GraphQLDescribeTasksInputType,
 			opsee_aws_ecs.GraphQLDescribeContainerInstancesInputType,
+			opsee_aws_ecs.GraphQLListClustersInputType,
+			opsee_aws_ecs.GraphQLListServicesInputType,
+			opsee_aws_ecs.GraphQLDescribeServicesInputType,
+			opsee_aws_ecs.GraphQLListContainerInstancesInputType,
 		},
 		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
 			switch value.(type) {
@@ -2223,6 +3028,10 @@ func init() {
 				return opsee_aws_cloudwatch.GraphQLListMetricsInputType
 			case *BezosRequest_Cloudwatch_GetMetricStatisticsInput:
 				return opsee_aws_cloudwatch.GraphQLGetMetricStatisticsInputType
+			case *BezosRequest_Cloudwatch_DescribeAlarmsInput:
+				return opsee_aws_cloudwatch.GraphQLDescribeAlarmsInputType
+			case *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput:
+				return opsee_aws_cloudwatch.GraphQLDescribeAlarmsForMetricInputType
 			case *BezosRequest_Ec2_DescribeInstancesInput:
 				return opsee_aws_ec2.GraphQLDescribeInstancesInputType
 			case *BezosRequest_Ec2_DescribeSecurityGroupsInput:
@@ -2245,6 +3054,14 @@ func init() {
 				return opsee_aws_ecs.GraphQLDescribeTasksInputType
 			case *BezosRequest_Ecs_DescribeContainerInstancesInput:
 				return opsee_aws_ecs.GraphQLDescribeContainerInstancesInputType
+			case *BezosRequest_Ecs_ListClustersInput:
+				return opsee_aws_ecs.GraphQLListClustersInputType
+			case *BezosRequest_Ecs_ListServicesInput:
+				return opsee_aws_ecs.GraphQLListServicesInputType
+			case *BezosRequest_Ecs_DescribeServicesInput:
+				return opsee_aws_ecs.GraphQLDescribeServicesInputType
+			case *BezosRequest_Ecs_ListContainerInstancesInput:
+				return opsee_aws_ecs.GraphQLListContainerInstancesInputType
 			}
 			return nil
 		},
@@ -2401,6 +3218,38 @@ func (m *BezosRequest_Cloudwatch_GetMetricStatisticsInput) MarshalTo(data []byte
 	}
 	return i, nil
 }
+func (m *BezosRequest_Cloudwatch_DescribeAlarmsInput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Cloudwatch_DescribeAlarmsInput != nil {
+		data[i] = 0xba
+		i++
+		data[i] = 0x6
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Cloudwatch_DescribeAlarmsInput.Size()))
+		n6, err := m.Cloudwatch_DescribeAlarmsInput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	return i, nil
+}
+func (m *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Cloudwatch_DescribeAlarmsForMetricInput != nil {
+		data[i] = 0xc2
+		i++
+		data[i] = 0x6
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Cloudwatch_DescribeAlarmsForMetricInput.Size()))
+		n7, err := m.Cloudwatch_DescribeAlarmsForMetricInput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n7
+	}
+	return i, nil
+}
 func (m *BezosRequest_Ec2_DescribeInstancesInput) MarshalTo(data []byte) (int, error) {
 	i := 0
 	if m.Ec2_DescribeInstancesInput != nil {
@@ -2409,11 +3258,11 @@ func (m *BezosRequest_Ec2_DescribeInstancesInput) MarshalTo(data []byte) (int, e
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeInstancesInput.Size()))
-		n6, err := m.Ec2_DescribeInstancesInput.MarshalTo(data[i:])
+		n8, err := m.Ec2_DescribeInstancesInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n6
+		i += n8
 	}
 	return i, nil
 }
@@ -2425,11 +3274,11 @@ func (m *BezosRequest_Ec2_DescribeSecurityGroupsInput) MarshalTo(data []byte) (i
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeSecurityGroupsInput.Size()))
-		n7, err := m.Ec2_DescribeSecurityGroupsInput.MarshalTo(data[i:])
+		n9, err := m.Ec2_DescribeSecurityGroupsInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n7
+		i += n9
 	}
 	return i, nil
 }
@@ -2441,11 +3290,11 @@ func (m *BezosRequest_Ec2_DescribeSubnetsInput) MarshalTo(data []byte) (int, err
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeSubnetsInput.Size()))
-		n8, err := m.Ec2_DescribeSubnetsInput.MarshalTo(data[i:])
+		n10, err := m.Ec2_DescribeSubnetsInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n8
+		i += n10
 	}
 	return i, nil
 }
@@ -2457,11 +3306,11 @@ func (m *BezosRequest_Ec2_DescribeVpcsInput) MarshalTo(data []byte) (int, error)
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeVpcsInput.Size()))
-		n9, err := m.Ec2_DescribeVpcsInput.MarshalTo(data[i:])
+		n11, err := m.Ec2_DescribeVpcsInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n9
+		i += n11
 	}
 	return i, nil
 }
@@ -2473,11 +3322,11 @@ func (m *BezosRequest_Ec2_DescribeRouteTablesInput) MarshalTo(data []byte) (int,
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeRouteTablesInput.Size()))
-		n10, err := m.Ec2_DescribeRouteTablesInput.MarshalTo(data[i:])
+		n12, err := m.Ec2_DescribeRouteTablesInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n10
+		i += n12
 	}
 	return i, nil
 }
@@ -2489,11 +3338,11 @@ func (m *BezosRequest_Elb_DescribeLoadBalancersInput) MarshalTo(data []byte) (in
 		data[i] = 0x12
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Elb_DescribeLoadBalancersInput.Size()))
-		n11, err := m.Elb_DescribeLoadBalancersInput.MarshalTo(data[i:])
+		n13, err := m.Elb_DescribeLoadBalancersInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n11
+		i += n13
 	}
 	return i, nil
 }
@@ -2505,11 +3354,11 @@ func (m *BezosRequest_Autoscaling_DescribeAutoScalingGroupsInput) MarshalTo(data
 		data[i] = 0x19
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Autoscaling_DescribeAutoScalingGroupsInput.Size()))
-		n12, err := m.Autoscaling_DescribeAutoScalingGroupsInput.MarshalTo(data[i:])
+		n14, err := m.Autoscaling_DescribeAutoScalingGroupsInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n12
+		i += n14
 	}
 	return i, nil
 }
@@ -2521,11 +3370,11 @@ func (m *BezosRequest_Rds_DescribeDBInstancesInput) MarshalTo(data []byte) (int,
 		data[i] = 0x1f
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Rds_DescribeDBInstancesInput.Size()))
-		n13, err := m.Rds_DescribeDBInstancesInput.MarshalTo(data[i:])
+		n15, err := m.Rds_DescribeDBInstancesInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n13
+		i += n15
 	}
 	return i, nil
 }
@@ -2537,11 +3386,11 @@ func (m *BezosRequest_Ecs_ListTasksInput) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x25
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListTasksInput.Size()))
-		n14, err := m.Ecs_ListTasksInput.MarshalTo(data[i:])
+		n16, err := m.Ecs_ListTasksInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n14
+		i += n16
 	}
 	return i, nil
 }
@@ -2553,11 +3402,11 @@ func (m *BezosRequest_Ecs_DescribeTasksInput) MarshalTo(data []byte) (int, error
 		data[i] = 0x25
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ecs_DescribeTasksInput.Size()))
-		n15, err := m.Ecs_DescribeTasksInput.MarshalTo(data[i:])
+		n17, err := m.Ecs_DescribeTasksInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n15
+		i += n17
 	}
 	return i, nil
 }
@@ -2569,11 +3418,75 @@ func (m *BezosRequest_Ecs_DescribeContainerInstancesInput) MarshalTo(data []byte
 		data[i] = 0x25
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ecs_DescribeContainerInstancesInput.Size()))
-		n16, err := m.Ecs_DescribeContainerInstancesInput.MarshalTo(data[i:])
+		n18, err := m.Ecs_DescribeContainerInstancesInput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n16
+		i += n18
+	}
+	return i, nil
+}
+func (m *BezosRequest_Ecs_ListClustersInput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_ListClustersInput != nil {
+		data[i] = 0xe2
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListClustersInput.Size()))
+		n19, err := m.Ecs_ListClustersInput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n19
+	}
+	return i, nil
+}
+func (m *BezosRequest_Ecs_ListServicesInput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_ListServicesInput != nil {
+		data[i] = 0xea
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListServicesInput.Size()))
+		n20, err := m.Ecs_ListServicesInput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n20
+	}
+	return i, nil
+}
+func (m *BezosRequest_Ecs_DescribeServicesInput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_DescribeServicesInput != nil {
+		data[i] = 0xf2
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_DescribeServicesInput.Size()))
+		n21, err := m.Ecs_DescribeServicesInput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n21
+	}
+	return i, nil
+}
+func (m *BezosRequest_Ecs_ListContainerInstancesInput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_ListContainerInstancesInput != nil {
+		data[i] = 0xfa
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListContainerInstancesInput.Size()))
+		n22, err := m.Ecs_ListContainerInstancesInput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n22
 	}
 	return i, nil
 }
@@ -2596,18 +3509,18 @@ func (m *BezosResponse) MarshalTo(data []byte) (int, error) {
 		data[i] = 0xa
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.LastModified.Size()))
-		n17, err := m.LastModified.MarshalTo(data[i:])
+		n23, err := m.LastModified.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n17
+		i += n23
 	}
 	if m.Output != nil {
-		nn18, err := m.Output.MarshalTo(data[i:])
+		nn24, err := m.Output.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += nn18
+		i += nn24
 	}
 	return i, nil
 }
@@ -2620,11 +3533,11 @@ func (m *BezosResponse_Cloudwatch_ListMetricsOutput) MarshalTo(data []byte) (int
 		data[i] = 0x6
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Cloudwatch_ListMetricsOutput.Size()))
-		n19, err := m.Cloudwatch_ListMetricsOutput.MarshalTo(data[i:])
+		n25, err := m.Cloudwatch_ListMetricsOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n19
+		i += n25
 	}
 	return i, nil
 }
@@ -2636,11 +3549,43 @@ func (m *BezosResponse_Cloudwatch_GetMetricStatisticsOutput) MarshalTo(data []by
 		data[i] = 0x6
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Cloudwatch_GetMetricStatisticsOutput.Size()))
-		n20, err := m.Cloudwatch_GetMetricStatisticsOutput.MarshalTo(data[i:])
+		n26, err := m.Cloudwatch_GetMetricStatisticsOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n20
+		i += n26
+	}
+	return i, nil
+}
+func (m *BezosResponse_Cloudwatch_DescribeAlarmsOutput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Cloudwatch_DescribeAlarmsOutput != nil {
+		data[i] = 0xba
+		i++
+		data[i] = 0x6
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Cloudwatch_DescribeAlarmsOutput.Size()))
+		n27, err := m.Cloudwatch_DescribeAlarmsOutput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n27
+	}
+	return i, nil
+}
+func (m *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Cloudwatch_DescribeAlarmsForMetricOutput != nil {
+		data[i] = 0xc2
+		i++
+		data[i] = 0x6
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Cloudwatch_DescribeAlarmsForMetricOutput.Size()))
+		n28, err := m.Cloudwatch_DescribeAlarmsForMetricOutput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n28
 	}
 	return i, nil
 }
@@ -2652,11 +3597,11 @@ func (m *BezosResponse_Ec2_DescribeInstancesOutput) MarshalTo(data []byte) (int,
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeInstancesOutput.Size()))
-		n21, err := m.Ec2_DescribeInstancesOutput.MarshalTo(data[i:])
+		n29, err := m.Ec2_DescribeInstancesOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n21
+		i += n29
 	}
 	return i, nil
 }
@@ -2668,11 +3613,11 @@ func (m *BezosResponse_Ec2_DescribeSecurityGroupsOutput) MarshalTo(data []byte) 
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeSecurityGroupsOutput.Size()))
-		n22, err := m.Ec2_DescribeSecurityGroupsOutput.MarshalTo(data[i:])
+		n30, err := m.Ec2_DescribeSecurityGroupsOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n22
+		i += n30
 	}
 	return i, nil
 }
@@ -2684,11 +3629,11 @@ func (m *BezosResponse_Ec2_DescribeSubnetsOutput) MarshalTo(data []byte) (int, e
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeSubnetsOutput.Size()))
-		n23, err := m.Ec2_DescribeSubnetsOutput.MarshalTo(data[i:])
+		n31, err := m.Ec2_DescribeSubnetsOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n23
+		i += n31
 	}
 	return i, nil
 }
@@ -2700,11 +3645,11 @@ func (m *BezosResponse_Ec2_DescribeVpcsOutput) MarshalTo(data []byte) (int, erro
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeVpcsOutput.Size()))
-		n24, err := m.Ec2_DescribeVpcsOutput.MarshalTo(data[i:])
+		n32, err := m.Ec2_DescribeVpcsOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n24
+		i += n32
 	}
 	return i, nil
 }
@@ -2716,11 +3661,11 @@ func (m *BezosResponse_Ec2_DescribeRouteTablesOutput) MarshalTo(data []byte) (in
 		data[i] = 0xc
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ec2_DescribeRouteTablesOutput.Size()))
-		n25, err := m.Ec2_DescribeRouteTablesOutput.MarshalTo(data[i:])
+		n33, err := m.Ec2_DescribeRouteTablesOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n25
+		i += n33
 	}
 	return i, nil
 }
@@ -2732,11 +3677,11 @@ func (m *BezosResponse_Elb_DescribeLoadBalancersOutput) MarshalTo(data []byte) (
 		data[i] = 0x12
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Elb_DescribeLoadBalancersOutput.Size()))
-		n26, err := m.Elb_DescribeLoadBalancersOutput.MarshalTo(data[i:])
+		n34, err := m.Elb_DescribeLoadBalancersOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n26
+		i += n34
 	}
 	return i, nil
 }
@@ -2748,11 +3693,11 @@ func (m *BezosResponse_Autoscaling_DescribeAutoScalingGroupsOutput) MarshalTo(da
 		data[i] = 0x19
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Autoscaling_DescribeAutoScalingGroupsOutput.Size()))
-		n27, err := m.Autoscaling_DescribeAutoScalingGroupsOutput.MarshalTo(data[i:])
+		n35, err := m.Autoscaling_DescribeAutoScalingGroupsOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n27
+		i += n35
 	}
 	return i, nil
 }
@@ -2764,11 +3709,11 @@ func (m *BezosResponse_Rds_DescribeDBInstancesOutput) MarshalTo(data []byte) (in
 		data[i] = 0x1f
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Rds_DescribeDBInstancesOutput.Size()))
-		n28, err := m.Rds_DescribeDBInstancesOutput.MarshalTo(data[i:])
+		n36, err := m.Rds_DescribeDBInstancesOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n28
+		i += n36
 	}
 	return i, nil
 }
@@ -2780,11 +3725,11 @@ func (m *BezosResponse_Ecs_ListTasksOutput) MarshalTo(data []byte) (int, error) 
 		data[i] = 0x25
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListTasksOutput.Size()))
-		n29, err := m.Ecs_ListTasksOutput.MarshalTo(data[i:])
+		n37, err := m.Ecs_ListTasksOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n29
+		i += n37
 	}
 	return i, nil
 }
@@ -2796,11 +3741,11 @@ func (m *BezosResponse_Ecs_DescribeTasksOutput) MarshalTo(data []byte) (int, err
 		data[i] = 0x25
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ecs_DescribeTasksOutput.Size()))
-		n30, err := m.Ecs_DescribeTasksOutput.MarshalTo(data[i:])
+		n38, err := m.Ecs_DescribeTasksOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n30
+		i += n38
 	}
 	return i, nil
 }
@@ -2812,11 +3757,75 @@ func (m *BezosResponse_Ecs_DescribeContainerInstancesOutput) MarshalTo(data []by
 		data[i] = 0x25
 		i++
 		i = encodeVarintBezos(data, i, uint64(m.Ecs_DescribeContainerInstancesOutput.Size()))
-		n31, err := m.Ecs_DescribeContainerInstancesOutput.MarshalTo(data[i:])
+		n39, err := m.Ecs_DescribeContainerInstancesOutput.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n31
+		i += n39
+	}
+	return i, nil
+}
+func (m *BezosResponse_Ecs_ListClustersOutput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_ListClustersOutput != nil {
+		data[i] = 0xe2
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListClustersOutput.Size()))
+		n40, err := m.Ecs_ListClustersOutput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n40
+	}
+	return i, nil
+}
+func (m *BezosResponse_Ecs_ListServicesOutput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_ListServicesOutput != nil {
+		data[i] = 0xea
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListServicesOutput.Size()))
+		n41, err := m.Ecs_ListServicesOutput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n41
+	}
+	return i, nil
+}
+func (m *BezosResponse_Ecs_DescribeServicesOutput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_DescribeServicesOutput != nil {
+		data[i] = 0xf2
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_DescribeServicesOutput.Size()))
+		n42, err := m.Ecs_DescribeServicesOutput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n42
+	}
+	return i, nil
+}
+func (m *BezosResponse_Ecs_ListContainerInstancesOutput) MarshalTo(data []byte) (int, error) {
+	i := 0
+	if m.Ecs_ListContainerInstancesOutput != nil {
+		data[i] = 0xfa
+		i++
+		data[i] = 0x25
+		i++
+		i = encodeVarintBezos(data, i, uint64(m.Ecs_ListContainerInstancesOutput.Size()))
+		n43, err := m.Ecs_ListContainerInstancesOutput.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n43
 	}
 	return i, nil
 }
@@ -2857,12 +3866,16 @@ func NewPopulatedBezosRequest(r randyBezos, easy bool) *BezosRequest {
 	if r.Intn(10) != 0 {
 		this.MaxAge = opsee_types.NewPopulatedTimestamp(r, easy)
 	}
-	oneofNumber_Input := []int32{101, 102, 201, 202, 203, 204, 205, 301, 401, 501, 601, 602, 603}[r.Intn(13)]
+	oneofNumber_Input := []int32{101, 102, 103, 104, 201, 202, 203, 204, 205, 301, 401, 501, 601, 602, 603, 604, 605, 606, 607}[r.Intn(19)]
 	switch oneofNumber_Input {
 	case 101:
 		this.Input = NewPopulatedBezosRequest_Cloudwatch_ListMetricsInput(r, easy)
 	case 102:
 		this.Input = NewPopulatedBezosRequest_Cloudwatch_GetMetricStatisticsInput(r, easy)
+	case 103:
+		this.Input = NewPopulatedBezosRequest_Cloudwatch_DescribeAlarmsInput(r, easy)
+	case 104:
+		this.Input = NewPopulatedBezosRequest_Cloudwatch_DescribeAlarmsForMetricInput(r, easy)
 	case 201:
 		this.Input = NewPopulatedBezosRequest_Ec2_DescribeInstancesInput(r, easy)
 	case 202:
@@ -2885,6 +3898,14 @@ func NewPopulatedBezosRequest(r randyBezos, easy bool) *BezosRequest {
 		this.Input = NewPopulatedBezosRequest_Ecs_DescribeTasksInput(r, easy)
 	case 603:
 		this.Input = NewPopulatedBezosRequest_Ecs_DescribeContainerInstancesInput(r, easy)
+	case 604:
+		this.Input = NewPopulatedBezosRequest_Ecs_ListClustersInput(r, easy)
+	case 605:
+		this.Input = NewPopulatedBezosRequest_Ecs_ListServicesInput(r, easy)
+	case 606:
+		this.Input = NewPopulatedBezosRequest_Ecs_DescribeServicesInput(r, easy)
+	case 607:
+		this.Input = NewPopulatedBezosRequest_Ecs_ListContainerInstancesInput(r, easy)
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -2899,6 +3920,16 @@ func NewPopulatedBezosRequest_Cloudwatch_ListMetricsInput(r randyBezos, easy boo
 func NewPopulatedBezosRequest_Cloudwatch_GetMetricStatisticsInput(r randyBezos, easy bool) *BezosRequest_Cloudwatch_GetMetricStatisticsInput {
 	this := &BezosRequest_Cloudwatch_GetMetricStatisticsInput{}
 	this.Cloudwatch_GetMetricStatisticsInput = opsee_aws_cloudwatch.NewPopulatedGetMetricStatisticsInput(r, easy)
+	return this
+}
+func NewPopulatedBezosRequest_Cloudwatch_DescribeAlarmsInput(r randyBezos, easy bool) *BezosRequest_Cloudwatch_DescribeAlarmsInput {
+	this := &BezosRequest_Cloudwatch_DescribeAlarmsInput{}
+	this.Cloudwatch_DescribeAlarmsInput = opsee_aws_cloudwatch.NewPopulatedDescribeAlarmsInput(r, easy)
+	return this
+}
+func NewPopulatedBezosRequest_Cloudwatch_DescribeAlarmsForMetricInput(r randyBezos, easy bool) *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput {
+	this := &BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput{}
+	this.Cloudwatch_DescribeAlarmsForMetricInput = opsee_aws_cloudwatch.NewPopulatedDescribeAlarmsForMetricInput(r, easy)
 	return this
 }
 func NewPopulatedBezosRequest_Ec2_DescribeInstancesInput(r randyBezos, easy bool) *BezosRequest_Ec2_DescribeInstancesInput {
@@ -2956,17 +3987,41 @@ func NewPopulatedBezosRequest_Ecs_DescribeContainerInstancesInput(r randyBezos, 
 	this.Ecs_DescribeContainerInstancesInput = opsee_aws_ecs.NewPopulatedDescribeContainerInstancesInput(r, easy)
 	return this
 }
+func NewPopulatedBezosRequest_Ecs_ListClustersInput(r randyBezos, easy bool) *BezosRequest_Ecs_ListClustersInput {
+	this := &BezosRequest_Ecs_ListClustersInput{}
+	this.Ecs_ListClustersInput = opsee_aws_ecs.NewPopulatedListClustersInput(r, easy)
+	return this
+}
+func NewPopulatedBezosRequest_Ecs_ListServicesInput(r randyBezos, easy bool) *BezosRequest_Ecs_ListServicesInput {
+	this := &BezosRequest_Ecs_ListServicesInput{}
+	this.Ecs_ListServicesInput = opsee_aws_ecs.NewPopulatedListServicesInput(r, easy)
+	return this
+}
+func NewPopulatedBezosRequest_Ecs_DescribeServicesInput(r randyBezos, easy bool) *BezosRequest_Ecs_DescribeServicesInput {
+	this := &BezosRequest_Ecs_DescribeServicesInput{}
+	this.Ecs_DescribeServicesInput = opsee_aws_ecs.NewPopulatedDescribeServicesInput(r, easy)
+	return this
+}
+func NewPopulatedBezosRequest_Ecs_ListContainerInstancesInput(r randyBezos, easy bool) *BezosRequest_Ecs_ListContainerInstancesInput {
+	this := &BezosRequest_Ecs_ListContainerInstancesInput{}
+	this.Ecs_ListContainerInstancesInput = opsee_aws_ecs.NewPopulatedListContainerInstancesInput(r, easy)
+	return this
+}
 func NewPopulatedBezosResponse(r randyBezos, easy bool) *BezosResponse {
 	this := &BezosResponse{}
 	if r.Intn(10) != 0 {
 		this.LastModified = opsee_types.NewPopulatedTimestamp(r, easy)
 	}
-	oneofNumber_Output := []int32{101, 102, 201, 202, 203, 204, 205, 301, 401, 501, 601, 602, 603}[r.Intn(13)]
+	oneofNumber_Output := []int32{101, 102, 103, 104, 201, 202, 203, 204, 205, 301, 401, 501, 601, 602, 603, 604, 605, 606, 607}[r.Intn(19)]
 	switch oneofNumber_Output {
 	case 101:
 		this.Output = NewPopulatedBezosResponse_Cloudwatch_ListMetricsOutput(r, easy)
 	case 102:
 		this.Output = NewPopulatedBezosResponse_Cloudwatch_GetMetricStatisticsOutput(r, easy)
+	case 103:
+		this.Output = NewPopulatedBezosResponse_Cloudwatch_DescribeAlarmsOutput(r, easy)
+	case 104:
+		this.Output = NewPopulatedBezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput(r, easy)
 	case 201:
 		this.Output = NewPopulatedBezosResponse_Ec2_DescribeInstancesOutput(r, easy)
 	case 202:
@@ -2989,6 +4044,14 @@ func NewPopulatedBezosResponse(r randyBezos, easy bool) *BezosResponse {
 		this.Output = NewPopulatedBezosResponse_Ecs_DescribeTasksOutput(r, easy)
 	case 603:
 		this.Output = NewPopulatedBezosResponse_Ecs_DescribeContainerInstancesOutput(r, easy)
+	case 604:
+		this.Output = NewPopulatedBezosResponse_Ecs_ListClustersOutput(r, easy)
+	case 605:
+		this.Output = NewPopulatedBezosResponse_Ecs_ListServicesOutput(r, easy)
+	case 606:
+		this.Output = NewPopulatedBezosResponse_Ecs_DescribeServicesOutput(r, easy)
+	case 607:
+		this.Output = NewPopulatedBezosResponse_Ecs_ListContainerInstancesOutput(r, easy)
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -3003,6 +4066,16 @@ func NewPopulatedBezosResponse_Cloudwatch_ListMetricsOutput(r randyBezos, easy b
 func NewPopulatedBezosResponse_Cloudwatch_GetMetricStatisticsOutput(r randyBezos, easy bool) *BezosResponse_Cloudwatch_GetMetricStatisticsOutput {
 	this := &BezosResponse_Cloudwatch_GetMetricStatisticsOutput{}
 	this.Cloudwatch_GetMetricStatisticsOutput = opsee_aws_cloudwatch.NewPopulatedGetMetricStatisticsOutput(r, easy)
+	return this
+}
+func NewPopulatedBezosResponse_Cloudwatch_DescribeAlarmsOutput(r randyBezos, easy bool) *BezosResponse_Cloudwatch_DescribeAlarmsOutput {
+	this := &BezosResponse_Cloudwatch_DescribeAlarmsOutput{}
+	this.Cloudwatch_DescribeAlarmsOutput = opsee_aws_cloudwatch.NewPopulatedDescribeAlarmsOutput(r, easy)
+	return this
+}
+func NewPopulatedBezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput(r randyBezos, easy bool) *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput {
+	this := &BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput{}
+	this.Cloudwatch_DescribeAlarmsForMetricOutput = opsee_aws_cloudwatch.NewPopulatedDescribeAlarmsForMetricOutput(r, easy)
 	return this
 }
 func NewPopulatedBezosResponse_Ec2_DescribeInstancesOutput(r randyBezos, easy bool) *BezosResponse_Ec2_DescribeInstancesOutput {
@@ -3058,6 +4131,26 @@ func NewPopulatedBezosResponse_Ecs_DescribeTasksOutput(r randyBezos, easy bool) 
 func NewPopulatedBezosResponse_Ecs_DescribeContainerInstancesOutput(r randyBezos, easy bool) *BezosResponse_Ecs_DescribeContainerInstancesOutput {
 	this := &BezosResponse_Ecs_DescribeContainerInstancesOutput{}
 	this.Ecs_DescribeContainerInstancesOutput = opsee_aws_ecs.NewPopulatedDescribeContainerInstancesOutput(r, easy)
+	return this
+}
+func NewPopulatedBezosResponse_Ecs_ListClustersOutput(r randyBezos, easy bool) *BezosResponse_Ecs_ListClustersOutput {
+	this := &BezosResponse_Ecs_ListClustersOutput{}
+	this.Ecs_ListClustersOutput = opsee_aws_ecs.NewPopulatedListClustersOutput(r, easy)
+	return this
+}
+func NewPopulatedBezosResponse_Ecs_ListServicesOutput(r randyBezos, easy bool) *BezosResponse_Ecs_ListServicesOutput {
+	this := &BezosResponse_Ecs_ListServicesOutput{}
+	this.Ecs_ListServicesOutput = opsee_aws_ecs.NewPopulatedListServicesOutput(r, easy)
+	return this
+}
+func NewPopulatedBezosResponse_Ecs_DescribeServicesOutput(r randyBezos, easy bool) *BezosResponse_Ecs_DescribeServicesOutput {
+	this := &BezosResponse_Ecs_DescribeServicesOutput{}
+	this.Ecs_DescribeServicesOutput = opsee_aws_ecs.NewPopulatedDescribeServicesOutput(r, easy)
+	return this
+}
+func NewPopulatedBezosResponse_Ecs_ListContainerInstancesOutput(r randyBezos, easy bool) *BezosResponse_Ecs_ListContainerInstancesOutput {
+	this := &BezosResponse_Ecs_ListContainerInstancesOutput{}
+	this.Ecs_ListContainerInstancesOutput = opsee_aws_ecs.NewPopulatedListContainerInstancesOutput(r, easy)
 	return this
 }
 
@@ -3176,6 +4269,24 @@ func (m *BezosRequest_Cloudwatch_GetMetricStatisticsInput) Size() (n int) {
 	}
 	return n
 }
+func (m *BezosRequest_Cloudwatch_DescribeAlarmsInput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Cloudwatch_DescribeAlarmsInput != nil {
+		l = m.Cloudwatch_DescribeAlarmsInput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Cloudwatch_DescribeAlarmsForMetricInput != nil {
+		l = m.Cloudwatch_DescribeAlarmsForMetricInput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
 func (m *BezosRequest_Ec2_DescribeInstancesInput) Size() (n int) {
 	var l int
 	_ = l
@@ -3275,6 +4386,42 @@ func (m *BezosRequest_Ecs_DescribeContainerInstancesInput) Size() (n int) {
 	}
 	return n
 }
+func (m *BezosRequest_Ecs_ListClustersInput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_ListClustersInput != nil {
+		l = m.Ecs_ListClustersInput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosRequest_Ecs_ListServicesInput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_ListServicesInput != nil {
+		l = m.Ecs_ListServicesInput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosRequest_Ecs_DescribeServicesInput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_DescribeServicesInput != nil {
+		l = m.Ecs_DescribeServicesInput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosRequest_Ecs_ListContainerInstancesInput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_ListContainerInstancesInput != nil {
+		l = m.Ecs_ListContainerInstancesInput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
 func (m *BezosResponse) Size() (n int) {
 	var l int
 	_ = l
@@ -3302,6 +4449,24 @@ func (m *BezosResponse_Cloudwatch_GetMetricStatisticsOutput) Size() (n int) {
 	_ = l
 	if m.Cloudwatch_GetMetricStatisticsOutput != nil {
 		l = m.Cloudwatch_GetMetricStatisticsOutput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosResponse_Cloudwatch_DescribeAlarmsOutput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Cloudwatch_DescribeAlarmsOutput != nil {
+		l = m.Cloudwatch_DescribeAlarmsOutput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Cloudwatch_DescribeAlarmsForMetricOutput != nil {
+		l = m.Cloudwatch_DescribeAlarmsForMetricOutput.Size()
 		n += 2 + l + sovBezos(uint64(l))
 	}
 	return n
@@ -3401,6 +4566,42 @@ func (m *BezosResponse_Ecs_DescribeContainerInstancesOutput) Size() (n int) {
 	_ = l
 	if m.Ecs_DescribeContainerInstancesOutput != nil {
 		l = m.Ecs_DescribeContainerInstancesOutput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosResponse_Ecs_ListClustersOutput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_ListClustersOutput != nil {
+		l = m.Ecs_ListClustersOutput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosResponse_Ecs_ListServicesOutput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_ListServicesOutput != nil {
+		l = m.Ecs_ListServicesOutput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosResponse_Ecs_DescribeServicesOutput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_DescribeServicesOutput != nil {
+		l = m.Ecs_DescribeServicesOutput.Size()
+		n += 2 + l + sovBezos(uint64(l))
+	}
+	return n
+}
+func (m *BezosResponse_Ecs_ListContainerInstancesOutput) Size() (n int) {
+	var l int
+	_ = l
+	if m.Ecs_ListContainerInstancesOutput != nil {
+		l = m.Ecs_ListContainerInstancesOutput.Size()
 		n += 2 + l + sovBezos(uint64(l))
 	}
 	return n
@@ -3635,6 +4836,70 @@ func (m *BezosRequest) Unmarshal(data []byte) error {
 				return err
 			}
 			m.Input = &BezosRequest_Cloudwatch_GetMetricStatisticsInput{v}
+			iNdEx = postIndex
+		case 103:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cloudwatch_DescribeAlarmsInput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_cloudwatch.DescribeAlarmsInput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Input = &BezosRequest_Cloudwatch_DescribeAlarmsInput{v}
+			iNdEx = postIndex
+		case 104:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cloudwatch_DescribeAlarmsForMetricInput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_cloudwatch.DescribeAlarmsForMetricInput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Input = &BezosRequest_Cloudwatch_DescribeAlarmsForMetricInput{v}
 			iNdEx = postIndex
 		case 201:
 			if wireType != 2 {
@@ -3988,6 +5253,134 @@ func (m *BezosRequest) Unmarshal(data []byte) error {
 			}
 			m.Input = &BezosRequest_Ecs_DescribeContainerInstancesInput{v}
 			iNdEx = postIndex
+		case 604:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_ListClustersInput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.ListClustersInput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Input = &BezosRequest_Ecs_ListClustersInput{v}
+			iNdEx = postIndex
+		case 605:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_ListServicesInput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.ListServicesInput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Input = &BezosRequest_Ecs_ListServicesInput{v}
+			iNdEx = postIndex
+		case 606:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_DescribeServicesInput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.DescribeServicesInput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Input = &BezosRequest_Ecs_DescribeServicesInput{v}
+			iNdEx = postIndex
+		case 607:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_ListContainerInstancesInput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.ListContainerInstancesInput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Input = &BezosRequest_Ecs_ListContainerInstancesInput{v}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipBezos(data[iNdEx:])
@@ -4134,6 +5527,70 @@ func (m *BezosResponse) Unmarshal(data []byte) error {
 				return err
 			}
 			m.Output = &BezosResponse_Cloudwatch_GetMetricStatisticsOutput{v}
+			iNdEx = postIndex
+		case 103:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cloudwatch_DescribeAlarmsOutput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_cloudwatch.DescribeAlarmsOutput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Output = &BezosResponse_Cloudwatch_DescribeAlarmsOutput{v}
+			iNdEx = postIndex
+		case 104:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cloudwatch_DescribeAlarmsForMetricOutput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_cloudwatch.DescribeAlarmsForMetricOutput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Output = &BezosResponse_Cloudwatch_DescribeAlarmsForMetricOutput{v}
 			iNdEx = postIndex
 		case 201:
 			if wireType != 2 {
@@ -4487,6 +5944,134 @@ func (m *BezosResponse) Unmarshal(data []byte) error {
 			}
 			m.Output = &BezosResponse_Ecs_DescribeContainerInstancesOutput{v}
 			iNdEx = postIndex
+		case 604:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_ListClustersOutput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.ListClustersOutput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Output = &BezosResponse_Ecs_ListClustersOutput{v}
+			iNdEx = postIndex
+		case 605:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_ListServicesOutput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.ListServicesOutput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Output = &BezosResponse_Ecs_ListServicesOutput{v}
+			iNdEx = postIndex
+		case 606:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_DescribeServicesOutput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.DescribeServicesOutput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Output = &BezosResponse_Ecs_DescribeServicesOutput{v}
+			iNdEx = postIndex
+		case 607:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Ecs_ListContainerInstancesOutput", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBezos
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthBezos
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &opsee_aws_ecs.ListContainerInstancesOutput{}
+			if err := v.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Output = &BezosResponse_Ecs_ListContainerInstancesOutput{v}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipBezos(data[iNdEx:])
@@ -4614,72 +6199,88 @@ var (
 )
 
 var fileDescriptorBezos = []byte{
-	// 1072 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x94, 0x97, 0xcf, 0x6f, 0xe3, 0x44,
-	0x14, 0xc7, 0xd7, 0xdb, 0x36, 0x85, 0x69, 0xf7, 0xc0, 0xec, 0xb6, 0x9b, 0x4d, 0xdb, 0xb4, 0x9b,
-	0xee, 0x8f, 0x6e, 0x57, 0xb2, 0xa1, 0x08, 0x04, 0xec, 0x69, 0xc3, 0x4a, 0x4b, 0xa5, 0x5d, 0xad,
-	0x94, 0x16, 0x84, 0x40, 0x22, 0xb2, 0x9d, 0x69, 0x6a, 0x48, 0x6c, 0xe3, 0x19, 0xb7, 0x94, 0x1b,
-	0x08, 0xfe, 0x00, 0x4e, 0x48, 0x1c, 0x39, 0x21, 0x24, 0xee, 0x1c, 0xb9, 0x20, 0xf1, 0x53, 0xe2,
-	0x0a, 0x5c, 0x80, 0xff, 0x01, 0x89, 0x23, 0xcf, 0x9e, 0x57, 0x67, 0xec, 0x78, 0x9c, 0xe4, 0x10,
-	0x29, 0x99, 0xf7, 0x7d, 0xef, 0x33, 0xf5, 0xa4, 0xf3, 0x51, 0xc8, 0x92, 0xc3, 0x3e, 0x0c, 0xb8,
-	0x19, 0x46, 0x81, 0x08, 0xe8, 0x42, 0x10, 0x72, 0xc6, 0x1a, 0xcf, 0xf6, 0x3d, 0x71, 0x1c, 0x3b,
-	0xa6, 0x1b, 0x0c, 0xad, 0x74, 0xc5, 0x4a, 0xcb, 0x4e, 0x7c, 0x24, 0x3f, 0xa6, 0x9f, 0xe4, 0x5b,
-	0xd9, 0xd8, 0x78, 0x65, 0xaa, 0x0e, 0x71, 0x16, 0x32, 0x6e, 0x09, 0x6f, 0xc8, 0xb8, 0xb0, 0x87,
-	0x21, 0xf6, 0xbe, 0x34, 0xd6, 0xeb, 0xd8, 0xdc, 0x73, 0x2d, 0xee, 0x1e, 0xb3, 0xa1, 0x6d, 0xd9,
-	0xa7, 0xdc, 0x72, 0x07, 0x41, 0xdc, 0x3b, 0xb5, 0x85, 0x7b, 0x2c, 0x67, 0x60, 0xe7, 0x73, 0x93,
-	0x3b, 0x99, 0xbb, 0x37, 0x7b, 0x0b, 0x9f, 0xb9, 0x65, 0xe0, 0xe4, 0x5a, 0x5e, 0x9e, 0xdc, 0x62,
-	0xc7, 0x22, 0xe0, 0xae, 0x3d, 0xf0, 0xfc, 0xfe, 0xac, 0xb4, 0xa8, 0x97, 0xdf, 0xe0, 0x4e, 0x75,
-	0x4b, 0xcc, 0x59, 0x24, 0x93, 0xad, 0xef, 0x97, 0xc9, 0x72, 0x3b, 0x39, 0xef, 0x0e, 0x7b, 0x3f,
-	0x86, 0x43, 0xa0, 0x9b, 0x64, 0x3e, 0x29, 0xd7, 0x8d, 0x2d, 0x63, 0x67, 0x69, 0x6f, 0xc9, 0x94,
-	0x67, 0xfa, 0x3a, 0x2c, 0x75, 0xd2, 0x02, 0x5d, 0x25, 0xb5, 0x88, 0xf5, 0xbd, 0xc0, 0xaf, 0x5f,
-	0x84, 0xc8, 0xd3, 0x1d, 0xfc, 0x44, 0x57, 0x48, 0xed, 0x24, 0x74, 0xbb, 0x5e, 0xaf, 0x3e, 0x97,
-	0xae, 0x2f, 0xc0, 0xa7, 0xfd, 0x1e, 0xb5, 0xc8, 0xe2, 0xd0, 0xfe, 0xa0, 0x6b, 0xf7, 0x59, 0x7d,
-	0x3e, 0x1d, 0xb9, 0x8a, 0x23, 0xe5, 0x7e, 0x0f, 0xcf, 0x8f, 0xbe, 0x53, 0x83, 0xd8, 0xfd, 0x3e,
-	0xa3, 0x1e, 0x59, 0x1b, 0x1d, 0x6e, 0xf7, 0x91, 0xc7, 0xc5, 0x63, 0x26, 0x22, 0xcf, 0xe5, 0xfb,
-	0x7e, 0x18, 0x8b, 0x3a, 0x4b, 0x87, 0xdc, 0xc2, 0x21, 0xf0, 0xc7, 0x9b, 0xa3, 0xb4, 0x59, 0x4c,
-	0xbf, 0x76, 0xa1, 0xd3, 0x18, 0x95, 0x8b, 0x55, 0xfa, 0x91, 0x41, 0xb6, 0x15, 0xd6, 0x43, 0x86,
-	0xe5, 0x03, 0x61, 0x0b, 0xc8, 0x66, 0xcc, 0xa3, 0x94, 0x69, 0x96, 0x33, 0x75, 0x5d, 0xc0, 0x6e,
-	0x8d, 0x62, 0xba, 0x14, 0xed, 0x93, 0x06, 0x7c, 0x23, 0xbb, 0x0f, 0x18, 0x77, 0x23, 0xcf, 0x61,
-	0xfb, 0x3e, 0x3c, 0x0d, 0xdf, 0x65, 0x48, 0xfe, 0x51, 0x1e, 0xc3, 0x4d, 0x05, 0x0d, 0x69, 0xb3,
-	0x3c, 0x0d, 0xc4, 0x6b, 0x50, 0x2d, 0x2f, 0xd2, 0x13, 0xb2, 0xa9, 0x82, 0x0e, 0x98, 0x1b, 0x47,
-	0x9e, 0x38, 0x7b, 0x18, 0x05, 0x71, 0x88, 0xb4, 0x9f, 0x24, 0x6d, 0x57, 0x43, 0x2b, 0x69, 0x01,
-	0x64, 0x53, 0x41, 0x96, 0x24, 0xa8, 0x4d, 0xea, 0x39, 0x6e, 0xec, 0xf8, 0x4c, 0x20, 0xf0, 0x67,
-	0x09, 0xdc, 0xd6, 0x01, 0x95, 0x2c, 0x90, 0xae, 0xaa, 0x24, 0xa5, 0x44, 0xdf, 0x24, 0x2b, 0x2a,
-	0xe2, 0x8d, 0xf0, 0xfc, 0xe0, 0x7e, 0x91, 0xf3, 0xb7, 0x34, 0xf3, 0xb3, 0x20, 0x0c, 0xbf, 0xa2,
-	0x0c, 0xcf, 0xd6, 0xe9, 0x90, 0xac, 0xab, 0x93, 0x3b, 0x41, 0x2c, 0xd8, 0xa1, 0xed, 0x0c, 0xce,
-	0xcf, 0xe7, 0x57, 0x09, 0xb8, 0xad, 0x01, 0x14, 0xf3, 0xc0, 0x59, 0x53, 0x38, 0xc5, 0x32, 0xe5,
-	0xa4, 0x09, 0x17, 0x47, 0x86, 0x7b, 0x14, 0xd8, 0xbd, 0xb6, 0x3d, 0x48, 0x0e, 0x31, 0x42, 0xe0,
-	0x37, 0x17, 0x53, 0xe0, 0x1d, 0x15, 0x38, 0x70, 0x4c, 0x7d, 0x07, 0x20, 0x37, 0x20, 0xa1, 0x0f,
-	0xd0, 0xcf, 0x0d, 0xb2, 0xab, 0xdc, 0x3d, 0x19, 0xfd, 0x3e, 0xac, 0x1d, 0xc8, 0x35, 0xf5, 0x4b,
-	0xf2, 0xd9, 0x5c, 0xba, 0x83, 0x17, 0x94, 0x1d, 0x28, 0xdd, 0x66, 0x75, 0x37, 0xec, 0xe6, 0x8e,
-	0x92, 0xae, 0x0e, 0x27, 0x4f, 0x1f, 0x6e, 0xb6, 0x6c, 0x43, 0x0f, 0xda, 0x85, 0xff, 0x8e, 0x7f,
-	0xe7, 0xc6, 0x9e, 0x3e, 0xe4, 0x4d, 0x5d, 0x3e, 0x79, 0xfa, 0x50, 0xd7, 0x95, 0xe9, 0x13, 0x42,
-	0xe1, 0xa6, 0x4f, 0xaf, 0x9c, 0x43, 0x9b, 0xbf, 0x87, 0x90, 0xdf, 0xe5, 0xb5, 0xb5, 0x91, 0x3b,
-	0x62, 0x6e, 0xe6, 0x53, 0x30, 0xfa, 0x19, 0x58, 0xcd, 0x2f, 0xd2, 0xb7, 0xc9, 0x6a, 0x32, 0xf0,
-	0x1c, 0xa8, 0x0c, 0xfd, 0x43, 0x0e, 0xbd, 0x5e, 0x18, 0x3a, 0x9e, 0x84, 0xc1, 0xf0, 0xdd, 0xe6,
-	0xe3, 0x05, 0xfa, 0x31, 0x5c, 0x5e, 0xea, 0xf4, 0x57, 0x03, 0x5f, 0xd8, 0x9e, 0xcf, 0xa2, 0xc2,
-	0x43, 0xfa, 0x73, 0x7e, 0xec, 0xf6, 0x52, 0x51, 0x9a, 0xb6, 0xe4, 0xf6, 0x52, 0xb8, 0x9a, 0x54,
-	0x7b, 0x91, 0x2c, 0x78, 0xc9, 0x9b, 0xd6, 0xd7, 0xcb, 0xe4, 0x12, 0x7a, 0x84, 0x87, 0x81, 0xcf,
-	0x19, 0xbd, 0x47, 0x2e, 0x0d, 0x6c, 0x2e, 0xba, 0xc3, 0xa0, 0xe7, 0x1d, 0x79, 0xac, 0x87, 0x46,
-	0xd1, 0x5d, 0xff, 0xcb, 0x49, 0xf8, 0x31, 0x66, 0xe9, 0x80, 0xac, 0x97, 0x4b, 0xe0, 0x49, 0x2c,
-	0x46, 0x16, 0xb8, 0x3d, 0xd1, 0x02, 0x32, 0x9e, 0x1c, 0x7c, 0xa9, 0x06, 0x64, 0x99, 0x7e, 0x62,
-	0x90, 0x1b, 0xd5, 0x1e, 0x40, 0xac, 0x14, 0x81, 0x35, 0xb5, 0x08, 0x32, 0xfc, 0x76, 0xa5, 0x09,
-	0x70, 0x1b, 0xef, 0x92, 0xb5, 0x52, 0x15, 0x20, 0x1c, 0x5d, 0x70, 0x6b, 0x92, 0x0b, 0x32, 0x68,
-	0xa3, 0x4c, 0x06, 0xc8, 0x3a, 0x23, 0x5b, 0x7a, 0x1b, 0x20, 0x10, 0x75, 0x70, 0x77, 0x2a, 0x1d,
-	0x64, 0xd4, 0x4d, 0xad, 0x0f, 0x10, 0xdd, 0x23, 0xd7, 0x4a, 0x84, 0x80, 0x4c, 0x34, 0xc2, 0x8d,
-	0x6a, 0x23, 0x64, 0xb0, 0xfa, 0xb8, 0x12, 0x90, 0x92, 0xfe, 0xef, 0xe5, 0x9d, 0x80, 0x08, 0x94,
-	0xc2, 0xf5, 0x0a, 0x29, 0x64, 0xf3, 0x57, 0x0a, 0x56, 0xc0, 0xe1, 0x21, 0xd9, 0xd0, 0x68, 0x01,
-	0x19, 0xe8, 0x85, 0x9d, 0xc9, 0x5e, 0xc8, 0x50, 0xeb, 0xe5, 0x62, 0x40, 0x62, 0x62, 0x6f, 0x9d,
-	0x19, 0x90, 0x89, 0x6a, 0xd8, 0x9d, 0x46, 0x0d, 0x19, 0xb5, 0xa9, 0x73, 0x03, 0x72, 0xbf, 0x30,
-	0xc8, 0xdd, 0xa9, 0xe4, 0x80, 0x9b, 0x40, 0x3b, 0xbc, 0x38, 0xab, 0x1d, 0xb2, 0x0d, 0xed, 0x4e,
-	0xa3, 0x87, 0xd1, 0x31, 0x68, 0xfc, 0x80, 0xbb, 0x41, 0x41, 0xec, 0x4c, 0x16, 0xc4, 0xe8, 0x18,
-	0xca, 0x0d, 0x81, 0xc4, 0x0e, 0xb9, 0x9c, 0x53, 0x04, 0x72, 0xd0, 0x11, 0x4d, 0x9d, 0x23, 0xb2,
-	0xe9, 0x54, 0x95, 0x04, 0xce, 0x7c, 0x87, 0x5c, 0x1d, 0xb3, 0x04, 0xce, 0x45, 0x4d, 0xb4, 0xaa,
-	0x34, 0x91, 0xcd, 0x5e, 0x2d, 0x7a, 0x02, 0xe7, 0x7f, 0x0a, 0xb7, 0x5b, 0xb5, 0x28, 0x90, 0x86,
-	0xa6, 0xb0, 0xa6, 0x36, 0xc5, 0xe8, 0x7a, 0xab, 0x54, 0x85, 0x8c, 0xb5, 0x9f, 0x22, 0xb5, 0x20,
-	0x7d, 0xb7, 0x77, 0x8f, 0x2c, 0xa4, 0xae, 0xa0, 0x7b, 0x64, 0x0e, 0xae, 0x43, 0x7a, 0x19, 0x89,
-	0xea, 0x0f, 0x91, 0xc6, 0x95, 0xfc, 0xa2, 0xb4, 0x4a, 0xeb, 0x42, 0xfb, 0xe6, 0x7f, 0x7f, 0x37,
-	0x8d, 0xaf, 0xfe, 0x69, 0x1a, 0xdf, 0xc2, 0xeb, 0x07, 0x78, 0xfd, 0x06, 0xaf, 0xbf, 0xe0, 0xf5,
-	0xdd, 0x97, 0x9b, 0xc6, 0x5b, 0x8b, 0xf0, 0x13, 0xe5, 0xc4, 0x73, 0x99, 0x53, 0x4b, 0x7f, 0xdf,
-	0x3c, 0xff, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x35, 0x59, 0x34, 0x87, 0xce, 0x0e, 0x00, 0x00,
+	// 1318 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x94, 0x98, 0xcd, 0x6f, 0x1b, 0x45,
+	0x18, 0xc6, 0xbb, 0x8d, 0xe3, 0xc0, 0xa4, 0x3d, 0x64, 0xda, 0xa4, 0x8e, 0x93, 0xd8, 0xa9, 0xf3,
+	0xe5, 0x26, 0xd2, 0x1a, 0x5c, 0x81, 0x80, 0x9e, 0xea, 0x56, 0x94, 0x48, 0xad, 0x2a, 0x39, 0x01,
+	0x21, 0x90, 0x88, 0xd6, 0xeb, 0x89, 0xb3, 0x60, 0x7b, 0x97, 0x9d, 0xdd, 0x94, 0x70, 0x03, 0xc1,
+	0x11, 0x09, 0x4e, 0x48, 0x1c, 0x39, 0x71, 0xe1, 0xce, 0x91, 0x23, 0x9f, 0x12, 0xe2, 0x06, 0x6d,
+	0xf8, 0xfa, 0x1f, 0x90, 0x38, 0x32, 0xbb, 0xf3, 0x7a, 0x76, 0xf6, 0x63, 0xd6, 0xf6, 0xc1, 0x92,
+	0x3d, 0xf3, 0xbc, 0xcf, 0xf3, 0x7a, 0x66, 0x67, 0xfc, 0x4b, 0xd0, 0x7c, 0x87, 0xbc, 0x6f, 0x53,
+	0xdd, 0x71, 0x6d, 0xcf, 0xc6, 0xb3, 0xb6, 0x43, 0x09, 0x29, 0x3f, 0xd3, 0xb3, 0xbc, 0x13, 0xbf,
+	0xa3, 0x9b, 0xf6, 0xa0, 0x11, 0x8e, 0x34, 0xc2, 0xe9, 0x8e, 0x7f, 0xcc, 0x3f, 0x86, 0x9f, 0xf8,
+	0x5b, 0x5e, 0x58, 0x7e, 0x69, 0xa2, 0x0a, 0xef, 0xcc, 0x21, 0xb4, 0xe1, 0x59, 0x03, 0x42, 0x3d,
+	0x63, 0xe0, 0x40, 0xed, 0x0b, 0xa9, 0xda, 0x8e, 0x41, 0x2d, 0xb3, 0x41, 0xcd, 0x13, 0x32, 0x30,
+	0x1a, 0xc6, 0x23, 0xda, 0x30, 0xfb, 0xb6, 0xdf, 0x7d, 0x64, 0x78, 0xe6, 0x09, 0xf7, 0x80, 0xca,
+	0x67, 0xc7, 0x57, 0x12, 0xb3, 0x39, 0x7d, 0x09, 0x9d, 0xba, 0xa4, 0xdf, 0x89, 0x95, 0xbc, 0x38,
+	0xbe, 0xc4, 0xf0, 0x3d, 0x9b, 0x9a, 0x46, 0xdf, 0x1a, 0xf6, 0xa6, 0x4d, 0x73, 0xbb, 0xf1, 0x06,
+	0xeb, 0xf9, 0x25, 0x3e, 0x25, 0x2e, 0x57, 0xd6, 0x1e, 0x2f, 0xa0, 0x4b, 0xad, 0x60, 0xbf, 0xdb,
+	0xe4, 0x5d, 0x9f, 0x6d, 0x02, 0xae, 0xa2, 0x42, 0x30, 0x5d, 0xd2, 0xd6, 0xb5, 0xfa, 0x7c, 0x73,
+	0x5e, 0xe7, 0x7b, 0xfa, 0x2a, 0x1b, 0x6a, 0x87, 0x13, 0x78, 0x09, 0x15, 0x5d, 0xd2, 0xb3, 0xec,
+	0x61, 0xe9, 0x22, 0x93, 0x3c, 0xdd, 0x86, 0x4f, 0x78, 0x11, 0x15, 0x4f, 0x1d, 0xf3, 0xc8, 0xea,
+	0x96, 0x66, 0xc2, 0xf1, 0x59, 0xf6, 0x69, 0xbf, 0x8b, 0x1b, 0x68, 0x6e, 0x60, 0xbc, 0x77, 0x64,
+	0xf4, 0x48, 0xa9, 0x10, 0x5a, 0x2e, 0x81, 0x25, 0xef, 0xf7, 0x70, 0xb4, 0xf5, 0xed, 0x22, 0x93,
+	0xdd, 0xee, 0x11, 0x6c, 0xa1, 0x95, 0x68, 0x73, 0x8f, 0xee, 0x5b, 0xd4, 0x7b, 0x40, 0x3c, 0xd7,
+	0x32, 0xe9, 0xfe, 0xd0, 0xf1, 0xbd, 0x12, 0x09, 0x4d, 0xb6, 0xc1, 0x84, 0x7d, 0x79, 0x3d, 0x52,
+	0xeb, 0x49, 0xf5, 0x2b, 0x17, 0xda, 0xe5, 0x68, 0x3a, 0x39, 0x8b, 0x3f, 0xd0, 0xd0, 0x86, 0x94,
+	0x75, 0x8f, 0xc0, 0xf4, 0x81, 0x67, 0x78, 0x4c, 0x2b, 0x32, 0x8f, 0xc3, 0x4c, 0x3d, 0x3b, 0x53,
+	0x55, 0xc5, 0xb2, 0x6b, 0x91, 0x4c, 0xa5, 0xc2, 0x2e, 0xaa, 0x48, 0x2d, 0xdc, 0x25, 0xd4, 0x74,
+	0xad, 0x0e, 0xb9, 0xdd, 0x37, 0xdc, 0x01, 0xa4, 0xf7, 0xc2, 0xf4, 0x1b, 0xd9, 0xe9, 0x19, 0x05,
+	0x2c, 0x78, 0x2d, 0x52, 0x64, 0x08, 0xf0, 0x27, 0x1a, 0xda, 0x51, 0x86, 0xbe, 0x6c, 0xbb, 0xbc,
+	0x53, 0x9e, 0x7e, 0x12, 0xa6, 0x37, 0x27, 0x49, 0x8f, 0x57, 0xb2, 0x36, 0xb6, 0x55, 0x6d, 0xc4,
+	0x95, 0xb8, 0x87, 0xca, 0xec, 0x54, 0x8a, 0x3e, 0xf6, 0x87, 0xec, 0x89, 0x18, 0x9a, 0x04, 0xbe,
+	0xff, 0xf7, 0xfc, 0x51, 0xdc, 0x92, 0x5a, 0x60, 0x6a, 0x3d, 0x5b, 0xcd, 0x52, 0x97, 0xd9, 0x6c,
+	0xf6, 0x24, 0x3e, 0x45, 0x55, 0x39, 0xe8, 0x80, 0x98, 0xbe, 0x6b, 0x79, 0x67, 0xf7, 0x5c, 0xdb,
+	0x77, 0x20, 0xed, 0x07, 0x9e, 0xb6, 0xab, 0x48, 0xcb, 0x28, 0x61, 0x91, 0x15, 0x29, 0x32, 0x43,
+	0x81, 0x0d, 0x54, 0x8a, 0xe5, 0xfa, 0x9d, 0x21, 0xf1, 0x20, 0xf0, 0x47, 0x1e, 0xb8, 0xa1, 0x0a,
+	0x94, 0xb4, 0x2c, 0xe9, 0x9a, 0x9c, 0x24, 0x4d, 0xe1, 0xd7, 0xd1, 0xa2, 0x1c, 0xf1, 0x9a, 0x33,
+	0x7a, 0x78, 0x7f, 0xe2, 0xfe, 0xeb, 0x0a, 0x7f, 0x21, 0x64, 0xe6, 0x57, 0x25, 0x73, 0x31, 0x8e,
+	0x07, 0x68, 0x55, 0x76, 0x6e, 0xdb, 0xbe, 0x47, 0x0e, 0x8d, 0x4e, 0x7f, 0xb4, 0x3f, 0x3f, 0xf3,
+	0x80, 0x1d, 0x45, 0x40, 0x52, 0xcf, 0x72, 0x56, 0xa4, 0x9c, 0xe4, 0x34, 0xa6, 0xa8, 0xc2, 0x2e,
+	0x4f, 0x11, 0x77, 0xdf, 0x36, 0xba, 0x2d, 0xa3, 0x1f, 0x6c, 0xa2, 0x0b, 0x81, 0x5f, 0x5f, 0x4c,
+	0x9d, 0x08, 0x56, 0xa1, 0xab, 0x2b, 0x82, 0x13, 0xc1, 0x14, 0x6a, 0x01, 0xfe, 0x5c, 0x43, 0xbb,
+	0xd2, 0xfd, 0x1b, 0x1d, 0x09, 0x36, 0x76, 0xc0, 0xc7, 0xe4, 0x87, 0xe4, 0xb3, 0x99, 0xb0, 0x83,
+	0xe7, 0xa4, 0x0e, 0xa4, 0x6a, 0x3d, 0xbf, 0x9a, 0x75, 0x73, 0x43, 0x52, 0xe7, 0x8b, 0x83, 0xd5,
+	0x67, 0xb7, 0xbb, 0x68, 0xe8, 0x6e, 0x2b, 0x71, 0x3a, 0xfe, 0x9d, 0x49, 0xad, 0x3e, 0xd3, 0xeb,
+	0x2a, 0x7d, 0xb0, 0xfa, 0x6c, 0x5e, 0x35, 0x8d, 0x1f, 0x22, 0xcc, 0x7e, 0xed, 0xc2, 0x6b, 0xf7,
+	0xd0, 0xa0, 0xef, 0x40, 0xc8, 0x6f, 0xfc, 0xea, 0x5e, 0x8b, 0x6d, 0x31, 0xd5, 0xe3, 0x2a, 0x66,
+	0xbd, 0xc0, 0x46, 0xe3, 0x83, 0xf8, 0x4d, 0xb4, 0x14, 0x18, 0x8e, 0x02, 0x25, 0xd3, 0xdf, 0xb9,
+	0xe9, 0xf5, 0x84, 0x69, 0x5a, 0xc9, 0x8c, 0xd9, 0xb3, 0x4d, 0xd3, 0x13, 0xf8, 0x43, 0x76, 0x81,
+	0xcb, 0xee, 0x77, 0xec, 0xa1, 0x67, 0x58, 0x43, 0xe2, 0x26, 0x16, 0xe9, 0x71, 0x21, 0x75, 0x83,
+	0xcb, 0x51, 0x8a, 0xb2, 0xe0, 0x06, 0x97, 0x72, 0x15, 0x2a, 0x7e, 0xf2, 0xf8, 0x92, 0xdd, 0xe9,
+	0xfb, 0xd4, 0x13, 0xcf, 0xe9, 0x93, 0x42, 0xc6, 0xc9, 0xe3, 0xab, 0x16, 0x13, 0xf2, 0x93, 0x47,
+	0x53, 0xe3, 0xb2, 0xf3, 0x01, 0x71, 0x4f, 0x2d, 0xf1, 0x7d, 0xce, 0xd5, 0xce, 0x31, 0xa1, 0xe4,
+	0x1c, 0x1b, 0xc7, 0x5d, 0xb4, 0x2c, 0xaf, 0x5b, 0xdc, 0xfd, 0x0f, 0xee, 0xbe, 0xa9, 0x58, 0xad,
+	0x64, 0x42, 0x49, 0x5a, 0xa3, 0x78, 0x4a, 0x78, 0xdd, 0xc2, 0xca, 0x28, 0x76, 0xe6, 0xcf, 0x42,
+	0xc6, 0x75, 0x0b, 0x6b, 0xa4, 0xdc, 0x95, 0xca, 0x68, 0xb5, 0xb2, 0x15, 0xad, 0x39, 0x34, 0x6b,
+	0x05, 0x6f, 0x6a, 0xbf, 0x2e, 0xa0, 0xcb, 0x40, 0x37, 0xd4, 0xb1, 0x87, 0x94, 0xe0, 0x5b, 0xe8,
+	0x72, 0xdf, 0xa0, 0xde, 0xd1, 0xc0, 0xee, 0x5a, 0xc7, 0x16, 0xe9, 0x02, 0xe7, 0xa8, 0xa0, 0xe4,
+	0x52, 0x20, 0x7e, 0x00, 0x5a, 0xdc, 0x47, 0xab, 0xd9, 0x68, 0xf2, 0xd0, 0xf7, 0x22, 0x36, 0xd9,
+	0x19, 0xcb, 0x26, 0x5c, 0x1e, 0x1c, 0xc5, 0x4c, 0x38, 0xe1, 0xd3, 0xf8, 0x23, 0x0d, 0x6d, 0xe6,
+	0xd3, 0x09, 0xc4, 0x72, 0x3c, 0x69, 0x4c, 0x8c, 0x27, 0x22, 0x7e, 0x23, 0x97, 0x4f, 0xa0, 0x0d,
+	0x1f, 0x55, 0x95, 0xac, 0x00, 0x0d, 0xf4, 0x52, 0x7b, 0xa8, 0x64, 0x04, 0x91, 0x5d, 0x51, 0xb1,
+	0x01, 0xc4, 0x7e, 0xaa, 0xa1, 0xfa, 0x78, 0x46, 0x81, 0x06, 0x38, 0xa4, 0xdc, 0x9c, 0x0a, 0x52,
+	0x44, 0x27, 0x3b, 0x63, 0x29, 0x05, 0x5a, 0x7a, 0x1b, 0xad, 0x64, 0x62, 0x0a, 0x34, 0x01, 0x9c,
+	0xb2, 0x3d, 0x8e, 0x53, 0x44, 0x70, 0x39, 0x0b, 0x54, 0x20, 0xeb, 0x0c, 0xad, 0xab, 0x49, 0x05,
+	0x02, 0x01, 0x55, 0xf6, 0x26, 0x42, 0x15, 0x91, 0x5a, 0x55, 0xb2, 0x0a, 0x44, 0x87, 0x77, 0x43,
+	0x0a, 0x56, 0x20, 0x13, 0x68, 0x65, 0x33, 0x9f, 0x56, 0x44, 0x58, 0x29, 0x8d, 0x2b, 0x90, 0x12,
+	0xfe, 0x2e, 0xc4, 0x79, 0x05, 0x22, 0x00, 0x58, 0xae, 0xe7, 0x00, 0x8b, 0xf0, 0x5f, 0x4c, 0x10,
+	0x0b, 0x98, 0x3b, 0x68, 0x4d, 0x81, 0x2c, 0x90, 0x01, 0xcc, 0x52, 0x1f, 0xcf, 0x2c, 0x22, 0x6a,
+	0x35, 0x1b, 0x5a, 0x20, 0x31, 0xb8, 0xea, 0x54, 0xd4, 0x02, 0x99, 0x80, 0x2d, 0xbb, 0x93, 0x60,
+	0x4b, 0x74, 0x4c, 0x54, 0xdc, 0x02, 0xb9, 0x5f, 0x68, 0x68, 0x6f, 0x22, 0x70, 0x81, 0x26, 0x80,
+	0x5c, 0x9e, 0x9f, 0x96, 0x5c, 0x44, 0x43, 0xbb, 0x93, 0xa0, 0x4b, 0xb4, 0x0d, 0x0a, 0x76, 0x81,
+	0x6e, 0x00, 0x5e, 0xea, 0xe3, 0xe1, 0x25, 0xda, 0x86, 0x6c, 0x7a, 0x81, 0xc4, 0x36, 0xba, 0x12,
+	0xc3, 0x17, 0xc8, 0x01, 0x7e, 0xa9, 0xa8, 0xf8, 0x45, 0xb8, 0x63, 0x19, 0x60, 0xc0, 0xf3, 0x2d,
+	0x74, 0x2d, 0x45, 0x30, 0xe0, 0x0b, 0x08, 0x53, 0xcb, 0x43, 0x18, 0xe1, 0xbd, 0x94, 0x64, 0x18,
+	0xf0, 0xff, 0x98, 0xdd, 0xf3, 0xf9, 0x10, 0x03, 0x69, 0x40, 0x31, 0x8d, 0x89, 0x29, 0x26, 0xba,
+	0xe8, 0x73, 0x31, 0x46, 0x3e, 0x91, 0x71, 0x8e, 0x81, 0xe0, 0x27, 0xd9, 0xa4, 0x96, 0x56, 0x02,
+	0xa9, 0xa5, 0x27, 0x64, 0xf3, 0x11, 0x23, 0x80, 0xf9, 0xb9, 0xda, 0x3c, 0xae, 0x94, 0xcc, 0xe3,
+	0x13, 0xfc, 0xef, 0xc7, 0x34, 0xcd, 0x40, 0x00, 0xe0, 0xcc, 0xd6, 0x18, 0x9c, 0x11, 0x21, 0xcb,
+	0x19, 0x3c, 0x23, 0xdf, 0xca, 0x2a, 0xa0, 0x81, 0x38, 0x20, 0x9a, 0xbd, 0x89, 0x88, 0x46, 0xbe,
+	0x95, 0x69, 0x9e, 0xa4, 0xf5, 0x14, 0x2a, 0xda, 0xe1, 0xbb, 0xe6, 0x2d, 0x34, 0x1b, 0x32, 0x0d,
+	0x6e, 0xa2, 0x19, 0xf6, 0xb3, 0x8d, 0xaf, 0x40, 0x92, 0xfc, 0x6f, 0x9c, 0xf2, 0xd5, 0xf8, 0x20,
+	0xa7, 0x9f, 0xda, 0x85, 0xd6, 0xd6, 0x7f, 0x7f, 0x57, 0xb4, 0xaf, 0xfe, 0xa9, 0x68, 0xdf, 0xb0,
+	0xd7, 0x77, 0xec, 0xf5, 0x0b, 0x7b, 0xfd, 0xc5, 0x5e, 0xdf, 0x7e, 0x59, 0xd5, 0xde, 0x98, 0xa3,
+	0xfc, 0xfb, 0x76, 0x8a, 0xe1, 0x7f, 0x87, 0x6e, 0xfe, 0x1f, 0x00, 0x00, 0xff, 0xff, 0xd2, 0x13,
+	0x75, 0x38, 0x0c, 0x14, 0x00, 0x00,
 }

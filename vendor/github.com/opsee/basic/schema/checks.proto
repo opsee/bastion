@@ -37,6 +37,7 @@ message Check {
 		CloudWatchCheck cloudwatch_check = 102;
 	}
 	repeated Notification notifications = 9;
+  string customer_id = 10;
 }
 
 message Notification {
