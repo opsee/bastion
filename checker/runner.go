@@ -23,7 +23,6 @@ type NSQRunnerConfig struct {
 	ConsumerChannelName string
 	ConsumerNsqdHost    string
 	ProducerNsqdHost    string
-	CustomerID          string
 	MaxHandlers         int
 }
 
@@ -86,7 +85,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
 			cancel()
 			result := &schema.CheckResult{
-				CustomerId: cfg.CustomerID,
+				CustomerId: check.CustomerId,
 				CheckId:    check.Id,
 				CheckName:  check.Name,
 				Target:     check.Target,
@@ -123,7 +122,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 		}
 
 		result := &schema.CheckResult{
-			CustomerId: cfg.CustomerID,
+			CustomerId: check.CustomerId,
 			CheckId:    check.Id,
 			Target:     check.Target,
 			CheckName:  check.Name,
@@ -143,7 +142,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			return err
 		} else {
 			log.WithFields(log.Fields{
-				"CustomerId": cfg.CustomerID,
+				"CustomerId": check.CustomerId,
 				"CheckId":    check.Id,
 				"Target":     check.Target,
 				"CheckName":  check.Name,
@@ -298,7 +297,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 					Active:     true,
 					Email:      globalConfig.CustomerEmail,
 					Admin:      false,
-					CustomerId: globalConfig.CustomerId,
+					CustomerId: check.CustomerId,
 				},
 				Region: metaData.Region,
 				VpcId:  metaData.VpcId,

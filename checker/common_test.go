@@ -44,6 +44,7 @@ func (t TestCommonStubs) HTTPRequest() *HTTPRequest {
 
 func (t TestCommonStubs) Check() *schema.Check {
 	return &schema.Check{
+		CustomerId: "stub-customer-id",
 		Id:         "stub-check-id",
 		Interval:   60,
 		Name:       "fuck off",
@@ -235,9 +236,10 @@ func resetNsq(host string, qmap resetNsqConfig) {
 func setupBartnetEmulator() {
 	// dead stupid bartnet api emulator with 2 hardcoded checks
 	checka := &schema.Check{
-		Id:       "stub-check-id",
-		Interval: 60,
-		Name:     "fuck off",
+		CustomerId: "stub-customer-id",
+		Id:         "stub-check-id",
+		Interval:   60,
+		Name:       "fuck off",
 		Target: &schema.Target{
 			Type: "sg",
 			Id:   "sg3",
@@ -246,9 +248,10 @@ func setupBartnetEmulator() {
 		CheckSpec: &opsee_types.Any{},
 	}
 	checkb := &schema.Check{
-		Id:       "stub-check-id",
-		Interval: 60,
-		Name:     "fuck off",
+		CustomerId: "stub-customer-id",
+		Id:         "stub-check-id",
+		Interval:   60,
+		Name:       "fuck off",
 		Target: &schema.Target{
 			Type: "sg",
 			Id:   "sg3",

@@ -60,7 +60,6 @@ func main() {
 
 	runnerConfig.ConsumerNsqdHost = cfg.NsqdHost
 	runnerConfig.ProducerNsqdHost = cfg.NsqdHost
-	runnerConfig.CustomerID = cfg.CustomerId
 	log.WithFields(log.Fields{"service": moduleName}).Info("starting up")
 	resolver := checker.NewResolver(bezosClient, config.GetConfig())
 	newChecker := checker.NewChecker(resolver)
