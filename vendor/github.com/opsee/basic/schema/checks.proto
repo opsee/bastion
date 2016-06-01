@@ -37,7 +37,8 @@ message Check {
 		CloudWatchCheck cloudwatch_check = 102;
 	}
 	repeated Notification notifications = 9;
-  string customer_id = 10;
+	string customer_id = 10;
+	string execution_group_id = 11;
 }
 
 message Notification {
@@ -129,4 +130,5 @@ message CheckResult {
 	Target target = 6;
 	string check_name = 7;
 	int32 version = 8;
+	string region = 9;
 }
