@@ -25,6 +25,7 @@ type Config struct {
 	SlateHost           string
 	LogLevel            string
 	BezosHost           string
+	ExecutionGroupId    string
 	AWS                 *AWSConfig
 }
 
@@ -60,6 +61,7 @@ func (this *Config) getEnv() {
 	this.NsqdHost = os.Getenv("NSQD_HOST")
 	this.EtcdHost = os.Getenv("ETCD_HOST")
 	this.BezosHost = os.Getenv("BEZOS_HOST")
+	this.ExecutionGroupId = os.Getenv("EXECUTION_GROUP_ID")
 }
 
 func GetConfig() *Config {
