@@ -127,22 +127,13 @@ func (file *FileDescriptorProto) GetMessage(typeName string) *DescriptorProto {
 		if msg.GetName() == typeName {
 			return msg
 		}
-		nes := file.GetNestedMessage(msg, strings.TrimPrefix(typeName, msg.GetName()+"."))
-		if nes != nil {
-			return nes
-		}
-	}
-	return nil
-}
-
-func (file *FileDescriptorProto) GetNestedMessage(msg *DescriptorProto, typeName string) *DescriptorProto {
-	for _, nes := range msg.GetNestedType() {
-		if nes.GetName() == typeName {
-			return nes
-		}
-		res := file.GetNestedMessage(nes, strings.TrimPrefix(typeName, nes.GetName()+"."))
-		if res != nil {
-			return res
+		for _, nes := range msg.GetNestedType() {
+			if nes.GetName() == typeName {
+				return nes
+			}
+			if msg.GetName()+"."+nes.GetName() == typeName {
+				return nes
+			}
 		}
 	}
 	return nil
