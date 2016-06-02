@@ -23,7 +23,7 @@ func (w *dispatcherTestWorkerRequest) Do(ctx context.Context) <-chan *Response {
 	defer close(r)
 	r <- &Response{
 		// This is real jank, but it is easy.
-		Response: &schema.CheckResponse_HttpResponse{&schema.HttpResponse{Code: w.ID}},
+		Response: &schema.CheckResponse_HttpResponse{&schema.HttpResponse{Code: int32(w.ID)}},
 	}
 	return r
 }
