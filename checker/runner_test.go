@@ -278,7 +278,6 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 
 func (s *NSQRunnerTestSuite) TestResultsHaveCorrectCustomerId() {
 	check1 := s.Common.PassingCheck()
-	check1.CustomerId = "check1-customer-id"
 	cwt1, _ := NewCheckWithTargets(s.Resolver, check1)
 	msg1, _ := json.Marshal(cwt1)
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg1)
@@ -307,7 +306,7 @@ func (s *NSQRunnerTestSuite) TestResultsHaveCorrectCustomerId() {
 	}
 
 	assert.Equal(s.T(), 1, customerIds["check2-customer-id"])
-	assert.Equal(s.T(), 1, customerIds["check1-customer-id"])
+	assert.Equal(s.T(), 1, customerIds["stub-customer-id"])
 
 	timer.Stop()
 }
