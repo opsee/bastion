@@ -168,7 +168,7 @@ func (r *HTTPRequest) doWebSocket() *Response {
 	}
 
 	return &Response{
-		Response: httpResponse,
+		Response: &schema.CheckResponse_HttpResponse{httpResponse},
 	}
 }
 

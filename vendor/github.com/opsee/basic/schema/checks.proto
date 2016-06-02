@@ -111,7 +111,7 @@ message HttpResponse {
 
 
 message CheckResponse {
-	Target target = 1; //
+	Target target = 1;
 	opsee.types.Any response = 2;
 	string error = 3;
 	bool passing = 4;
@@ -119,6 +119,7 @@ message CheckResponse {
 		HttpResponse http_response = 101;
 		CloudWatchResponse cloudwatch_response = 102;
 	}
+  string bastion_id = 5;
 }
 
 message CheckResult {

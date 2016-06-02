@@ -341,14 +341,8 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 		}
 
 		log.WithFields(log.Fields{"task": *t}).Debug("runAssertions - Handling finished task.")
-		var (
-			responseError string
-			responseAny   *opsee_types.Any
-			err           error
-			passing       bool
-		)
 
-		passing = false
+		passing := false
 
 		response := &schema.CheckResponse{
 			Target: t.Target,
