@@ -191,14 +191,14 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
 	assert.Empty(s.T(), response.Error)
 
-	httpResponse := &schema.HttpResponse{}
 	responses := response.GetResponses()
 	assert.NotNil(s.T(), responses)
 	assert.Len(s.T(), responses, 1)
-	assert.Equal(s.T(), "HttpResponse", responses[0].Response.TypeUrl)
 
-	err = proto.Unmarshal(responses[0].Response.Value, httpResponse)
-	assert.Nil(s.T(), err)
+	httpResponse, ok := responses[0].Reply.(*schema.CheckResponse_HttpResponse)
+	assert.True(s.T(), ok)
+
+	assert.Nil(s.T(), httpResponse.HttpResponse.Error)
 }
 
 func (s *CheckerTestSuite) TestCheckResolverFailure() {
