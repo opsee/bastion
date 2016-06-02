@@ -168,7 +168,7 @@ func (r *HTTPRequest) doWebSocket() *Response {
 	}
 
 	return &Response{
-		Response: httpResponse,
+		Response: &schema.CheckResponse_HttpResponse{httpResponse},
 	}
 }
 
@@ -341,7 +341,7 @@ func (r *HTTPRequest) Do(ctx context.Context) <-chan *Response {
 		}
 
 		respChan <- &Response{
-			Response: httpResponse,
+			Response: &schema.CheckResponse_HttpResponse{httpResponse},
 		}
 	}()
 

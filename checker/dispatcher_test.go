@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/opsee/basic/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
@@ -21,7 +22,8 @@ func (w *dispatcherTestWorkerRequest) Do(ctx context.Context) <-chan *Response {
 	r := make(chan *Response, 1)
 	defer close(r)
 	r <- &Response{
-		Response: w.ID,
+		// This is real jank, but it is easy.
+		Response: &schema.CheckResponse_HttpResponse{&schema.HttpResponse{Code: int32(w.ID)}},
 	}
 	return r
 }
@@ -97,7 +99,10 @@ func (s *DispatcherTestSuite) TestDispatcherTaskGroup() {
 	for _, t := range done {
 		req := t.Request.(*dispatcherTestWorkerRequest)
 		id := req.ID
-		assert.Equal(s.T(), id, t.Response.Response.(int))
+		resp, ok := t.Response.Response.(*schema.CheckResponse_HttpResponse)
+		assert.True(s.T(), ok)
+
+		assert.EqualValues(s.T(), id, resp.HttpResponse.Code)
 		assert.IsType(s.T(), new(Task), t)
 		assert.NotNil(s.T(), t.Response)
 	}

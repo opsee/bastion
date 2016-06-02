@@ -46,7 +46,7 @@ type Request interface {
 }
 
 type Response struct {
-	Response interface{}
+	Response schema.CheckResponseReply
 	Error    error
 }
 

@@ -335,35 +335,26 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks chan *Task) []*schema.CheckResponse {
 	responses := []*schema.CheckResponse{}
 	for t := range tasks {
+		if t.Response == nil {
+			log.WithFields(log.Fields{"task": *t}).Error("Task has no response")
+			continue
+		}
+
 		log.WithFields(log.Fields{"task": *t}).Debug("runAssertions - Handling finished task.")
-		var (
-			responseError string
-			responseAny   *opsee_types.Any
-			err           error
-			passing       bool
-		)
 
-		passing = false
-		if t.Response.Response != nil {
-			responseAny, err = MarshalAny(t.Response.Response)
-			if err != nil {
-				responseError = err.Error()
-			}
-		}
-
-		// Overwrite the error if there is an error on the response.
-		if t.Response.Error != nil {
-			responseError = t.Response.Error.Error()
-		}
+		passing := false
 
 		response := &schema.CheckResponse{
-			Target:   t.Target,
-			Response: responseAny,
-			Error:    responseError,
+			Target: t.Target,
+			Reply:  t.Response.Response,
+		}
+
+		if e := t.Response.Error; e != nil {
+			response.Error = e.Error()
 		}
 
 		if response.Error == "" && len(check.Assertions) > 0 && r.slateClient != nil {
-			jsonBytes, err := json.Marshal(t.Response.Response)
+			jsonBytes, err := json.Marshal(response.Reply)
 			passing, err = r.slateClient.CheckAssertions(ctx, check, jsonBytes)
 			if err != nil {
 				log.WithError(err).Error("Could not contact slate.")

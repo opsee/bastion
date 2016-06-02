@@ -28,8 +28,10 @@ func TestRedirectResponse(t *testing.T) {
 		log.Fatal("TestRedirectResponse: Got nil response from http worker")
 	}
 
-	httpResponse, _ := resp.Response.(*schema.HttpResponse)
+	response, ok := resp.Response.(*schema.CheckResponse_HttpResponse)
+	assert.True(t, ok)
 
+	httpResponse := response.HttpResponse
 	assert.EqualValues(t, 301, httpResponse.Code, "response code should contain the redirect code")
 	location := ""
 
@@ -62,11 +64,11 @@ func TestResponseEmpty(t *testing.T) {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "Error": "request error"}).Fatal(err)
 	}
 
-	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
-		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "response": resp.Body}).Info("received response")
-		assert.Equal(t, testResponse, resp.Body, "response must match predefined test response (the empty string)")
+	if cr, ok := resp.Response.(*schema.CheckResponse_HttpResponse); ok {
+		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "response": cr.HttpResponse.Body}).Info("received response")
+		assert.Equal(t, testResponse, cr.HttpResponse.Body, "response must match predefined test response (the empty string)")
 	} else {
-		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "response": resp.Body, "Error": "no response body"}).Fatal(err)
+		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestEmptyResponse", "response": cr.HttpResponse, "Error": "no response body"}).Fatal(err)
 	}
 }
 
@@ -91,11 +93,11 @@ func TestResponseNormal(t *testing.T) {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "Error": "request error"}).Fatal(err)
 	}
 
-	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
-		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TesResponseNormal", "response": resp.Body}).Info("received response")
-		assert.Equal(t, testResponse, resp.Body, "response must match predefined test response")
+	if cr, ok := resp.Response.(*schema.CheckResponse_HttpResponse); ok {
+		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TesResponseNormal", "response": cr.HttpResponse.Body}).Info("received response")
+		assert.Equal(t, testResponse, cr.HttpResponse.Body, "response must match predefined test response")
 	} else {
-		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "response": resp.Body, "Error": "no response body"}).Fatal(err)
+		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseNormal", "response": cr.HttpResponse, "Error": "no response body"}).Fatal(err)
 	}
 }
 
@@ -120,11 +122,11 @@ func TestResponseTruncate(t *testing.T) {
 		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "Error": "request error"}).Fatal(err)
 	}
 
-	if resp, ok := resp.Response.(*schema.HttpResponse); ok {
-		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": resp.Body}).Info("received response")
-		assert.Equal(t, MaxContentLength, len(resp.Body), "body should be trucated to MaxContentLength bytes")
+	if cr, ok := resp.Response.(*schema.CheckResponse_HttpResponse); ok {
+		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": cr.HttpResponse.Body}).Info("received response")
+		assert.Equal(t, MaxContentLength, len(cr.HttpResponse.Body), "body should be trucated to MaxContentLength bytes")
 	} else {
-		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": resp.Body, "Error": "no response body"}).Fatal(err)
+		log.WithFields(log.Fields{"test unit": "checker/http.go", "test": "TestResponseTruncate", "response": cr.HttpResponse, "Error": "no response body"}).Fatal(err)
 	}
 }
 
