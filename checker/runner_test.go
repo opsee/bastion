@@ -51,7 +51,7 @@ func (s *RunnerTestSuite) TestRunnerWorksWithoutSlate() {
 
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
-		assert.NotNil(s.T(), response.Response)
+		assert.NotNil(s.T(), response.Reply)
 	}
 	assert.Equal(s.T(), 3, len(responses))
 	os.Setenv("SLATE_HOST", slate_host)
@@ -70,7 +70,7 @@ func (s *RunnerTestSuite) TestRunCheckHasResponsePerTarget() {
 
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
-		assert.NotNil(s.T(), response.Response)
+		assert.NotNil(s.T(), response.Reply)
 	}
 	assert.Equal(s.T(), 3, len(responses))
 }
@@ -89,7 +89,7 @@ func (s *RunnerTestSuite) TestRunCheckAdheresToMaxHosts() {
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
-		assert.NotNil(s.T(), response.Response)
+		assert.NotNil(s.T(), response.Reply)
 	}
 	assert.Equal(s.T(), 1, len(responses))
 }
@@ -108,7 +108,7 @@ func (s *RunnerTestSuite) TestRunCheckCanCheckAnInstanceTarget() {
 	assert.NoError(s.T(), err)
 	for _, response := range responses {
 		assert.IsType(s.T(), new(schema.CheckResponse), response)
-		assert.NotNil(s.T(), response.Response)
+		assert.NotNil(s.T(), response.Reply)
 	}
 	assert.Equal(s.T(), 1, len(responses))
 }
