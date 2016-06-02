@@ -198,7 +198,7 @@ func (s *CheckerTestSuite) TestCheckHasSingleResponse() {
 	httpResponse, ok := responses[0].Reply.(*schema.CheckResponse_HttpResponse)
 	assert.True(s.T(), ok)
 
-	assert.Nil(s.T(), httpResponse.HttpResponse.Error)
+	assert.Equal(s.T(), testHTTPResponseString, httpResponse.HttpResponse.Body)
 }
 
 func (s *CheckerTestSuite) TestCheckResolverFailure() {
