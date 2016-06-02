@@ -102,7 +102,7 @@ func (s *DispatcherTestSuite) TestDispatcherTaskGroup() {
 		resp, ok := t.Response.Response.(*schema.CheckResponse_HttpResponse)
 		assert.True(s.T(), ok)
 
-		assert.Equal(s.T(), id, resp.HttpResponse.Code)
+		assert.EqualValue(s.T(), id, resp.HttpResponse.Code)
 		assert.IsType(s.T(), new(Task), t)
 		assert.NotNil(s.T(), t.Response)
 	}
