@@ -55,6 +55,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	log.Debugf("NSQRunner producing on queue %s", cfg.ProducerQueueName)
 
 	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner.")
+	bastionCustomerId := config.GetConfig().CustomerId
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
 		checkWithTargets := &CheckWithTargets{}
@@ -63,6 +64,11 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			return err
 		}
 		check := checkWithTargets.Check
+
+		// Backward compatibility required.
+		if check.CustomerId == "" {
+			check.CustomerId = bastionCustomerId
+		}
 
 		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
 
