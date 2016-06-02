@@ -28,8 +28,10 @@ func TestRedirectResponse(t *testing.T) {
 		log.Fatal("TestRedirectResponse: Got nil response from http worker")
 	}
 
-	httpResponse, _ := resp.Response.(*schema.HttpResponse)
+	response, ok := resp.Reply.(*schema.CheckResponse_HttpResponse)
+	assert.True(t, ok)
 
+	httpResponse := response.HttpResponse
 	assert.EqualValues(t, 301, httpResponse.Code, "response code should contain the redirect code")
 	location := ""
 

@@ -225,7 +225,7 @@ func (this *CloudWatchRequest) Do(ctx context.Context) <-chan *Response {
 	}
 
 	respChan <- &Response{
-		Response: cloudwatchResponse,
+		Response: &schema.CheckResponse_CloudwatchResponse{cloudwatchResponse},
 	}
 
 	return respChan
