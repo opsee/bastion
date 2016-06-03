@@ -422,6 +422,8 @@ func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]
 		return this.resolveECSService(ctx, target.Id)
 	case "host":
 		return this.resolveHost(target.Id)
+	case "external_host":
+		return this.resolveHost(target.Id)
 	}
 
 	return nil, fmt.Errorf("Unable to resolve target: %s", target)
