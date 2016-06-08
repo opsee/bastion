@@ -365,8 +365,8 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 	})
 }
 
-func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
-	log.Debugf("resolving host: %s", host)
+func (this *AWSResolver) resolveHost(hostType, host string) ([]*schema.Target, error) {
+	log.Debugf("resolving %s: %s", hostType, host)
 
 	ips, err := net.LookupIP(host)
 	if err != nil {
@@ -379,7 +379,7 @@ func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 		// ipv4 only
 		if ip.To4() != nil {
 			target = append(target, &schema.Target{
-				Type:    "host",
+				Type:    hostType,
 				Id:      host,
 				Address: ip.String(),
 			})
@@ -421,9 +421,9 @@ func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]
 	case "ecs_service":
 		return this.resolveECSService(ctx, target.Id)
 	case "host":
-		return this.resolveHost(target.Id)
+		return this.resolveHost("host", target.Id)
 	case "external_host":
-		return this.resolveHost(target.Id)
+		return this.resolveHost("external_host", target.Id)
 	}
 
 	return nil, fmt.Errorf("Unable to resolve target: %s", target)
