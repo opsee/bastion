@@ -26,6 +26,12 @@ var (
 	DefaultResponseCacheTTL = time.Second * time.Duration(5)
 )
 
+/* A Respolver resolves a target into an array of targets that are
+ * directly addressable by a bastion component.
+ *
+ * It is important to note, that Target IDs should be unique across
+ * a set of responses. This makes them
+ */
 type Resolver interface {
 	Resolve(context.Context, *schema.Target) ([]*schema.Target, error)
 }
@@ -378,10 +384,11 @@ func (this *AWSResolver) resolveHost(hostType, host string) ([]*schema.Target, e
 	for _, ip := range ips {
 		// ipv4 only
 		if ip.To4() != nil {
+			ipstr := ip.String()
 			target = append(target, &schema.Target{
 				Type:    hostType,
-				Id:      host,
-				Address: ip.String(),
+				Id:      ipstr,
+				Address: ipstr,
 			})
 		}
 	}
