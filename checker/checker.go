@@ -34,7 +34,7 @@ const (
 
 	// BastionProtoVersion is used for feature flagging fields in various Bastion
 	// message types that specify a version number.
-	BastionProtoVersion = 1
+	BastionProtoVersion = 2
 
 	// Time to allow requests to read a response body.
 	BodyReadTimeout = 10 * time.Second
@@ -436,9 +436,11 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 		return nil, err
 	}
 
-	getChecksURL := config.GetConfig().BartnetHost + "/checks"
+	getChecksURL := config.GetConfig().BartnetHost + "/checks/exgid/"
 	if exgid := config.GetConfig().ExecutionGroupId; exgid != "" {
-		getChecksURL += "/exgid/" + exgid
+		getChecksURL += exgid
+	} else {
+		getChecksURL += config.GetConfig().CustomerId
 	}
 
 	request := &auth.BastionAuthTokenRequest{
