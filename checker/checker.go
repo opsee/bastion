@@ -34,7 +34,7 @@ const (
 
 	// BastionProtoVersion is used for feature flagging fields in various Bastion
 	// message types that specify a version number.
-	BastionProtoVersion = 1
+	BastionProtoVersion = 2
 
 	// Time to allow requests to read a response body.
 	BodyReadTimeout = 10 * time.Second
