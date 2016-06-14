@@ -67,6 +67,9 @@ func (d *Dispatcher) Dispatch(ctx context.Context, tg TaskGroup) chan *Task {
 	wg := &sync.WaitGroup{}
 
 	for _, t := range tg {
+		if dl, ok := ctx.Deadline(); ok {
+			log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debugf("deadline is: %s", dl.Sub(time.Now().UTC()).String())
+		}
 		log.WithFields(log.Fields{"request": fmt.Sprintf("%#v", t.Request)}).Debug("Dispatching request.")
 		metrics.GetOrRegisterCounter("task_dispatched", d.metrics).Inc(1)
 

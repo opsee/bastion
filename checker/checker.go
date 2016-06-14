@@ -384,7 +384,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 	}
 
 	deadline := time.Unix(req.Deadline.Seconds, int64(req.Deadline.Nanos))
-	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Debug("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
+	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Debug("TestCheck deadline is " + deadline.Sub(time.Now().UTC()).String() + " from now.")
 	// We add the request deadline here, and the Runner will adhere to that
 	// deadline.
 	ctx, _ = context.WithDeadline(ctx, deadline)
