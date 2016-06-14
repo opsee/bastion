@@ -249,7 +249,9 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			// and validate ssl certs
 			switch target.Type {
 			case "host", "external_host":
-				host = target.Id
+				// target.Name is used to determine the hostname for TLS, since target.Id has been
+				// set to the IP address
+				host = target.Name
 				skipVerify = false
 			}
 

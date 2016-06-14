@@ -386,6 +386,9 @@ func (this *AWSResolver) resolveHost(hostType, host string) ([]*schema.Target, e
 		if ip.To4() != nil {
 			ipstr := ip.String()
 			target = append(target, &schema.Target{
+				// name is very important, please leave.
+				// it's used by the http check runner to determine hostname for TLS
+				Name:    host,
 				Type:    hostType,
 				Id:      ipstr,
 				Address: ipstr,
