@@ -248,7 +248,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			// special case host targets so that we may explicitly set host name in http requests
 			// and validate ssl certs
 			switch target.Type {
-			case "host":
+			case "host", "external_host":
 				host = target.Id
 				skipVerify = false
 			}
