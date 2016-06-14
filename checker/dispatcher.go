@@ -3,6 +3,7 @@ package checker
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	metrics "github.com/rcrowley/go-metrics"
