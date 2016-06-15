@@ -1,12 +1,12 @@
 package checker
 
 import (
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 )
@@ -272,7 +272,7 @@ func (s *Scheduler) Start() error {
 				if checkWithTargets, err := NewCheckTargets(s.resolver, check); err != nil {
 					log.Error(err.Error())
 				} else {
-					jsonBytes, err := json.Marshal(checkWithTargets)
+					msg, err := proto.Marshal(checkWithTargets)
 					if err != nil {
 						log.Error(err.Error())
 					} else {
@@ -280,7 +280,7 @@ func (s *Scheduler) Start() error {
 						// be centralized and easily managed. It can just be a static file or
 						// something that every microservice refers to--just to make sure
 						// they're all on the same page.
-						if err := s.Producer.Publish("runner", jsonBytes); err != nil {
+						if err := s.Producer.Publish("runner", msg); err != nil {
 							log.Error(err.Error())
 						} else {
 							log.Debug("Scheduled check for execution: %s", check.Id)
