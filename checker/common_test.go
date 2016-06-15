@@ -12,7 +12,6 @@ import (
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/config"
-	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"

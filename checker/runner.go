@@ -260,17 +260,13 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				InsecureSkipVerify: skipVerify,
 			}
 
-		case *schema.Check_CloudWatchCheck:
-			typedCheck := check.GetCloudWatchCheck()
+		case *schema.Check_CloudwatchCheck:
+			cloudwatchCheck := check.GetCloudwatchCheck()
 			_, ok := r.checkType.(*schema.CloudWatchCheck)
 			if !ok {
 				return nil, nil
 			}
 			defaultResponseCacheTTL := time.Second * time.Duration(5)
-			cloudwatchCheck, ok := c.(*schema.CloudWatchCheck)
-			if !ok {
-				return nil, fmt.Errorf("Unable to assert type on cloudwatch check")
-			}
 			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
 
 			if target.Id == "" {

@@ -20,7 +20,6 @@ import (
 	"github.com/opsee/bastion/auth"
 	"github.com/opsee/bastion/config"
 	"github.com/opsee/bastion/heart"
-	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/satori/go.uuid"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
