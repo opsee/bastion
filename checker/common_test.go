@@ -11,6 +11,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
+	"github.com/opsee/bastion/config"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	// "github.com/stretchr/testify/assert"
@@ -267,7 +268,8 @@ func setupBartnetEmulator() {
 		panic("couldn't set up bartnet endpoint emulator!")
 	}
 
-	http.HandleFunc("/checks", func(w http.ResponseWriter, r *http.Request) {
+	handlerPath := fmt.Sprintf("/checks/exgid/%s", config.GetConfig().CustomerId)
+	http.HandleFunc(handlerPath, func(w http.ResponseWriter, r *http.Request) {
 		w.Write(data)
 	})
 
