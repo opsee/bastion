@@ -9,8 +9,6 @@ import (
 	"testing"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/config"
@@ -155,18 +153,8 @@ func (s *CheckerTestSuite) TestGoodCreateCheckRequest() {
 
 func (s *CheckerTestSuite) buildTestCheckRequest(check *schema.HttpCheck, target *schema.Target) (*opsee.TestCheckRequest, error) {
 	request := s.TestCheckRequest
-	checkBytes, err := proto.Marshal(check)
-	if err != nil {
-		log.Fatalf("Unable to marshal HttpCheck: %v", err)
-		return nil, err
-	}
-	checkAny := &opsee_types.Any{
-		TypeUrl: "HttpCheck",
-		Value:   checkBytes,
-	}
-
 	c := s.Common.Check()
-	c.CheckSpec = checkAny
+	c.Spec = &schema.Check_HttpCheck{check}
 	c.Target = target
 
 	request.Check = c

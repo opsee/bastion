@@ -12,7 +12,6 @@ import (
 	"github.com/opsee/basic/schema"
 	opsee "github.com/opsee/basic/service"
 	"github.com/opsee/bastion/config"
-	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"golang.org/x/net/context"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/stretchr/testify/suite"
@@ -50,8 +49,8 @@ func (t TestCommonStubs) Check() *schema.Check {
 		Interval:   60,
 		Name:       "fuck off",
 		Target:     &schema.Target{},
-		CheckSpec:  &opsee_types.Any{},
 		Assertions: []*schema.Assertion{},
+		Spec:       &schema.Check_HttpCheck{&schema.HttpCheck{}},
 	}
 }
 
@@ -63,8 +62,7 @@ func (t TestCommonStubs) PassingCheck() *schema.Check {
 		Name: "sg",
 	}
 
-	spec, _ := MarshalAny(t.HTTPCheck())
-	check.CheckSpec = spec
+	check.Spec = &schema.Check_HttpCheck{t.HTTPCheck()}
 	return check
 }
 
@@ -76,8 +74,7 @@ func (t TestCommonStubs) PassingCheckInstanceTarget() *schema.Check {
 		Name: "instance",
 	}
 
-	spec, _ := MarshalAny(t.HTTPCheck())
-	check.CheckSpec = spec
+	check.Spec = &schema.Check_HttpCheck{t.HTTPCheck()}
 	return check
 }
 
@@ -89,8 +86,7 @@ func (t TestCommonStubs) PassingCheckMultiTarget() *schema.Check {
 		Name: "sg3",
 	}
 
-	spec, _ := MarshalAny(t.HTTPCheck())
-	check.CheckSpec = spec
+	check.Spec = &schema.Check_HttpCheck{t.HTTPCheck()}
 	return check
 }
 
@@ -101,10 +97,7 @@ func (t TestCommonStubs) BadCheck() *schema.Check {
 		Id:   "unknown",
 		Name: "unknown",
 	}
-	check.CheckSpec = &opsee_types.Any{
-		TypeUrl: "unknown",
-		Value:   []byte{},
-	}
+	check.Spec = nil
 	return check
 }
 
@@ -235,6 +228,13 @@ func resetNsq(host string, qmap resetNsqConfig) {
 }
 
 func setupBartnetEmulator() {
+	checkspec := &schema.HttpCheck{
+		Name:     "test check",
+		Path:     "/",
+		Protocol: "http",
+		Port:     testHTTPServerPort,
+		Verb:     "GET",
+	}
 	// dead stupid bartnet api emulator with 2 hardcoded checks
 	checka := &schema.Check{
 		CustomerId: "stub-customer-id",
@@ -246,7 +246,7 @@ func setupBartnetEmulator() {
 			Id:   "sg3",
 			Name: "sg3",
 		},
-		CheckSpec: &opsee_types.Any{},
+		Spec: &schema.Check_HttpCheck{checkspec},
 	}
 	checkb := &schema.Check{
 		CustomerId: "stub-customer-id",
@@ -258,19 +258,8 @@ func setupBartnetEmulator() {
 			Id:   "sg3",
 			Name: "sg3",
 		},
-		CheckSpec: &opsee_types.Any{},
+		Spec: &schema.Check_HttpCheck{checkspec},
 	}
-	checkspec := &schema.HttpCheck{
-		Name:     "test check",
-		Path:     "/",
-		Protocol: "http",
-		Port:     testHTTPServerPort,
-		Verb:     "GET",
-	}
-	spec, _ := MarshalAny(checkspec)
-
-	checka.CheckSpec = spec
-	checkb.CheckSpec = spec
 
 	req := &opsee.CheckResourceRequest{
 		Checks: []*schema.Check{checka, checkb},

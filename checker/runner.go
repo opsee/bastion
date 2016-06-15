@@ -58,8 +58,8 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	bastionCustomerId := config.GetConfig().CustomerId
 
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
-		checkWithTargets := &CheckWithTargets{}
-		if err := json.Unmarshal(m.Body, checkWithTargets); err != nil {
+		checkWithTargets := &schema.CheckTargets{}
+		if err := proto.Unmarshal(m.Body, checkWithTargets); err != nil {
 			log.WithError(err).Errorf("Error decoding checkWithTargets: %s", string(m.Body))
 			return err
 		}
@@ -215,11 +215,6 @@ func NewRunner(checkType interface{}) *Runner {
 func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*schema.Target) (chan *Task, error) {
 	// If the Check submitted is invalid, RunCheck will return a single
 	// CheckResponse indicating that there was an error with the Check.
-	c, err := UnmarshalAny(check.CheckSpec)
-	if err != nil {
-		log.WithError(err).Error("dispatch - unable to unmarshal check")
-		return nil, err
-	}
 	log.WithFields(log.Fields{"check": check}).Debug("dispatch check")
 
 	tg := TaskGroup{}
@@ -228,8 +223,9 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 		log.WithFields(log.Fields{"target": target}).Debug("dispatch - Handling target.")
 
 		var request Request
-		switch typedCheck := c.(type) {
-		case *schema.HttpCheck:
+		switch check.GetSpec().(type) {
+		case *schema.Check_HttpCheck:
+			typedCheck := check.GetHttpCheck()
 			_, ok := r.checkType.(*schema.HttpCheck)
 			if !ok {
 				return nil, nil
@@ -264,16 +260,13 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				InsecureSkipVerify: skipVerify,
 			}
 
-		case *schema.CloudWatchCheck:
+		case *schema.Check_CloudwatchCheck:
+			cloudwatchCheck := check.GetCloudwatchCheck()
 			_, ok := r.checkType.(*schema.CloudWatchCheck)
 			if !ok {
 				return nil, nil
 			}
 			defaultResponseCacheTTL := time.Second * time.Duration(5)
-			cloudwatchCheck, ok := c.(*schema.CloudWatchCheck)
-			if !ok {
-				return nil, fmt.Errorf("Unable to assert type on cloudwatch check")
-			}
 			log.WithFields(log.Fields{"target": target}).Debug("dispatch - dispatching for target")
 
 			if target.Id == "" {
@@ -313,7 +306,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			}
 
 		default:
-			log.WithFields(log.Fields{"type": reflect.TypeOf(c)}).Error("dispatch - Unknown check type.")
+			log.WithFields(log.Fields{"type": reflect.TypeOf(check.Spec)}).Error("dispatch - Unknown check type.")
 			return nil, fmt.Errorf("Unrecognized check type.")
 		}
 

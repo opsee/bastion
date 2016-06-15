@@ -1,13 +1,14 @@
 package checker
 
 import (
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gogo/protobuf/proto"
 	"github.com/opsee/basic/schema"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 )
 
 const (
@@ -25,8 +26,8 @@ func validateCheck(check *schema.Check) error {
 	if check.Target == nil {
 		return fmt.Errorf("Check has null target")
 	}
-	if check.CheckSpec == nil {
-		return fmt.Errorf("Check has null CheckSpec")
+	if check.Spec == nil {
+		return fmt.Errorf("Check has null Spec")
 	}
 
 	return nil
@@ -187,6 +188,24 @@ func NewScheduler(r Resolver) *Scheduler {
 // redefinition when it happens.
 
 func (s *Scheduler) CreateCheck(check *schema.Check) (*schema.Check, error) {
+	// since we're still retrieving checks from bartnet, turn the check spec into the oneof
+	// this should be the sole entrypoint for checks
+	// TODO: remove this after no bartnet
+	if check.Spec == nil && check.CheckSpec != nil {
+		any, err := opsee_types.UnmarshalAny(check.CheckSpec)
+		if err != nil {
+			log.WithError(err).Error("couldn't unmarshal the check spec from bartnet")
+			return nil, err
+		}
+
+		switch spec := any.(type) {
+		case *schema.HttpCheck:
+			check.Spec = &schema.Check_HttpCheck{spec}
+		case *schema.CloudWatchCheck:
+			check.Spec = &schema.Check_CloudwatchCheck{spec}
+		}
+	}
+
 	if err := validateCheck(check); err != nil {
 		return check, err
 	}
@@ -250,10 +269,10 @@ func (s *Scheduler) Start() error {
 				s.scheduleMap.Destroy()
 				return
 			case check := <-s.scheduleMap.RunChan():
-				if checkWithTargets, err := NewCheckWithTargets(s.resolver, check); err != nil {
+				if checkWithTargets, err := NewCheckTargets(s.resolver, check); err != nil {
 					log.Error(err.Error())
 				} else {
-					jsonBytes, err := json.Marshal(checkWithTargets)
+					msg, err := proto.Marshal(checkWithTargets)
 					if err != nil {
 						log.Error(err.Error())
 					} else {
@@ -261,7 +280,7 @@ func (s *Scheduler) Start() error {
 						// be centralized and easily managed. It can just be a static file or
 						// something that every microservice refers to--just to make sure
 						// they're all on the same page.
-						if err := s.Producer.Publish("runner", jsonBytes); err != nil {
+						if err := s.Producer.Publish("runner", msg); err != nil {
 							log.Error(err.Error())
 						} else {
 							log.Debug("Scheduled check for execution: %s", check.Id)
