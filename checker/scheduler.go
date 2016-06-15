@@ -191,7 +191,7 @@ func (s *Scheduler) CreateCheck(check *schema.Check) (*schema.Check, error) {
 	// since we're still retrieving checks from bartnet, turn the check spec into the oneof
 	// this should be the sole entrypoint for checks
 	// TODO: remove this after no bartnet
-	if check.Spec == nil {
+	if check.Spec == nil && check.CheckSpec != nil {
 		any, err := opsee_types.UnmarshalAny(check.CheckSpec)
 		if err != nil {
 			log.WithError(err).Error("couldn't unmarshal the check spec from bartnet")

@@ -50,6 +50,7 @@ func (t TestCommonStubs) Check() *schema.Check {
 		Name:       "fuck off",
 		Target:     &schema.Target{},
 		Assertions: []*schema.Assertion{},
+		Spec:       &schema.Check_HttpCheck{&schema.HttpCheck{}},
 	}
 }
 
@@ -96,6 +97,7 @@ func (t TestCommonStubs) BadCheck() *schema.Check {
 		Id:   "unknown",
 		Name: "unknown",
 	}
+	check.Spec = nil
 	return check
 }
 
