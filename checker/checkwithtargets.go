@@ -8,19 +8,12 @@ import (
 	"github.com/opsee/basic/schema"
 )
 
-type CheckWithTargets struct {
-	Check   *schema.Check
-	Targets []*schema.Target
-}
-
-func NewCheckWithTargets(resolver Resolver, check *schema.Check) (*CheckWithTargets, error) {
-	//TODO(dan) context stuff
-	ctx := context.Background()
+func NewCheckTargets(resolver Resolver, check *schema.Check) (*schema.CheckTargets, error) {
 	if check.Target == nil {
-		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%s", check)
+		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%#v", check)
 	}
 
-	targets, err := resolver.Resolve(ctx, check.Target)
+	targets, err := resolver.Resolve(context.TODO(), check.Target)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +22,7 @@ func NewCheckWithTargets(resolver Resolver, check *schema.Check) (*CheckWithTarg
 		return nil, fmt.Errorf("No valid targets resolved from %s", check.Target)
 	}
 
-	return &CheckWithTargets{
+	return &schema.CheckTargets{
 		Check:   check,
 		Targets: targets,
 	}, nil

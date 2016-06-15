@@ -259,7 +259,7 @@ func (s *NSQRunnerTestSuite) TearDownTest() {
 
 func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 	check := s.Common.PassingCheck()
-	checkWithTargets, _ := NewCheckWithTargets(s.Resolver, check)
+	checkWithTargets, _ := NewCheckTargets(s.Resolver, check)
 	msg, _ := json.Marshal(checkWithTargets)
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg)
 	timer := time.NewTimer(10 * time.Second)
@@ -278,13 +278,13 @@ func (s *NSQRunnerTestSuite) TestHandlerDoesItsThing() {
 
 func (s *NSQRunnerTestSuite) TestResultsHaveCorrectCustomerId() {
 	check1 := s.Common.PassingCheck()
-	cwt1, _ := NewCheckWithTargets(s.Resolver, check1)
+	cwt1, _ := NewCheckTargets(s.Resolver, check1)
 	msg1, _ := json.Marshal(cwt1)
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg1)
 
 	check2 := s.Common.PassingCheck()
 	check2.CustomerId = "check2-customer-id"
-	cwt2, _ := NewCheckWithTargets(s.Resolver, check2)
+	cwt2, _ := NewCheckTargets(s.Resolver, check2)
 	msg2, _ := json.Marshal(cwt2)
 	s.Producer.Publish(s.Config.ConsumerQueueName, msg2)
 

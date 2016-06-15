@@ -44,36 +44,8 @@ const (
 )
 
 var (
-	registry        = make(map[string]reflect.Type)
 	metricsRegistry = heart.MetricsRegistry
 )
-
-func init() {
-	// Check types for Any recomposition go here.
-	registry["HttpCheck"] = reflect.TypeOf(schema.HttpCheck{})
-	registry["CloudWatchCheck"] = reflect.TypeOf(schema.CloudWatchCheck{})
-}
-
-// UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
-
-func UnmarshalAny(any *opsee_types.Any) (interface{}, error) {
-	class := any.TypeUrl
-	bytes := any.Value
-	t, ok := registry[class]
-	if !ok {
-		return nil, fmt.Errorf("type not in Any registry: %s", class)
-	}
-
-	instance := reflect.New(t).Interface()
-	err := proto.Unmarshal(bytes, instance.(proto.Message))
-	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "unmarshall returned error", "error": "couldn't unmarshall *Any"}).Error(err.Error())
-		return nil, err
-	}
-	log.WithFields(log.Fields{"service": "checker", "event": "unmarshal successful"}).Debug("unmarshaled Any to: ", instance)
-
-	return instance, nil
-}
 
 // This is admittedly janky, but at the very least it gives us some reasonable
 // and fast insight into what's going on.
@@ -109,29 +81,6 @@ func handleError(err error) string {
 	log.WithFields(log.Fields{"service": "checker", "event": "handleError() error", "error": err}).Warn(string(errStr))
 
 	return string(errStr)
-}
-
-// MarshalAny uses reflection to marshal an interface{} into an Any object and
-// sets up its TypeUrl type hint.
-
-func MarshalAny(i interface{}) (*opsee_types.Any, error) {
-	msg, ok := i.(proto.Message)
-	if !ok {
-		err := fmt.Errorf("Unable to convert to proto.Message: %v", i)
-		log.WithFields(log.Fields{"service": "checker", "event": "marshalling error"}).Error(err.Error())
-		return nil, err
-	}
-	bytes, err := proto.Marshal(msg)
-
-	if err != nil {
-		log.WithFields(log.Fields{"service": "checker", "event": "marshalling error"}).Error(err.Error())
-		return nil, err
-	}
-
-	return &opsee_types.Any{
-		TypeUrl: reflect.ValueOf(i).Elem().Type().Name(),
-		Value:   bytes,
-	}, nil
 }
 
 // Interval is the frequency of check execution.
@@ -223,7 +172,7 @@ func (r *RemoteRunner) withLock(f func()) {
 // RunCheck asynchronously executes the check and blocks waiting on the result. It's important to set a
 // context deadline unless you want this to block forever.
 
-func (r *RemoteRunner) RunCheck(ctx context.Context, checkWithTargets *CheckWithTargets) (*schema.CheckResult, error) {
+func (r *RemoteRunner) RunCheck(ctx context.Context, checkWithTargets *schema.CheckTargets) (*schema.CheckResult, error) {
 	chk := checkWithTargets.Check
 	log.Debugf("RemoteRunner Running check %s", chk.String())
 
@@ -252,7 +201,7 @@ func (r *RemoteRunner) RunCheck(ctx context.Context, checkWithTargets *CheckWith
 		})
 	}()
 
-	msg, err := json.Marshal(checkWithTargets)
+	msg, err := proto.Marshal(checkWithTargets)
 	if err != nil {
 		log.WithError(err).Error("Failed to marshal checkwithtargets")
 		return nil, err
@@ -366,7 +315,7 @@ func (c *Checker) DeleteCheck(ctx context.Context, req *opsee.CheckResourceReque
 // TestCheckResponse.
 //
 // "Request-specific errors" are defined as: - An unresolvable Check target.  -
-// An unidentifiable Check type or CheckSpec.
+// An unidentifiable Check type or Spec.
 //
 // * Synchronously in this case means that TestCheck blocks until a runner has
 // returned a response via NSQ or the context deadline is exceeded.
@@ -393,7 +342,7 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 	log.WithFields(log.Fields{"service": "checker", "event": "TestCheck"}).Debug("TestCheck deadline is " + deadline.Sub(time.Now()).String() + " from now.")
 
 	testCheckResponse := &opsee.TestCheckResponse{}
-	checkWithTargets, err := NewCheckWithTargets(c.resolver, req.Check)
+	checkWithTargets, err := NewCheckTargets(c.resolver, req.Check)
 	if err != nil {
 		testCheckResponse.Error = handleError(err)
 		return testCheckResponse, nil

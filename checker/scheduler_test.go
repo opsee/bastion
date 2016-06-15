@@ -50,9 +50,9 @@ func (s *SchedulerTestSuite) TestCheckWithoutTargetIsInvalid() {
 	assert.Error(s.T(), validateCheck(check))
 }
 
-func (s *SchedulerTestSuite) TestCheckWithoutCheckSpecIsInvalid() {
+func (s *SchedulerTestSuite) TestCheckWithoutSpecIsInvalid() {
 	check := s.Common.Check()
-	check.CheckSpec = nil
+	check.Spec = nil
 	assert.Error(s.T(), validateCheck(check))
 }
 
