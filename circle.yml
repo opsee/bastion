@@ -9,10 +9,8 @@ machine:
     - docker
   environment:
     ci: "true"
-    VPN_REMOTE: "bastion.opsee.com"
-    DNS_SERVER: 169.254.169.253
-    NSQD_HOST: nsqd.in.opsee.com
-    BASTION_VERSION: $CIRCLE_SHA1
+    BASTION_VERSION: "$CIRCLE_SHA1"
+
 experimental:
   notify:
     branches:

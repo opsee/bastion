@@ -439,9 +439,11 @@ func (c *Checker) GetExistingChecks(tries int) ([]*schema.Check, error) {
 		return nil, err
 	}
 
-	getChecksURL := config.GetConfig().BartnetHost + "/checks"
+	getChecksURL := config.GetConfig().BartnetHost + "/checks/exgid/"
 	if exgid := config.GetConfig().ExecutionGroupId; exgid != "" {
-		getChecksURL += "/exgid/" + exgid
+		getChecksURL += exgid
+	} else {
+		getChecksURL += config.GetConfig().CustomerId
 	}
 
 	request := &auth.BastionAuthTokenRequest{
