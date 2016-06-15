@@ -8,6 +8,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/opsee/basic/schema"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 )
 
 const (
