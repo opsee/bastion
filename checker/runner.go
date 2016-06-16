@@ -130,6 +130,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 
 		result := &schema.CheckResult{
 			CustomerId: check.CustomerId,
+			BastionId:  config.GetConfig().BastionId,
 			CheckId:    check.Id,
 			Target:     check.Target,
 			CheckName:  check.Name,
