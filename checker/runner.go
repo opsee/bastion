@@ -92,6 +92,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			cancel()
 			result := &schema.CheckResult{
 				CustomerId: check.CustomerId,
+				BastionId:  config.GetConfig().BastionId,
 				CheckId:    check.Id,
 				CheckName:  check.Name,
 				Target:     check.Target,
@@ -349,7 +350,23 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 		}
 
 		if response.Error == "" && len(check.Assertions) > 0 && r.slateClient != nil {
-			jsonBytes, err := json.Marshal(response.Reply)
+			var (
+				jsonBytes json.RawMessage
+				err       error
+			)
+			switch t := response.Reply.(type) {
+			case *schema.CheckResponse_HttpResponse:
+				jsonBytes, err = json.Marshal(t.HttpResponse)
+			case *schema.CheckResponse_CloudwatchResponse:
+				jsonBytes, err = json.Marshal(t.CloudwatchResponse)
+			default:
+				err = fmt.Errorf("reply type not found: %#v", t)
+			}
+
+			if err != nil {
+				log.WithError(err).Error("Could marshal check response reply.")
+			}
+
 			passing, err = r.slateClient.CheckAssertions(ctx, check, jsonBytes)
 			if err != nil {
 				log.WithError(err).Error("Could not contact slate.")
