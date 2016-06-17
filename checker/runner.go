@@ -365,12 +365,15 @@ func (r *Runner) runAssertions(ctx context.Context, check *schema.Check, tasks c
 			}
 
 			if err != nil {
-				log.WithError(err).Error("Could marshal check response reply.")
+				log.WithError(err).Error("Couldn't marshal check response reply.")
+				return nil
 			}
 
 			passing, err = r.slateClient.CheckAssertions(ctx, check, jsonBytes)
 			if err != nil {
+				// even one failure with contacting slate will cause the check to not be run
 				log.WithError(err).Error("Could not contact slate.")
+				return nil
 			}
 		}
 		log.WithFields(log.Fields{"Check Name": check.Name, "Check Id": check.Id}).Debugf("Check is passing: %t", passing)
@@ -415,6 +418,9 @@ func (r *Runner) RunCheck(ctx context.Context, check *schema.Check, targets []*s
 	// TODO(greg): Move assertion processing to a parallel model, but for now
 	// try to be a little nicer to slate and run these serially, blocking until
 	// all assertions have been processed.
+	// In the event of a slate failure, we're return nil for the list of responses,
+	// which will skip putting results on the queue!
+	// TODO: Alert opsee in that scenario
 	responses := r.runAssertions(ctx, check, tasks)
 	return responses, nil
 }
