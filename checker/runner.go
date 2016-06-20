@@ -63,81 +63,65 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			log.WithError(err).Errorf("Error decoding checkWithTargets: %s", string(m.Body))
 			return err
 		}
+
 		check := checkWithTargets.Check
+
+		timestamp := &opsee_types.Timestamp{}
+		timestamp.Scan(time.Now())
+
+		result := &schema.CheckResult{
+			CustomerId: check.CustomerId,
+			BastionId:  config.GetConfig().BastionId,
+			CheckId:    check.Id,
+			CheckName:  check.Name,
+			Target:     check.Target,
+			Timestamp:  timestamp,
+			Version:    BastionProtoVersion,
+		}
 
 		// Backward compatibility required.
 		if check.CustomerId == "" {
 			check.CustomerId = bastionCustomerId
 		}
 
-		log.WithFields(log.Fields{"check": check.String()}).Debug("Entering NSQRunner handler.")
+		// Handle a resolver error
+		if checkWithTargets.Targets == nil || len(checkWithTargets.Targets) == 0 {
+			result.Responses = []*schema.CheckResponse{&schema.CheckResponse{
+				Target: check.Target,
+				Error:  fmt.Sprintf("Could not resolve target: type=%s id=%s name=%s", check.Target.Type, check.Target.Id, check.Target.Name),
+			}}
+		} else {
+			d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
 
-		timestamp := &opsee_types.Timestamp{}
-		timestamp.Scan(time.Now())
+			ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
 
-		d, err := time.ParseDuration(fmt.Sprintf("%ds", check.Interval))
-		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(d*2))
-		// A call to RunCheck is synchronous. Calling cancel() is not necessarily superfluous though.
-		responses, err := runner.RunCheck(ctx, check, checkWithTargets.Targets)
-		log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
-		cancel()
-
-		if responses == nil {
-			log.WithFields(log.Fields{"check_id": check.Id}).Debug("skipping check.")
-			return nil
-		}
-
-		if err != nil {
-			log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
+			// A call to RunCheck is synchronous. Calling cancel() is not necessarily superfluous though.
+			responses, err := runner.RunCheck(ctx, check, checkWithTargets.Targets)
+			log.WithFields(log.Fields{"check_id": check.Id}).Debug("Running check.")
 			cancel()
-			result := &schema.CheckResult{
-				CustomerId: check.CustomerId,
-				BastionId:  config.GetConfig().BastionId,
-				CheckId:    check.Id,
-				CheckName:  check.Name,
-				Target:     check.Target,
-				Timestamp:  timestamp,
-				Responses: []*schema.CheckResponse{&schema.CheckResponse{
+
+			if responses == nil {
+				log.WithFields(log.Fields{"check_id": check.Id}).Debug("skipping check.")
+				return nil
+			}
+
+			if err != nil {
+				log.WithError(err).WithFields(log.Fields{"check": check}).Error("Error running check.")
+				result.Responses = []*schema.CheckResponse{&schema.CheckResponse{
 					Target: check.Target,
 					Error:  handleError(err),
-				}},
-				Version: BastionProtoVersion,
+				}}
+			} else {
+				// Determine if the CheckResult has its passing flag set.
+				passing := true
+				for _, response := range responses {
+					if !response.Passing {
+						passing = false
+					}
+				}
+				result.Responses = responses
+				result.Passing = passing
 			}
-
-			msg, err := proto.Marshal(result)
-			if err != nil {
-				log.WithError(err).Error("Error marshaling CheckResult")
-				return err
-			}
-
-			if err := producer.Publish(cfg.ProducerQueueName, msg); err != nil {
-				log.WithError(err).Error("Error publishing CheckResult")
-				return err
-			}
-
-			metrics.GetOrRegisterCounter("nsq_messages_handled", registry).Inc(1)
-
-			return nil
-		}
-
-		// Determine if the CheckResult has its passing flag set.
-		passing := true
-		for _, response := range responses {
-			if !response.Passing {
-				passing = false
-			}
-		}
-
-		result := &schema.CheckResult{
-			CustomerId: check.CustomerId,
-			BastionId:  config.GetConfig().BastionId,
-			CheckId:    check.Id,
-			Target:     check.Target,
-			CheckName:  check.Name,
-			Timestamp:  timestamp,
-			Responses:  responses,
-			Passing:    passing,
-			Version:    BastionProtoVersion,
 		}
 
 		msg, err := proto.Marshal(result)
@@ -155,8 +139,8 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 				"Target":     check.Target,
 				"CheckName":  check.Name,
 				"Timestamp":  timestamp,
-				"Responses":  responses,
-				"Passing":    passing,
+				"Responses":  result.Responses,
+				"Passing":    result.Passing,
 				"Version":    BastionProtoVersion}).Debug("Published result to queue %s", cfg.ProducerQueueName)
 		}
 

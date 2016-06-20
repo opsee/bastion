@@ -31,7 +31,7 @@ CUSTOMER_EMAIL ?= "email"
 CUSTOMER_PASSWORD ?= "password"
 DNS_SERVER ?= "169.254.169.253"
 ENABLE_BASTION_INGRESS ?= "false"
-LOG_LEVEL ?= "debug"
+LOG_LEVEL ?= "info"
 SLATE_HOST ?= "slate:7000"
 BEZOS_HOST ?= "bezosphere.in.opsee.com:8443"
 TARGETS ?= linux/amd64
@@ -52,6 +52,7 @@ build: deps
 	-e BASTION_AUTH_ENDPOINT=$(BASTION_AUTH_ENDPOINT) \
 	-e AWS_DEFAULT_REGION \
 	-e PROJECT=$(PROJECT) \
+	-e LOG_LEVEL=$(LOG_LEVEL) \
 	-v `pwd`:/gopath/src/$(PROJECT) \
 	quay.io/opsee/build-go:16
 	docker build -t quay.io/opsee/bastion:$(BASTION_VERSION) .

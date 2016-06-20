@@ -269,22 +269,34 @@ func (s *Scheduler) Start() error {
 				s.scheduleMap.Destroy()
 				return
 			case check := <-s.scheduleMap.RunChan():
-				if checkWithTargets, err := NewCheckTargets(s.resolver, check); err != nil {
+				var (
+					checkWithTargets *schema.CheckTargets
+					err              error
+				)
+
+				// TODO(greg): Clean this up and get rid of schema.CheckTargets.
+				checkWithTargets, err = NewCheckTargets(s.resolver, check)
+				if err != nil {
 					log.Error(err.Error())
 				} else {
-					msg, err := proto.Marshal(checkWithTargets)
-					if err != nil {
+					checkWithTargets = &schema.CheckTargets{
+						Check:   check,
+						Targets: nil,
+					}
+				}
+
+				msg, err := proto.Marshal(checkWithTargets)
+				if err != nil {
+					log.Error(err.Error())
+				} else {
+					// TODO(greg): All of the channel configuration stuff, really needs to
+					// be centralized and easily managed. It can just be a static file or
+					// something that every microservice refers to--just to make sure
+					// they're all on the same page.
+					if err := s.Producer.Publish("runner", msg); err != nil {
 						log.Error(err.Error())
 					} else {
-						// TODO(greg): All of the channel configuration stuff, really needs to
-						// be centralized and easily managed. It can just be a static file or
-						// something that every microservice refers to--just to make sure
-						// they're all on the same page.
-						if err := s.Producer.Publish("runner", msg); err != nil {
-							log.Error(err.Error())
-						} else {
-							log.Debug("Scheduled check for execution: %s", check.Id)
-						}
+						log.Debug("Scheduled check for execution: %s", check.Id)
 					}
 				}
 			}
