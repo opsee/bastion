@@ -13,7 +13,7 @@ func NewCheckTargets(resolver Resolver, check *schema.Check) (*schema.CheckTarge
 		return nil, fmt.Errorf("resolveRequestTargets: Check requires target. CHECK=%#v", check)
 	}
 
-	targets, err := resolver.Resolve(context.TODO(), check.Target)
+	targets, err := resolver.Resolve(context.Background(), check.Target)
 	if err != nil {
 		return nil, err
 	}
