@@ -278,7 +278,9 @@ func (s *Scheduler) Start() error {
 				checkWithTargets, err = NewCheckTargets(s.resolver, check)
 				if err != nil {
 					log.Error(err.Error())
-				} else {
+				}
+
+				if checkWithTargets == nil {
 					checkWithTargets = &schema.CheckTargets{
 						Check:   check,
 						Targets: nil,
