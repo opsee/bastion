@@ -402,13 +402,15 @@ func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
 func (this *AWSResolver) resolveExternalHost(host string) ([]*schema.Target, error) {
 	log.Debugf("resolving external host: %s", host)
 
-	return &schema.Target{
-		// name is very important, please leave.
-		// it's used by the http check runner to determine hostname for TLS
-		Name:    host,
-		Type:    "external_host",
-		Id:      host,
-		Address: host,
+	return []*schema.Target{
+		{
+			// name is very important, please leave.
+			// it's used by the http check runner to determine hostname for TLS
+			Name:    host,
+			Type:    "external_host",
+			Id:      host,
+			Address: host,
+		},
 	}, nil
 }
 
