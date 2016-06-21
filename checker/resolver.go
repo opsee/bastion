@@ -371,8 +371,8 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 	})
 }
 
-func (this *AWSResolver) resolveHost(hostType, host string) ([]*schema.Target, error) {
-	log.Debugf("resolving %s: %s", hostType, host)
+func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
+	log.Debugf("resolving host: %s", host)
 
 	ips, err := net.LookupIP(host)
 	if err != nil {
@@ -389,7 +389,7 @@ func (this *AWSResolver) resolveHost(hostType, host string) ([]*schema.Target, e
 				// name is very important, please leave.
 				// it's used by the http check runner to determine hostname for TLS
 				Name:    host,
-				Type:    hostType,
+				Type:    "host",
 				Id:      ipstr,
 				Address: ipstr,
 			})
@@ -397,6 +397,21 @@ func (this *AWSResolver) resolveHost(hostType, host string) ([]*schema.Target, e
 	}
 
 	return target, nil
+}
+
+func (this *AWSResolver) resolveExternalHost(host string) ([]*schema.Target, error) {
+	log.Debugf("resolving external host: %s", host)
+
+	return []*schema.Target{
+		{
+			// name is very important, please leave.
+			// it's used by the http check runner to determine hostname for TLS
+			Name:    host,
+			Type:    "external_host",
+			Id:      host,
+			Address: host,
+		},
+	}, nil
 }
 
 func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]*schema.Target, error) {
@@ -431,9 +446,9 @@ func (this *AWSResolver) Resolve(ctx context.Context, target *schema.Target) ([]
 	case "ecs_service":
 		return this.resolveECSService(ctx, target.Id)
 	case "host":
-		return this.resolveHost("host", target.Id)
+		return this.resolveHost(target.Id)
 	case "external_host":
-		return this.resolveHost("external_host", target.Id)
+		return this.resolveExternalHost(target.Id)
 	}
 
 	return nil, fmt.Errorf("Unable to resolve target: %s", target)
