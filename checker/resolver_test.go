@@ -15,7 +15,7 @@ func TestResolveHost(t *testing.T) {
 		err      error
 	)
 
-	targets, err = resolver.resolveHost("host", "127.0.0.1")
+	targets, err = resolver.resolveHost("127.0.0.1")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func TestResolveHost(t *testing.T) {
 		"resolver.resolveHost will work with an ip address given as a parameter",
 	)
 
-	targets, err = resolver.resolveHost("host", "reddit.com")
+	targets, err = resolver.resolveHost("reddit.com")
 	if err != nil {
 		t.Fatal(err)
 	}
