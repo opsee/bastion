@@ -267,7 +267,7 @@ func (this *AWSResolver) resolveDBInstance(ctx context.Context, instanceId strin
 }
 
 func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*schema.Target, error) {
-	t := strings.Split(id, "\x00")
+	t := strings.Split(id, "/")
 	if len(t) < 2 {
 		return nil, fmt.Errorf("Invalid ECS Service target.")
 	}

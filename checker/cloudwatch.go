@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"golang.org/x/net/context"
@@ -99,6 +100,22 @@ func (this *CloudWatchRequest) GetDimensions(metric *schema.CloudWatchMetric) ([
 			&opsee_aws_cloudwatch.Dimension{
 				Name:  aws.String("AutoScalingGroupName"),
 				Value: aws.String(this.Target.Id),
+			},
+		}, nil
+	case "AWS/ECS":
+		idParts := strings.Split(this.Target.Id, "/")
+		if len(idParts) < 2 {
+			return nil, fmt.Errorf("invalid ECS cluster/service pair")
+		}
+
+		return []*opsee_aws_cloudwatch.Dimension{
+			{
+				Name:  aws.String("ClusterName"),
+				Value: aws.String(idParts[0]),
+			},
+			{
+				Name:  aws.String("ServiceName"),
+				Value: aws.String(idParts[1]),
 			},
 		}, nil
 	default:
