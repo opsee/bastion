@@ -1,7 +1,3 @@
-checkout:
-  post:
-    - git submodule sync
-    - git submodule update --init
 machine:
   java:
     version: oraclejdk8
