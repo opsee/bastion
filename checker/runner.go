@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -218,6 +219,7 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 			}
 			var (
 				host       string
+				address    string
 				skipVerify = true
 			)
 
@@ -237,9 +239,15 @@ func (r *Runner) dispatch(ctx context.Context, check *schema.Check, targets []*s
 				skipVerify = false
 			}
 
+			if strings.Contains(target.Address, ":") {
+				address = target.Address
+			} else {
+				address = fmt.Sprintf("%s:%d", target.Address, typedCheck.Port)
+			}
+
 			request = &HTTPRequest{
 				Method:             typedCheck.Verb,
-				URL:                fmt.Sprintf("%s://%s:%d%s", typedCheck.Protocol, target.Address, typedCheck.Port, typedCheck.Path),
+				URL:                fmt.Sprintf("%s://%s%s", typedCheck.Protocol, address, typedCheck.Path),
 				Headers:            typedCheck.Headers,
 				Body:               typedCheck.Body,
 				Host:               host,
