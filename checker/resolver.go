@@ -3,6 +3,7 @@ package checker
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 
@@ -268,16 +269,21 @@ func (this *AWSResolver) resolveDBInstance(ctx context.Context, instanceId strin
 
 func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*schema.Target, error) {
 	t := strings.Split(id, "/")
-	if len(t) < 2 {
-		return nil, fmt.Errorf("Invalid ECS Service target.")
+	if len(t) != 4 {
+		return nil, fmt.Errorf("Invalid ECS Service target: %q", id)
 	}
 
-	cluster_name := t[0]
-	service_name := t[1]
+	clusterName := t[0]
+	serviceName := t[1]
+	containerName := t[2]
+	containerPort, err := strconv.ParseInt(t[3], 10, 64)
+	if err != nil {
+		return nil, err
+	}
 
 	ltInput := &opsee_aws_ecs.ListTasksInput{
-		Cluster:     aws.String(cluster_name),
-		ServiceName: aws.String(service_name),
+		Cluster:     aws.String(clusterName),
+		ServiceName: aws.String(serviceName),
 	}
 
 	maxAge := &opsee_types.Timestamp{}
@@ -307,7 +313,7 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 
 	dtInput := &opsee_aws_ecs.DescribeTasksInput{
 		Tasks:   tasks,
-		Cluster: aws.String(cluster_name),
+		Cluster: aws.String(clusterName),
 	}
 
 	bdtResponse, err := this.BezosClient.Get(
@@ -328,9 +334,24 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 		return nil, fmt.Errorf("error decoding aws response")
 	}
 
+	// DescribeTasksOutput has Tasks, each Task has:
+	// ContainerInstanceArn
+	// Containers[].NetworkBindings[].ContainerPort (which we match against to find host port)
+
+	// container instance arn -> host port
+	portMap := map[string]int64{}
 	var ci []string
 	for _, t := range bdtOutput.Tasks {
-		ci = append(ci, aws.StringValue(t.ContainerInstanceArn))
+		ci = append(ci, t.GetContainerInstanceArn())
+		for _, container := range t.Containers {
+			if container.GetName() == containerName {
+				for _, binding := range container.GetNetworkBindings() {
+					if binding.GetContainerPort() == containerPort {
+						portMap[t.GetContainerInstanceArn()] = binding.GetHostPort()
+					}
+				}
+			}
+		}
 	}
 
 	dciInput := &opsee_aws_ecs.DescribeContainerInstancesInput{
@@ -355,12 +376,18 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 		return nil, fmt.Errorf("error decoding aws response")
 	}
 
-	instances := make([]string, 0, len(ci))
+	// ec2 instance id -> container instance arn (so we can look up the host port.)
+	instanceMap := map[string]string{}
+	instances := make([]string, len(ci))
 	for i, inst := range dciOutput.ContainerInstances {
-		instances[i] = aws.StringValue(inst.Ec2InstanceId)
+		if inst.Ec2InstanceId == nil {
+			continue
+		}
+		instanceMap[inst.GetEc2InstanceId()] = inst.GetContainerInstanceArn()
+		instances[i] = inst.GetEc2InstanceId()
 	}
 
-	return this.resolveEC2InstancesWithInput(ctx, &opsee_aws_ec2.DescribeInstancesInput{
+	targets, err := this.resolveEC2InstancesWithInput(ctx, &opsee_aws_ec2.DescribeInstancesInput{
 		Filters: []*opsee_aws_ec2.Filter{
 			{
 				Name:   aws.String("vpc-id"),
@@ -369,6 +396,25 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 		},
 		InstanceIds: instances,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, t := range targets {
+		arn, ok := instanceMap[t.Id]
+		if !ok {
+			return nil, fmt.Errorf("No container instance found for resolved instance id: %s", t.Id)
+		}
+
+		port, ok := portMap[arn]
+		if !ok {
+			return nil, fmt.Errorf("No host port found for container instance: %s", arn)
+		}
+
+		t.Address = fmt.Sprintf("%s:%d", t.Address, port)
+	}
+
+	return targets, nil
 }
 
 func (this *AWSResolver) resolveHost(host string) ([]*schema.Target, error) {
