@@ -58,6 +58,11 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 	registry := metrics.NewPrefixedChildRegistry(metricsRegistry, "runner.")
 	bastionCustomerId := config.GetConfig().CustomerId
 
+	bastionRegion := ""
+	if metaData, err := config.GetConfig().AWS.MetaData(); err == nil {
+		bastionRegion = metaData.Region
+	}
+
 	consumer.AddConcurrentHandlers(nsq.HandlerFunc(func(m *nsq.Message) error {
 		checkWithTargets := &schema.CheckTargets{}
 		if err := proto.Unmarshal(m.Body, checkWithTargets); err != nil {
@@ -78,6 +83,7 @@ func NewNSQRunner(runner *Runner, cfg *NSQRunnerConfig) (*NSQRunner, error) {
 			Target:     check.Target,
 			Timestamp:  timestamp,
 			Version:    BastionProtoVersion,
+			Region:     bastionRegion,
 		}
 
 		// Backward compatibility required.
