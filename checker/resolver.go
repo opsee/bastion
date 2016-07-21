@@ -355,6 +355,7 @@ func (this *AWSResolver) resolveECSService(ctx context.Context, id string) ([]*s
 	}
 
 	dciInput := &opsee_aws_ecs.DescribeContainerInstancesInput{
+		Cluster:            aws.String(clusterName),
 		ContainerInstances: ci,
 	}
 
