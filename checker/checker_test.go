@@ -198,9 +198,8 @@ func (s *CheckerTestSuite) TestCheckResolverFailure() {
 	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
 	assert.NoError(s.T(), err)
 
-	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
-	assert.NotNil(s.T(), response.Error)
+	_, err = s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.Error(s.T(), err)
 }
 
 func (s *CheckerTestSuite) TestCheckResolverEmpty() {
@@ -212,10 +211,8 @@ func (s *CheckerTestSuite) TestCheckResolverEmpty() {
 	request, err := s.buildTestCheckRequest(s.Common.HTTPCheck(), target)
 	assert.NoError(s.T(), err)
 
-	response, err := s.CheckerClient.Client.TestCheck(s.Context, request)
-	assert.NoError(s.T(), err)
-	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
-	assert.NotNil(s.T(), response.Error)
+	_, err = s.CheckerClient.Client.TestCheck(s.Context, request)
+	assert.Error(s.T(), err)
 }
 
 func (s *CheckerTestSuite) TestCheckTimeout() {
@@ -232,9 +229,8 @@ func (s *CheckerTestSuite) TestCheckTimeout() {
 	// We bypass the client here, because it will intercept the context and return
 	// an error, but we want to simulate what happens if the deadline is met
 	// _after_ we get to the Checker.
-	response, err := s.Checker.TestCheck(ctx, request)
-	assert.NoError(s.T(), err)
-	assert.IsType(s.T(), new(opsee.TestCheckResponse), response)
+	_, err = s.Checker.TestCheck(ctx, request)
+	assert.Error(s.T(), err)
 }
 
 func (s *CheckerTestSuite) TestCheckAdheresToMaxHosts() {

@@ -343,18 +343,15 @@ func (c *Checker) TestCheck(ctx context.Context, req *opsee.TestCheckRequest) (*
 	testCheckResponse := &opsee.TestCheckResponse{}
 	checkWithTargets, err := NewCheckTargets(c.resolver, req.Check)
 	if err != nil {
-		testCheckResponse.Error = handleError(err)
-		return testCheckResponse, nil
+		return nil, err
 	}
 	result, err := c.Runner.RunCheck(ctx, checkWithTargets)
 	// I hate this hot garbage. We have to do this because the Java
 	// GRPC client will throw exceptions if we return errors via GRPC.
 	// So, rather than dealing with exceptions on the bartnet side, we
 	// just do this nonsense.
-	// TODO(greg): Fucking get rid of Error fields in GRPC responses.
 	if err != nil {
-		testCheckResponse.Error = handleError(err)
-		return testCheckResponse, nil
+		return nil, err
 	}
 
 	responses := result.GetResponses()
